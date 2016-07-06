@@ -1,8 +1,8 @@
 **Nonny is in very early development. Please check back later.**
 
 
-Nonny - free nonograms
-=====
+Nonny: free nonograms
+=====================
 
 **Nonny** is a free nonogram puzzle game. Nonograms (also called Griddlers or
 Picross) are logic puzzles in which squares within a grid must be colored or

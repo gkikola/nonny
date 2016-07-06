@@ -1,5 +1,17 @@
 *.gz
 *.log
+*.m4
 *.o
 *.tar
+.deps
+Makefile
+Makefile.in
+autom4te.cache
+config.h*
+config.status
+configure
+depcomp
+install-sh
+missing
+stamp*
 nonny
