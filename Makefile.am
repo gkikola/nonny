@@ -1,2 +1,2 @@
-SUBDIRS = src
+SUBDIRS = data src
 dist_doc_DATA = README.md COPYING
