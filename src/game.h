@@ -25,7 +25,7 @@ private:
   std::string data_path;
   std::string save_path;
 
-  const std::string cell_sheet_filename {"cells.bmp"};
+  const std::string cell_sheet_filename {"cell.png"};
   const int cell_sheet_frame_size = 32;
 };
 

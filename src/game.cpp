@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 
 #include "game.h"
 
@@ -45,28 +46,12 @@ Game::Game() : exit{false}, puzzle{nullptr} {
 
   //load sprite set
   std::string sprite_path = data_path + cell_sheet_filename;
-  SDL_Surface* loading_surface = SDL_LoadBMP(sprite_path.c_str());
-  if (!loading_surface) {    
-    std::string err_msg("SDL_LoadBMP: ");
-    err_msg += SDL_GetError();
-
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
-    throw std::runtime_error(err_msg);
-  }
-
-  cell_sheet_tex = SDL_CreateTextureFromSurface(renderer, loading_surface);
-  SDL_FreeSurface(loading_surface);
-
+  cell_sheet_tex = IMG_LoadTexture(renderer, sprite_path.c_str());
   if (!cell_sheet_tex) {
-    std::string err_msg("SDL_CreateTextureFromSurface: ");
-    err_msg += SDL_GetError();
-
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
-    throw std::runtime_error(err_msg);
+    throw std::runtime_error("IMG_LoadTexture: failed to load texture");
   }
 
   puzzle = new Puzzle(data_path + "test.non");

@@ -11,6 +11,12 @@ AM_PATH_SDL2($SDL_VERSION,
 CFLAGS="$CFLAGS $SDL_CFLAGS"
 LIBS="$LIBS $SDL_LIBS"
 
+AC_CHECK_LIB(SDL2_image, IMG_LoadTexture, ,
+  AC_MSG_ERROR([*** SDL2_image library not found]))
+
+AC_CHECK_LIB(SDL2_ttf, TTF_OpenFont, ,
+  AC_MSG_ERROR([*** SDL2_ttf library not found]))
+
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([
   Makefile
