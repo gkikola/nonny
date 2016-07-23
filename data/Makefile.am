@@ -1,1 +1,1 @@
-pkgdata_DATA = cell.png test.non
+pkgdata_DATA = cell.png test.non FreeSans.ttf

@@ -3,6 +3,7 @@
 #include <string>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 
 #include "game.h"
 
@@ -18,6 +19,12 @@ Game::Game() : exit{false}, puzzle{nullptr} {
 
   get_paths(&data_path, &save_path);
 
+  //load SDL_ttf
+  if (TTF_Init() != 0) {
+    SDL_Quit();
+    throw std::runtime_error("TTF_Init: failed to initialize SDL_ttf");
+  }
+
   window = SDL_CreateWindow("Nonny",
 			    SDL_WINDOWPOS_CENTERED,
 			    SDL_WINDOWPOS_CENTERED,
@@ -27,7 +34,8 @@ Game::Game() : exit{false}, puzzle{nullptr} {
   if (!window) {
     std::string err_msg("SDL_CreateWindow: ");
     err_msg += SDL_GetError();
-    
+
+    TTF_Quit();
     SDL_Quit();
     throw std::runtime_error(err_msg);
   }
@@ -40,6 +48,7 @@ Game::Game() : exit{false}, puzzle{nullptr} {
     err_msg += SDL_GetError();
     
     SDL_DestroyWindow(window);
+    TTF_Quit();
     SDL_Quit();
     throw std::runtime_error(err_msg);
   }
@@ -50,20 +59,35 @@ Game::Game() : exit{false}, puzzle{nullptr} {
   if (!cell_sheet_tex) {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
+    TTF_Quit();
     SDL_Quit();
     throw std::runtime_error("IMG_LoadTexture: failed to load texture");
   }
 
   puzzle = new Puzzle(data_path + "test.non");
+
+  std::string font_path = data_path + main_font_filename;
+  main_font = TTF_OpenFont(font_path.c_str(), main_font_size);
+  if (!main_font) {
+    SDL_DestroyTexture(cell_sheet_tex);
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    IMG_Quit();
+    TTF_Quit();
+    SDL_Quit();
+    throw std::runtime_error("TTF_OpenFont: could not open font file");
+  }
 }
 
 Game::~Game() {
   delete puzzle;
-  
+
+  TTF_CloseFont(main_font);
   SDL_DestroyTexture(cell_sheet_tex);
   SDL_DestroyRenderer(renderer);
   SDL_DestroyWindow(window);
   IMG_Quit();
+  TTF_Quit();
   SDL_Quit();
 }
 
