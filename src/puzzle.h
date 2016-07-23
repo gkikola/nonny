@@ -5,6 +5,10 @@
 #include <vector>
 
 enum class CellState { blank, marked, xedout };
+struct RuleEntry {
+  int value;
+  bool completed;
+};
 
 class Puzzle {
 public:
@@ -15,14 +19,14 @@ public:
 
   CellState cell(int x, int y) const { return grid[y * grid_width + x]; }
 
-  const std::vector<int>& get_row_rule(int row) const;
-  const std::vector<int>& get_col_rule(int col) const;
+  const std::vector<RuleEntry>& get_row_rule(int row) const;
+  const std::vector<RuleEntry>& get_col_rule(int col) const;
 private:
   void load_file(const std::string& filename);
   
   std::vector<CellState> grid;
-  std::vector<std::vector<int>> row_rules;
-  std::vector<std::vector<int>> col_rules;
+  std::vector<std::vector<RuleEntry>> row_rules;
+  std::vector<std::vector<RuleEntry>> col_rules;
   int grid_width;
   int grid_height;
 };

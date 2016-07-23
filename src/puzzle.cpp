@@ -11,14 +11,14 @@ Puzzle::Puzzle(const std::string& filename) : grid_width{0}, grid_height{0} {
   load_file(filename);
 }
 
-const std::vector<int>& Puzzle::get_row_rule(int row) const {
+const std::vector<RuleEntry>& Puzzle::get_row_rule(int row) const {
   if (row >= row_rules.size() || row < 0)
     throw std::runtime_error("Puzzle::get_row_rule: invalid row");
 
   return row_rules[row];
 }
 
-const std::vector<int>& Puzzle::get_col_rule(int col) const {
+const std::vector<RuleEntry>& Puzzle::get_col_rule(int col) const {
   if (col >= col_rules.size() || col < 0)
     throw std::runtime_error("Puzzle::get_col_rule: invalid column");
 
@@ -47,11 +47,11 @@ void Puzzle::load_file(const std::string& filename) {
 	ss.seekg(0);
 
 	if (reading_rows) {
-	  std::vector<int> rule;
+	  std::vector<RuleEntry> rule;
 	  row_rules.push_back(std::move(rule));
 	}
 	else {
-	  std::vector<int> rule;
+	  std::vector<RuleEntry> rule;
 	  col_rules.push_back(std::move(rule));
 	}
 
@@ -60,13 +60,14 @@ void Puzzle::load_file(const std::string& filename) {
 	  if (ch == ' ' || ch == ',' || ch == '\t')
 	    ss.get(); //eat the character
 	  else { //read rule data
-	    int value;
-	    ss >> value;
+	    RuleEntry entry;
+	    ss >> entry.value;
+	    entry.completed = false;
 
             if (reading_rows)
-	      row_rules[row_rules.size() - 1].push_back(value);
+	      row_rules[row_rules.size() - 1].push_back(entry);
             else
-	      col_rules[col_rules.size() - 1].push_back(value);
+	      col_rules[col_rules.size() - 1].push_back(entry);
 	  }
 	}
       }
