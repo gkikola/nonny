@@ -1,8 +1,86 @@
+#include <algorithm>
+#include <cctype>
+#include <exception>
+#include <fstream>
+#include <sstream>
+#include <string>
+
 #include "puzzle.h"
 
-Puzzle::Puzzle(std::string filename) {
-  grid_width = 10;
-  grid_height = 10;
+Puzzle::Puzzle(const std::string& filename) : grid_width{0}, grid_height{0} {
+  load_file(filename);
+}
 
-  grid.resize(grid_width * grid_height, CellState::blank);
+const std::vector<int>& Puzzle::get_row_rule(int row) const {
+  if (row >= row_rules.size() || row < 0)
+    throw std::runtime_error("Puzzle::get_row_rule: invalid row");
+
+  return row_rules[row];
+}
+
+const std::vector<int>& Puzzle::get_col_rule(int col) const {
+  if (col >= col_rules.size() || col < 0)
+    throw std::runtime_error("Puzzle::get_col_rule: invalid column");
+
+  return col_rules[col];
+}
+
+void Puzzle::load_file(const std::string& filename) {
+  std::string line;
+  std::ifstream file(filename);
+
+  if (!file.is_open()) {
+    throw std::runtime_error("Puzzle::load_file: could not open file");
+  }
+
+  bool reading_rows = true;
+
+  while (getline(file, line)) {
+    std::istringstream ss(line);
+    std::string property;
+
+    ss >> property;
+    transform(property.begin(), property.end(), property.begin(), tolower);
+
+    if (property.length() > 0) {
+      if (isdigit(property[0])) { //current line is rule data
+	ss.seekg(0);
+
+	if (reading_rows) {
+	  std::vector<int> rule;
+	  row_rules.push_back(std::move(rule));
+	}
+	else {
+	  std::vector<int> rule;
+	  col_rules.push_back(std::move(rule));
+	}
+
+	char ch;
+	while ((ch = ss.peek()) != EOF) {
+	  if (ch == ' ' || ch == ',' || ch == '\t')
+	    ss.get(); //eat the character
+	  else { //read rule data
+	    int value;
+	    ss >> value;
+
+            if (reading_rows)
+	      row_rules[row_rules.size() - 1].push_back(value);
+            else
+	      col_rules[col_rules.size() - 1].push_back(value);
+	  }
+	}
+      }
+      else if (property == "width")
+	ss >> grid_width;
+      else if (property == "height")
+	ss >> grid_height;
+      else if (property == "rows") {
+	reading_rows = true;
+      } else if (property == "columns") {
+	reading_rows = false;
+      }
+    }
+  }
+
+  file.close();
 }

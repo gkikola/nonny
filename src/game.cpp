@@ -5,9 +5,6 @@
 
 #include "game.h"
 
-const std::string cell_sheet_filename {"cells.bmp"};
-const int cell_sheet_frame_size = 32;
-
 void get_paths(std::string* data_dir, std::string* save_dir);
 char get_filesystem_separator();
 
@@ -72,7 +69,7 @@ Game::Game() : exit{false}, puzzle{nullptr} {
     throw std::runtime_error(err_msg);
   }
 
-  puzzle = new Puzzle("default.non");
+  puzzle = new Puzzle(data_path + "test.non");
 }
 
 Game::~Game() {

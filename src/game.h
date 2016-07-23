@@ -24,6 +24,9 @@ private:
   bool exit;
   std::string data_path;
   std::string save_path;
+
+  const std::string cell_sheet_filename {"cells.bmp"};
+  const int cell_sheet_frame_size = 32;
 };
 
 #endif

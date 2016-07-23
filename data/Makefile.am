@@ -1,1 +1,1 @@
-pkgdata_DATA = cells.bmp
+pkgdata_DATA = cells.bmp test.non
