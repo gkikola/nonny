@@ -15,6 +15,7 @@ public:
   void run();
 private:
   void draw();
+  void change_scale(double new_scale);
   
   SDL_Window* window;
   SDL_Renderer* renderer;
@@ -22,15 +23,16 @@ private:
   TTF_Font* main_font;
 
   Puzzle* puzzle;
+  double scale;
 
   bool exit;
   std::string data_path;
   std::string save_path;
 
   const std::string cell_sheet_filename {"cell.png"};
+  int cell_sheet_frame_size;
   const std::string main_font_filename {"FreeSans.ttf"};
-  const int main_font_size = 12;
-  const int cell_sheet_frame_size = 32;
+  const int main_font_size = 32;
 };
 
 #endif

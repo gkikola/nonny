@@ -10,7 +10,7 @@
 void get_paths(std::string* data_dir, std::string* save_dir);
 char get_filesystem_separator();
 
-Game::Game() : exit{false}, puzzle{nullptr} {
+Game::Game() : exit{false}, puzzle{nullptr}, scale{1.0} {
   if (SDL_Init(SDL_INIT_VIDEO) != 0) {
     std::string err_msg("SDL_Init: ");
     err_msg += SDL_GetError();
@@ -62,6 +62,23 @@ Game::Game() : exit{false}, puzzle{nullptr} {
     TTF_Quit();
     SDL_Quit();
     throw std::runtime_error("IMG_LoadTexture: failed to load texture");
+  }
+
+  //determine the width/height of each frame
+  cell_sheet_frame_size = 0;
+  Uint32 fmt;
+  int access, width;
+  SDL_QueryTexture(cell_sheet_tex, &fmt, &access, &width,
+                   &cell_sheet_frame_size);
+  if (cell_sheet_frame_size <= 0) {
+    SDL_DestroyTexture(cell_sheet_tex);
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    IMG_Quit();
+    TTF_Quit();
+    SDL_Quit();
+    throw std::runtime_error("SDL_QueryTexture: "
+                             "could not determine texture size");
   }
 
   puzzle = new Puzzle(data_path + "test.non");
@@ -128,7 +145,7 @@ void Game::draw() {
       
       SDL_RenderFillRect(renderer, &rect);
     }
-  }  
+  }
 
   SDL_RenderPresent(renderer);
 }
