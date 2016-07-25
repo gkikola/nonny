@@ -10,7 +10,9 @@
 void get_paths(std::string* data_dir, std::string* save_dir);
 char get_filesystem_separator();
 
-Game::Game() : exit{false}, puzzle{nullptr}, scale{1.0} {
+Game::Game() : exit{false}, puzzle{nullptr}, scale{1.0},
+               cell_sheet_tex{nullptr}, main_font{nullptr},
+               renderer{nullptr}, window{nullptr} {
   if (SDL_Init(SDL_INIT_VIDEO) != 0) {
     std::string err_msg("SDL_Init: ");
     err_msg += SDL_GetError();
@@ -35,8 +37,7 @@ Game::Game() : exit{false}, puzzle{nullptr}, scale{1.0} {
     std::string err_msg("SDL_CreateWindow: ");
     err_msg += SDL_GetError();
 
-    TTF_Quit();
-    SDL_Quit();
+    SDL_cleanup();
     throw std::runtime_error(err_msg);
   }
 
@@ -47,9 +48,7 @@ Game::Game() : exit{false}, puzzle{nullptr}, scale{1.0} {
     std::string err_msg("SDL_CreateRenderer: ");
     err_msg += SDL_GetError();
     
-    SDL_DestroyWindow(window);
-    TTF_Quit();
-    SDL_Quit();
+    SDL_cleanup();
     throw std::runtime_error(err_msg);
   }
 
@@ -57,10 +56,7 @@ Game::Game() : exit{false}, puzzle{nullptr}, scale{1.0} {
   std::string sprite_path = data_path + cell_sheet_filename;
   cell_sheet_tex = IMG_LoadTexture(renderer, sprite_path.c_str());
   if (!cell_sheet_tex) {
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    TTF_Quit();
-    SDL_Quit();
+    SDL_cleanup();
     throw std::runtime_error("IMG_LoadTexture: failed to load texture");
   }
 
@@ -71,12 +67,7 @@ Game::Game() : exit{false}, puzzle{nullptr}, scale{1.0} {
   SDL_QueryTexture(cell_sheet_tex, &fmt, &access, &width,
                    &cell_sheet_frame_size);
   if (cell_sheet_frame_size <= 0) {
-    SDL_DestroyTexture(cell_sheet_tex);
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    IMG_Quit();
-    TTF_Quit();
-    SDL_Quit();
+    SDL_cleanup();
     throw std::runtime_error("SDL_QueryTexture: "
                              "could not determine texture size");
   }
@@ -86,26 +77,29 @@ Game::Game() : exit{false}, puzzle{nullptr}, scale{1.0} {
   std::string font_path = data_path + main_font_filename;
   main_font = TTF_OpenFont(font_path.c_str(), main_font_size);
   if (!main_font) {
-    SDL_DestroyTexture(cell_sheet_tex);
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    IMG_Quit();
-    TTF_Quit();
-    SDL_Quit();
+    SDL_cleanup();
     throw std::runtime_error("TTF_OpenFont: could not open font file");
   }
 }
 
 Game::~Game() {
   delete puzzle;
+  SDL_cleanup();
+}
 
-  TTF_CloseFont(main_font);
-  SDL_DestroyTexture(cell_sheet_tex);
-  SDL_DestroyRenderer(renderer);
-  SDL_DestroyWindow(window);
+void Game::SDL_cleanup() {
+  if (main_font) TTF_CloseFont(main_font);
+  if (cell_sheet_tex) SDL_DestroyTexture(cell_sheet_tex);
+  if (renderer) SDL_DestroyRenderer(renderer);
+  if (window) SDL_DestroyWindow(window);
+  if (TTF_WasInit()) TTF_Quit();
   IMG_Quit();
-  TTF_Quit();
   SDL_Quit();
+
+  main_font = nullptr;
+  cell_sheet_tex = nullptr;
+  renderer = nullptr;
+  window = nullptr;
 }
 
 void Game::run() {

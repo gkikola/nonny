@@ -14,6 +14,7 @@ public:
 
   void run();
 private:
+  void SDL_cleanup();
   void draw();
   void change_scale(double new_scale);
   
