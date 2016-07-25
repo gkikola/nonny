@@ -16,7 +16,6 @@ public:
 private:
   void SDL_cleanup();
   void draw();
-  void change_scale(double new_scale);
   
   SDL_Window* window;
   SDL_Renderer* renderer;
@@ -24,7 +23,11 @@ private:
   TTF_Font* main_font;
 
   Puzzle* puzzle;
-  double scale;
+  double cur_scale;
+  double target_scale;
+  const double scale_step = 0.05;
+  const int scale_time = 5;
+  int x_pos, y_pos;
 
   bool exit;
   std::string data_path;

@@ -10,7 +10,8 @@
 void get_paths(std::string* data_dir, std::string* save_dir);
 char get_filesystem_separator();
 
-Game::Game() : exit{false}, puzzle{nullptr}, scale{1.0},
+Game::Game() : exit{false}, puzzle{nullptr}, x_pos{0}, y_pos{0},
+               cur_scale{1.0}, target_scale{1.0},
                cell_sheet_tex{nullptr}, main_font{nullptr},
                renderer{nullptr}, window{nullptr} {
   if (SDL_Init(SDL_INIT_VIDEO) != 0) {
@@ -114,6 +115,11 @@ void Game::run() {
       break;
     }
 
+    if (cur_scale - target_scale >= scale_step)
+      cur_scale -= scale_step / scale_time;
+    else if (target_scale - cur_scale >= scale_step)
+      cur_scale += scale_step / scale_time;
+
     draw();
   }
 }
@@ -123,12 +129,13 @@ void Game::draw() {
   SDL_RenderClear(renderer);
 
   //shade cells
+  int scaled_frame_size = (int)round(cur_scale * cell_sheet_frame_size);
   for (int y = 0; y < puzzle->height(); ++y) {
     for (int x = 0; x < puzzle->width(); ++x) {
       SDL_Rect rect;
-      rect.x = 16 + x * cell_sheet_frame_size;
-      rect.y = 16 + y * cell_sheet_frame_size;
-      rect.w = rect.h = cell_sheet_frame_size;
+      rect.x = x_pos + x * scaled_frame_size;
+      rect.y = y_pos + y * scaled_frame_size;
+      rect.w = rect.h = scaled_frame_size;
 
       if (x % 2 != y % 2)
 	SDL_SetRenderDrawColor(renderer, 240, 240, 255, 255);
