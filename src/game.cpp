@@ -11,6 +11,7 @@ void get_paths(std::string* data_dir, std::string* save_dir);
 char get_filesystem_separator();
 
 Game::Game() : exit{false}, puzzle{nullptr}, x_pos{0}, y_pos{0},
+               x_mouse{0}, y_mouse{0}, dragging_screen{false},
                cur_scale{1.0}, target_scale{1.0},
                cell_sheet_tex{nullptr}, main_font{nullptr},
                renderer{nullptr}, window{nullptr} {
@@ -107,14 +108,40 @@ void Game::run() {
   SDL_Event event;
   
   while (!exit) {
-    SDL_PollEvent(&event);
+    while (SDL_PollEvent(&event)) {
+      switch(event.type) {
+      case SDL_MOUSEBUTTONDOWN:
+      case SDL_MOUSEBUTTONUP:
+	x_mouse = event.button.x;
+	y_mouse = event.button.y;
+	
+	switch (event.button.button) {
+	default:
+	case SDL_BUTTON_LEFT:
+	  break;
+	case SDL_BUTTON_MIDDLE:
+	  dragging_screen = (event.type == SDL_MOUSEBUTTONDOWN);
 
-    switch(event.type) {
-    case SDL_QUIT:
-      exit = true;
-      break;
+	  if (dragging_screen) SDL_CaptureMouse(SDL_TRUE);
+	  else SDL_CaptureMouse(SDL_FALSE);
+	  break;
+	}
+	break;
+      case SDL_MOUSEMOTION:
+	if (dragging_screen
+            && (SDL_GetWindowFlags(window) & SDL_WINDOW_MOUSE_CAPTURE)) {
+	  x_pos += (event.motion.x - x_mouse);
+	  y_pos += (event.motion.y - y_mouse);
+	  x_mouse = event.motion.x;
+	  y_mouse = event.motion.y;
+	}
+	break;
+      case SDL_QUIT:
+	exit = true;
+	break;
+      }
     }
-
+    
     if (cur_scale - target_scale >= scale_step)
       cur_scale -= scale_step / scale_time;
     else if (target_scale - cur_scale >= scale_step)

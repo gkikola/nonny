@@ -29,6 +29,9 @@ private:
   const int scale_time = 5;
   int x_pos, y_pos;
 
+  int x_mouse, y_mouse;
+  bool dragging_screen;
+
   bool exit;
   std::string data_path;
   std::string save_path;
