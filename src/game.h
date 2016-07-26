@@ -16,6 +16,8 @@ public:
 private:
   void SDL_cleanup();
   void draw();
+  void draw_cells();
+  void shade_cells();
   
   SDL_Window* window;
   SDL_Renderer* renderer;
@@ -23,11 +25,8 @@ private:
   TTF_Font* main_font;
 
   Puzzle* puzzle;
-  double cur_scale;
-  double target_scale;
-  const double scale_step = 0.05;
-  const int scale_time = 5;
   int x_pos, y_pos;
+  int cell_size;
 
   int x_mouse, y_mouse;
   bool dragging_screen;

@@ -10,9 +10,8 @@
 void get_paths(std::string* data_dir, std::string* save_dir);
 char get_filesystem_separator();
 
-Game::Game() : exit{false}, puzzle{nullptr}, x_pos{0}, y_pos{0},
+Game::Game() : exit{false}, puzzle{nullptr}, x_pos{0}, y_pos{0}, cell_size{32},
                x_mouse{0}, y_mouse{0}, dragging_screen{false},
-               cur_scale{1.0}, target_scale{1.0},
                cell_sheet_tex{nullptr}, main_font{nullptr},
                renderer{nullptr}, window{nullptr} {
   if (SDL_Init(SDL_INIT_VIDEO) != 0) {
@@ -136,16 +135,16 @@ void Game::run() {
 	  y_mouse = event.motion.y;
 	}
 	break;
+      case SDL_MOUSEWHEEL:
+	SDL_GetMouseState(&x_mouse, &y_mouse);
+	if (event.wheel.y > 0);
+	else if (event.wheel.y < 0);
+	break;
       case SDL_QUIT:
 	exit = true;
 	break;
       }
     }
-    
-    if (cur_scale - target_scale >= scale_step)
-      cur_scale -= scale_step / scale_time;
-    else if (target_scale - cur_scale >= scale_step)
-      cur_scale += scale_step / scale_time;
 
     draw();
   }
@@ -155,14 +154,36 @@ void Game::draw() {
   SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
   SDL_RenderClear(renderer);
 
-  //shade cells
-  int scaled_frame_size = (int)round(cur_scale * cell_sheet_frame_size);
+  draw_cells();
+
+  SDL_RenderPresent(renderer);
+}
+
+void Game::draw_cells() {
+  SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+  
+  for(int x = 0; x <= puzzle->width(); ++x) {
+    SDL_RenderDrawLine(renderer, x_pos + x * (cell_size + 1), y_pos,
+                       x_pos + x * (cell_size + 1),
+                       y_pos + puzzle->height() * (cell_size + 1));
+  }
+
+  for(int y = 0; y <= puzzle->height(); ++y) {
+    SDL_RenderDrawLine(renderer, x_pos, y_pos + y * (cell_size + 1),
+                       x_pos + puzzle->width() * (cell_size + 1),
+                       y_pos + y * (cell_size + 1));
+  }
+  
+  shade_cells();
+}
+
+void Game::shade_cells() {
   for (int y = 0; y < puzzle->height(); ++y) {
     for (int x = 0; x < puzzle->width(); ++x) {
       SDL_Rect rect;
-      rect.x = x_pos + x * scaled_frame_size;
-      rect.y = y_pos + y * scaled_frame_size;
-      rect.w = rect.h = scaled_frame_size;
+      rect.x = 1 + x_pos + x * (cell_size + 1);
+      rect.y = 1 + y_pos + y * (cell_size + 1);
+      rect.w = rect.h = cell_size;
 
       if (x % 2 != y % 2)
 	SDL_SetRenderDrawColor(renderer, 240, 240, 255, 255);
@@ -174,8 +195,6 @@ void Game::draw() {
       SDL_RenderFillRect(renderer, &rect);
     }
   }
-
-  SDL_RenderPresent(renderer);
 }
 
 void get_paths(std::string* data_dir, std::string* save_dir) {
