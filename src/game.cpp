@@ -137,8 +137,13 @@ void Game::run() {
 	break;
       case SDL_MOUSEWHEEL:
 	SDL_GetMouseState(&x_mouse, &y_mouse);
-	if (event.wheel.y > 0);
-	else if (event.wheel.y < 0);
+	if (event.wheel.y > 0)
+	  cell_size += cell_size_step;
+	else if (event.wheel.y < 0)
+	  cell_size -= cell_size_step;
+
+	if (cell_size < 0)
+	  cell_size = 0;
 	break;
       case SDL_QUIT:
 	exit = true;

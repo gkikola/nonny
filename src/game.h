@@ -27,6 +27,7 @@ private:
   Puzzle* puzzle;
   int x_pos, y_pos;
   int cell_size;
+  const int cell_size_step = 5;
 
   int x_mouse, y_mouse;
   bool dragging_screen;
