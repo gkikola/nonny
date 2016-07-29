@@ -11,7 +11,7 @@ void get_paths(std::string* data_dir, std::string* save_dir);
 char get_filesystem_separator();
 
 Game::Game() : exit{false}, puzzle{nullptr}, x_pos{0}, y_pos{0}, cell_size{32},
-               mouse_x{0}, mouse_y{0}, dragging_screen{false},
+               mouse_x{0}, mouse_y{0}, dragging{false},
                cell_sheet_tex{nullptr}, main_font{nullptr},
                renderer{nullptr}, window{nullptr} {
   if (SDL_Init(SDL_INIT_VIDEO) != 0) {
@@ -120,14 +120,26 @@ void Game::run() {
           //check if mouse pointer is inside the grid
           if (mouse_x >= x_pos && mouse_x <= x_pos + actual_grid_width()
               && mouse_y >= y_pos && mouse_y <= y_pos + actual_grid_height()) {
-            dragging_mark = (event.type == SDL_MOUSEBUTTONDOWN);
+            dragging = (event.type == SDL_MOUSEBUTTONDOWN);
 
-            if (dragging_mark) {
+            if (dragging) {
               SDL_CaptureMouse(SDL_TRUE);
-
+              
+              //determine what cell we are on
               int x, y;
               screen_coords_to_cell_coords(mouse_x, mouse_y, x, y);
-              puzzle->set_cell(x, y, CellState::marked);
+
+              //if the cell is blank, mark it
+              if (puzzle->cell(x, y) == CellState::blank) {
+                puzzle->set_cell(x, y, CellState::marked);
+                drag_type = DragType::marks;
+              } else if (puzzle->cell(x, y) == CellState::marked) {
+                puzzle->set_cell(x, y, CellState::blank);
+                drag_type = DragType::blank_marks;
+              } else {
+                puzzle->set_cell(x, y, CellState::blank);
+                drag_type = DragType::blank_xes;
+              }
             }
             else SDL_CaptureMouse(SDL_FALSE);
             break;
@@ -135,52 +147,83 @@ void Game::run() {
 
           //outside the grid, do screen-dragging action:
         case SDL_BUTTON_MIDDLE:
-          dragging_screen = (event.type == SDL_MOUSEBUTTONDOWN);
+          dragging = (event.type == SDL_MOUSEBUTTONDOWN);
 
-          if (dragging_screen) SDL_CaptureMouse(SDL_TRUE);
+          if (dragging) {
+            drag_type = DragType::screen;
+            SDL_CaptureMouse(SDL_TRUE);
+          }
           else SDL_CaptureMouse(SDL_FALSE);
           break;
         case SDL_BUTTON_RIGHT:
           if (mouse_x >= x_pos && mouse_x <= x_pos + actual_grid_width()
               && mouse_y >= y_pos && mouse_y <= y_pos + actual_grid_height()) {
-            dragging_xout = (event.type == SDL_MOUSEBUTTONDOWN);
+            dragging = (event.type == SDL_MOUSEBUTTONDOWN);
 
-            if (dragging_xout) {
+            if (dragging) {
               SDL_CaptureMouse(SDL_TRUE);
- 
+              
+              //determine what cell we are on
               int x, y;
               screen_coords_to_cell_coords(mouse_x, mouse_y, x, y);
-              puzzle->set_cell(x, y, CellState::xedout);
+
+              //if the cell is blank, x it out
+              if (puzzle->cell(x, y) == CellState::blank) {
+                puzzle->set_cell(x, y, CellState::xedout);
+                drag_type = DragType::xes;
+              } else if (puzzle->cell(x, y) == CellState::marked) {
+                puzzle->set_cell(x, y, CellState::blank);
+                drag_type = DragType::blank_marks;
+              } else {
+                puzzle->set_cell(x, y, CellState::blank);
+                drag_type = DragType::blank_xes;
+              }
             }
             else SDL_CaptureMouse(SDL_FALSE);
           }
+          
           break;
         }
         break;
       case SDL_MOUSEMOTION:
-        if (dragging_screen
+        if (dragging
             && (SDL_GetWindowFlags(window) & SDL_WINDOW_MOUSE_CAPTURE)) {
-          x_pos += (event.motion.x - mouse_x);
-          y_pos += (event.motion.y - mouse_y);
-          mouse_x = event.motion.x;
-          mouse_y = event.motion.y;
-        }
-
-        if ((dragging_mark || dragging_xout)
-            && (SDL_GetWindowFlags(window) & SDL_WINDOW_MOUSE_CAPTURE)) {
-          mouse_x = event.motion.x;
-          mouse_y = event.motion.y;
-
-          int x, y;
-          screen_coords_to_cell_coords(mouse_x, mouse_y, x, y);
-
-          CellState state;
-          if (dragging_mark)
-            state = CellState::marked;
-          else if (dragging_xout)
-            state = CellState::xedout;
+          if (drag_type == DragType::screen) {
+            x_pos += (event.motion.x - mouse_x);
+            y_pos += (event.motion.y - mouse_y);
+          }
           
-          puzzle->set_cell(x, y, state);
+          mouse_x = event.motion.x;
+          mouse_y = event.motion.y;
+            
+          if (drag_type != DragType::screen) {
+            int x, y;
+            screen_coords_to_cell_coords(mouse_x, mouse_y, x, y);
+
+            CellState state;
+            bool change_cell = false;
+            if (drag_type == DragType::marks
+                && puzzle->cell(x, y) != CellState::xedout) {
+              change_cell = true;
+              state = CellState::marked;
+            } else if (drag_type == DragType::xes
+                       && puzzle->cell(x, y) != CellState::marked) {
+              change_cell = true;
+              state = CellState::xedout;
+            }
+            else if (drag_type == DragType::blank_marks
+                     && puzzle->cell(x, y) != CellState::xedout) {
+              change_cell = true;
+              state = CellState::blank;
+            } else if (drag_type == DragType::blank_xes
+                       && puzzle->cell(x, y) != CellState::marked) {
+              change_cell = true;
+              state = CellState::blank;
+            }
+
+            if (change_cell)
+              puzzle->set_cell(x, y, state);
+          }
         }
         break;
       case SDL_MOUSEWHEEL:

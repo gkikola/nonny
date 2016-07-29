@@ -7,6 +7,8 @@
 
 #include "puzzle.h"
 
+enum class DragType { screen, marks, xes, blank_marks, blank_xes };
+
 class Game {
 public:
   Game();
@@ -37,10 +39,9 @@ private:
   const int cell_size_step = 5;
 
   int mouse_x, mouse_y;
-  bool dragging_screen;
-  bool dragging_mark;
-  bool dragging_xout;
-
+  bool dragging;
+  DragType drag_type;
+  
   bool exit;
   std::string data_path;
   std::string save_path;
