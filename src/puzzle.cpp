@@ -25,6 +25,11 @@ const std::vector<RuleEntry>& Puzzle::get_col_rule(int col) const {
   return col_rules[col];
 }
 
+void Puzzle::set_cell(int x, int y, CellState state) {
+  if (x >= 0 && y >= 0 && x < width() && y < height())
+    grid[y * width() + x] = state;
+}
+
 void Puzzle::load_file(const std::string& filename) {
   std::string line;
   std::ifstream file(filename);
@@ -82,6 +87,8 @@ void Puzzle::load_file(const std::string& filename) {
       }
     }
   }
+
+  grid.resize(grid_width * grid_height, CellState::blank);
 
   file.close();
 }

@@ -18,7 +18,8 @@ public:
   int height() const { return grid_height; }
 
   CellState cell(int x, int y) const { return grid[y * grid_width + x]; }
-
+  void set_cell(int x, int y, CellState state);
+  
   const std::vector<RuleEntry>& get_row_rule(int row) const;
   const std::vector<RuleEntry>& get_col_rule(int col) const;
 private:

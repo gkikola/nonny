@@ -29,10 +29,10 @@ Game::Game() : exit{false}, puzzle{nullptr}, x_pos{0}, y_pos{0}, cell_size{32},
   }
 
   window = SDL_CreateWindow("Nonny",
-			    SDL_WINDOWPOS_CENTERED,
-			    SDL_WINDOWPOS_CENTERED,
-			    640, 480,
-			    SDL_WINDOW_RESIZABLE);
+                            SDL_WINDOWPOS_CENTERED,
+                            SDL_WINDOWPOS_CENTERED,
+                            640, 480,
+                            SDL_WINDOW_RESIZABLE);
 
   if (!window) {
     std::string err_msg("SDL_CreateWindow: ");
@@ -111,41 +111,89 @@ void Game::run() {
       switch(event.type) {
       case SDL_MOUSEBUTTONDOWN:
       case SDL_MOUSEBUTTONUP:
-	mouse_x = event.button.x;
-	mouse_y = event.button.y;
-	
-	switch (event.button.button) {
-	default:
-	case SDL_BUTTON_LEFT:
-	  break;
-	case SDL_BUTTON_MIDDLE:
-	  dragging_screen = (event.type == SDL_MOUSEBUTTONDOWN);
+        mouse_x = event.button.x;
+        mouse_y = event.button.y;
 
-	  if (dragging_screen) SDL_CaptureMouse(SDL_TRUE);
-	  else SDL_CaptureMouse(SDL_FALSE);
-	  break;
-	}
-	break;
+        switch (event.button.button) {
+        default:
+        case SDL_BUTTON_LEFT:
+          //check if mouse pointer is inside the grid
+          if (mouse_x >= x_pos && mouse_x <= x_pos + actual_grid_width()
+              && mouse_y >= y_pos && mouse_y <= y_pos + actual_grid_height()) {
+            dragging_mark = (event.type == SDL_MOUSEBUTTONDOWN);
+
+            if (dragging_mark) {
+              SDL_CaptureMouse(SDL_TRUE);
+
+              int x, y;
+              screen_coords_to_cell_coords(mouse_x, mouse_y, x, y);
+              puzzle->set_cell(x, y, CellState::marked);
+            }
+            else SDL_CaptureMouse(SDL_FALSE);
+            break;
+          }
+
+          //outside the grid, do screen-dragging action:
+        case SDL_BUTTON_MIDDLE:
+          dragging_screen = (event.type == SDL_MOUSEBUTTONDOWN);
+
+          if (dragging_screen) SDL_CaptureMouse(SDL_TRUE);
+          else SDL_CaptureMouse(SDL_FALSE);
+          break;
+        case SDL_BUTTON_RIGHT:
+          if (mouse_x >= x_pos && mouse_x <= x_pos + actual_grid_width()
+              && mouse_y >= y_pos && mouse_y <= y_pos + actual_grid_height()) {
+            dragging_xout = (event.type == SDL_MOUSEBUTTONDOWN);
+
+            if (dragging_xout) {
+              SDL_CaptureMouse(SDL_TRUE);
+ 
+              int x, y;
+              screen_coords_to_cell_coords(mouse_x, mouse_y, x, y);
+              puzzle->set_cell(x, y, CellState::xedout);
+            }
+            else SDL_CaptureMouse(SDL_FALSE);
+          }
+          break;
+        }
+        break;
       case SDL_MOUSEMOTION:
-	if (dragging_screen
+        if (dragging_screen
             && (SDL_GetWindowFlags(window) & SDL_WINDOW_MOUSE_CAPTURE)) {
-	  x_pos += (event.motion.x - mouse_x);
-	  y_pos += (event.motion.y - mouse_y);
-	  mouse_x = event.motion.x;
-	  mouse_y = event.motion.y;
-	}
-	break;
-      case SDL_MOUSEWHEEL:
-	SDL_GetMouseState(&mouse_x, &mouse_y);
+          x_pos += (event.motion.x - mouse_x);
+          y_pos += (event.motion.y - mouse_y);
+          mouse_x = event.motion.x;
+          mouse_y = event.motion.y;
+        }
 
-	if (event.wheel.y > 0)
+        if ((dragging_mark || dragging_xout)
+            && (SDL_GetWindowFlags(window) & SDL_WINDOW_MOUSE_CAPTURE)) {
+          mouse_x = event.motion.x;
+          mouse_y = event.motion.y;
+
+          int x, y;
+          screen_coords_to_cell_coords(mouse_x, mouse_y, x, y);
+
+          CellState state;
+          if (dragging_mark)
+            state = CellState::marked;
+          else if (dragging_xout)
+            state = CellState::xedout;
+          
+          puzzle->set_cell(x, y, state);
+        }
+        break;
+      case SDL_MOUSEWHEEL:
+        SDL_GetMouseState(&mouse_x, &mouse_y);
+
+        if (event.wheel.y > 0)
           zoom(cell_size_step, mouse_x, mouse_y);
-	else if (event.wheel.y < 0)
+        else if (event.wheel.y < 0)
           zoom(-cell_size_step, mouse_x, mouse_y);
-	break;
+        break;
       case SDL_QUIT:
-	exit = true;
-	break;
+        exit = true;
+        break;
       }
     }
 
@@ -176,8 +224,32 @@ void Game::draw_cells() {
                        x_pos + puzzle->width() * (cell_size + 1),
                        y_pos + y * (cell_size + 1));
   }
-  
+
   shade_cells();
+
+  for (int y = 0; y < puzzle->height(); ++y) {
+    for (int x = 0; x < puzzle->width(); ++x) {
+      SDL_Rect src, dest;
+      src.w = src.h = cell_sheet_frame_size;
+
+      bool draw_cell = false;
+      if (puzzle->cell(x, y) == CellState::marked) {
+        src.x = 0;
+        src.y = 0;
+        draw_cell = true;
+      } else if (puzzle->cell(x, y) == CellState::xedout) {
+        src.x = cell_sheet_frame_size;
+        src.y = 0;
+        draw_cell = true;
+      }
+
+      cell_coords_to_screen_coords(x, y, dest.x, dest.y);
+      dest.w = dest.h = cell_size;
+      
+      if (draw_cell)
+        SDL_RenderCopy(renderer, cell_sheet_tex, &src, &dest);
+    }
+  }
 }
 
 void Game::shade_cells() {
@@ -189,11 +261,11 @@ void Game::shade_cells() {
       rect.w = rect.h = cell_size;
 
       if (x % 2 != y % 2)
-	SDL_SetRenderDrawColor(renderer, 240, 240, 255, 255);
+        SDL_SetRenderDrawColor(renderer, 240, 240, 255, 255);
       else if (x % 2 == 0 && y % 2 == 0)
-	SDL_SetRenderDrawColor(renderer, 230, 230, 255, 255);
+        SDL_SetRenderDrawColor(renderer, 230, 230, 255, 255);
       else
-	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
       
       SDL_RenderFillRect(renderer, &rect);
     }
@@ -212,6 +284,20 @@ void Game::screen_coords_to_cell_coords(int x, int y,
                                         int& cell_x, int& cell_y) {
   cell_x = (x - x_pos - 1) / (cell_size + 1);
   cell_y = (y - y_pos - 1) / (cell_size + 1);
+}
+
+void Game::cell_coords_to_screen_coords(int x, int y,
+                                        int& screen_x, int& screen_y) {
+  screen_x = x_pos + 1 + x * (cell_size + 1);
+  screen_y = y_pos + 1 + y * (cell_size + 1);
+}
+
+int Game::actual_grid_width() {
+  return puzzle->width() * (cell_size + 1) + 1;
+}
+
+int Game::actual_grid_height() {
+  return puzzle->height() * (cell_size + 1) + 1;
 }
 
 void get_paths(std::string* data_dir, std::string* save_dir) {

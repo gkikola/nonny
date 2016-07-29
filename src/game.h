@@ -21,6 +21,10 @@ private:
 
   void zoom(int incr, int cell_x, int cell_y);
   void screen_coords_to_cell_coords(int x, int y, int& cell_x, int& cell_y);
+  void cell_coords_to_screen_coords(int x, int y,
+                                    int& screen_x, int& screen_y);
+  int actual_grid_width();
+  int actual_grid_height();
   
   SDL_Window* window;
   SDL_Renderer* renderer;
@@ -34,6 +38,8 @@ private:
 
   int mouse_x, mouse_y;
   bool dragging_screen;
+  bool dragging_mark;
+  bool dragging_xout;
 
   bool exit;
   std::string data_path;
