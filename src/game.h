@@ -18,6 +18,9 @@ private:
   void draw();
   void draw_cells();
   void shade_cells();
+
+  void zoom(int incr, int cell_x, int cell_y);
+  void screen_coords_to_cell_coords(int x, int y, int& cell_x, int& cell_y);
   
   SDL_Window* window;
   SDL_Renderer* renderer;
@@ -29,7 +32,7 @@ private:
   int cell_size;
   const int cell_size_step = 5;
 
-  int x_mouse, y_mouse;
+  int mouse_x, mouse_y;
   bool dragging_screen;
 
   bool exit;

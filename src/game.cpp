@@ -11,7 +11,7 @@ void get_paths(std::string* data_dir, std::string* save_dir);
 char get_filesystem_separator();
 
 Game::Game() : exit{false}, puzzle{nullptr}, x_pos{0}, y_pos{0}, cell_size{32},
-               x_mouse{0}, y_mouse{0}, dragging_screen{false},
+               mouse_x{0}, mouse_y{0}, dragging_screen{false},
                cell_sheet_tex{nullptr}, main_font{nullptr},
                renderer{nullptr}, window{nullptr} {
   if (SDL_Init(SDL_INIT_VIDEO) != 0) {
@@ -111,8 +111,8 @@ void Game::run() {
       switch(event.type) {
       case SDL_MOUSEBUTTONDOWN:
       case SDL_MOUSEBUTTONUP:
-	x_mouse = event.button.x;
-	y_mouse = event.button.y;
+	mouse_x = event.button.x;
+	mouse_y = event.button.y;
 	
 	switch (event.button.button) {
 	default:
@@ -129,21 +129,19 @@ void Game::run() {
       case SDL_MOUSEMOTION:
 	if (dragging_screen
             && (SDL_GetWindowFlags(window) & SDL_WINDOW_MOUSE_CAPTURE)) {
-	  x_pos += (event.motion.x - x_mouse);
-	  y_pos += (event.motion.y - y_mouse);
-	  x_mouse = event.motion.x;
-	  y_mouse = event.motion.y;
+	  x_pos += (event.motion.x - mouse_x);
+	  y_pos += (event.motion.y - mouse_y);
+	  mouse_x = event.motion.x;
+	  mouse_y = event.motion.y;
 	}
 	break;
       case SDL_MOUSEWHEEL:
-	SDL_GetMouseState(&x_mouse, &y_mouse);
-	if (event.wheel.y > 0)
-	  cell_size += cell_size_step;
-	else if (event.wheel.y < 0)
-	  cell_size -= cell_size_step;
+	SDL_GetMouseState(&mouse_x, &mouse_y);
 
-	if (cell_size < 0)
-	  cell_size = 0;
+	if (event.wheel.y > 0)
+          zoom(cell_size_step, mouse_x, mouse_y);
+	else if (event.wheel.y < 0)
+          zoom(-cell_size_step, mouse_x, mouse_y);
 	break;
       case SDL_QUIT:
 	exit = true;
@@ -200,6 +198,20 @@ void Game::shade_cells() {
       SDL_RenderFillRect(renderer, &rect);
     }
   }
+}
+
+void Game::zoom(int incr, int x, int y) {
+  x_pos += -incr * (x - x_pos) / (cell_size + 1);
+  y_pos += -incr * (y - y_pos) / (cell_size + 1);
+  
+  cell_size += incr;
+  if (cell_size < 0) cell_size = 0;
+}
+
+void Game::screen_coords_to_cell_coords(int x, int y,
+                                        int& cell_x, int& cell_y) {
+  cell_x = (x - x_pos - 1) / (cell_size + 1);
+  cell_y = (y - y_pos - 1) / (cell_size + 1);
 }
 
 void get_paths(std::string* data_dir, std::string* save_dir) {
