@@ -75,17 +75,24 @@ Game::Game() : exit{false}, puzzle{nullptr}, x_pos{0}, y_pos{0}, cell_size{32},
 
   puzzle = new Puzzle(data_path + "test.non");
 
-  std::string font_path = data_path + main_font_filename;
-  main_font = TTF_OpenFont(font_path.c_str(), main_font_size);
-  if (!main_font) {
-    SDL_cleanup();
-    throw std::runtime_error("TTF_OpenFont: could not open font file");
-  }
+  reload_font();
 }
 
 Game::~Game() {
   delete puzzle;
   SDL_cleanup();
+}
+
+void Game::reload_font() {
+  if (main_font)
+    TTF_CloseFont(main_font);
+  
+  std::string font_path = data_path + main_font_filename;
+  main_font = TTF_OpenFont(font_path.c_str(), cell_size * 3 / 5);
+  if (!main_font) {
+    SDL_cleanup();
+    throw std::runtime_error("TTF_OpenFont: could not open font file");
+  }
 }
 
 void Game::SDL_cleanup() {
@@ -249,6 +256,7 @@ void Game::draw() {
   SDL_RenderClear(renderer);
 
   draw_cells();
+  draw_rules();
 
   SDL_RenderPresent(renderer);
 }
@@ -315,12 +323,95 @@ void Game::shade_cells() {
   }
 }
 
+void Game::draw_rules() {
+  const int horiz_buffer = cell_size / 3;
+  const int vert_buffer = cell_size / 3;
+  
+  SDL_Rect dst_rect;
+  dst_rect.x = x_pos;
+  dst_rect.y = y_pos;
+  
+  for (int i = 0; i < puzzle->width(); ++i) {
+    int left_edge = 0;
+    cell_coords_to_screen_coords(i, 0, left_edge, dst_rect.y);
+
+    auto rule = puzzle->get_col_rule(i);
+    for (auto entry = rule.rbegin(); entry != rule.rend(); ++entry) {
+      std::string entry_str = std::to_string(entry->value);
+
+      SDL_Color color = { 0, 0, 0, 255 };
+      if (entry->completed)
+        color = { 96, 96, 96, 255 };
+      if (entry->hint)
+        color = { 0, 0, 255, 255 };
+      if (entry->error)
+        color = { 255, 0, 0, 255 };
+      
+      SDL_Surface* text_surf = TTF_RenderText_Blended(main_font,
+                                                      entry_str.c_str(),
+                                                      color);
+      SDL_Texture* text_tex = SDL_CreateTextureFromSurface(renderer,
+                                                           text_surf);
+      SDL_FreeSurface(text_surf);
+      
+      int text_w, text_h;
+      TTF_SizeText(main_font, entry_str.c_str(), &text_w, &text_h);
+
+      dst_rect.x = left_edge + cell_size / 2 - text_w / 2;
+      dst_rect.y -= text_h + vert_buffer;
+      dst_rect.w = text_w;
+      dst_rect.h = text_h;
+      SDL_RenderCopy(renderer, text_tex, NULL, &dst_rect);
+
+      SDL_DestroyTexture(text_tex);
+    }
+  }
+
+  for (int j = 0; j < puzzle->height(); ++j) {
+    int top_edge = 0;
+    cell_coords_to_screen_coords(0, j, dst_rect.x, top_edge);
+
+    auto rule = puzzle->get_row_rule(j);
+    for (auto entry = rule.rbegin(); entry != rule.rend(); ++entry) {
+      std::string entry_str = std::to_string(entry->value);
+
+      SDL_Color color = { 0, 0, 0, 255 };
+      if (entry->completed)
+        color = { 96, 96, 96, 255 };
+      if (entry->hint)
+        color = { 0, 0, 255, 255 };
+      if (entry->error)
+        color = { 255, 0, 0, 255 };
+      
+      SDL_Surface* text_surf = TTF_RenderText_Blended(main_font,
+                                                      entry_str.c_str(),
+                                                      color);
+      SDL_Texture* text_tex = SDL_CreateTextureFromSurface(renderer,
+                                                           text_surf);
+      SDL_FreeSurface(text_surf);
+      
+      int text_w, text_h;
+      TTF_SizeText(main_font, entry_str.c_str(), &text_w, &text_h);
+
+      dst_rect.x -= text_w + horiz_buffer;
+      dst_rect.y = top_edge + cell_size / 2 - text_h / 2;
+      dst_rect.w = text_w;
+      dst_rect.h = text_h;
+      SDL_RenderCopy(renderer, text_tex, NULL, &dst_rect);
+
+      SDL_DestroyTexture(text_tex);
+    }
+  }
+}
+
 void Game::zoom(int incr, int x, int y) {
   x_pos += -incr * (x - x_pos) / (cell_size + 1);
   y_pos += -incr * (y - y_pos) / (cell_size + 1);
   
   cell_size += incr;
   if (cell_size < 0) cell_size = 0;
+
+  reload_font();
 }
 
 void Game::screen_coords_to_cell_coords(int x, int y,

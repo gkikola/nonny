@@ -16,10 +16,12 @@ public:
 
   void run();
 private:
+  void reload_font();
   void SDL_cleanup();
   void draw();
   void draw_cells();
   void shade_cells();
+  void draw_rules();
 
   void zoom(int incr, int cell_x, int cell_y);
   void screen_coords_to_cell_coords(int x, int y, int& cell_x, int& cell_y);
@@ -49,7 +51,6 @@ private:
   const std::string cell_sheet_filename {"cell.png"};
   int cell_sheet_frame_size;
   const std::string main_font_filename {"FreeSans.ttf"};
-  const int main_font_size = 32;
 };
 
 #endif

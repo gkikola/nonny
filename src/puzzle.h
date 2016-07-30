@@ -8,6 +8,8 @@ enum class CellState { blank, marked, xedout };
 struct RuleEntry {
   int value;
   bool completed;
+  bool hint;
+  bool error;
 };
 
 class Puzzle {

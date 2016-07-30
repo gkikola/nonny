@@ -49,41 +49,43 @@ void Puzzle::load_file(const std::string& filename) {
 
     if (property.length() > 0) {
       if (isdigit(property[0])) { //current line is rule data
-	ss.seekg(0);
+        ss.seekg(0);
 
-	if (reading_rows) {
-	  std::vector<RuleEntry> rule;
-	  row_rules.push_back(std::move(rule));
-	}
-	else {
-	  std::vector<RuleEntry> rule;
-	  col_rules.push_back(std::move(rule));
-	}
+        if (reading_rows) {
+          std::vector<RuleEntry> rule;
+          row_rules.push_back(std::move(rule));
+        }
+        else {
+          std::vector<RuleEntry> rule;
+          col_rules.push_back(std::move(rule));
+        }
 
-	char ch;
-	while ((ch = ss.peek()) != EOF) {
-	  if (ch == ' ' || ch == ',' || ch == '\t')
-	    ss.get(); //eat the character
-	  else { //read rule data
-	    RuleEntry entry;
-	    ss >> entry.value;
-	    entry.completed = false;
+        char ch;
+        while ((ch = ss.peek()) != EOF) {
+          if (ch == ' ' || ch == ',' || ch == '\t')
+            ss.get(); //eat the character
+          else { //read rule data
+            RuleEntry entry;
+            ss >> entry.value;
+            entry.completed = false;
+            entry.hint = false;
+            entry.error = false;
 
             if (reading_rows)
-	      row_rules[row_rules.size() - 1].push_back(entry);
+              row_rules[row_rules.size() - 1].push_back(entry);
             else
-	      col_rules[col_rules.size() - 1].push_back(entry);
-	  }
-	}
+              col_rules[col_rules.size() - 1].push_back(entry);
+          }
+        }
       }
       else if (property == "width")
-	ss >> grid_width;
+        ss >> grid_width;
       else if (property == "height")
-	ss >> grid_height;
+        ss >> grid_height;
       else if (property == "rows") {
-	reading_rows = true;
+        reading_rows = true;
       } else if (property == "columns") {
-	reading_rows = false;
+        reading_rows = false;
       }
     }
   }
