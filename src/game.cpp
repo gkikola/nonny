@@ -324,84 +324,80 @@ void Game::shade_cells() {
 }
 
 void Game::draw_rules() {
-  const int horiz_buffer = cell_size / 3;
-  const int vert_buffer = cell_size / 3;
-  
-  SDL_Rect dst_rect;
-  dst_rect.x = x_pos;
-  dst_rect.y = y_pos;
-  
+  const int buffer = cell_size / 3;
+
   for (int i = 0; i < puzzle->width(); ++i) {
-    int left_edge = 0;
-    cell_coords_to_screen_coords(i, 0, left_edge, dst_rect.y);
+    int col_left_edge, col_top_edge;
+    cell_coords_to_screen_coords(i, 0, col_left_edge, col_top_edge);
 
-    auto rule = puzzle->get_col_rule(i);
-    for (auto entry = rule.rbegin(); entry != rule.rend(); ++entry) {
-      std::string entry_str = std::to_string(entry->value);
+    int x = col_left_edge;
+    int y = col_top_edge - col_rule_height(i, buffer);
 
-      SDL_Color color = { 0, 0, 0, 255 };
-      if (entry->completed)
-        color = { 96, 96, 96, 255 };
-      if (entry->hint)
-        color = { 0, 0, 255, 255 };
-      if (entry->error)
-        color = { 255, 0, 0, 255 };
+    for (auto entry : puzzle->get_col_rule(i)) {
+      SDL_Texture* tex = rule_entry_to_texture(entry);
+
+      Uint32 fmt;
+      int access, w, h;
+      SDL_QueryTexture(tex, &fmt, &access, &w, &h);
       
-      SDL_Surface* text_surf = TTF_RenderText_Blended(main_font,
-                                                      entry_str.c_str(),
-                                                      color);
-      SDL_Texture* text_tex = SDL_CreateTextureFromSurface(renderer,
-                                                           text_surf);
-      SDL_FreeSurface(text_surf);
-      
-      int text_w, text_h;
-      TTF_SizeText(main_font, entry_str.c_str(), &text_w, &text_h);
+      SDL_Rect dst_rect;
+      dst_rect.x = col_left_edge + cell_size / 2 - w / 2;
+      dst_rect.y = y;
+      dst_rect.w = w;
+      dst_rect.h = h;
 
-      dst_rect.x = left_edge + cell_size / 2 - text_w / 2;
-      dst_rect.y -= text_h + vert_buffer;
-      dst_rect.w = text_w;
-      dst_rect.h = text_h;
-      SDL_RenderCopy(renderer, text_tex, NULL, &dst_rect);
+      SDL_RenderCopy(renderer, tex, NULL, &dst_rect);
+      SDL_DestroyTexture(tex);
 
-      SDL_DestroyTexture(text_tex);
+      y += h + buffer;
     }
   }
 
   for (int j = 0; j < puzzle->height(); ++j) {
-    int top_edge = 0;
-    cell_coords_to_screen_coords(0, j, dst_rect.x, top_edge);
+    int row_left_edge, row_top_edge;
+    cell_coords_to_screen_coords(0, j, row_left_edge, row_top_edge);
 
-    auto rule = puzzle->get_row_rule(j);
-    for (auto entry = rule.rbegin(); entry != rule.rend(); ++entry) {
-      std::string entry_str = std::to_string(entry->value);
+    int x = row_left_edge - row_rule_width(j, buffer);
+    int y = row_top_edge;
 
-      SDL_Color color = { 0, 0, 0, 255 };
-      if (entry->completed)
-        color = { 96, 96, 96, 255 };
-      if (entry->hint)
-        color = { 0, 0, 255, 255 };
-      if (entry->error)
-        color = { 255, 0, 0, 255 };
+    for (auto entry : puzzle->get_row_rule(j)) {
+      SDL_Texture* tex = rule_entry_to_texture(entry);
+
+      Uint32 fmt;
+      int access, w, h;
+      SDL_QueryTexture(tex, &fmt, &access, &w, &h);
       
-      SDL_Surface* text_surf = TTF_RenderText_Blended(main_font,
-                                                      entry_str.c_str(),
-                                                      color);
-      SDL_Texture* text_tex = SDL_CreateTextureFromSurface(renderer,
-                                                           text_surf);
-      SDL_FreeSurface(text_surf);
-      
-      int text_w, text_h;
-      TTF_SizeText(main_font, entry_str.c_str(), &text_w, &text_h);
+      SDL_Rect dst_rect;
+      dst_rect.x = x;
+      dst_rect.y = row_top_edge + cell_size / 2 - h / 2;
+      dst_rect.w = w;
+      dst_rect.h = h;
 
-      dst_rect.x -= text_w + horiz_buffer;
-      dst_rect.y = top_edge + cell_size / 2 - text_h / 2;
-      dst_rect.w = text_w;
-      dst_rect.h = text_h;
-      SDL_RenderCopy(renderer, text_tex, NULL, &dst_rect);
+      SDL_RenderCopy(renderer, tex, NULL, &dst_rect);
+      SDL_DestroyTexture(tex);
 
-      SDL_DestroyTexture(text_tex);
+      x += w + buffer;
     }
   }
+}
+
+SDL_Texture* Game::rule_entry_to_texture(const RuleEntry& e) {
+  std::string str = std::to_string(e.value);
+  SDL_Color color = { 0, 0, 0, 255 };
+  
+  if (e.completed)
+    color = { 96, 96, 96, 255 };
+  if (e.hint)
+    color = { 0, 0, 255, 255 };
+  if (e.error)
+    color = { 255, 0, 0, 255 };
+      
+  SDL_Surface* surf = TTF_RenderText_Blended(main_font,
+                                             str.c_str(), color);
+  SDL_Texture* tex = SDL_CreateTextureFromSurface(renderer, surf);
+  SDL_FreeSurface(surf);
+
+  return tex;
 }
 
 void Game::zoom(int incr, int x, int y) {
@@ -432,6 +428,34 @@ int Game::actual_grid_width() {
 
 int Game::actual_grid_height() {
   return puzzle->height() * (cell_size + 1) + 1;
+}
+
+int Game::row_rule_width(int row, int buffer) {
+  int width = 0;
+
+  for (auto entry : puzzle->get_row_rule(row)) {
+    std::string entry_str = std::to_string(entry.value);
+    int entry_width, entry_height;
+    TTF_SizeText(main_font, entry_str.c_str(), &entry_width, &entry_height);
+
+    width += entry_width + buffer;
+  }
+  
+  return width;
+}
+
+int Game::col_rule_height(int col, int buffer) {
+  int height = 0;
+
+  for (auto entry : puzzle->get_col_rule(col)) {
+    std::string entry_str = std::to_string(entry.value);
+    int entry_width, entry_height;
+    TTF_SizeText(main_font, entry_str.c_str(), &entry_width, &entry_height);
+
+    height += entry_height + buffer;
+  }
+  
+  return height;
 }
 
 void get_paths(std::string* data_dir, std::string* save_dir) {

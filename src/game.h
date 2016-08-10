@@ -22,6 +22,7 @@ private:
   void draw_cells();
   void shade_cells();
   void draw_rules();
+  SDL_Texture* rule_entry_to_texture(const RuleEntry& e);
 
   void zoom(int incr, int cell_x, int cell_y);
   void screen_coords_to_cell_coords(int x, int y, int& cell_x, int& cell_y);
@@ -29,6 +30,8 @@ private:
                                     int& screen_x, int& screen_y);
   int actual_grid_width();
   int actual_grid_height();
+  int row_rule_width(int row, int buffer = 0);
+  int col_rule_height(int col, int buffer = 0);
   
   SDL_Window* window;
   SDL_Renderer* renderer;
