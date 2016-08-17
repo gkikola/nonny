@@ -325,13 +325,22 @@ void Game::shade_cells() {
 
 void Game::draw_rules() {
   const int buffer = cell_size / 3;
+  int col_rule_bottom = 0;
 
   for (int i = 0; i < puzzle->width(); ++i) {
     int col_left_edge, col_top_edge;
     cell_coords_to_screen_coords(i, 0, col_left_edge, col_top_edge);
 
+    int col_height = col_rule_height(i, buffer);
     int x = col_left_edge;
-    int y = col_top_edge - col_rule_height(i, buffer);
+    int y = col_top_edge - col_height;
+
+    if (y < 0)
+      y = 0;
+
+    //keep track of how far down the column numbers go
+    if (col_rule_bottom < y + col_height)
+      col_rule_bottom = y + col_height;
 
     for (auto entry : puzzle->get_col_rule(i)) {
       SDL_Texture* tex = rule_entry_to_texture(entry);
@@ -359,6 +368,9 @@ void Game::draw_rules() {
 
     int x = row_left_edge - row_rule_width(j, buffer);
     int y = row_top_edge;
+
+    if (x < 0 && y >= col_rule_bottom)
+      x = 0;
 
     for (auto entry : puzzle->get_row_rule(j)) {
       SDL_Texture* tex = rule_entry_to_texture(entry);
