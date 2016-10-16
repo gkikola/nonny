@@ -133,6 +133,9 @@ void Game::run() {
         switch (event.button.button) {
         default:
         case SDL_BUTTON_LEFT:
+          if (event.type == SDL_MOUSEBUTTONUP)
+            dragging = false;
+          
           //check if mouse pointer is inside the grid
           if (mouse_x >= x_pos && mouse_x <= x_pos + actual_grid_width()
               && mouse_y >= y_pos && mouse_y <= y_pos + actual_grid_height()) {
@@ -172,6 +175,9 @@ void Game::run() {
           else SDL_CaptureMouse(SDL_FALSE);
           break;
         case SDL_BUTTON_RIGHT:
+          if (event.type == SDL_MOUSEBUTTONUP)
+            dragging = false;
+          
           if (mouse_x >= x_pos && mouse_x <= x_pos + actual_grid_width()
               && mouse_y >= y_pos && mouse_y <= y_pos + actual_grid_height()) {
             dragging = (event.type == SDL_MOUSEBUTTONDOWN);
