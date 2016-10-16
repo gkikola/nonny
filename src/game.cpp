@@ -61,21 +61,29 @@ Game::Game() : exit{false}, puzzle{nullptr}, x_pos{0}, y_pos{0}, cell_size{32},
     throw std::runtime_error("IMG_LoadTexture: failed to load texture");
   }
 
-  //determine the width/height of each frame
+  //determine the size of each animation frame and the number of frames
   cell_sheet_frame_size = 0;
+  num_animation_frames = 0;
   Uint32 fmt;
-  int access, width;
-  SDL_QueryTexture(cell_sheet_tex, &fmt, &access, &width,
-                   &cell_sheet_frame_size);
+  int access, width, height;
+  SDL_QueryTexture(cell_sheet_tex, &fmt, &access, &width, &height);
+
+  cell_sheet_frame_size = height / 2;
+  
   if (cell_sheet_frame_size <= 0) {
     SDL_cleanup();
     throw std::runtime_error("SDL_QueryTexture: "
                              "could not determine texture size");
   }
 
+  num_animation_frames = width / cell_sheet_frame_size;
+
   puzzle = new Puzzle(data_path + "test.non");
 
   reload_font();
+
+  time = SDL_GetTicks();
+  time_until_cell_aging = cell_age_time;
 }
 
 Game::~Game() {
@@ -115,6 +123,7 @@ void Game::run() {
   
   while (!exit) {
     while (SDL_PollEvent(&event)) {
+      //process SDL event
       switch(event.type) {
       case SDL_MOUSEBUTTONDOWN:
       case SDL_MOUSEBUTTONUP:
@@ -210,11 +219,11 @@ void Game::run() {
             CellState state;
             bool change_cell = false;
             if (drag_type == DragType::marks
-                && puzzle->cell(x, y) != CellState::xedout) {
+                && puzzle->cell(x, y) == CellState::blank) {
               change_cell = true;
               state = CellState::marked;
             } else if (drag_type == DragType::xes
-                       && puzzle->cell(x, y) != CellState::marked) {
+                       && puzzle->cell(x, y) == CellState::blank) {
               change_cell = true;
               state = CellState::xedout;
             }
@@ -245,6 +254,18 @@ void Game::run() {
         exit = true;
         break;
       }
+    }
+
+    //calculate frame time
+    Uint32 prev_time = time;
+    time = SDL_GetTicks();
+    int elapsed_time = time - prev_time;
+
+    //handle cell animation
+    time_until_cell_aging -= elapsed_time;
+    while (time_until_cell_aging < 0) {
+      age_cells();
+      time_until_cell_aging += cell_age_time;
     }
 
     draw();
@@ -280,19 +301,23 @@ void Game::draw_cells() {
 
   for (int y = 0; y < puzzle->height(); ++y) {
     for (int x = 0; x < puzzle->width(); ++x) {
-      SDL_Rect src, dest;
-      src.w = src.h = cell_sheet_frame_size;
+      int sheet_row, sheet_col;
 
       bool draw_cell = false;
       if (puzzle->cell(x, y) == CellState::marked) {
-        src.x = 0;
-        src.y = 0;
+        sheet_row = 0;
+        sheet_col = puzzle->cell_age(x, y);
         draw_cell = true;
       } else if (puzzle->cell(x, y) == CellState::xedout) {
-        src.x = cell_sheet_frame_size;
-        src.y = 0;
+        sheet_row = 1;
+        sheet_col = puzzle->cell_age(x, y);
         draw_cell = true;
       }
+      
+      SDL_Rect src, dest;
+      src.x = sheet_col * cell_sheet_frame_size;
+      src.y = sheet_row * cell_sheet_frame_size;
+      src.w = src.h = cell_sheet_frame_size;
 
       cell_coords_to_screen_coords(x, y, dest.x, dest.y);
       dest.w = dest.h = cell_size;
@@ -410,6 +435,12 @@ SDL_Texture* Game::rule_entry_to_texture(const RuleEntry& e) {
   SDL_FreeSurface(surf);
 
   return tex;
+}
+
+void Game::age_cells() {
+  for (int x = 0; x < puzzle->width(); ++x)
+    for (int y = 0; y < puzzle->height(); ++y)
+      puzzle->age_cell(x, y, num_animation_frames - 1);
 }
 
 void Game::zoom(int incr, int x, int y) {
