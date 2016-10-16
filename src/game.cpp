@@ -289,7 +289,7 @@ void Game::draw() {
 }
 
 void Game::draw_cells() {
-  SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+  SDL_SetRenderDrawColor(renderer, 128, 128, 128, 255);
   
   for(int x = 0; x <= puzzle->width(); ++x) {
     SDL_RenderDrawLine(renderer, x_pos + x * (cell_size + 1), y_pos,
