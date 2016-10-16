@@ -8,6 +8,7 @@ enum class CellState { blank, marked, xedout };
 
 struct Cell {
   CellState state;
+  CellState prev_state;
   int age;
 };
   
@@ -26,6 +27,7 @@ public:
   int height() const { return grid_height; }
 
   CellState cell(int x, int y) const { return grid[y * grid_width + x].state; }
+  CellState prev_cell_state(int x, int y) const;
   int cell_age(int x, int y) const { return grid[y * grid_width + x].age; }
   void set_cell(int x, int y, CellState state);
   void age_cell(int x, int y, int max);

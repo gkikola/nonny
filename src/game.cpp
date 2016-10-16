@@ -234,11 +234,11 @@ void Game::run() {
               state = CellState::xedout;
             }
             else if (drag_type == DragType::blank_marks
-                     && puzzle->cell(x, y) != CellState::xedout) {
+                     && puzzle->cell(x, y) == CellState::marked) {
               change_cell = true;
               state = CellState::blank;
             } else if (drag_type == DragType::blank_xes
-                       && puzzle->cell(x, y) != CellState::marked) {
+                       && puzzle->cell(x, y) == CellState::xedout) {
               change_cell = true;
               state = CellState::blank;
             }
@@ -310,6 +310,7 @@ void Game::draw_cells() {
       int sheet_row, sheet_col;
 
       bool draw_cell = false;
+      //determine animation frames
       if (puzzle->cell(x, y) == CellState::marked) {
         sheet_row = 0;
         sheet_col = puzzle->cell_age(x, y);
@@ -318,6 +319,17 @@ void Game::draw_cells() {
         sheet_row = 1;
         sheet_col = puzzle->cell_age(x, y);
         draw_cell = true;
+      } else if (puzzle->cell(x, y) == CellState::blank) {
+        //reverse the animation for cells being cleared
+        if (puzzle->prev_cell_state(x, y) == CellState::marked)
+          sheet_row = 0;
+        else if (puzzle->prev_cell_state(x, y) == CellState::xedout)
+          sheet_row = 1;
+
+        if (puzzle->prev_cell_state(x, y) != CellState::blank) {
+          sheet_col = num_animation_frames - puzzle->cell_age(x, y) - 1;
+          draw_cell = true;
+        }
       }
       
       SDL_Rect src, dest;

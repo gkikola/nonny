@@ -25,10 +25,17 @@ const std::vector<RuleEntry>& Puzzle::get_col_rule(int col) const {
   return col_rules[col];
 }
 
+CellState Puzzle::prev_cell_state(int x, int y) const {
+  return grid[y * width() + x].prev_state;
+}
+
 void Puzzle::set_cell(int x, int y, CellState state) {
   if (x >= 0 && y >= 0 && x < width() && y < height()) {
-    grid[y * width() + x].state = state;
-    grid[y * width() + x].age = 0;
+    int index = y * width() + x;
+
+    grid[index].prev_state = grid[index].state;
+    grid[index].state = state;
+    grid[index].age = 0;
   }
 }
 
@@ -99,6 +106,7 @@ void Puzzle::load_file(const std::string& filename) {
 
   Cell blank;
   blank.state = CellState::blank;
+  blank.prev_state = CellState::blank;
   blank.age = 0;
   
   grid.resize(grid_width * grid_height, blank);
