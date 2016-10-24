@@ -84,6 +84,8 @@ Game::Game() : exit{false}, puzzle{nullptr}, x_pos{0}, y_pos{0}, cell_size{32},
 
   time = SDL_GetTicks();
   time_until_cell_aging = cell_age_time;
+
+  zoom_default();
 }
 
 Game::~Game() {
@@ -469,6 +471,43 @@ void Game::zoom(int incr, int x, int y) {
   if (cell_size < 0) cell_size = 0;
 
   reload_font();
+}
+
+void Game::zoom_default() {
+  //add rule numbers to grid size
+  int max_row_rule_width = 0, max_col_rule_height = 0;
+  for (int i = 0; i < puzzle->width(); ++i) {
+    int col_rule_height = puzzle->get_col_rule(i).size();
+    
+    if (col_rule_height > max_col_rule_height)
+      max_col_rule_height = col_rule_height;
+  }
+
+  for (int j = 0; j < puzzle->height(); ++j) {
+    int row_rule_width = puzzle->get_row_rule(j).size();
+
+    if (row_rule_width > max_row_rule_width)
+      max_row_rule_width = row_rule_width;
+  }
+
+  int width = puzzle->width() + max_row_rule_width;
+  int height = puzzle->height() + max_col_rule_height;
+
+  const double screen_coverage = 0.80;
+  int win_width, win_height;
+  SDL_GetWindowSize(window, &win_width, &win_height);
+
+  int max_cell_width = (win_width - width) * screen_coverage / width;
+  int max_cell_height = (win_height - height) * screen_coverage / height;
+
+  cell_size = max_cell_width;
+  if (cell_size > max_cell_height)
+    cell_size = max_cell_height;
+
+  reload_font();
+
+  x_pos = win_width / 2 - actual_grid_width() / 2;
+  y_pos = win_height / 2 - actual_grid_height() / 2;
 }
 
 void Game::screen_coords_to_cell_coords(int x, int y,
