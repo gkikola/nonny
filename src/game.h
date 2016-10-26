@@ -46,7 +46,7 @@ private:
   Puzzle* puzzle;
   int x_pos, y_pos;
   int cell_size;
-  const int cell_size_step = 5;
+  const int cell_size_step = 8;
   const int cell_age_time = 50;
 
   int mouse_x, mouse_y;

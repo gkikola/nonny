@@ -559,6 +559,9 @@ void Game::zoom_default() {
   if (cell_size > max_cell_height)
     cell_size = max_cell_height;
 
+  //make sure cell_size is a multiple of cell_size_step
+  cell_size -= cell_size % cell_size_step;
+
   reload_font();
 
   x_pos = win_width / 2 - actual_grid_width() / 2;
