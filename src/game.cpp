@@ -329,20 +329,6 @@ void Game::draw() {
 }
 
 void Game::draw_cells() {
-  SDL_SetRenderDrawColor(renderer, 128, 128, 128, 255);
-  
-  for(int x = 0; x <= puzzle->width(); ++x) {
-    SDL_RenderDrawLine(renderer, x_pos + x * (cell_size + 1), y_pos,
-                       x_pos + x * (cell_size + 1),
-                       y_pos + puzzle->height() * (cell_size + 1));
-  }
-
-  for(int y = 0; y <= puzzle->height(); ++y) {
-    SDL_RenderDrawLine(renderer, x_pos, y_pos + y * (cell_size + 1),
-                       x_pos + puzzle->width() * (cell_size + 1),
-                       y_pos + y * (cell_size + 1));
-  }
-
   shade_cells();
 
   for (int y = 0; y < puzzle->height(); ++y) {
@@ -382,6 +368,37 @@ void Game::draw_cells() {
       
       if (draw_cell)
         SDL_RenderCopy(renderer, cell_sheet_tex, &src, &dest);
+    }
+  }
+
+  //draw cell borders
+  SDL_SetRenderDrawColor(renderer, 128, 128, 128, 255);
+  
+  for(int x = 0; x <= puzzle->width(); ++x) {
+    int x_coord = x_pos + x * (cell_size + 1);
+    SDL_RenderDrawLine(renderer, x_coord, y_pos, x_coord,
+                       y_pos + puzzle->height() * (cell_size + 1));
+
+    if (x % 5 == 0) { //draw guide lines
+      SDL_RenderDrawLine(renderer, x_coord - 1, y_pos, x_coord - 1,
+                         y_pos + puzzle->height() * (cell_size + 1));
+      SDL_RenderDrawLine(renderer, x_coord + 1, y_pos, x_coord + 1,
+                         y_pos + puzzle->height() * (cell_size + 1));
+    }
+  }
+
+  for(int y = 0; y <= puzzle->height(); ++y) {
+    int y_coord = y_pos + y * (cell_size + 1);
+    SDL_RenderDrawLine(renderer, x_pos, y_coord,
+                       x_pos + puzzle->width() * (cell_size + 1), y_coord);
+
+    if (y % 5 == 0) {
+      SDL_RenderDrawLine(renderer, x_pos, y_coord - 1,
+                         x_pos + puzzle->width() * (cell_size + 1),
+                         y_coord - 1);
+      SDL_RenderDrawLine(renderer, x_pos, y_coord + 1,
+                         x_pos + puzzle->width() * (cell_size + 1),
+                         y_coord + 1);
     }
   }
 }
