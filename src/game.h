@@ -7,7 +7,9 @@
 
 #include "puzzle.h"
 
+enum class Controls { mouse, keyboard };
 enum class DragType { screen, marks, xes, blank_marks, blank_xes };
+enum class MouseLockType { no_lock, to_row, to_col };
 
 class Game {
 public:
@@ -48,8 +50,12 @@ private:
   const int cell_age_time = 50;
 
   int mouse_x, mouse_y;
+  int prev_mouse_x, prev_mouse_y;
+  MouseLockType mouse_lock_type;
+  int mouse_lock_pos;
   bool dragging;
   DragType drag_type;
+  Controls drag_controls;
 
   Uint32 time;
   int time_until_cell_aging;

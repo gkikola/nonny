@@ -1,6 +1,7 @@
 #include <stdexcept>
 #include <iostream>
 #include <string>
+#include <cmath>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
@@ -11,8 +12,8 @@ void get_paths(std::string* data_dir, std::string* save_dir);
 char get_filesystem_separator();
 
 Game::Game() : exit{false}, puzzle{nullptr}, x_pos{0}, y_pos{0}, cell_size{32},
-               mouse_x{0}, mouse_y{0}, dragging{false},
-               cell_sheet_tex{nullptr}, main_font{nullptr},
+               mouse_x{0}, mouse_y{0}, prev_mouse_x{0}, prev_mouse_y{0},
+               dragging{false}, cell_sheet_tex{nullptr}, main_font{nullptr},
                renderer{nullptr}, window{nullptr} {
   if (SDL_Init(SDL_INIT_VIDEO) != 0) {
     std::string err_msg("SDL_Init: ");
@@ -78,7 +79,7 @@ Game::Game() : exit{false}, puzzle{nullptr}, x_pos{0}, y_pos{0}, cell_size{32},
 
   num_animation_frames = width / cell_sheet_frame_size;
 
-  puzzle = new Puzzle(data_path + "test.non");
+  puzzle = new Puzzle(data_path + "test2.non");
 
   reload_font();
 
@@ -135,20 +136,27 @@ void Game::run() {
         switch (event.button.button) {
         default:
         case SDL_BUTTON_LEFT:
-          if (event.type == SDL_MOUSEBUTTONUP)
+          if (event.type == SDL_MOUSEBUTTONUP) {
             dragging = false;
+            mouse_lock_type = MouseLockType::no_lock;
+          }
           
           //check if mouse pointer is inside the grid
           if (mouse_x >= x_pos && mouse_x <= x_pos + actual_grid_width()
               && mouse_y >= y_pos && mouse_y <= y_pos + actual_grid_height()) {
             dragging = (event.type == SDL_MOUSEBUTTONDOWN);
-
+            
             if (dragging) {
               SDL_CaptureMouse(SDL_TRUE);
               
               //determine what cell we are on
               int x, y;
               screen_coords_to_cell_coords(mouse_x, mouse_y, x, y);
+
+              //keep track of mouse position for locking drags
+              prev_mouse_x = mouse_x;
+              prev_mouse_y = mouse_y;
+              mouse_lock_type = MouseLockType::no_lock;
 
               //if the cell is blank, mark it
               if (puzzle->cell(x, y) == CellState::blank) {
@@ -177,8 +185,10 @@ void Game::run() {
           else SDL_CaptureMouse(SDL_FALSE);
           break;
         case SDL_BUTTON_RIGHT:
-          if (event.type == SDL_MOUSEBUTTONUP)
+          if (event.type == SDL_MOUSEBUTTONUP) {
             dragging = false;
+            mouse_lock_type = MouseLockType::no_lock;
+          }
           
           if (mouse_x >= x_pos && mouse_x <= x_pos + actual_grid_width()
               && mouse_y >= y_pos && mouse_y <= y_pos + actual_grid_height()) {
@@ -191,6 +201,11 @@ void Game::run() {
               int x, y;
               screen_coords_to_cell_coords(mouse_x, mouse_y, x, y);
 
+              //keep track of mouse position for locking drags
+              prev_mouse_x = mouse_x;
+              prev_mouse_y = mouse_y;
+              mouse_lock_type = MouseLockType::no_lock;
+              
               //if the cell is blank, x it out
               if (puzzle->cell(x, y) == CellState::blank) {
                 puzzle->set_cell(x, y, CellState::xedout);
@@ -219,11 +234,34 @@ void Game::run() {
           
           mouse_x = event.motion.x;
           mouse_y = event.motion.y;
-            
+          
           if (drag_type != DragType::screen) {
+            if (mouse_lock_type == MouseLockType::to_row)
+              mouse_y = prev_mouse_y;
+            else if (mouse_lock_type == MouseLockType::to_col)
+              mouse_x = prev_mouse_x;
+
             int x, y;
             screen_coords_to_cell_coords(mouse_x, mouse_y, x, y);
 
+            //lock mouse position if necessary
+            int prev_x, prev_y;
+            screen_coords_to_cell_coords(prev_mouse_x, prev_mouse_y,
+                                         prev_x, prev_y);
+
+            if (mouse_lock_type == MouseLockType::no_lock) {
+              if (x != prev_x && y != prev_y) {
+                prev_mouse_x = mouse_x;
+                prev_mouse_y = mouse_y;
+              } else if (x == prev_x && abs(y - prev_y) > 2) {
+                mouse_lock_type = MouseLockType::to_col;
+                mouse_lock_pos = x;
+              } else if (y == prev_y && abs(x - prev_x) > 2) {
+                mouse_lock_type = MouseLockType::to_row;
+                mouse_lock_pos = y;
+              }
+            }
+            
             CellState state;
             bool change_cell = false;
             if (drag_type == DragType::marks
