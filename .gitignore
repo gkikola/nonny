@@ -1,11 +1,11 @@
 *.gz
 *.log
-*.m4
 *.o
 *.tar
 .deps
 Makefile
 Makefile.in
+aclocal.m4
 autom4te.cache
 compile
 config.h*
