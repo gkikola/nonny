@@ -23,6 +23,7 @@ private:
   void draw();
   void draw_cells();
   void shade_cells();
+  void draw_highlight();
   void draw_rules();
   SDL_Texture* rule_entry_to_texture(const RuleEntry& e);
 
@@ -56,6 +57,11 @@ private:
   bool dragging;
   DragType drag_type;
   Controls drag_controls;
+  int widest_rule;
+  int tallest_rule;
+
+  int selection_x, selection_y;
+  bool selected;
 
   Uint32 time;
   int time_until_cell_aging;

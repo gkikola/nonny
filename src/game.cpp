@@ -13,7 +13,9 @@ char get_filesystem_separator();
 
 Game::Game() : exit{false}, puzzle{nullptr}, x_pos{0}, y_pos{0}, cell_size{32},
                mouse_x{0}, mouse_y{0}, prev_mouse_x{0}, prev_mouse_y{0},
-               dragging{false}, cell_sheet_tex{nullptr}, main_font{nullptr},
+               dragging{false}, selected{false},
+               widest_rule{0}, tallest_rule{0},
+               cell_sheet_tex{nullptr}, main_font{nullptr},
                renderer{nullptr}, window{nullptr} {
   if (SDL_Init(SDL_INIT_VIDEO) != 0) {
     std::string err_msg("SDL_Init: ");
@@ -225,6 +227,24 @@ void Game::run() {
         }
         break;
       case SDL_MOUSEMOTION:
+        {
+          //change selected cell if necessary
+          int mx = event.motion.x;
+          int my = event.motion.y;
+          if (mx >= x_pos && mx <= x_pos + actual_grid_width()
+              && my >= y_pos && my <= y_pos + actual_grid_height()) {
+            screen_coords_to_cell_coords(mx, my, selection_x, selection_y);
+
+            if (mouse_lock_type == MouseLockType::to_row)
+              selection_y = mouse_lock_pos;
+            else if (mouse_lock_type == MouseLockType::to_col)
+              selection_x = mouse_lock_pos;
+
+            selected = true;
+          } else
+            selected = false;
+        }
+
         if (dragging
             && (SDL_GetWindowFlags(window) & SDL_WINDOW_MOUSE_CAPTURE)) {
           if (drag_type == DragType::screen) {
@@ -323,6 +343,7 @@ void Game::draw() {
   SDL_RenderClear(renderer);
 
   draw_cells();
+  draw_highlight();
   draw_rules();
 
   SDL_RenderPresent(renderer);
@@ -423,9 +444,45 @@ void Game::shade_cells() {
   }
 }
 
+void Game::draw_highlight() {
+  if (selected) {
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+
+    int x1, x2, y1, y2;
+    x1 = x_pos - widest_rule;
+    x2 = x_pos + actual_grid_width();
+    y1 = y_pos + selection_y * (cell_size + 1);
+    y2 = y_pos + (selection_y + 1) * (cell_size + 1);
+
+    SDL_Rect line;
+    line.x = x1;
+    line.y = y1 - 1;
+    line.w = x2 - x1;
+    line.h = 3;
+    SDL_RenderFillRect(renderer, &line);
+    line.y = y2 - 1;
+    SDL_RenderFillRect(renderer, &line);
+
+    x1 = x_pos + selection_x * (cell_size + 1);
+    x2 = x_pos + (selection_x + 1) * (cell_size + 1);
+    y1 = y_pos - tallest_rule;
+    y2 = y_pos + actual_grid_height();
+
+    line.x = x1 - 1;
+    line.y = y1;
+    line.w = 3;
+    line.h = y2 - y1;
+    SDL_RenderFillRect(renderer, &line);
+    line.x = x2 - 1;
+    SDL_RenderFillRect(renderer, &line);
+  }
+}
+
 void Game::draw_rules() {
   const int buffer = cell_size / 3;
   int col_rule_bottom = 0;
+
+  tallest_rule = widest_rule = 0;
 
   for (int i = 0; i < puzzle->width(); ++i) {
     int col_left_edge, col_top_edge;
@@ -434,6 +491,9 @@ void Game::draw_rules() {
     int col_height = col_rule_height(i, buffer);
     int x = col_left_edge;
     int y = col_top_edge - col_height;
+
+    if (col_height > tallest_rule)
+      tallest_rule = col_height;
 
     if (y < 0)
       y = 0;
@@ -466,8 +526,12 @@ void Game::draw_rules() {
     int row_left_edge, row_top_edge;
     cell_coords_to_screen_coords(0, j, row_left_edge, row_top_edge);
 
-    int x = row_left_edge - row_rule_width(j, buffer);
+    int row_width = row_rule_width(j, buffer);
+    int x = row_left_edge - row_width;
     int y = row_top_edge;
+
+    if (row_width > widest_rule)
+      widest_rule = row_width;
 
     if (x < 0 && y >= col_rule_bottom)
       x = 0;
