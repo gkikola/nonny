@@ -32,10 +32,12 @@ Game::Game() : exit{false}, puzzle{nullptr}, x_pos{0}, y_pos{0}, cell_size{32},
     throw std::runtime_error("TTF_Init: failed to initialize SDL_ttf");
   }
 
+  screen_width = 800;
+  screen_height = 600;
   window = SDL_CreateWindow("Nonny",
                             SDL_WINDOWPOS_CENTERED,
                             SDL_WINDOWPOS_CENTERED,
-                            640, 480,
+                            screen_width, screen_height,
                             SDL_WINDOW_RESIZABLE);
 
   if (!window) {
@@ -131,6 +133,14 @@ void Game::run() {
     while (SDL_PollEvent(&event)) {
       //process SDL event
       switch(event.type) {
+      case SDL_WINDOWEVENT:
+        switch (event.window.event) {
+        case SDL_WINDOWEVENT_RESIZED:
+          screen_width = event.window.data1;
+          screen_height = event.window.data2;
+          break;
+        }
+        break;
       case SDL_MOUSEBUTTONDOWN:
       case SDL_MOUSEBUTTONUP:
         mouse_x = event.button.x;
@@ -463,9 +473,6 @@ void Game::run() {
           int x, y;
           cell_coords_to_screen_coords(selection_x, selection_y, x, y);
 
-          int screen_width, screen_height;
-          SDL_GetWindowSize(window, &screen_width, &screen_height);
-
           if (x < 0)
             x_pos -= x;
           else if (x + cell_size > screen_width)
@@ -784,11 +791,9 @@ void Game::zoom_default() {
   int height = puzzle->height() + max_col_rule_height;
 
   const double screen_coverage = 0.80;
-  int win_width, win_height;
-  SDL_GetWindowSize(window, &win_width, &win_height);
 
-  int max_cell_width = (win_width - width) * screen_coverage / width;
-  int max_cell_height = (win_height - height) * screen_coverage / height;
+  int max_cell_width = (screen_width - width) * screen_coverage / width;
+  int max_cell_height = (screen_height - height) * screen_coverage / height;
 
   cell_size = max_cell_width;
   if (cell_size > max_cell_height)
@@ -799,8 +804,8 @@ void Game::zoom_default() {
 
   reload_font();
 
-  x_pos = win_width / 2 - actual_grid_width() / 2;
-  y_pos = win_height / 2 - actual_grid_height() / 2;
+  x_pos = screen_width / 2 - actual_grid_width() / 2;
+  y_pos = screen_height / 2 - actual_grid_height() / 2;
 }
 
 void Game::screen_coords_to_cell_coords(int x, int y,

@@ -44,6 +44,8 @@ private:
   SDL_Texture* cell_sheet_tex;
   TTF_Font* main_font;
 
+  int screen_width, screen_height;
+  
   Puzzle* puzzle;
   int x_pos, y_pos;
   int cell_size;
