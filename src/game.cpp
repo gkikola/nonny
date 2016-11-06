@@ -340,8 +340,12 @@ void Game::run() {
         case SDLK_KP_8:
           if (selected) {
             --selection_y;
-            if (selection_y < 0)
-              selection_y = puzzle->height() - 1;
+            if (selection_y < 0) {
+              if (kb_dragging)
+                selection_y = 0;
+              else
+                selection_y = puzzle->height() - 1;
+            }
           }
           selected = true;
           break;
@@ -349,8 +353,12 @@ void Game::run() {
         case SDLK_KP_2:
           if (selected) {
             ++selection_y;
-            if (selection_y >= puzzle->height())
-              selection_y = 0;
+            if (selection_y >= puzzle->height()) {
+              if (kb_dragging)
+                selection_y = puzzle->height() - 1;
+              else
+                selection_y = 0;
+            }
           }
           selected = true;
           break;
@@ -358,8 +366,12 @@ void Game::run() {
         case SDLK_KP_4:
           if (selected) {
             --selection_x;
-            if (selection_x < 0)
-              selection_x = puzzle->width() - 1;
+            if (selection_x < 0) {
+              if (kb_dragging)
+                selection_x = 0;
+              else
+                selection_x = puzzle->width() - 1;
+            }
           }
           selected = true;
           break;
@@ -367,8 +379,12 @@ void Game::run() {
         case SDLK_KP_6:
           if (selected) {
             ++selection_x;
-            if (selection_x >= puzzle->width())
-              selection_x = 0;
+            if (selection_x >= puzzle->width()) {
+              if (kb_dragging)
+                selection_x = puzzle->width() - 1;
+              else
+                selection_x = 0;
+            }
           }
           selected = true;
           break;
