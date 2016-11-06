@@ -232,8 +232,8 @@ void Game::run() {
           //change selected cell if necessary
           int mx = event.motion.x;
           int my = event.motion.y;
-          if (mx >= x_pos && mx <= x_pos + actual_grid_width()
-              && my >= y_pos && my <= y_pos + actual_grid_height()) {
+          if (mx >= x_pos && mx < x_pos + actual_grid_width()
+              && my >= y_pos && my < y_pos + actual_grid_height()) {
             screen_coords_to_cell_coords(mx, my, selection_x, selection_y);
 
             if (mouse_lock_type == MouseLockType::to_row)
@@ -456,6 +456,24 @@ void Game::run() {
             if (change_state)
               puzzle->set_cell(selection_x, selection_y, state);
           }
+        }
+
+        //move camera if selection is offscreen
+        {
+          int x, y;
+          cell_coords_to_screen_coords(selection_x, selection_y, x, y);
+
+          int screen_width, screen_height;
+          SDL_GetWindowSize(window, &screen_width, &screen_height);
+
+          if (x < 0)
+            x_pos -= x;
+          else if (x + cell_size > screen_width)
+            x_pos -= x + cell_size - screen_width;
+          if (y < 0)
+            y_pos -= y;
+          else if (y + cell_size > screen_height)
+            y_pos -= y + cell_size - screen_height;
         }
         break;
       case SDL_KEYUP:
