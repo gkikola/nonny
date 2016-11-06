@@ -54,8 +54,10 @@ private:
   int prev_mouse_x, prev_mouse_y;
   MouseLockType mouse_lock_type;
   int mouse_lock_pos;
-  bool dragging;
-  DragType drag_type;
+  bool mouse_dragging;
+  bool kb_dragging;
+  DragType mouse_drag_type;
+  DragType kb_drag_type;
   Controls drag_controls;
   int widest_rule;
   int tallest_rule;

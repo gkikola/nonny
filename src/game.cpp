@@ -13,7 +13,8 @@ char get_filesystem_separator();
 
 Game::Game() : exit{false}, puzzle{nullptr}, x_pos{0}, y_pos{0}, cell_size{32},
                mouse_x{0}, mouse_y{0}, prev_mouse_x{0}, prev_mouse_y{0},
-               dragging{false}, selection_x{0}, selection_y{0},
+               mouse_dragging{false}, kb_dragging{false},
+               selection_x{0}, selection_y{0},
                selected{false}, widest_rule{0}, tallest_rule{0},
                cell_sheet_tex{nullptr}, main_font{nullptr},
                renderer{nullptr}, window{nullptr} {
@@ -139,16 +140,16 @@ void Game::run() {
         default:
         case SDL_BUTTON_LEFT:
           if (event.type == SDL_MOUSEBUTTONUP) {
-            dragging = false;
+            mouse_dragging = false;
             mouse_lock_type = MouseLockType::no_lock;
           }
           
           //check if mouse pointer is inside the grid
           if (mouse_x >= x_pos && mouse_x <= x_pos + actual_grid_width()
               && mouse_y >= y_pos && mouse_y <= y_pos + actual_grid_height()) {
-            dragging = (event.type == SDL_MOUSEBUTTONDOWN);
+            mouse_dragging = (event.type == SDL_MOUSEBUTTONDOWN);
             
-            if (dragging) {
+            if (mouse_dragging) {
               SDL_CaptureMouse(SDL_TRUE);
               
               //determine what cell we are on
@@ -163,13 +164,13 @@ void Game::run() {
               //if the cell is blank, mark it
               if (puzzle->cell(x, y) == CellState::blank) {
                 puzzle->set_cell(x, y, CellState::marked);
-                drag_type = DragType::marks;
+                mouse_drag_type = DragType::marks;
               } else if (puzzle->cell(x, y) == CellState::marked) {
                 puzzle->set_cell(x, y, CellState::blank);
-                drag_type = DragType::blank_marks;
+                mouse_drag_type = DragType::blank_marks;
               } else {
                 puzzle->set_cell(x, y, CellState::blank);
-                drag_type = DragType::blank_xes;
+                mouse_drag_type = DragType::blank_xes;
               }
             }
             else SDL_CaptureMouse(SDL_FALSE);
@@ -178,25 +179,25 @@ void Game::run() {
 
           //outside the grid, do screen-dragging action:
         case SDL_BUTTON_MIDDLE:
-          dragging = (event.type == SDL_MOUSEBUTTONDOWN);
+          mouse_dragging = (event.type == SDL_MOUSEBUTTONDOWN);
 
-          if (dragging) {
-            drag_type = DragType::screen;
+          if (mouse_dragging) {
+            mouse_drag_type = DragType::screen;
             SDL_CaptureMouse(SDL_TRUE);
           }
           else SDL_CaptureMouse(SDL_FALSE);
           break;
         case SDL_BUTTON_RIGHT:
           if (event.type == SDL_MOUSEBUTTONUP) {
-            dragging = false;
+            mouse_dragging = false;
             mouse_lock_type = MouseLockType::no_lock;
           }
           
           if (mouse_x >= x_pos && mouse_x <= x_pos + actual_grid_width()
               && mouse_y >= y_pos && mouse_y <= y_pos + actual_grid_height()) {
-            dragging = (event.type == SDL_MOUSEBUTTONDOWN);
+            mouse_dragging = (event.type == SDL_MOUSEBUTTONDOWN);
 
-            if (dragging) {
+            if (mouse_dragging) {
               SDL_CaptureMouse(SDL_TRUE);
               
               //determine what cell we are on
@@ -211,13 +212,13 @@ void Game::run() {
               //if the cell is blank, x it out
               if (puzzle->cell(x, y) == CellState::blank) {
                 puzzle->set_cell(x, y, CellState::xedout);
-                drag_type = DragType::xes;
+                mouse_drag_type = DragType::xes;
               } else if (puzzle->cell(x, y) == CellState::marked) {
                 puzzle->set_cell(x, y, CellState::blank);
-                drag_type = DragType::blank_marks;
+                mouse_drag_type = DragType::blank_marks;
               } else {
                 puzzle->set_cell(x, y, CellState::blank);
-                drag_type = DragType::blank_xes;
+                mouse_drag_type = DragType::blank_xes;
               }
             }
             else SDL_CaptureMouse(SDL_FALSE);
@@ -245,9 +246,9 @@ void Game::run() {
             selected = false;
         }
 
-        if (dragging
+        if (mouse_dragging
             && (SDL_GetWindowFlags(window) & SDL_WINDOW_MOUSE_CAPTURE)) {
-          if (drag_type == DragType::screen) {
+          if (mouse_drag_type == DragType::screen) {
             x_pos += (event.motion.x - mouse_x);
             y_pos += (event.motion.y - mouse_y);
           }
@@ -255,7 +256,7 @@ void Game::run() {
           mouse_x = event.motion.x;
           mouse_y = event.motion.y;
           
-          if (drag_type != DragType::screen) {
+          if (mouse_drag_type != DragType::screen) {
             if (mouse_lock_type == MouseLockType::to_row)
               mouse_y = prev_mouse_y;
             else if (mouse_lock_type == MouseLockType::to_col)
@@ -284,20 +285,20 @@ void Game::run() {
             
             CellState state;
             bool change_cell = false;
-            if (drag_type == DragType::marks
+            if (mouse_drag_type == DragType::marks
                 && puzzle->cell(x, y) == CellState::blank) {
               change_cell = true;
               state = CellState::marked;
-            } else if (drag_type == DragType::xes
+            } else if (mouse_drag_type == DragType::xes
                        && puzzle->cell(x, y) == CellState::blank) {
               change_cell = true;
               state = CellState::xedout;
             }
-            else if (drag_type == DragType::blank_marks
+            else if (mouse_drag_type == DragType::blank_marks
                      && puzzle->cell(x, y) == CellState::marked) {
               change_cell = true;
               state = CellState::blank;
-            } else if (drag_type == DragType::blank_xes
+            } else if (mouse_drag_type == DragType::blank_xes
                        && puzzle->cell(x, y) == CellState::xedout) {
               change_cell = true;
               state = CellState::blank;
@@ -316,9 +317,10 @@ void Game::run() {
         else if (event.wheel.y < 0)
           zoom(-cell_size_step, mouse_x, mouse_y);
         break;
-      case SDL_KEYDOWN:
+      case SDL_KEYDOWN:        
         switch (event.key.keysym.sym) {
         case SDLK_UP:
+        case SDLK_KP_8:
           if (selected) {
             --selection_y;
             if (selection_y < 0)
@@ -327,6 +329,7 @@ void Game::run() {
           selected = true;
           break;
         case SDLK_DOWN:
+        case SDLK_KP_2:
           if (selected) {
             ++selection_y;
             if (selection_y >= puzzle->height())
@@ -335,6 +338,7 @@ void Game::run() {
           selected = true;
           break;
         case SDLK_LEFT:
+        case SDLK_KP_4:
           if (selected) {
             --selection_x;
             if (selection_x < 0)
@@ -343,12 +347,125 @@ void Game::run() {
           selected = true;
           break;
         case SDLK_RIGHT:
+        case SDLK_KP_6:
           if (selected) {
             ++selection_x;
             if (selection_x >= puzzle->width())
               selection_x = 0;
           }
           selected = true;
+          break;
+        case SDLK_RETURN:
+        case SDLK_KP_ENTER:
+        case SDLK_SPACE:
+          if (selected && !kb_dragging) {
+            kb_dragging = true;
+            
+            CellState state;
+            bool change_state = false;
+            if (puzzle->cell(selection_x, selection_y)
+                == CellState::blank) {
+              kb_drag_type = DragType::marks;
+              state = CellState::marked;
+              change_state = true;
+            } else if (puzzle->cell(selection_x, selection_y)
+                       == CellState::marked) {
+              kb_drag_type = DragType::blank_marks;
+              state = CellState::blank;
+              change_state = true;
+            } else if (puzzle->cell(selection_x, selection_y)
+                       == CellState::xedout) {
+              kb_drag_type = DragType::blank_xes;
+              state = CellState::blank;
+              change_state = true;
+            }
+
+            if (change_state)
+              puzzle->set_cell(selection_x, selection_y, state);
+          } else
+            selected = true;
+          break;
+        case SDLK_LCTRL:
+        case SDLK_RCTRL:
+          if (selected && !kb_dragging) {
+            kb_dragging = true;
+            
+            CellState state;
+            bool change_state = false;
+            if (puzzle->cell(selection_x, selection_y)
+                == CellState::blank) {
+              kb_drag_type = DragType::xes;
+              state = CellState::xedout;
+              change_state = true;
+            } else if (puzzle->cell(selection_x, selection_y)
+                       == CellState::marked) {
+              kb_drag_type = DragType::blank_marks;
+              state = CellState::blank;
+              change_state = true;
+            } else if (puzzle->cell(selection_x, selection_y)
+                       == CellState::xedout) {
+              kb_drag_type = DragType::blank_xes;
+              state = CellState::blank;
+              change_state = true;
+            }
+
+            if (change_state)
+              puzzle->set_cell(selection_x, selection_y, state);
+            break;
+          } else
+            selected = true;
+        }
+
+        if (kb_dragging) {
+          auto key = event.key.keysym.sym;
+          if (key == SDLK_UP || key == SDLK_DOWN || key == SDLK_LEFT
+              || key == SDLK_RIGHT || key == SDLK_KP_8 || key == SDLK_KP_2
+              || key == SDLK_KP_4 || key == SDLK_KP_6) {
+            CellState state;
+            bool change_state = false;
+            
+            switch (kb_drag_type) {
+            case DragType::marks:
+              if (puzzle->cell(selection_x, selection_y) == CellState::blank) {
+                state = CellState::marked;
+                change_state = true;
+              }
+              break;
+            case DragType::xes:
+              if (puzzle->cell(selection_x, selection_y) == CellState::blank) {
+                state = CellState::xedout;
+                change_state = true;
+              }
+              break;
+            case DragType::blank_marks:
+              if (puzzle->cell(selection_x, selection_y)
+                  == CellState::marked) {
+                state = CellState::blank;
+                change_state = true;
+              }
+              break;
+            case DragType::blank_xes:
+              if (puzzle->cell(selection_x, selection_y)
+                  == CellState::xedout) {
+                state = CellState::blank;
+                change_state = true;
+              }
+              break;
+            }
+
+            if (change_state)
+              puzzle->set_cell(selection_x, selection_y, state);
+          }
+        }
+        break;
+      case SDL_KEYUP:
+        switch (event.key.keysym.sym) {
+        case SDLK_RETURN:
+        case SDLK_KP_ENTER:
+        case SDLK_SPACE:
+        case SDLK_LCTRL:
+        case SDLK_RCTRL:
+          kb_dragging = false;
           break;
         }
         break;
