@@ -136,8 +136,15 @@ void Game::run() {
       case SDL_WINDOWEVENT:
         switch (event.window.event) {
         case SDL_WINDOWEVENT_RESIZED:
-          screen_width = event.window.data1;
-          screen_height = event.window.data2;
+          int new_width = event.window.data1;
+          int new_height = event.window.data2;
+
+          //recenter screen
+          x_pos += (new_width - screen_width) / 2;
+          y_pos += (new_height - screen_height) / 2;
+          
+          screen_width = new_width;
+          screen_height = new_height;
           break;
         }
         break;
