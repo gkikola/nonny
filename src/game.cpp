@@ -13,8 +13,8 @@ char get_filesystem_separator();
 
 Game::Game() : exit{false}, puzzle{nullptr}, x_pos{0}, y_pos{0}, cell_size{32},
                mouse_x{0}, mouse_y{0}, prev_mouse_x{0}, prev_mouse_y{0},
-               dragging{false}, selected{false},
-               widest_rule{0}, tallest_rule{0},
+               dragging{false}, selection_x{0}, selection_y{0},
+               selected{false}, widest_rule{0}, tallest_rule{0},
                cell_sheet_tex{nullptr}, main_font{nullptr},
                renderer{nullptr}, window{nullptr} {
   if (SDL_Init(SDL_INIT_VIDEO) != 0) {
@@ -315,6 +315,42 @@ void Game::run() {
           zoom(cell_size_step, mouse_x, mouse_y);
         else if (event.wheel.y < 0)
           zoom(-cell_size_step, mouse_x, mouse_y);
+        break;
+      case SDL_KEYDOWN:
+        switch (event.key.keysym.sym) {
+        case SDLK_UP:
+          if (selected) {
+            --selection_y;
+            if (selection_y < 0)
+              selection_y = puzzle->height() - 1;
+          }
+          selected = true;
+          break;
+        case SDLK_DOWN:
+          if (selected) {
+            ++selection_y;
+            if (selection_y >= puzzle->height())
+              selection_y = 0;
+          }
+          selected = true;
+          break;
+        case SDLK_LEFT:
+          if (selected) {
+            --selection_x;
+            if (selection_x < 0)
+              selection_x = puzzle->width() - 1;
+          }
+          selected = true;
+          break;
+        case SDLK_RIGHT:
+          if (selected) {
+            ++selection_x;
+            if (selection_x >= puzzle->width())
+              selection_x = 0;
+          }
+          selected = true;
+          break;
+        }
         break;
       case SDL_QUIT:
         exit = true;
