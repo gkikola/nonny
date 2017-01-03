@@ -148,12 +148,6 @@ void Game::run() {
             screen_height = new_height;
           }
           break;
-        case SDL_WINDOWEVENT_FOCUS_LOST:
-          selected = false;
-          break;
-        case SDL_WINDOWEVENT_FOCUS_GAINED:
-          selected = true;
-          break;
         }
         break;
       case SDL_MOUSEBUTTONDOWN:
