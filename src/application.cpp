@@ -39,4 +39,22 @@ void Application::SDL_cleanup() {
 }
 
 void Application::run() {
+  SDL_Event event;
+  bool exit = false;
+
+  while (!exit) {
+    while (SDL_PollEvent(&event)) {
+      //process SDL event
+      switch (event.type) {
+      case SDL_QUIT:
+        exit = true;
+        break;
+      }
+    }
+
+    //drawing code here
+
+    //give control back to the OS
+    SDL_Delay(1);
+  }
 }
