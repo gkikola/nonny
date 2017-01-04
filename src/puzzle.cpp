@@ -7,41 +7,41 @@
 
 #include "puzzle.h"
 
-Puzzle::Puzzle(const std::string& filename) : grid_width{0}, grid_height{0} {
+Puzzle::Puzzle(const std::string& filename) : m_width{0}, m_height{0} {
   load_file(filename);
 }
 
 const std::vector<RuleEntry>& Puzzle::get_row_rule(int row) const {
-  if (row >= row_rules.size() || row < 0)
+  if (row >= m_row_rules.size() || row < 0)
     throw std::runtime_error("Puzzle::get_row_rule: invalid row");
 
-  return row_rules[row];
+  return m_row_rules[row];
 }
 
 const std::vector<RuleEntry>& Puzzle::get_col_rule(int col) const {
-  if (col >= col_rules.size() || col < 0)
+  if (col >= m_col_rules.size() || col < 0)
     throw std::runtime_error("Puzzle::get_col_rule: invalid column");
 
-  return col_rules[col];
+  return m_col_rules[col];
 }
 
 CellState Puzzle::prev_cell_state(int x, int y) const {
-  return grid[y * width() + x].prev_state;
+  return m_grid[y * width() + x].prev_state;
 }
 
 void Puzzle::set_cell(int x, int y, CellState state) {
   if (x >= 0 && y >= 0 && x < width() && y < height()) {
     int index = y * width() + x;
 
-    grid[index].prev_state = grid[index].state;
-    grid[index].state = state;
-    grid[index].age = 0;
+    m_grid[index].prev_state = m_grid[index].state;
+    m_grid[index].state = state;
+    m_grid[index].age = 0;
   }
 }
 
 void Puzzle::age_cell(int x, int y, int max) {
   if (cell_age(x, y) < max)
-    grid[y * width() + x].age++;
+    m_grid[y * width() + x].age++;
 }
 
 void Puzzle::load_file(const std::string& filename) {
@@ -67,11 +67,11 @@ void Puzzle::load_file(const std::string& filename) {
 
         if (reading_rows) {
           std::vector<RuleEntry> rule;
-          row_rules.push_back(std::move(rule));
+          m_row_rules.push_back(std::move(rule));
         }
         else {
           std::vector<RuleEntry> rule;
-          col_rules.push_back(std::move(rule));
+          m_col_rules.push_back(std::move(rule));
         }
 
         char ch;
@@ -86,16 +86,16 @@ void Puzzle::load_file(const std::string& filename) {
             entry.error = false;
 
             if (reading_rows)
-              row_rules[row_rules.size() - 1].push_back(entry);
+              m_row_rules[m_row_rules.size() - 1].push_back(entry);
             else
-              col_rules[col_rules.size() - 1].push_back(entry);
+              m_col_rules[m_col_rules.size() - 1].push_back(entry);
           }
         }
       }
       else if (property == "width")
-        ss >> grid_width;
+        ss >> m_width;
       else if (property == "height")
-        ss >> grid_height;
+        ss >> m_height;
       else if (property == "rows") {
         reading_rows = true;
       } else if (property == "columns") {
@@ -109,7 +109,7 @@ void Puzzle::load_file(const std::string& filename) {
   blank.prev_state = CellState::blank;
   blank.age = 0;
   
-  grid.resize(grid_width * grid_height, blank);
+  m_grid.resize(m_width * m_height, blank);
 
   file.close();
 }

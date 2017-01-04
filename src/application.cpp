@@ -11,17 +11,17 @@ const std::string default_win_title = "Nonny";
 Application::Application() {
   if (SDL_Init(SDL_INIT_VIDEO) != 0) SDL_error("SDL_Init");
 
-  window = SDL_CreateWindow(default_win_title.c_str(),
-                            SDL_WINDOWPOS_CENTERED,
-                            SDL_WINDOWPOS_CENTERED,
-                            default_win_width, default_win_height,
-                            SDL_WINDOW_RESIZABLE);
+  m_window = SDL_CreateWindow(default_win_title.c_str(),
+                              SDL_WINDOWPOS_CENTERED,
+                              SDL_WINDOWPOS_CENTERED,
+                              default_win_width, default_win_height,
+                              SDL_WINDOW_RESIZABLE);
 
-  if (!window) SDL_error("SDL_CreateWindow");
+  if (!m_window) SDL_error("SDL_CreateWindow");
 
   //temporary, start a game immediately
   {
-    game = new Game();
+    m_game = new Game();
   }
 }
 
@@ -39,8 +39,8 @@ void Application::SDL_error(const std::string& function) {
 }
 
 void Application::cleanup() {
-  if (game) delete game;
-  if (window) SDL_DestroyWindow(window);
+  if (m_game) delete m_game;
+  if (m_window) SDL_DestroyWindow(m_window);
   SDL_Quit();
 }
 

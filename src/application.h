@@ -16,9 +16,9 @@ class Application {
   void SDL_error(const std::string& function);
   void cleanup();
 
-  SDL_Window* window;
+  SDL_Window* m_window;
 
-  Game* game;
+  Game* m_game;
 };
 
 #endif
