@@ -19,6 +19,11 @@ Application::Application() {
 
   if (!m_window) SDL_error("SDL_CreateWindow");
 
+  //tell SDL that we want anisotropic filtering if available
+  if (SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "best") == SDL_FALSE) {
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
+  }
+
   //temporary, start a game immediately
   {
     m_game = new Game();
