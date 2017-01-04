@@ -17,6 +17,7 @@ class Application {
   void cleanup();
 
   SDL_Window* m_window;
+  SDL_Renderer* m_renderer;
 
   Game* m_game;
 };
