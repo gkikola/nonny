@@ -18,10 +18,15 @@ Application::Application() {
                             SDL_WINDOW_RESIZABLE);
 
   if (!window) SDL_error("SDL_CreateWindow");
+
+  //temporary, start a game immediately
+  {
+    game = new Game();
+  }
 }
 
-Application::~Application() {
-  SDL_cleanup();
+Application::~Application() {  
+  cleanup();
 }
 
 void Application::SDL_error(const std::string& function) {
@@ -29,11 +34,12 @@ void Application::SDL_error(const std::string& function) {
   err_msg += ": ";
   err_msg += SDL_GetError();
 
-  SDL_cleanup();
+  cleanup();
   throw std::runtime_error(err_msg);
 }
 
-void Application::SDL_cleanup() {
+void Application::cleanup() {
+  if (game) delete game;
   if (window) SDL_DestroyWindow(window);
   SDL_Quit();
 }

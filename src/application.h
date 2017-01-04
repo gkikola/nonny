@@ -4,17 +4,21 @@
 #include <string>
 #include <SDL2/SDL.h>
 
+#include "game.h"
+
 class Application {
-public:
+ public:
   Application();
   ~Application();
 
   void run();
-private:
+ private:
   void SDL_error(const std::string& function);
-  void SDL_cleanup();
+  void cleanup();
 
   SDL_Window* window;
+
+  Game* game;
 };
 
 #endif
