@@ -1,3 +1,4 @@
+#include <iostream>
 #include <stdexcept>
 #include <string>
 #include <SDL2/SDL.h>
@@ -17,7 +18,7 @@ Renderer::Renderer(SDL_Window* window, const std::string& data_dir)
   m_renderer = SDL_CreateRenderer(m_window, -1, SDL_RENDERER_ACCELERATED
                                   | SDL_RENDERER_PRESENTVSYNC);
   if (!m_renderer) SDL_error("SDL_CreateRenderer");
-  
+
   //tell SDL that we want anisotropic filtering if available
   if (SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "best") == SDL_FALSE) {
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
@@ -48,6 +49,7 @@ Renderer::Renderer(SDL_Window* window, const std::string& data_dir)
   std::string font_path = m_data_dir + font_filename;
   m_menu_font = TTF_OpenFont(font_path.c_str(), 30);
   m_info_font = TTF_OpenFont(font_path.c_str(), 12);
+  m_rule_font = nullptr;
 }
 
 Renderer::~Renderer() {
@@ -110,13 +112,17 @@ void Renderer::render_game(Game& game) {
 }
 
 void Renderer::render_puzzle(Game& game) {
-  if (game.has_size_changed()) {
-    reload_font(game.cell_size() * 3 / 5);
+  if (!m_rule_font || game.has_size_changed()) {
+    int font_size = game.cell_size() * 3 / 5;
+
+    if (font_size <= 0)
+      font_size = 1;
+    
+    reload_font(font_size);
   }
 
-  int spacing = game.cell_size() / 3;
-
   draw_cells(game);
+  draw_rules(game);
 }
 
 void Renderer::draw_cells(Game& game) {
@@ -222,6 +228,116 @@ void Renderer::shade_cells(Game& game) {
       SDL_RenderFillRect(m_renderer, &rect);
     }
   }
+}
+
+void Renderer::draw_rules(Game& game) {
+  int cell_size = game.cell_size();
+  const int buffer = cell_size / 3;
+  int col_rule_bottom = 0;
+
+  m_tallest_rule = m_widest_rule = 0;
+
+  for (int i = 0; i < game.puzzle().width(); ++i) {
+    int col_left_edge, col_top_edge;
+    game.cell_coords_to_screen_coords(i, 0, &col_left_edge, &col_top_edge);
+
+    int col_height = col_rule_height(game, i, buffer);
+    int x = col_left_edge;
+    int y = col_top_edge - col_height;
+
+    if (col_height > m_tallest_rule)
+      m_tallest_rule = col_height;
+
+    if (y < 0)
+      y = 0;
+
+    //keep track of how far down the column numbers go
+    if (col_rule_bottom < y + col_height)
+      col_rule_bottom = y + col_height;
+
+    for (auto entry : game.puzzle().get_col_rule(i)) {
+      int w, h;
+      SDL_Texture* tex = rule_entry_to_texture(entry, &w, &h);
+      
+      SDL_Rect dst_rect;
+      dst_rect.x = col_left_edge + cell_size / 2 - w / 2;
+      dst_rect.y = y;
+      dst_rect.w = w;
+      dst_rect.h = h;
+
+      SDL_RenderCopy(m_renderer, tex, NULL, &dst_rect);
+      SDL_DestroyTexture(tex);
+
+      y += h + buffer;
+    }
+  }
+
+  for (int j = 0; j < game.puzzle().height(); ++j) {
+    int row_left_edge, row_top_edge;
+    game.cell_coords_to_screen_coords(0, j, &row_left_edge, &row_top_edge);
+
+    int row_width = row_rule_width(game, j, buffer);
+    int x = row_left_edge - row_width;
+    int y = row_top_edge;
+
+    if (row_width > m_widest_rule)
+      m_widest_rule = row_width;
+
+    if (x < 0 && y >= col_rule_bottom)
+      x = 0;
+
+    for (auto entry : game.puzzle().get_row_rule(j)) {
+      int w, h;
+      SDL_Texture* tex = rule_entry_to_texture(entry, &w, &h);
+
+      SDL_Rect dst_rect;
+      dst_rect.x = x;
+      dst_rect.y = row_top_edge + cell_size / 2 - h / 2;
+      dst_rect.w = w;
+      dst_rect.h = h;
+
+      SDL_RenderCopy(m_renderer, tex, NULL, &dst_rect);
+      SDL_DestroyTexture(tex);
+
+      x += w + buffer;
+    }
+  }
+}
+
+int Renderer::cell_grid_width(const Game& game) {
+  return game.puzzle().width() * (game.cell_size() + 1) + 1;
+}
+
+int Renderer::cell_grid_height(const Game& game) {
+  return game.puzzle().height() * (game.cell_size() + 1) + 1;
+}
+
+int Renderer::row_rule_width(Game& game, int row, int buffer) {
+  int width = 0;
+
+  for (auto entry : game.puzzle().get_row_rule(row)) {
+    std::string entry_str = std::to_string(entry.value);
+    int entry_width, entry_height;
+    TTF_SizeText(m_rule_font, entry_str.c_str(), &entry_width, &entry_height);
+
+    width += entry_width + buffer;
+  }
+
+  return width;
+}
+
+int Renderer::col_rule_height(Game& game, int col, int buffer) {
+  int height = 0;
+
+  for (auto entry : game.puzzle().get_col_rule(col)) {
+    std::string entry_str = std::to_string(entry.value);
+    int entry_width, entry_height;
+    TTF_SizeText(m_rule_font, entry_str.c_str(), &entry_width, &entry_height);
+
+    height += entry_height + buffer;
+  }
+  
+  return height;
 }
 
 void Renderer::reload_font(int font_size) {

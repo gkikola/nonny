@@ -23,6 +23,12 @@ class Renderer {
   void render_puzzle(Game& game);
   void shade_cells(Game& game);
   void draw_cells(Game& game);
+  void draw_rules(Game& game);
+
+  int cell_grid_width(const Game& game);
+  int cell_grid_height(const Game& game);
+  int row_rule_width(Game& game, int row, int buffer);
+  int col_rule_height(Game& game, int col, int buffer);
 
   SDL_Window* m_window;
   SDL_Renderer* m_renderer;
@@ -37,8 +43,8 @@ class Renderer {
 
   std::string m_data_dir;
 
-  int m_row_rule_width;
-  int m_col_rule_height;
+  int m_widest_rule;
+  int m_tallest_rule;
 };
 
 #endif
