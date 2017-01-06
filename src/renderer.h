@@ -20,9 +20,17 @@ class Renderer {
   SDL_Texture* rule_entry_to_texture(const RuleEntry& e,
                                      int* w = nullptr, int* h = nullptr);
 
+  void render_puzzle(Game& game);
+  void shade_cells(Game& game);
+  void draw_cells(Game& game);
+
   SDL_Window* m_window;
   SDL_Renderer* m_renderer;
+  
   SDL_Texture* m_cell_sheet;
+  int m_cell_sheet_frame_size;
+  int m_num_animation_frames;
+  
   TTF_Font* m_menu_font;
   TTF_Font* m_info_font;
   TTF_Font* m_rule_font;

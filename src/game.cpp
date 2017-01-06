@@ -26,3 +26,20 @@ void Game::set_rule_dimensions(int row_rule_width, int col_rule_height) {
   m_row_rule_width = row_rule_width;
   m_col_rule_height = col_rule_height;
 }
+
+void Game::get_puzzle_coords(int* x, int* y) const {
+  *x = m_x;
+  *y = m_y;
+}
+
+void Game::screen_coords_to_cell_coords(int screen_x, int screen_y,
+                                        int* x, int* y) {
+  *x = (screen_x - m_x - 1) / (m_cell_size + 1);
+  *y = (screen_y - m_y - 1) / (m_cell_size + 1);
+}
+
+void Game::cell_coords_to_screen_coords(int x, int y,
+                                        int* screen_x, int* screen_y) {
+  *screen_x = m_x + 1 + x * (m_cell_size + 1);
+  *screen_y = m_y + 1 + y * (m_cell_size + 1);
+}

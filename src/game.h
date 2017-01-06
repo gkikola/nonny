@@ -10,7 +10,7 @@ class Game {
   Game();
   ~Game();
 
-  GameState game_state() const { return m_state; }
+  GameState state() const { return m_state; }
   void update(int elapsed_time);
 
   void load_puzzle(const std::string& filename);
@@ -20,6 +20,9 @@ class Game {
 
   void set_rule_dimensions(int row_rule_width, int col_rule_height);
   bool has_size_changed() const { return m_recalc_size; }
+
+  void cell_coords_to_screen_coords(int x, int y, int* screen_x, int* screen_y);
+  void screen_coords_to_cell_coords(int screen_x, int screen_y, int* x, int* y);
   
   const Puzzle& puzzle() const { return *m_puzzle; }
  private:
