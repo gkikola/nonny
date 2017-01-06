@@ -1,6 +1,8 @@
 #include <stdexcept>
 #include <string>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 
 #include "game.h"
 #include "renderer.h"
@@ -18,6 +20,11 @@ Application::Application() : m_game{nullptr}, m_window{nullptr},
                              m_renderer{nullptr} {
   if (SDL_Init(SDL_INIT_VIDEO) != 0) SDL_error("SDL_Init");
 
+  if (TTF_Init() != 0) {
+    SDL_Quit();
+    throw std::runtime_error("TTF_Init: failed to initialize SDL_ttf");
+  }
+  
   m_window = SDL_CreateWindow(default_win_title.c_str(),
                               SDL_WINDOWPOS_CENTERED,
                               SDL_WINDOWPOS_CENTERED,
@@ -30,7 +37,7 @@ Application::Application() : m_game{nullptr}, m_window{nullptr},
   m_game = new Game();
   m_game->load_puzzle(m_data_dir + "test.non");
 
-  m_renderer = new Renderer(m_window);
+  m_renderer = new Renderer(m_window, m_data_dir);
 }
 
 Application::~Application() {  
@@ -41,6 +48,8 @@ void Application::cleanup() {
   if (m_game) delete m_game;
   if (m_renderer) delete m_renderer;
   if (m_window) SDL_DestroyWindow(m_window);
+  if (TTF_WasInit()) TTF_Quit();
+  IMG_Quit();
   SDL_Quit();
 }
 

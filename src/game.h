@@ -18,6 +18,9 @@ class Game {
   void get_puzzle_coords(int* x, int* y) const;
   int cell_size() const { return m_cell_size; }
 
+  void set_rule_dimensions(int row_rule_width, int col_rule_height);
+  bool has_size_changed() const { return m_recalc_size; }
+  
   const Puzzle& puzzle() const { return *m_puzzle; }
  private:
   Puzzle* m_puzzle;
@@ -25,6 +28,10 @@ class Game {
   GameState m_state;
   int m_x, m_y;
   int m_cell_size;
+
+  bool m_recalc_size;
+  int m_row_rule_width;
+  int m_col_rule_height;
 };
 
 #endif
