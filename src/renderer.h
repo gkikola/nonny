@@ -15,7 +15,10 @@ class Renderer {
   void render_game(Game& game);
  private:
   void SDL_error(const std::string& function);
+
   void reload_font(int font_size);
+  SDL_Texture* rule_entry_to_texture(const RuleEntry& e,
+                                     int* w = nullptr, int* h = nullptr);
 
   SDL_Window* m_window;
   SDL_Renderer* m_renderer;
