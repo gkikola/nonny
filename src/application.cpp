@@ -2,13 +2,17 @@
 #include <string>
 #include <SDL2/SDL.h>
 
-#include "render.h"
+#include "game.h"
+#include "renderer.h"
 
 #include "application.h"
 
 const int default_win_width = 800;
 const int default_win_height = 600;
 const std::string default_win_title = "Nonny";
+
+void get_paths(std::string* data_dir, std::string* save_dir);
+char get_filesystem_separator();
 
 Application::Application() : m_game{nullptr}, m_window{nullptr},
                              m_renderer{nullptr} {
@@ -21,42 +25,41 @@ Application::Application() : m_game{nullptr}, m_window{nullptr},
                               SDL_WINDOW_RESIZABLE);
   if (!m_window) SDL_error("SDL_CreateWindow");
 
-  m_renderer = SDL_CreateRenderer(m_window, -1, SDL_RENDERER_ACCELERATED
-                                  | SDL_RENDERER_PRESENTVSYNC);
-  if (!m_renderer) SDL_error("SDL_CreateRenderer");
-  
-  //tell SDL that we want anisotropic filtering if available
-  if (SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "best") == SDL_FALSE) {
-    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
-  }
+  get_paths(&m_data_dir, &m_save_dir);
 
   m_game = new Game();
+  m_game->load_puzzle(m_data_dir + "test.non");
+
+  m_renderer = new Renderer(m_window);
 }
 
 Application::~Application() {  
   cleanup();
 }
 
+void Application::cleanup() {
+  if (m_game) delete m_game;
+  if (m_renderer) delete m_renderer;
+  if (m_window) SDL_DestroyWindow(m_window);
+  SDL_Quit();
+}
+
 void Application::SDL_error(const std::string& function) {
   std::string err_msg = function;
   err_msg += ": ";
   err_msg += SDL_GetError();
-
+  
   cleanup();
-  throw std::runtime_error(err_msg);
-}
 
-void Application::cleanup() {
-  if (m_game) delete m_game;
-  if (m_renderer) SDL_DestroyRenderer(m_renderer);
-  if (m_window) SDL_DestroyWindow(m_window);
-  SDL_Quit();
+  throw std::runtime_error(err_msg);
 }
 
 void Application::run() {
   SDL_Event event;
   bool exit = false;
 
+  Uint32 time = SDL_GetTicks();
+  
   while (!exit) {
     while (SDL_PollEvent(&event)) {
       //process SDL event
@@ -67,10 +70,39 @@ void Application::run() {
       }
     }
 
+    //calculate frame time
+    Uint32 prev_time = time;
+    time = SDL_GetTicks();
+    int elapsed_time = time - prev_time;
+
+    //handle game frame updates
+    m_game->update(elapsed_time);
+    
     //handle rendering
-    render_game(*m_game, m_window, m_renderer);
+    m_renderer->render_game(*m_game);
 
     //give control back to the OS
     SDL_Delay(1);
   }
+}
+
+void get_paths(std::string* data_dir, std::string* save_dir) {
+  *data_dir = DATADIR;
+  *data_dir += get_filesystem_separator();
+
+  char* save_ptr = SDL_GetPrefPath(".", "nonny");
+  *save_dir = save_ptr;
+  SDL_free(save_ptr);
+}
+
+char get_filesystem_separator() {
+  //SDL_GetBasePath is guaranteed to end with a separator
+  char* path_ptr = SDL_GetBasePath();
+  std::string path { path_ptr };
+  SDL_free(path_ptr);
+
+  if (path.length() > 0)
+    return path[path.length() - 1];
+  else
+    return '/';
 }

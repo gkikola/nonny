@@ -4,7 +4,8 @@
 #include <string>
 #include <SDL2/SDL.h>
 
-#include "game.h"
+class Game;
+class Renderer;
 
 class Application {
  public:
@@ -13,13 +14,16 @@ class Application {
 
   void run();
  private:
-  void SDL_error(const std::string& function);
   void cleanup();
+  void SDL_error(const std::string& function);
 
   SDL_Window* m_window;
-  SDL_Renderer* m_renderer;
 
   Game* m_game;
+  Renderer* m_renderer;
+
+  std::string m_data_dir;
+  std::string m_save_dir;
 };
 
 #endif
