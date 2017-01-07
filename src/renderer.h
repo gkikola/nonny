@@ -24,6 +24,7 @@ class Renderer {
                                      int* w = nullptr, int* h = nullptr);
 
   void render_puzzle();
+  void render_info_pane();
   void shade_cells();
   void draw_cells();
   void draw_rules();

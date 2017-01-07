@@ -106,8 +106,10 @@ void Renderer::render_game() {
   SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
   SDL_RenderClear(m_renderer);
 
-  if (m_game->state() == GameState::puzzle)
+  if (m_game->state() == GameState::puzzle) {
     render_puzzle();
+    render_info_pane();
+  }
     
   SDL_RenderPresent(m_renderer);
 }
@@ -134,6 +136,21 @@ void Renderer::render_puzzle() {
 
   draw_cells();
   draw_rules();
+}
+
+void Renderer::render_info_pane() {
+  //get window dimensions
+  int width, height;
+  SDL_GetWindowSize(m_window, &width, &height);
+  
+  SDL_Rect info_pane;
+  info_pane.x = 0;
+  info_pane.y = 0;
+  info_pane.w = m_game->info_pane_width();
+  info_pane.h = height;
+
+  SDL_SetRenderDrawColor(m_renderer, 123, 175, 212, 255);
+  SDL_RenderFillRect(m_renderer, &info_pane);
 }
 
 void Renderer::draw_cells() {

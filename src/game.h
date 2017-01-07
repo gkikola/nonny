@@ -25,6 +25,9 @@ class Game {
 
   void cell_coords_to_screen_coords(int x, int y, int* screen_x, int* screen_y);
   void screen_coords_to_cell_coords(int screen_x, int screen_y, int* x, int* y);
+
+  int info_pane_width() const { return m_info_pane_width; }
+  bool is_info_pane_visible() const { return m_info_pane_visible; }
   
   const Puzzle& puzzle() const { return *m_puzzle; }
  private:
@@ -33,6 +36,8 @@ class Game {
   GameState m_state;
   int m_x, m_y;
   int m_cell_size;
+  int m_info_pane_width;
+  bool m_info_pane_visible;
 
   bool m_recalc_size;
   int m_row_rule_width;
