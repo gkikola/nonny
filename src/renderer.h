@@ -29,8 +29,6 @@ class Renderer {
   void draw_cells();
   void draw_rules();
 
-  int cell_grid_width();
-  int cell_grid_height();
   int row_rule_width(int row, int buffer);
   int col_rule_height(int col, int buffer);
 

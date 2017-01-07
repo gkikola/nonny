@@ -35,6 +35,8 @@ Application::Application() : m_game{nullptr}, m_window{nullptr},
   get_paths(&m_data_dir, &m_save_dir);
 
   m_game = new Game();
+  m_game->update_screen_size(default_win_width, default_win_height);
+  
   m_game->load_puzzle(m_data_dir + "test.non");
 
   m_renderer = new Renderer(m_window, m_game, m_data_dir);

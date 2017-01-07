@@ -21,6 +21,8 @@ class Game {
   void set_rule_dimensions(int row_rule_width, int col_rule_height);
   bool has_size_changed() const { return m_recalc_size; }
 
+  void update_screen_size(int width, int height);
+
   void age_cells(int max_age);
 
   void cell_coords_to_screen_coords(int x, int y, int* screen_x, int* screen_y);
@@ -31,6 +33,11 @@ class Game {
   
   const Puzzle& puzzle() const { return *m_puzzle; }
  private:
+  int cell_grid_width();
+  int cell_grid_height();
+  
+  void default_zoom();
+
   Puzzle* m_puzzle;
   
   GameState m_state;
@@ -42,6 +49,9 @@ class Game {
   bool m_recalc_size;
   int m_row_rule_width;
   int m_col_rule_height;
+
+  int m_screen_width;
+  int m_screen_height;
 };
 
 #endif

@@ -276,8 +276,8 @@ void Renderer::draw_rules() {
     if (col_height > m_tallest_rule)
       m_tallest_rule = col_height;
 
-    if (y < 0)
-      y = 0;
+    if (y < buffer)
+      y = buffer;
 
     //keep track of how far down the column numbers go
     if (col_rule_bottom < y + col_height)
@@ -311,8 +311,8 @@ void Renderer::draw_rules() {
     if (row_width > m_widest_rule)
       m_widest_rule = row_width;
 
-    if (x < m_game->info_pane_width()  && y >= col_rule_bottom)
-      x = m_game->info_pane_width();
+    if (x < m_game->info_pane_width() + buffer  && y >= col_rule_bottom)
+      x = m_game->info_pane_width() + buffer;
 
     for (auto entry : m_game->puzzle().get_row_rule(j)) {
       int w, h;
@@ -332,14 +332,6 @@ void Renderer::draw_rules() {
   }
 
   m_game->set_rule_dimensions(m_widest_rule, m_tallest_rule);
-}
-
-int Renderer::cell_grid_width() {
-  return m_game->puzzle().width() * (m_game->cell_size() + 1) + 1;
-}
-
-int Renderer::cell_grid_height() {
-  return m_game->puzzle().height() * (m_game->cell_size() + 1) + 1;
 }
 
 int Renderer::row_rule_width(int row, int buffer) {
