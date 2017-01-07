@@ -312,7 +312,8 @@ void Renderer::draw_rules() {
     if (row_width > m_widest_rule)
       m_widest_rule = row_width;
 
-    if (x < m_game->info_pane_width() + buffer  && y >= col_rule_bottom)
+    if (x < m_game->info_pane_width() + buffer
+        && y >= col_rule_bottom - buffer)
       x = m_game->info_pane_width() + buffer;
 
     for (auto entry : m_game->puzzle().get_row_rule(j)) {
