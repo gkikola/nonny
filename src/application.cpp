@@ -86,6 +86,7 @@ void Application::run() {
 
     //handle game frame updates
     m_game->update(elapsed_time);
+    m_renderer->update(*m_game, elapsed_time);
     
     //handle rendering
     m_renderer->render_game(*m_game);

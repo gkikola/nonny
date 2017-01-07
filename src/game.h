@@ -21,6 +21,8 @@ class Game {
   void set_rule_dimensions(int row_rule_width, int col_rule_height);
   bool has_size_changed() const { return m_recalc_size; }
 
+  void age_cells(int max_age);
+
   void cell_coords_to_screen_coords(int x, int y, int* screen_x, int* screen_y);
   void screen_coords_to_cell_coords(int screen_x, int screen_y, int* x, int* y);
   

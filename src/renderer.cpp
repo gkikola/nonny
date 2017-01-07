@@ -13,6 +13,8 @@
 const std::string cell_sheet_filename = "cell.png";
 const std::string font_filename = "FreeSans.ttf";
 
+const int cell_age_time = 50;
+
 Renderer::Renderer(SDL_Window* window, const std::string& data_dir)
   : m_window{window}, m_data_dir{data_dir} {
   m_renderer = SDL_CreateRenderer(m_window, -1, SDL_RENDERER_ACCELERATED
@@ -33,6 +35,7 @@ Renderer::Renderer(SDL_Window* window, const std::string& data_dir)
   //determine size of each animation frame and number of frames
   m_cell_sheet_frame_size = 0;
   m_num_animation_frames = 0;
+  m_time_until_cell_aging = cell_age_time;
   Uint32 fmt;
   int access, width, height;
   SDL_QueryTexture(m_cell_sheet, &fmt, &access, &width, &height);
@@ -109,6 +112,16 @@ void Renderer::render_game(Game& game) {
   //drawing code goes here
   
   SDL_RenderPresent(m_renderer);
+}
+
+void Renderer::update(Game& game, int elapsed_time) {
+  //handle cell animation
+  m_time_until_cell_aging -= elapsed_time;
+
+  while (m_time_until_cell_aging < 0) {
+    game.age_cells(m_num_animation_frames - 1);
+    m_time_until_cell_aging += cell_age_time;
+  }
 }
 
 void Renderer::render_puzzle(Game& game) {

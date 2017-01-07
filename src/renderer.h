@@ -13,6 +13,8 @@ class Renderer {
   ~Renderer();
 
   void render_game(Game& game);
+
+  void update(Game& game, int elapsed_time);
  private:
   void SDL_error(const std::string& function);
 
@@ -36,6 +38,7 @@ class Renderer {
   SDL_Texture* m_cell_sheet;
   int m_cell_sheet_frame_size;
   int m_num_animation_frames;
+  int m_time_until_cell_aging;
   
   TTF_Font* m_menu_font;
   TTF_Font* m_info_font;

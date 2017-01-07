@@ -1,5 +1,7 @@
 #include <iostream>
 
+#include "puzzle.h"
+
 #include "game.h"
 
 const int cell_size_step = 8;
@@ -32,6 +34,12 @@ void Game::set_rule_dimensions(int row_rule_width, int col_rule_height) {
 void Game::get_puzzle_coords(int* x, int* y) const {
   *x = m_x;
   *y = m_y;
+}
+
+void Game::age_cells(int max_age) {
+  for (int x = 0; x < m_puzzle->width(); ++x)
+    for (int y = 0; y < m_puzzle->height(); ++y)
+      m_puzzle->age_cell(x, y, max_age);
 }
 
 void Game::screen_coords_to_cell_coords(int screen_x, int screen_y,
