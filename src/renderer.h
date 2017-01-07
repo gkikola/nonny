@@ -9,12 +9,13 @@
 
 class Renderer {
  public:
-  explicit Renderer(SDL_Window* window, const std::string& data_dir);
+  explicit Renderer(SDL_Window* window, Game* game,
+                    const std::string& data_dir);
   ~Renderer();
 
-  void render_game(Game& game);
+  void render_game();
 
-  void update(Game& game, int elapsed_time);
+  void update(int elapsed_time);
  private:
   void SDL_error(const std::string& function);
 
@@ -22,18 +23,19 @@ class Renderer {
   SDL_Texture* rule_entry_to_texture(const RuleEntry& e,
                                      int* w = nullptr, int* h = nullptr);
 
-  void render_puzzle(Game& game);
-  void shade_cells(Game& game);
-  void draw_cells(Game& game);
-  void draw_rules(Game& game);
+  void render_puzzle();
+  void shade_cells();
+  void draw_cells();
+  void draw_rules();
 
-  int cell_grid_width(const Game& game);
-  int cell_grid_height(const Game& game);
-  int row_rule_width(Game& game, int row, int buffer);
-  int col_rule_height(Game& game, int col, int buffer);
+  int cell_grid_width();
+  int cell_grid_height();
+  int row_rule_width(int row, int buffer);
+  int col_rule_height(int col, int buffer);
 
   SDL_Window* m_window;
   SDL_Renderer* m_renderer;
+  Game* m_game;
   
   SDL_Texture* m_cell_sheet;
   int m_cell_sheet_frame_size;

@@ -15,8 +15,8 @@ const std::string font_filename = "FreeSans.ttf";
 
 const int cell_age_time = 50;
 
-Renderer::Renderer(SDL_Window* window, const std::string& data_dir)
-  : m_window{window}, m_data_dir{data_dir} {
+Renderer::Renderer(SDL_Window* window, Game* game, const std::string& data_dir)
+  : m_window{window}, m_game{game}, m_data_dir{data_dir} {
   m_renderer = SDL_CreateRenderer(m_window, -1, SDL_RENDERER_ACCELERATED
                                   | SDL_RENDERER_PRESENTVSYNC);
   if (!m_renderer) SDL_error("SDL_CreateRenderer");
@@ -52,7 +52,7 @@ Renderer::Renderer(SDL_Window* window, const std::string& data_dir)
   std::string font_path = m_data_dir + font_filename;
   m_menu_font = TTF_OpenFont(font_path.c_str(), 30);
   m_info_font = TTF_OpenFont(font_path.c_str(), 12);
-  m_rule_font = nullptr;
+  m_rule_font = nullptr; //will be initialized when rendering starts
 }
 
 Renderer::~Renderer() {
@@ -102,31 +102,29 @@ SDL_Texture* Renderer::rule_entry_to_texture(const RuleEntry& e,
   return tex;
 }
 
-void Renderer::render_game(Game& game) {
+void Renderer::render_game() {
   SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
   SDL_RenderClear(m_renderer);
 
-  if (game.state() == GameState::puzzle)
-    render_puzzle(game);
+  if (m_game->state() == GameState::puzzle)
+    render_puzzle();
     
-  //drawing code goes here
-  
   SDL_RenderPresent(m_renderer);
 }
 
-void Renderer::update(Game& game, int elapsed_time) {
+void Renderer::update(int elapsed_time) {
   //handle cell animation
   m_time_until_cell_aging -= elapsed_time;
 
   while (m_time_until_cell_aging < 0) {
-    game.age_cells(m_num_animation_frames - 1);
+    m_game->age_cells(m_num_animation_frames - 1);
     m_time_until_cell_aging += cell_age_time;
   }
 }
 
-void Renderer::render_puzzle(Game& game) {
-  if (!m_rule_font || game.has_size_changed()) {
-    int font_size = game.cell_size() * 3 / 5;
+void Renderer::render_puzzle() {
+  if (!m_rule_font || m_game->has_size_changed()) {
+    int font_size = m_game->cell_size() * 3 / 5;
 
     if (font_size <= 0)
       font_size = 1;
@@ -134,40 +132,40 @@ void Renderer::render_puzzle(Game& game) {
     reload_font(font_size);
   }
 
-  draw_cells(game);
-  draw_rules(game);
+  draw_cells();
+  draw_rules();
 }
 
-void Renderer::draw_cells(Game& game) {
-  shade_cells(game);
+void Renderer::draw_cells() {
+  shade_cells();
 
   int start_x, start_y;
-  game.get_puzzle_coords(&start_x, &start_y);
-  int cell_size = game.cell_size();
+  m_game->get_puzzle_coords(&start_x, &start_y);
+  int cell_size = m_game->cell_size();
 
-  for (int y = 0; y < game.puzzle().height(); ++y) {
-    for (int x = 0; x < game.puzzle().width(); ++x) {
+  for (int y = 0; y < m_game->puzzle().height(); ++y) {
+    for (int x = 0; x < m_game->puzzle().width(); ++x) {
       int sheet_row, sheet_col;
 
       bool draw_cell = false;
       //determine animation frames
-      if (game.puzzle().cell(x, y) == CellState::marked) {
+      if (m_game->puzzle().cell(x, y) == CellState::marked) {
         sheet_row = 0;
-        sheet_col = game.puzzle().cell_age(x, y);
+        sheet_col = m_game->puzzle().cell_age(x, y);
         draw_cell = true;
-      } else if (game.puzzle().cell(x, y) == CellState::xedout) {
+      } else if (m_game->puzzle().cell(x, y) == CellState::xedout) {
         sheet_row = 1;
-        sheet_col = game.puzzle().cell_age(x, y);
+        sheet_col = m_game->puzzle().cell_age(x, y);
         draw_cell = true;
-      } else if (game.puzzle().cell(x, y) == CellState::blank) {
+      } else if (m_game->puzzle().cell(x, y) == CellState::blank) {
         //reverse the animation for cells being cleared
-        if (game.puzzle().prev_cell_state(x, y) == CellState::marked)
+        if (m_game->puzzle().prev_cell_state(x, y) == CellState::marked)
           sheet_row = 0;
-        else if (game.puzzle().prev_cell_state(x, y) == CellState::xedout)
+        else if (m_game->puzzle().prev_cell_state(x, y) == CellState::xedout)
           sheet_row = 1;
 
-        if (game.puzzle().prev_cell_state(x, y) != CellState::blank) {
-          sheet_col = m_num_animation_frames - game.puzzle().cell_age(x, y) - 1;
+        if (m_game->puzzle().prev_cell_state(x, y) != CellState::blank) {
+          sheet_col = m_num_animation_frames - m_game->puzzle().cell_age(x, y) - 1;
           draw_cell = true;
         }
       }
@@ -177,8 +175,8 @@ void Renderer::draw_cells(Game& game) {
       src.y = sheet_row * m_cell_sheet_frame_size;
       src.w = src.h = m_cell_sheet_frame_size;
 
-      game.cell_coords_to_screen_coords(x, y, &dest.x, &dest.y);
-      dest.w = dest.h = game.cell_size();
+      m_game->cell_coords_to_screen_coords(x, y, &dest.x, &dest.y);
+      dest.w = dest.h = m_game->cell_size();
       
       if (draw_cell)
         SDL_RenderCopy(m_renderer, m_cell_sheet, &src, &dest);
@@ -188,43 +186,43 @@ void Renderer::draw_cells(Game& game) {
   //draw cell borders
   SDL_SetRenderDrawColor(m_renderer, 128, 128, 128, 255);
   
-  for(int x = 0; x <= game.puzzle().width(); ++x) {
+  for(int x = 0; x <= m_game->puzzle().width(); ++x) {
     int x_coord = start_x + x * (cell_size + 1);
     SDL_RenderDrawLine(m_renderer, x_coord, start_y, x_coord,
-                       start_y + game.puzzle().height() * (cell_size + 1));
+                       start_y + m_game->puzzle().height() * (cell_size + 1));
 
     if (x % 5 == 0) { //draw guide lines
       SDL_RenderDrawLine(m_renderer, x_coord - 1, start_y, x_coord - 1,
-                         start_y + game.puzzle().height() * (cell_size + 1));
+                         start_y + m_game->puzzle().height() * (cell_size + 1));
       SDL_RenderDrawLine(m_renderer, x_coord + 1, start_y, x_coord + 1,
-                         start_y + game.puzzle().height() * (cell_size + 1));
+                         start_y + m_game->puzzle().height() * (cell_size + 1));
     }
   }
 
-  for(int y = 0; y <= game.puzzle().height(); ++y) {
+  for(int y = 0; y <= m_game->puzzle().height(); ++y) {
     int y_coord = start_y + y * (cell_size + 1);
     SDL_RenderDrawLine(m_renderer, start_x, y_coord,
-                       start_x + game.puzzle().width() * (cell_size + 1),
+                       start_x + m_game->puzzle().width() * (cell_size + 1),
                        y_coord);
 
     if (y % 5 == 0) {
       SDL_RenderDrawLine(m_renderer, start_x, y_coord - 1,
-                         start_x + game.puzzle().width() * (cell_size + 1),
+                         start_x + m_game->puzzle().width() * (cell_size + 1),
                          y_coord - 1);
       SDL_RenderDrawLine(m_renderer, start_x, y_coord + 1,
-                         start_x + game.puzzle().width() * (cell_size + 1),
+                         start_x + m_game->puzzle().width() * (cell_size + 1),
                          y_coord + 1);
     }
   }
 }
 
-void Renderer::shade_cells(Game& game) {
+void Renderer::shade_cells() {
   int start_x, start_y;
-  game.get_puzzle_coords(&start_x, &start_y);
-  int cell_size = game.cell_size();
+  m_game->get_puzzle_coords(&start_x, &start_y);
+  int cell_size = m_game->cell_size();
   
-  for (int y = 0; y < game.puzzle().height(); ++y) {
-    for (int x = 0; x < game.puzzle().width(); ++x) {
+  for (int y = 0; y < m_game->puzzle().height(); ++y) {
+    for (int x = 0; x < m_game->puzzle().width(); ++x) {
       
       SDL_Rect rect;
       rect.x = 1 + start_x + x * (cell_size + 1);
@@ -243,18 +241,18 @@ void Renderer::shade_cells(Game& game) {
   }
 }
 
-void Renderer::draw_rules(Game& game) {
-  int cell_size = game.cell_size();
+void Renderer::draw_rules() {
+  int cell_size = m_game->cell_size();
   const int buffer = cell_size / 3;
   int col_rule_bottom = 0;
 
   m_tallest_rule = m_widest_rule = 0;
 
-  for (int i = 0; i < game.puzzle().width(); ++i) {
+  for (int i = 0; i < m_game->puzzle().width(); ++i) {
     int col_left_edge, col_top_edge;
-    game.cell_coords_to_screen_coords(i, 0, &col_left_edge, &col_top_edge);
+    m_game->cell_coords_to_screen_coords(i, 0, &col_left_edge, &col_top_edge);
 
-    int col_height = col_rule_height(game, i, buffer);
+    int col_height = col_rule_height(i, buffer);
     int x = col_left_edge;
     int y = col_top_edge - col_height;
 
@@ -268,7 +266,7 @@ void Renderer::draw_rules(Game& game) {
     if (col_rule_bottom < y + col_height)
       col_rule_bottom = y + col_height;
 
-    for (auto entry : game.puzzle().get_col_rule(i)) {
+    for (auto entry : m_game->puzzle().get_col_rule(i)) {
       int w, h;
       SDL_Texture* tex = rule_entry_to_texture(entry, &w, &h);
       
@@ -285,11 +283,11 @@ void Renderer::draw_rules(Game& game) {
     }
   }
 
-  for (int j = 0; j < game.puzzle().height(); ++j) {
+  for (int j = 0; j < m_game->puzzle().height(); ++j) {
     int row_left_edge, row_top_edge;
-    game.cell_coords_to_screen_coords(0, j, &row_left_edge, &row_top_edge);
+    m_game->cell_coords_to_screen_coords(0, j, &row_left_edge, &row_top_edge);
 
-    int row_width = row_rule_width(game, j, buffer);
+    int row_width = row_rule_width(j, buffer);
     int x = row_left_edge - row_width;
     int y = row_top_edge;
 
@@ -299,7 +297,7 @@ void Renderer::draw_rules(Game& game) {
     if (x < 0 && y >= col_rule_bottom)
       x = 0;
 
-    for (auto entry : game.puzzle().get_row_rule(j)) {
+    for (auto entry : m_game->puzzle().get_row_rule(j)) {
       int w, h;
       SDL_Texture* tex = rule_entry_to_texture(entry, &w, &h);
 
@@ -317,18 +315,18 @@ void Renderer::draw_rules(Game& game) {
   }
 }
 
-int Renderer::cell_grid_width(const Game& game) {
-  return game.puzzle().width() * (game.cell_size() + 1) + 1;
+int Renderer::cell_grid_width() {
+  return m_game->puzzle().width() * (m_game->cell_size() + 1) + 1;
 }
 
-int Renderer::cell_grid_height(const Game& game) {
-  return game.puzzle().height() * (game.cell_size() + 1) + 1;
+int Renderer::cell_grid_height() {
+  return m_game->puzzle().height() * (m_game->cell_size() + 1) + 1;
 }
 
-int Renderer::row_rule_width(Game& game, int row, int buffer) {
+int Renderer::row_rule_width(int row, int buffer) {
   int width = 0;
 
-  for (auto entry : game.puzzle().get_row_rule(row)) {
+  for (auto entry : m_game->puzzle().get_row_rule(row)) {
     std::string entry_str = std::to_string(entry.value);
     int entry_width, entry_height;
     TTF_SizeText(m_rule_font, entry_str.c_str(), &entry_width, &entry_height);
@@ -339,10 +337,10 @@ int Renderer::row_rule_width(Game& game, int row, int buffer) {
   return width;
 }
 
-int Renderer::col_rule_height(Game& game, int col, int buffer) {
+int Renderer::col_rule_height(int col, int buffer) {
   int height = 0;
 
-  for (auto entry : game.puzzle().get_col_rule(col)) {
+  for (auto entry : m_game->puzzle().get_col_rule(col)) {
     std::string entry_str = std::to_string(entry.value);
     int entry_width, entry_height;
     TTF_SizeText(m_rule_font, entry_str.c_str(), &entry_width, &entry_height);

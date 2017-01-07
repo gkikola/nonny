@@ -37,7 +37,7 @@ Application::Application() : m_game{nullptr}, m_window{nullptr},
   m_game = new Game();
   m_game->load_puzzle(m_data_dir + "test.non");
 
-  m_renderer = new Renderer(m_window, m_data_dir);
+  m_renderer = new Renderer(m_window, m_game, m_data_dir);
 }
 
 Application::~Application() {  
@@ -45,8 +45,8 @@ Application::~Application() {
 }
 
 void Application::cleanup() {
-  if (m_game) delete m_game;
   if (m_renderer) delete m_renderer;
+  if (m_game) delete m_game;
   if (m_window) SDL_DestroyWindow(m_window);
   if (TTF_WasInit()) TTF_Quit();
   IMG_Quit();
@@ -86,10 +86,10 @@ void Application::run() {
 
     //handle game frame updates
     m_game->update(elapsed_time);
-    m_renderer->update(*m_game, elapsed_time);
+    m_renderer->update(elapsed_time);
     
     //handle rendering
-    m_renderer->render_game(*m_game);
+    m_renderer->render_game();
 
     //give control back to the OS
     SDL_Delay(1);
