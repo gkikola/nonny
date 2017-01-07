@@ -170,7 +170,7 @@ void Renderer::draw_cells() {
         sheet_row = 0;
         sheet_col = m_game->puzzle().cell_age(x, y);
         draw_cell = true;
-      } else if (m_game->puzzle().cell(x, y) == CellState::xedout) {
+      } else if (m_game->puzzle().cell(x, y) == CellState::exedout) {
         sheet_row = 1;
         sheet_col = m_game->puzzle().cell_age(x, y);
         draw_cell = true;
@@ -178,11 +178,12 @@ void Renderer::draw_cells() {
         //reverse the animation for cells being cleared
         if (m_game->puzzle().prev_cell_state(x, y) == CellState::marked)
           sheet_row = 0;
-        else if (m_game->puzzle().prev_cell_state(x, y) == CellState::xedout)
+        else if (m_game->puzzle().prev_cell_state(x, y) == CellState::exedout)
           sheet_row = 1;
 
         if (m_game->puzzle().prev_cell_state(x, y) != CellState::blank) {
-          sheet_col = m_num_animation_frames - m_game->puzzle().cell_age(x, y) - 1;
+          sheet_col = (m_num_animation_frames
+                       - m_game->puzzle().cell_age(x, y) - 1);
           draw_cell = true;
         }
       }

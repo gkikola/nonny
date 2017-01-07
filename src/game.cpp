@@ -10,8 +10,9 @@ const int default_info_pane_width = 256;
 const double default_screen_coverage = 0.80;
 
 Game::Game()
-  : m_puzzle{nullptr}, m_x{0}, m_y{0}, m_cell_size{32}, m_recalc_size{true},
-    m_row_rule_width{0}, m_col_rule_height{0},
+  : m_puzzle{nullptr}, m_grid_x{0}, m_grid_y{0}, m_cell_size{32},
+    m_selected{false}, m_selection_x{0}, m_selection_y{0},
+    m_recalc_size{true}, m_row_rule_width{0}, m_col_rule_height{0},
     m_info_pane_width{default_info_pane_width}, m_info_pane_visible{true},
     m_screen_width{0}, m_screen_height{0} {
   m_state = GameState::puzzle;
@@ -40,8 +41,8 @@ void Game::set_rule_dimensions(int row_rule_width, int col_rule_height) {
 
 void Game::update_screen_size(int width, int height) {
   //recenter the puzzle
-  m_x += (width - m_screen_width) / 2;
-  m_y += (height - m_screen_height) / 2;
+  m_grid_x += (width - m_screen_width) / 2;
+  m_grid_y += (height - m_screen_height) / 2;
 
   //update the dimensions
   m_screen_width = width;
@@ -49,8 +50,13 @@ void Game::update_screen_size(int width, int height) {
 }
 
 void Game::get_puzzle_coords(int* x, int* y) const {
-  *x = m_x;
-  *y = m_y;
+  *x = m_grid_x;
+  *y = m_grid_y;
+}
+
+void Game::move_puzzle(int relx, int rely) {
+  m_grid_x += relx;
+  m_grid_y += rely;
 }
 
 void Game::age_cells(int max_age) {
@@ -61,14 +67,14 @@ void Game::age_cells(int max_age) {
 
 void Game::screen_coords_to_cell_coords(int screen_x, int screen_y,
                                         int* x, int* y) {
-  *x = (screen_x - m_x - 1) / (m_cell_size + 1);
-  *y = (screen_y - m_y - 1) / (m_cell_size + 1);
+  *x = (screen_x - m_grid_x - 1) / (m_cell_size + 1);
+  *y = (screen_y - m_grid_y - 1) / (m_cell_size + 1);
 }
 
 void Game::cell_coords_to_screen_coords(int x, int y,
                                         int* screen_x, int* screen_y) {
-  *screen_x = m_x + 1 + x * (m_cell_size + 1);
-  *screen_y = m_y + 1 + y * (m_cell_size + 1);
+  *screen_x = m_grid_x + 1 + x * (m_cell_size + 1);
+  *screen_y = m_grid_y + 1 + y * (m_cell_size + 1);
 }
 
 int Game::cell_grid_width() {
@@ -113,7 +119,26 @@ void Game::default_zoom() {
 
   m_recalc_size = true;
 
-  m_x = m_info_pane_width
+  m_grid_x = m_info_pane_width
     + (m_screen_width - m_info_pane_width) / 2 - cell_grid_width() / 2;
-  m_y = m_screen_height / 2 - cell_grid_height() / 2;
+  m_grid_y = m_screen_height / 2 - cell_grid_height() / 2;
+}
+
+void Game::select_cell(int x, int y) {
+  m_selection_x = x;
+  m_selection_y = y;
+  m_selected = true;
+}
+
+void Game::get_selected_cell(int* x, int* y) const {
+  if (x) *x = m_selection_x;
+  if (y) *y = m_selection_y;
+}
+
+void Game::clear_selection() {
+  m_selected = false;
+}
+
+void Game::set_cell(int x, int y, CellState state) {
+  m_puzzle->set_cell(x, y, state);
 }

@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-enum class CellState { blank, marked, xedout };
+enum class CellState { blank, marked, exedout };
 
 struct Cell {
   CellState state;

@@ -6,6 +6,7 @@
 
 class Game;
 class Renderer;
+class InputHandler;
 
 class Application {
  public:
@@ -21,6 +22,7 @@ class Application {
 
   Game* m_game;
   Renderer* m_renderer;
+  InputHandler* m_input_handler;
 
   std::string m_data_dir;
   std::string m_save_dir;

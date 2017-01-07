@@ -5,6 +5,7 @@
 #include <SDL2/SDL_ttf.h>
 
 #include "game.h"
+#include "input_handler.h"
 #include "renderer.h"
 
 #include "application.h"
@@ -17,7 +18,7 @@ void get_paths(std::string* data_dir, std::string* save_dir);
 char get_filesystem_separator();
 
 Application::Application() : m_game{nullptr}, m_window{nullptr},
-                             m_renderer{nullptr} {
+                             m_renderer{nullptr}, m_input_handler{nullptr} {
   if (SDL_Init(SDL_INIT_VIDEO) != 0) SDL_error("SDL_Init");
 
   if (TTF_Init() != 0) {
@@ -40,6 +41,7 @@ Application::Application() : m_game{nullptr}, m_window{nullptr},
   m_game->load_puzzle(m_data_dir + "test.non");
 
   m_renderer = new Renderer(m_window, m_game, m_data_dir);
+  m_input_handler = new InputHandler(m_window, m_game);
 }
 
 Application::~Application() {  
@@ -82,6 +84,24 @@ void Application::run() {
           m_game->update_screen_size(event.window.data1, event.window.data2);
         }
         
+        break;
+      case SDL_MOUSEBUTTONDOWN:
+        m_input_handler->mouse_press(event.button.button, true);
+        break;
+      case SDL_MOUSEBUTTONUP:
+        m_input_handler->mouse_press(event.button.button, false);
+        break;
+      case SDL_MOUSEMOTION:
+        m_input_handler->mouse_move(event.motion.x, event.motion.y);
+        break;
+      case SDL_MOUSEWHEEL:
+        m_input_handler->mouse_wheel(event.wheel.y, event.wheel.direction);
+        break;
+      case SDL_KEYDOWN:
+        m_input_handler->key_press(event.key.keysym.sym, true);
+        break;
+      case SDL_KEYUP:
+        m_input_handler->key_press(event.key.keysym.sym, false);
         break;
       case SDL_QUIT:
         exit = true;
