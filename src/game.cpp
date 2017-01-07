@@ -5,6 +5,7 @@
 #include "game.h"
 
 const int cell_size_step = 8;
+const int max_cell_size = 256;
 const int cell_age_rate = 50;
 const int default_info_pane_width = 256;
 const double default_screen_coverage = 0.80;
@@ -141,4 +142,23 @@ void Game::clear_selection() {
 
 void Game::set_cell(int x, int y, CellState state) {
   m_puzzle->set_cell(x, y, state);
+}
+
+void Game::zoom_in(int x, int y) {
+  zoom(cell_size_step, x, y);
+}
+
+void Game::zoom_out(int x, int y) {
+  zoom(-cell_size_step, x, y);
+}
+
+void Game::zoom(int amount, int x, int y) {
+  if ((amount < 0 && m_cell_size > cell_size_step)
+      || (amount > 0 && m_cell_size < max_cell_size)) {
+    m_grid_x -= amount * (x - m_grid_x) / (m_cell_size + 1);
+    m_grid_y -= amount * (y - m_grid_y) / (m_cell_size + 1);
+
+    m_cell_size += amount;
+    m_recalc_size = true;
+  }
 }

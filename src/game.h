@@ -39,12 +39,16 @@ class Game {
   void select_cell(int x, int y);
   void clear_selection();
 
+  void zoom_in(int x, int y);
+  void zoom_out(int x, int y);
+
   void get_selected_cell(int* x, int* y) const;
   bool is_cell_selected() const { return m_selected; }
   
   const Puzzle& puzzle() const { return *m_puzzle; }
  private:
   void default_zoom();
+  void zoom(int amount, int x, int y);
 
   Puzzle* m_puzzle;
   

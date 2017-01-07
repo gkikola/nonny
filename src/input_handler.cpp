@@ -219,6 +219,16 @@ void InputHandler::mouse_press(Uint8 button, bool down) {
 }
 
 void InputHandler::mouse_wheel(int y, Uint32 orientation) {
+  SDL_GetMouseState(&m_mouse_x, &m_mouse_y);
+
+  if (orientation = SDL_MOUSEWHEEL_FLIPPED) {
+    y = -y;
+  }
+  
+  if (y < 0)
+    m_game->zoom_in(m_mouse_x, m_mouse_y);
+  else if (y > 0)
+    m_game->zoom_out(m_mouse_x, m_mouse_y);
 }
 
 void InputHandler::key_press(SDL_Keycode key, bool down) {
