@@ -271,7 +271,7 @@ void Renderer::draw_rules() {
 
     int col_height = col_rule_height(i, buffer);
     int x = col_left_edge;
-    int y = col_top_edge - col_height;
+    int y = col_top_edge - col_height + buffer;
 
     if (col_height > m_tallest_rule)
       m_tallest_rule = col_height;
@@ -305,7 +305,7 @@ void Renderer::draw_rules() {
     m_game->cell_coords_to_screen_coords(0, j, &row_left_edge, &row_top_edge);
 
     int row_width = row_rule_width(j, buffer);
-    int x = row_left_edge - row_width;
+    int x = row_left_edge - row_width + buffer;
     int y = row_top_edge;
 
     if (row_width > m_widest_rule)
@@ -330,6 +330,8 @@ void Renderer::draw_rules() {
       x += w + buffer;
     }
   }
+
+  m_game->set_rule_dimensions(m_widest_rule, m_tallest_rule);
 }
 
 int Renderer::cell_grid_width() {
@@ -341,7 +343,7 @@ int Renderer::cell_grid_height() {
 }
 
 int Renderer::row_rule_width(int row, int buffer) {
-  int width = 0;
+  int width = buffer;
 
   for (auto entry : m_game->puzzle().get_row_rule(row)) {
     std::string entry_str = std::to_string(entry.value);
@@ -355,7 +357,7 @@ int Renderer::row_rule_width(int row, int buffer) {
 }
 
 int Renderer::col_rule_height(int col, int buffer) {
-  int height = 0;
+  int height = buffer;
 
   for (auto entry : m_game->puzzle().get_col_rule(col)) {
     std::string entry_str = std::to_string(entry.value);

@@ -31,9 +31,17 @@ void Game::load_puzzle(const std::string& filename) {
 }
 
 void Game::set_rule_dimensions(int row_rule_width, int col_rule_height) {
+  //put puzzle grid back to default spot
+  m_x -= m_row_rule_width;
+  m_y -= m_col_rule_height;
+  
   m_recalc_size = false;
   m_row_rule_width = row_rule_width;
   m_col_rule_height = col_rule_height;
+
+  //reposition puzzle grid
+  m_x += m_row_rule_width;
+  m_y += m_col_rule_height;
 }
 
 void Game::get_puzzle_coords(int* x, int* y) const {
