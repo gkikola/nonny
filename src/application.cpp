@@ -75,6 +75,14 @@ void Application::run() {
     while (SDL_PollEvent(&event)) {
       //process SDL event
       switch (event.type) {
+      case SDL_WINDOWEVENT:
+
+        switch (event.window.event) {
+        case SDL_WINDOWEVENT_RESIZED:
+          m_game->update_screen_size(event.window.data1, event.window.data2);
+        }
+        
+        break;
       case SDL_QUIT:
         exit = true;
         break;

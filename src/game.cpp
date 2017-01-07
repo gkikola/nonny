@@ -39,6 +39,11 @@ void Game::set_rule_dimensions(int row_rule_width, int col_rule_height) {
 }
 
 void Game::update_screen_size(int width, int height) {
+  //recenter the puzzle
+  m_x += (width - m_screen_width) / 2;
+  m_y += (height - m_screen_height) / 2;
+
+  //update the dimensions
   m_screen_width = width;
   m_screen_height = height;
 }
