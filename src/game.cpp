@@ -1,5 +1,4 @@
-#include <iostream>
-
+#include "info_pane.h"
 #include "puzzle.h"
 
 #include "game.h"
@@ -14,12 +13,16 @@ Game::Game()
   : m_puzzle{nullptr}, m_grid_x{0}, m_grid_y{0}, m_cell_size{32},
     m_selected{false}, m_selection_x{0}, m_selection_y{0},
     m_recalc_size{true}, m_row_rule_width{0}, m_col_rule_height{0},
-    m_info_pane_width{default_info_pane_width}, m_info_pane_visible{true},
+    m_info_pane{nullptr},
     m_screen_width{0}, m_screen_height{0} {
   m_state = GameState::puzzle;
+
+  m_info_pane = new InfoPane(this);
+  m_info_pane->set_width(256);
 }
 
 Game::~Game() {
+  if (m_info_pane) delete m_info_pane;
   if (m_puzzle) delete m_puzzle;
 }
 
@@ -64,8 +67,8 @@ void Game::make_selected_cell_visible() {
   int x, y;
   cell_coords_to_screen_coords(m_selection_x, m_selection_y, &x, &y);
 
-  if (x < m_info_pane_width)
-    m_grid_x -= x - m_info_pane_width;
+  if (x < m_info_pane->width())
+    m_grid_x -= x - m_info_pane->width();
   else if (x + m_cell_size > m_screen_width)
     m_grid_x -= x + m_cell_size - m_screen_width;
   if (y < 0)
@@ -120,7 +123,7 @@ void Game::default_zoom() {
   int width = m_puzzle->width() + max_row_rule_width;
   int height = m_puzzle->height() + max_col_rule_height;
 
-  int max_cell_width = ((m_screen_width - m_info_pane_width - width)
+  int max_cell_width = ((m_screen_width - m_info_pane->width() - width)
                         * default_screen_coverage / width);
   int max_cell_height = ((m_screen_height - height)
                          * default_screen_coverage / height);
@@ -134,8 +137,8 @@ void Game::default_zoom() {
 
   m_recalc_size = true;
 
-  m_grid_x = m_info_pane_width
-    + (m_screen_width - m_info_pane_width) / 2 - cell_grid_width() / 2;
+  m_grid_x = m_info_pane->width()
+    + (m_screen_width - m_info_pane->width()) / 2 - cell_grid_width() / 2;
   m_grid_y = m_screen_height / 2 - cell_grid_height() / 2;
 }
 

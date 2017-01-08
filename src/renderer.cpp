@@ -165,7 +165,7 @@ void Renderer::render_info_pane() {
   SDL_Rect info_pane;
   info_pane.x = 0;
   info_pane.y = 0;
-  info_pane.w = m_game->info_pane_width();
+  info_pane.w = m_game->info_pane().width();
   info_pane.h = height;
 
   SDL_SetRenderDrawColor(m_renderer, 123, 175, 212, 255);
@@ -331,9 +331,9 @@ void Renderer::draw_rules() {
     if (row_width > m_widest_rule)
       m_widest_rule = row_width;
 
-    if (x < m_game->info_pane_width() + buffer
+    if (x < m_game->info_pane().width() + buffer
         && y >= col_rule_bottom - buffer)
-      x = m_game->info_pane_width() + buffer;
+      x = m_game->info_pane().width() + buffer;
 
     for (auto entry : m_game->puzzle().get_row_rule(j)) {
       int w, h;
