@@ -18,7 +18,7 @@ Game::Game()
   m_state = GameState::puzzle;
 
   m_info_pane = new InfoPane(this);
-  m_info_pane->set_width(256);
+  m_info_pane->set_width(default_info_pane_width);
 }
 
 Game::~Game() {
@@ -27,6 +27,7 @@ Game::~Game() {
 }
 
 void Game::update(int elapsed_time) {
+  m_info_pane->update();
 }
 
 void Game::load_puzzle(const std::string& filename) {
@@ -35,6 +36,8 @@ void Game::load_puzzle(const std::string& filename) {
   m_puzzle = new Puzzle(filename);
 
   default_zoom();
+
+  m_info_pane->position_controls();
 }
 
 void Game::set_rule_dimensions(int row_rule_width, int col_rule_height) {

@@ -3,13 +3,17 @@
 
 #include "control.h"
 
+class Renderer;
+
 class Preview : public Control {
  public:
-  Preview(Game* game);
+  explicit Preview(Game* game);
   
-  void resize(int width, int height);
-
   int pixel_size() const { return m_pixel_size; }
+  void update_pixel_size();
+
+  void update() override;
+  void draw(Renderer* renderer) const override;
  private:
   int m_pixel_size;
 };

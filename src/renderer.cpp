@@ -170,6 +170,10 @@ void Renderer::render_info_pane() {
 
   SDL_SetRenderDrawColor(m_renderer, 123, 175, 212, 255);
   SDL_RenderFillRect(m_renderer, &info_pane);
+
+  for (Control* ctrl : m_game->info_pane()) {
+    ctrl->draw(this);
+  }
 }
 
 void Renderer::draw_cells() {
@@ -390,6 +394,15 @@ void Renderer::draw_cell_selection() {
     draw_horiz_line(x1, x2, y1 + 1, 1);
     draw_horiz_line(x1, x2, y2 - 1, 1);
   }
+}
+
+void Renderer::render_control(const Preview* preview) {
+  SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
+
+  SDL_Rect rect;
+  preview->get_position(&rect.x, &rect.y);
+  preview->get_size(&rect.w, &rect.h);
+  SDL_RenderFillRect(m_renderer, &rect);
 }
 
 int Renderer::row_rule_width(int row, int buffer) {

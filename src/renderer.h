@@ -5,16 +5,20 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
-#include "game.h"
+#include "preview.h"
+#include "puzzle.h"
+
+class Control;
+class Game;
 
 class Renderer {
  public:
-  explicit Renderer(SDL_Window* window, Game* game,
-                    const std::string& data_dir);
+  Renderer(SDL_Window* window, Game* game, const std::string& data_dir);
   ~Renderer();
 
   void render_game();
-
+  void render_control(const Preview* preview);
+  
   void update(int elapsed_time);
  private:
   void SDL_error(const std::string& function);

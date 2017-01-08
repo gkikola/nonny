@@ -1,16 +1,25 @@
 #include "game.h"
+#include "renderer.h"
 
 #include "preview.h"
 
 Preview::Preview(Game* game) : Control{game}, m_pixel_size{0} {
 }
 
-void Preview::resize(int width, int height) {
-  int pixel_width = width / m_game->puzzle().width();
-  int pixel_height = height / m_game->puzzle().height();
-
+void Preview::update_pixel_size() {
+  int width, height;
+  get_size(&width, &height);
+  
+  int pixel_width = 1, pixel_height = 1;
+  pixel_width = width / m_game->puzzle().width();
+  pixel_height = height / m_game->puzzle().height();
+  
   m_pixel_size = (pixel_width < pixel_height) ? pixel_width : pixel_height;
+}
 
-  Control::resize(m_game->puzzle().width() * m_pixel_size,
-                  m_game->puzzle().height() * m_pixel_size);
+void Preview::update() {
+}
+
+void Preview::draw(Renderer* renderer) const {
+  renderer->render_control(this);
 }
