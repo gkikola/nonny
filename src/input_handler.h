@@ -25,6 +25,8 @@ class InputHandler {
 
   void set_key_mapping();
   void associate_key(KeyAction action, SDL_Keycode key);
+
+  void move_selection(bool horizontal, int amount);
   
   Game* m_game;
   SDL_Window* m_window;

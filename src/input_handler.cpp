@@ -232,6 +232,57 @@ void InputHandler::mouse_wheel(int y, Uint32 orientation) {
 }
 
 void InputHandler::key_press(SDL_Keycode key, bool down) {
+  //search for key in map
+  auto iter = m_key_mapping.find(key);
+
+  if (iter != m_key_mapping.end()) {
+    KeyAction action = iter->second;
+    switch (action) {
+    case KeyAction::move_left:
+      move_selection(true, -1);
+      break;
+    case KeyAction::move_right:
+      move_selection(true, 1);
+      break;
+    case KeyAction::move_up:
+      move_selection(false, -1);
+      break;
+    case KeyAction::move_down:
+      move_selection(false, 1);
+      break;
+    }
+  }
+}
+
+void InputHandler::move_selection(bool horizontal, int amount) {
+  int sel_x, sel_y;
+  m_game->get_selected_cell(&sel_x, &sel_y);
+
+  int* change = nullptr;
+  int max = 0;
+
+  if (horizontal) {
+    change = &sel_x;
+    max = m_game->puzzle().width() - 1;
+  } else {
+    change = &sel_y;
+    max = m_game->puzzle().height() - 1;
+  }
+
+  //do bounds checking on appropriate value
+  if (*change < 0) {
+    if (m_kb_dragging)
+      *change = 0;
+    else
+      *change = max;
+  } else if (*change > max) {
+    if (m_kb_dragging)
+      *change = max;
+    else
+      *change = 0;
+  }
+
+  m_game->select_cell(sel_x, sel_y);
 }
 
 void InputHandler::set_default_controls() {

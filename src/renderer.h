@@ -23,11 +23,15 @@ class Renderer {
   SDL_Texture* rule_entry_to_texture(const RuleEntry& e,
                                      int* w = nullptr, int* h = nullptr);
 
+  void draw_horiz_line(int x1, int x2, int y, int extra_thickness);
+  void draw_vert_line(int x, int y1, int y2, int extra_thickness);
+  
   void render_puzzle();
   void render_info_pane();
   void shade_cells();
   void draw_cells();
   void draw_rules();
+  void draw_cell_selection();
 
   int row_rule_width(int row, int buffer);
   int col_rule_height(int col, int buffer);

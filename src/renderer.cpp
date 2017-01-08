@@ -124,6 +124,24 @@ void Renderer::update(int elapsed_time) {
   }
 }
 
+void Renderer::draw_horiz_line(int x1, int x2, int y, int extra_thickness) {
+  SDL_Rect rect;
+  rect.x = x1;
+  rect.y = y - extra_thickness;
+  rect.w = x2 - x1;
+  rect.h = 1 + 2 * extra_thickness;
+  SDL_RenderFillRect(m_renderer, &rect);
+}
+
+void Renderer::draw_vert_line(int x, int y1, int y2, int extra_thickness) {
+  SDL_Rect rect;
+  rect.x = x - extra_thickness;
+  rect.y = y1;
+  rect.w = 1 + 2 * extra_thickness;
+  rect.h = y2 - y1;
+  SDL_RenderFillRect(m_renderer, &rect);
+}
+
 void Renderer::render_puzzle() {
   if (!m_rule_font || m_game->has_size_changed()) {
     int font_size = m_game->cell_size() * 3 / 5;
@@ -136,6 +154,7 @@ void Renderer::render_puzzle() {
 
   draw_cells();
   draw_rules();
+  draw_cell_selection();
 }
 
 void Renderer::render_info_pane() {
@@ -334,6 +353,43 @@ void Renderer::draw_rules() {
   }
 
   m_game->set_rule_dimensions(m_widest_rule, m_tallest_rule);
+}
+
+void Renderer::draw_cell_selection() {
+  if (m_game->is_cell_selected()) {
+    SDL_SetRenderDrawColor(m_renderer, 255, 0, 0, 255);
+
+    int grid_x, grid_y;
+    m_game->get_puzzle_coords(&grid_x, &grid_y);
+    int grid_width = m_game->cell_grid_width();
+    int grid_height = m_game->cell_grid_height();
+
+    int cell_size = m_game->cell_size();
+
+    int sel_x, sel_y;
+    m_game->get_selected_cell(&sel_x, &sel_y);
+    
+    int x1, x2, y1, y2;
+    x1 = grid_x - m_widest_rule;
+    x2 = grid_x + grid_width;
+    y1 = grid_y + sel_y * (cell_size + 1);
+    y2 = grid_y + (sel_y + 1) * (cell_size + 1);
+
+    draw_horiz_line(x1, x2, y1, 1);
+    draw_horiz_line(x1, x2, y2, 1);
+    draw_vert_line(x1 + 1, y1, y2, 1);
+    draw_vert_line(x2 - 1, y1, y2, 1);
+
+    x1 = grid_x + sel_x * (cell_size + 1);
+    x2 = grid_x + (sel_x + 1) * (cell_size + 1);
+    y1 = grid_y - m_tallest_rule;
+    y2 = grid_y + grid_height;
+
+    draw_vert_line(x1, y1, y2, 1);
+    draw_vert_line(x2, y1, y2, 1);
+    draw_horiz_line(x1, x2, y1 + 1, 1);
+    draw_horiz_line(x1, x2, y2 - 1, 1);
+  }
 }
 
 int Renderer::row_rule_width(int row, int buffer) {
