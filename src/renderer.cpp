@@ -404,8 +404,10 @@ void Renderer::render_control(const Preview* preview) {
   preview->get_size(&rect.w, &rect.h);
   SDL_RenderFillRect(m_renderer, &rect);
 
-  int pixel_size = preview->pixel_size();
   SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 255);
+  SDL_RenderDrawRect(m_renderer, &rect);
+  
+  int pixel_size = preview->pixel_size();
   
   for (int y = 0; y < m_game->puzzle().height(); ++y) {
     for (int x = 0; x < m_game->puzzle().width(); ++x) {
