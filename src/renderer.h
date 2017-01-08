@@ -29,13 +29,15 @@ class Renderer {
 
   void draw_horiz_line(int x1, int x2, int y, int extra_thickness);
   void draw_vert_line(int x, int y1, int y2, int extra_thickness);
-  
+  void draw_text(TTF_Font* font, SDL_Color* color, const std::string& str,
+                 int x, int y);
   void render_puzzle();
   void render_info_pane();
   void shade_cells();
   void draw_cells();
   void draw_rules();
   void draw_cell_selection();
+  void draw_framerate();
 
   int row_rule_width(int row, int buffer);
   int col_rule_height(int col, int buffer);
@@ -57,6 +59,8 @@ class Renderer {
 
   int m_widest_rule;
   int m_tallest_rule;
+
+  double m_framerate;
 };
 
 #endif

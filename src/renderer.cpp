@@ -14,9 +14,10 @@ const std::string cell_sheet_filename = "cell.png";
 const std::string font_filename = "FreeSans.ttf";
 
 const int cell_age_time = 50;
+const bool show_framerate = false;
 
 Renderer::Renderer(SDL_Window* window, Game* game, const std::string& data_dir)
-  : m_window{window}, m_game{game}, m_data_dir{data_dir} {
+  : m_window{window}, m_game{game}, m_data_dir{data_dir}, m_framerate{0} {
   m_renderer = SDL_CreateRenderer(m_window, -1, SDL_RENDERER_ACCELERATED
                                   | SDL_RENDERER_PRESENTVSYNC);
   if (!m_renderer) SDL_error("SDL_CreateRenderer");
@@ -51,7 +52,7 @@ Renderer::Renderer(SDL_Window* window, Game* game, const std::string& data_dir)
   //load fonts
   std::string font_path = m_data_dir + font_filename;
   m_menu_font = TTF_OpenFont(font_path.c_str(), 30);
-  m_info_font = TTF_OpenFont(font_path.c_str(), 12);
+  m_info_font = TTF_OpenFont(font_path.c_str(), 16);
   m_rule_font = nullptr; //will be initialized when rendering starts
 }
 
@@ -122,6 +123,9 @@ void Renderer::update(int elapsed_time) {
     m_game->age_cells(m_num_animation_frames - 1);
     m_time_until_cell_aging += cell_age_time;
   }
+
+  if (show_framerate)
+    m_framerate = 1000.0 / elapsed_time;
 }
 
 void Renderer::draw_horiz_line(int x1, int x2, int y, int extra_thickness) {
@@ -142,6 +146,26 @@ void Renderer::draw_vert_line(int x, int y1, int y2, int extra_thickness) {
   SDL_RenderFillRect(m_renderer, &rect);
 }
 
+void Renderer::draw_text(TTF_Font* font, SDL_Color* color,
+                         const std::string& str, int x, int y) {
+  SDL_Surface* surface = TTF_RenderText_Blended(font, str.c_str(), *color);
+  SDL_Texture* texture = SDL_CreateTextureFromSurface(m_renderer, surface);
+  SDL_FreeSurface(surface);
+
+  int width, height, access;
+  Uint32 fmt;
+  SDL_QueryTexture(texture, &fmt, &access, &width, &height);
+
+  SDL_Rect dest_rect;
+  dest_rect.x = x;
+  dest_rect.y = y;
+  dest_rect.w = width;
+  dest_rect.h = height;
+  
+  SDL_RenderCopy(m_renderer, texture, NULL, &dest_rect);
+  SDL_DestroyTexture(texture);
+}
+
 void Renderer::render_puzzle() {
   if (!m_rule_font || m_game->has_size_changed()) {
     int font_size = m_game->cell_size() * 3 / 5;
@@ -155,6 +179,8 @@ void Renderer::render_puzzle() {
   draw_cells();
   draw_rules();
   draw_cell_selection();
+  if (show_framerate)
+    draw_framerate();
 }
 
 void Renderer::render_info_pane() {
@@ -394,6 +420,15 @@ void Renderer::draw_cell_selection() {
     draw_horiz_line(x1, x2, y1 + 1, 1);
     draw_horiz_line(x1, x2, y2 - 1, 1);
   }
+}
+
+void Renderer::draw_framerate() {
+  std::string str = "Rendering ";
+  str += std::to_string((int)round(m_framerate));
+  str += " frames per second";
+
+  SDL_Color color = { 0, 0, 0, 255 };
+  draw_text(m_info_font, &color, str, m_game->info_pane().width() + 5, 5);
 }
 
 void Renderer::render_control(const Preview* preview) {
