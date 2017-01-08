@@ -13,6 +13,7 @@ class InputHandler {
 
   void set_default_controls();
   
+  void update(int elapsed_time);
   void mouse_move(int x, int y);
   void mouse_press(Uint8 button, bool down = true);
   void mouse_wheel(int y, Uint32 orientation);
@@ -45,6 +46,10 @@ class InputHandler {
   int m_mouse_lock_pos;
   bool m_kb_dragging;
   DragType m_kb_drag_type;
+
+  int m_move_screen_horiz;
+  int m_move_screen_vert;
+  double m_movement_duration;
 };
 
 #endif

@@ -115,6 +115,7 @@ void Application::run() {
     int elapsed_time = time - prev_time;
 
     //handle game frame updates
+    m_input_handler->update(elapsed_time);
     m_game->update(elapsed_time);
     m_renderer->update(elapsed_time);
     

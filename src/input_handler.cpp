@@ -8,11 +8,15 @@
 
 #include "input_handler.h"
 
+const int move_speed = 250;
+
 InputHandler::InputHandler(SDL_Window* window, Game* game)
   : m_game{game}, m_window{window}, m_reverse_mouse{false},
     m_mouse_x{0}, m_mouse_y{0}, m_prev_mouse_x{0}, m_prev_mouse_y{0},
     m_mouse_dragging{false}, m_kb_dragging{false},
-    m_mouse_lock_type{MouseLockType::no_lock} {
+    m_mouse_lock_type{MouseLockType::no_lock},
+    m_move_screen_horiz{0}, m_move_screen_vert{0},
+    m_movement_duration{0.0} {
   set_key_mapping();
 }
 
@@ -22,6 +26,19 @@ void InputHandler::set_key_mapping() {
 
 void InputHandler::associate_key(KeyAction action, SDL_Keycode key) {
   m_key_mapping[key] = action;
+}
+
+void InputHandler::update(int elapsed_time) {
+  //move the screen
+  m_movement_duration += elapsed_time;
+  int move_x = m_move_screen_horiz * (m_movement_duration / 1000);
+  int move_y = m_move_screen_vert * (m_movement_duration / 1000);
+
+  //accumulate time until there's enough for a movement
+  if (move_x != 0 || move_y != 0) {
+    m_movement_duration = 0;
+    m_game->move_puzzle(move_x, move_y);
+  }
 }
 
 void InputHandler::mouse_move(int x, int y) {
@@ -243,6 +260,22 @@ void InputHandler::key_press(SDL_Keycode key, bool down) {
     if (iter != m_key_mapping.end()) {
       KeyAction action = iter->second;
       switch (action) {
+      case KeyAction::screen_left:
+        m_move_screen_horiz = -move_speed;
+        m_movement_duration = 0.0;
+        break;
+      case KeyAction::screen_right:
+        m_move_screen_horiz = move_speed;
+        m_movement_duration = 0.0;
+        break;
+      case KeyAction::screen_up:
+        m_move_screen_vert = -move_speed;
+        m_movement_duration = 0.0;
+        break;
+      case KeyAction::screen_down:
+        m_move_screen_vert = move_speed;
+        m_movement_duration = 0.0;
+        break;
       case KeyAction::move_left:
         move_selection(true, -1);
         break;
@@ -366,6 +399,14 @@ void InputHandler::key_press(SDL_Keycode key, bool down) {
       KeyAction action = iter->second;
 
       switch (action) {
+      case KeyAction::screen_left:
+      case KeyAction::screen_right:
+        m_move_screen_horiz = 0;
+        break;
+      case KeyAction::screen_up:
+      case KeyAction::screen_down:
+        m_move_screen_vert = 0;
+        break;
       case KeyAction::mark:
       case KeyAction::exout:
         m_kb_dragging = false;
