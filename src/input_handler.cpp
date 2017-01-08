@@ -8,7 +8,8 @@
 
 #include "input_handler.h"
 
-const int move_speed = 250;
+const int move_speed = 250; //pixels per second
+const int default_mouse_lock_time = 250; //ms
 
 InputHandler::InputHandler(SDL_Window* window, Game* game)
   : m_game{game}, m_window{window}, m_reverse_mouse{false},
@@ -29,6 +30,9 @@ void InputHandler::associate_key(KeyAction action, SDL_Keycode key) {
 }
 
 void InputHandler::update(int elapsed_time) {
+  int cell_x, cell_y;
+  m_game->screen_coords_to_cell_coords(m_mouse_x, m_mouse_y, &cell_x, &cell_y);
+  
   //move the screen
   m_movement_duration += elapsed_time;
   int move_x = m_move_screen_horiz * (m_movement_duration / 1000);
@@ -39,6 +43,27 @@ void InputHandler::update(int elapsed_time) {
     m_movement_duration = 0;
     m_game->move_puzzle(move_x, move_y);
   }
+
+  //release mouse lock if enough time has passed
+  if (m_mouse_lock_type != MouseLockType::no_lock) {
+    int x, y, prev_x, prev_y;
+    m_game->screen_coords_to_cell_coords(m_mouse_x, m_mouse_y, &x, &y);
+    m_game->screen_coords_to_cell_coords(m_prev_mouse_x, m_prev_mouse_y,
+                                         &prev_x, &prev_y);
+
+    if (cell_x == m_prev_cell_x && cell_y == m_prev_cell_y)
+      m_mouse_lock_time -= elapsed_time;
+    else
+      m_mouse_lock_time = default_mouse_lock_time;
+
+    if (m_mouse_lock_time <= 0) {
+      m_mouse_lock_time = 0;
+      m_mouse_lock_type = MouseLockType::no_lock;
+    }
+  }
+
+  m_game->screen_coords_to_cell_coords(m_mouse_x, m_mouse_y,
+                                       &m_prev_cell_x, &m_prev_cell_y);
 }
 
 void InputHandler::mouse_move(int x, int y) {
@@ -91,12 +116,14 @@ void InputHandler::mouse_move(int x, int y) {
         if (cell_x != prev_x && cell_y != prev_y) {
           m_prev_mouse_x = m_mouse_x;
           m_prev_mouse_y = m_mouse_y;
-        } else if (cell_x == prev_x && abs(cell_y - prev_y) > 2) {
+        } else if (cell_x == prev_x && abs(cell_y - prev_y) > 0) {
           m_mouse_lock_type = MouseLockType::to_col;
           m_mouse_lock_pos = cell_x;
-        } else if (cell_y == prev_y && abs(cell_x - prev_x) > 2) {
+          m_mouse_lock_time = default_mouse_lock_time;
+        } else if (cell_y == prev_y && abs(cell_x - prev_x) > 0) {
           m_mouse_lock_type = MouseLockType::to_row;
           m_mouse_lock_pos = cell_y;
+          m_mouse_lock_time = default_mouse_lock_time;
         }
       }
 

@@ -40,10 +40,12 @@ class InputHandler {
   
   int m_mouse_x, m_mouse_y;
   int m_prev_mouse_x, m_prev_mouse_y;
+  int m_prev_cell_x, m_prev_cell_y;
   bool m_mouse_dragging;
   DragType m_mouse_drag_type;
   MouseLockType m_mouse_lock_type;
   int m_mouse_lock_pos;
+  int m_mouse_lock_time;
   bool m_kb_dragging;
   DragType m_kb_drag_type;
 
