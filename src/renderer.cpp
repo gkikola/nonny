@@ -403,6 +403,21 @@ void Renderer::render_control(const Preview* preview) {
   preview->get_position(&rect.x, &rect.y);
   preview->get_size(&rect.w, &rect.h);
   SDL_RenderFillRect(m_renderer, &rect);
+
+  int pixel_size = preview->pixel_size();
+  SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 255);
+  
+  for (int y = 0; y < m_game->puzzle().height(); ++y) {
+    for (int x = 0; x < m_game->puzzle().width(); ++x) {
+      if (m_game->puzzle().cell(x, y) == CellState::marked) {
+        SDL_Rect pixel;
+        pixel.x = rect.x + pixel_size * x;
+        pixel.y = rect.y + pixel_size * y;
+        pixel.w = pixel.h = pixel_size;
+        SDL_RenderFillRect(m_renderer, &pixel);
+      }
+    }
+  }
 }
 
 int Renderer::row_rule_width(int row, int buffer) {
