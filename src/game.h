@@ -17,6 +17,7 @@ class Game {
 
   void get_puzzle_coords(int* x, int* y) const;
   void move_puzzle(int relx, int rely);
+  void make_selected_cell_visible();
   int cell_size() const { return m_cell_size; }
 
   void set_rule_dimensions(int row_rule_width, int col_rule_height);

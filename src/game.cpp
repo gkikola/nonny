@@ -60,6 +60,20 @@ void Game::move_puzzle(int relx, int rely) {
   m_grid_y += rely;
 }
 
+void Game::make_selected_cell_visible() {
+  int x, y;
+  cell_coords_to_screen_coords(m_selection_x, m_selection_y, &x, &y);
+
+  if (x < m_info_pane_width)
+    m_grid_x -= x - m_info_pane_width;
+  else if (x + m_cell_size > m_screen_width)
+    m_grid_x -= x + m_cell_size - m_screen_width;
+  if (y < 0)
+    m_grid_y -= y;
+  else if (y + m_cell_size > m_screen_height)
+    m_grid_y -= y + m_cell_size - m_screen_height;
+}
+
 void Game::age_cells(int max_age) {
   for (int x = 0; x < m_puzzle->width(); ++x)
     for (int y = 0; y < m_puzzle->height(); ++y)
