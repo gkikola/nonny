@@ -1,3 +1,3 @@
 bin_PROGRAMS = nonny
-nonny_SOURCES = application.cpp control.cpp game.cpp input_handler.cpp main.cpp puzzle.cpp renderer.cpp
+nonny_SOURCES = application.cpp control.cpp game.cpp input_handler.cpp main.cpp preview.cpp puzzle.cpp renderer.cpp
 AM_CPPFLAGS = -DDATADIR=\"$(pkgdatadir)\"

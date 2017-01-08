@@ -1,6 +1,9 @@
+#include "game.h"
+
 #include "control.h"
 
-Control::Control() : m_x{0}, m_y{0}, m_width{0}, m_height{0} {
+Control::Control(Game* game) : m_game{game}, m_x{0}, m_y{0},
+                               m_width{0}, m_height{0} {
 }
 
 void Control::get_position(int* x, int* y) const {
