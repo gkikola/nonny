@@ -9,7 +9,7 @@
 #include "input_handler.h"
 
 const int move_speed = 250; //pixels per second
-const int default_mouse_lock_time = 250; //ms
+const int default_mouse_lock_time = 150; //ms
 
 InputHandler::InputHandler(SDL_Window* window, Game* game)
   : m_game{game}, m_window{window}, m_reverse_mouse{false},
@@ -30,8 +30,11 @@ void InputHandler::associate_key(KeyAction action, SDL_Keycode key) {
 }
 
 void InputHandler::update(int elapsed_time) {
+  int mouse_x, mouse_y;
+  SDL_GetMouseState(&mouse_x, &mouse_y);
+  
   int cell_x, cell_y;
-  m_game->screen_coords_to_cell_coords(m_mouse_x, m_mouse_y, &cell_x, &cell_y);
+  m_game->screen_coords_to_cell_coords(mouse_x, mouse_y, &cell_x, &cell_y);
   
   //move the screen
   m_movement_duration += elapsed_time;
@@ -46,11 +49,6 @@ void InputHandler::update(int elapsed_time) {
 
   //release mouse lock if enough time has passed
   if (m_mouse_lock_type != MouseLockType::no_lock) {
-    int x, y, prev_x, prev_y;
-    m_game->screen_coords_to_cell_coords(m_mouse_x, m_mouse_y, &x, &y);
-    m_game->screen_coords_to_cell_coords(m_prev_mouse_x, m_prev_mouse_y,
-                                         &prev_x, &prev_y);
-
     if (cell_x == m_prev_cell_x && cell_y == m_prev_cell_y)
       m_mouse_lock_time -= elapsed_time;
     else
@@ -62,19 +60,30 @@ void InputHandler::update(int elapsed_time) {
     }
   }
 
-  m_game->screen_coords_to_cell_coords(m_mouse_x, m_mouse_y,
+  m_game->screen_coords_to_cell_coords(mouse_x, mouse_y,
                                        &m_prev_cell_x, &m_prev_cell_y);
 }
 
 void InputHandler::mouse_move(int x, int y) {
+  //make sure mouse doesn't skip over cells when moving fast
+  if (x - m_mouse_x > m_game->cell_size()) {
+    mouse_move(x - m_game->cell_size(), y);
+  } else if (m_mouse_x - x > m_game->cell_size()) {
+    mouse_move(x + m_game->cell_size(), y);
+  } else if (y - m_mouse_y > m_game->cell_size()) {
+    mouse_move(x, y - m_game->cell_size());
+  } else if (m_mouse_y - y > m_game->cell_size()) {
+    mouse_move(x, y + m_game->cell_size());
+  }
+
   int grid_x, grid_y;
   m_game->get_puzzle_coords(&grid_x, &grid_y);
 
   int grid_width = m_game->cell_grid_width();
   int grid_height = m_game->cell_grid_height();
 
-  if (x >= grid_x && x < grid_x + grid_width
-      && y >= grid_y && y < grid_y + grid_height) {
+  if (x >= grid_x && x < grid_x + grid_width - 1
+      && y >= grid_y && y < grid_y + grid_height - 1) {
     int cell_x, cell_y;
     m_game->screen_coords_to_cell_coords(x, y, &cell_x, &cell_y);
 
@@ -93,7 +102,7 @@ void InputHandler::mouse_move(int x, int y) {
     if (m_mouse_drag_type == DragType::screen) {
       m_game->move_puzzle(x - m_mouse_x, y - m_mouse_y);
     }
-
+    
     m_mouse_x = x;
     m_mouse_y = y;
 
@@ -106,6 +115,10 @@ void InputHandler::mouse_move(int x, int y) {
       int cell_x, cell_y;
       m_game->screen_coords_to_cell_coords(m_mouse_x, m_mouse_y,
                                            &cell_x, &cell_y);
+
+      //reset in case there was a lock
+      m_mouse_x = x;
+      m_mouse_y = y;
 
       //lock mouse position if necessary
       int prev_x, prev_y;
