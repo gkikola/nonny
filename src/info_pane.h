@@ -32,6 +32,8 @@ class InfoPane {
   StaticText* m_size;
   StaticText* m_author;
 
+  Button* m_menu;
+
   int m_width;
 };
 

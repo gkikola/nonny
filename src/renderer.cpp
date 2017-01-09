@@ -496,6 +496,19 @@ void Renderer::render_control(const StaticText* stat_text) {
 }
 
 void Renderer::render_control(const Button* button) {
+  SDL_SetRenderDrawColor(m_renderer, 240, 248, 255, 255);
+
+  SDL_Rect rect;
+  button->get_position(&rect.x, &rect.y);
+  button->get_size(&rect.w, &rect.h);
+
+  SDL_RenderFillRect(m_renderer, &rect);
+  SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 255);
+  SDL_RenderDrawRect(m_renderer, &rect);
+
+  SDL_Color color = { 0, 0, 0, 255 };
+  draw_text(m_control_font, &color, button->label(),
+            rect.x, rect.y, rect.w, rect.h);
 }
 
 int Renderer::row_rule_width(int row, int buffer) {
