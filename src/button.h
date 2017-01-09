@@ -1,6 +1,7 @@
 #ifndef NONNY_BUTTON_H
 #define NONNY_BUTTON_H
 
+#include <string>
 #include "control.h"
 
 class Game;

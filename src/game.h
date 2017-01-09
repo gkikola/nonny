@@ -9,10 +9,11 @@ enum class GameState { main_menu, opts_menu, puzzle_selection, puzzle };
 
 class Game {
  public:
-  Game();
+  Game(const std::string& data_dir, const std::string& save_dir);
   ~Game();
 
   GameState state() const { return m_state; }
+  void set_state(GameState state);
   void update(int elapsed_time);
 
   void load_puzzle(const std::string& filename);
@@ -44,6 +45,9 @@ class Game {
 
   void get_selected_cell(int* x, int* y) const;
   bool is_cell_selected() const { return m_selected; }
+
+  const std::string& data_dir() const { return m_data_dir; }
+  const std::string& save_dir() const { return m_save_dir; }
   
   InfoPane& info_pane() const { return *m_info_pane; }
   Menu& main_menu() const { return *m_main_menu; }
@@ -56,11 +60,12 @@ class Game {
   Puzzle* m_puzzle;
   
   GameState m_state;
+  GameState m_next_state;
   int m_grid_x, m_grid_y;
   int m_cell_size;
   int m_target_cell_size;
   int m_target_x, m_target_y;
-  double m_zoom_duration;
+  double m_zoom_delta;
 
   InfoPane* m_info_pane;
   Menu* m_main_menu;
@@ -74,6 +79,9 @@ class Game {
 
   int m_screen_width;
   int m_screen_height;
+
+  std::string m_data_dir;
+  std::string m_save_dir;
 };
 
 #endif

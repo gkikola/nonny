@@ -1,4 +1,5 @@
 #include <cmath>
+#include <string>
 
 #include "info_pane.h"
 #include "menu.h"
@@ -16,20 +17,25 @@ const int button_width = 192;
 const int button_height = 36;
 const double default_screen_coverage = 0.80;
 
-Game::Game()
+void do_play(Game* game);
+void do_create(Game* game);
+void do_options(Game* game);
+void do_about(Game* game);
+
+Game::Game(const std::string& data_dir, const std::string& save_dir)
   : m_puzzle{nullptr}, m_grid_x{0}, m_grid_y{0}, m_cell_size{32},
     m_target_cell_size{32}, m_target_x{0}, m_target_y{0},
     m_selected{false}, m_selection_x{0}, m_selection_y{0},
     m_recalc_size{true}, m_row_rule_width{0}, m_col_rule_height{0},
     m_info_pane{nullptr}, m_main_menu{nullptr},
-    m_screen_width{0}, m_screen_height{0} {
-  m_state = GameState::main_menu;
+    m_screen_width{0}, m_screen_height{0},
+    m_data_dir{data_dir}, m_save_dir{save_dir} {
+  m_state = m_next_state = GameState::main_menu;
 
   m_main_menu = new Menu(this);
   setup_main_menu();
   
   m_info_pane = new InfoPane(this);
-  m_info_pane->set_width(default_info_pane_width);
 }
 
 Game::~Game() {
@@ -38,25 +44,46 @@ Game::~Game() {
   if (m_puzzle) delete m_puzzle;
 }
 
-void Game::update(int elapsed_time) {
-  if (m_cell_size != m_target_cell_size) {
-    int multiplier = (1 + std::abs(m_cell_size - m_target_cell_size)
-                      / cell_size_step);
-    m_zoom_duration += multiplier * zoom_speed * (elapsed_time / 1000.0);
-    int amount = round(m_zoom_duration);
-    if (amount > 0) {
-      m_zoom_duration = 0;
-
-      if (m_cell_size > m_target_cell_size)
-        amount = -amount;
-    
-      m_grid_x -= amount * (m_target_x - m_grid_x) / (m_cell_size + 1);
-      m_grid_y -= amount * (m_target_y - m_grid_y) / (m_cell_size + 1);
-
-      m_cell_size += amount;
-      m_recalc_size = true;
-    }
+void Game::set_state(GameState state) {
+  m_next_state = state;
+  
+  switch (state) {
+  case GameState::puzzle:
+    m_state = state;
+    m_info_pane->slide_pane(m_screen_width, default_info_pane_width);
+    break;
+  case GameState::main_menu:
+    m_info_pane->slide_pane(default_info_pane_width, m_screen_width);
+    break;
   }
+}
+
+void Game::update(int elapsed_time) {
+  m_info_pane->update(elapsed_time);
+  
+  if (m_state != m_next_state && !m_info_pane->is_sliding())
+    m_state = m_next_state;
+
+  if (m_state == GameState::puzzle) {    
+    if (m_cell_size != m_target_cell_size) {
+      int multiplier = (1 + std::abs(m_cell_size - m_target_cell_size)
+                        / cell_size_step);
+      m_zoom_delta += multiplier * zoom_speed * (elapsed_time / 1000.0);
+      int amount = round(m_zoom_delta);
+      if (amount > 0) {
+        m_zoom_delta = 0;
+
+        if (m_cell_size > m_target_cell_size)
+          amount = -amount;
+    
+        m_grid_x -= amount * (m_target_x - m_grid_x) / (m_cell_size + 1);
+        m_grid_y -= amount * (m_target_y - m_grid_y) / (m_cell_size + 1);
+
+        m_cell_size += amount;
+        m_recalc_size = true;
+      }
+    }
+  } //if game in puzzle state
 }
 
 void Game::load_puzzle(const std::string& filename) {
@@ -65,8 +92,7 @@ void Game::load_puzzle(const std::string& filename) {
   m_puzzle = new Puzzle(filename);
 
   default_zoom();
-
-  m_info_pane->setup_controls();
+  m_info_pane->setup_controls(default_info_pane_width);
 }
 
 void Game::set_rule_dimensions(int row_rule_width, int col_rule_height) {
@@ -149,21 +175,25 @@ void Game::setup_main_menu() {
     Button* play = new Button(this);
     play->resize(button_width, button_height);
     play->set_label("Play");
+    play->register_callback(do_play);
     m_main_menu->add_control(play);
 
     Button* create = new Button(this);
     create->resize(button_width, button_height);
     create->set_label("Create");
+    create->register_callback(do_create);
     m_main_menu->add_control(create);
     
     Button* options = new Button(this);
     options->resize(button_width, button_height);
     options->set_label("Options");
+    options->register_callback(do_options);
     m_main_menu->add_control(options);
 
     Button* about = new Button(this);
     about->resize(button_width, button_height);
     about->set_label("About");
+    about->register_callback(do_about);
     m_main_menu->add_control(about);
   }
 
@@ -212,8 +242,8 @@ void Game::default_zoom() {
 
   m_recalc_size = true;
 
-  m_grid_x = m_info_pane->width()
-    + (m_screen_width - m_info_pane->width()) / 2 - cell_grid_width() / 2;
+  m_grid_x = default_info_pane_width
+    + (m_screen_width - default_info_pane_width) / 2 - cell_grid_width() / 2;
   m_grid_y = m_screen_height / 2 - cell_grid_height() / 2;
 }
 
@@ -247,14 +277,23 @@ void Game::zoom_out(int x, int y) {
 void Game::zoom(int amount, int x, int y) {
   if ((amount < 0 && m_target_cell_size > cell_size_step)
       || (amount > 0 && m_target_cell_size < max_cell_size)) {
-    //m_grid_x -= amount * (x - m_grid_x) / (m_cell_size + 1);
-    //m_grid_y -= amount * (y - m_grid_y) / (m_cell_size + 1);
-
     m_target_x = x;
     m_target_y = y;
     m_target_cell_size += amount;
     m_recalc_size = true;
-    m_zoom_duration = 0.0;
+    m_zoom_delta = 0.0;
   }
 }
 
+void do_play(Game* game) {
+  game->set_state(GameState::puzzle);
+}
+
+void do_create(Game* game) {
+}
+
+void do_options(Game* game) {
+}
+
+void do_about(Game* game) {
+}
