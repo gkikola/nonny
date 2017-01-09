@@ -55,6 +55,9 @@ class Game {
   GameState m_state;
   int m_grid_x, m_grid_y;
   int m_cell_size;
+  int m_target_cell_size;
+  int m_target_x, m_target_y;
+  double m_zoom_duration;
 
   InfoPane* m_info_pane;
 

@@ -1,9 +1,12 @@
+#include <cmath>
+
 #include "info_pane.h"
 #include "puzzle.h"
 
 #include "game.h"
 
 const int cell_size_step = 8;
+const int zoom_speed = 32;
 const int max_cell_size = 112;
 const int cell_age_rate = 50;
 const int default_info_pane_width = 256;
@@ -11,6 +14,7 @@ const double default_screen_coverage = 0.80;
 
 Game::Game()
   : m_puzzle{nullptr}, m_grid_x{0}, m_grid_y{0}, m_cell_size{32},
+    m_target_cell_size{32}, m_target_x{0}, m_target_y{0},
     m_selected{false}, m_selection_x{0}, m_selection_y{0},
     m_recalc_size{true}, m_row_rule_width{0}, m_col_rule_height{0},
     m_info_pane{nullptr},
@@ -27,6 +31,22 @@ Game::~Game() {
 }
 
 void Game::update(int elapsed_time) {
+  if (m_cell_size != m_target_cell_size) {
+    m_zoom_duration += zoom_speed * (elapsed_time / 1000.0);
+    int amount = round(m_zoom_duration);
+    if (amount > 0) {
+      m_zoom_duration = 0;
+
+      if (m_cell_size > m_target_cell_size)
+        amount = -amount;
+    
+      m_grid_x -= amount * (m_target_x - m_grid_x) / (m_cell_size + 1);
+      m_grid_y -= amount * (m_target_y - m_grid_y) / (m_cell_size + 1);
+
+      m_cell_size += amount;
+      m_recalc_size = true;
+    }
+  }
 }
 
 void Game::load_puzzle(const std::string& filename) {
@@ -172,12 +192,16 @@ void Game::zoom_out(int x, int y) {
 }
 
 void Game::zoom(int amount, int x, int y) {
-  if ((amount < 0 && m_cell_size > cell_size_step)
-      || (amount > 0 && m_cell_size < max_cell_size)) {
-    m_grid_x -= amount * (x - m_grid_x) / (m_cell_size + 1);
-    m_grid_y -= amount * (y - m_grid_y) / (m_cell_size + 1);
+  if ((amount < 0 && m_target_cell_size > cell_size_step)
+      || (amount > 0 && m_target_cell_size < max_cell_size)) {
+    //m_grid_x -= amount * (x - m_grid_x) / (m_cell_size + 1);
+    //m_grid_y -= amount * (y - m_grid_y) / (m_cell_size + 1);
 
-    m_cell_size += amount;
+    m_target_x = x;
+    m_target_y = y;
+    m_target_cell_size += amount;
     m_recalc_size = true;
+    m_zoom_duration = 0.0;
   }
 }
+
