@@ -10,6 +10,7 @@ class Menu : public ControlContainer {
   explicit Menu(Game* game);
 
   void add_control(Control* control);
+  void arrange_controls(int screen_width, int screen_height);
  private:
   Game* m_game;
 };

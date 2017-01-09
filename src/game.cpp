@@ -13,7 +13,6 @@ const int zoom_speed = 32;
 const int max_cell_size = 112;
 const int cell_age_rate = 50;
 const int default_info_pane_width = 256;
-const int menu_spacing = 16;
 const int button_width = 192;
 const int button_height = 36;
 const double default_screen_coverage = 0.80;
@@ -199,22 +198,7 @@ void Game::setup_main_menu() {
     m_main_menu->add_control(about);
   }
 
-  int total_height = menu_spacing;
-  for (Control* control : *m_main_menu) {
-    int width, height;
-    control->get_size(&width, &height);
-    total_height += menu_spacing + height;
-  }
-
-  int y = m_screen_height / 2 - total_height / 2;
-  
-  for (Control* control : *m_main_menu) {
-    int width, height;
-    control->get_size(&width, &height);
-    control->move(m_screen_width / 2 - width / 2, y);
-    y += height;
-    y += menu_spacing;
-  }
+  m_main_menu->arrange_controls(m_screen_width, m_screen_height);
 }
 
 void Game::default_zoom() {
