@@ -2,19 +2,7 @@
 
 #include "button.h"
 
-Button::Button(Game* game) : Control{game}, m_hover{false}, m_selected{false} {
-}
-
-void Button::hover_mouse(bool hovering) {
-  m_hover = hovering;
-}
-
-void Button::select() {
-  m_selected = true;
-}
-
-void Button::deselect() {
-  m_selected = false;
+Button::Button(Game* game) : Control{game} {
 }
 
 void Button::set_label(const std::string& label) {

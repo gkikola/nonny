@@ -9,7 +9,7 @@ class Renderer;
 class ControlContainer {
  public:
   virtual ~ControlContainer();
-
+  
   typedef std::list<Control*>::iterator iterator;
 
   iterator begin();

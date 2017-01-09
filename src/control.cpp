@@ -3,7 +3,8 @@
 #include "control.h"
 
 Control::Control(Game* game) : m_game{game}, m_x{0}, m_y{0},
-                               m_width{0}, m_height{0} {
+                               m_width{0}, m_height{0},
+                               m_hover{false}, m_selected{false} {
 }
 
 void Control::get_position(int* x, int* y) const {
@@ -14,6 +15,18 @@ void Control::get_position(int* x, int* y) const {
 void Control::get_size(int* width, int* height) const {
   if (width) *width = m_width;
   if (height) *height = m_height;
+}
+
+void Control::hover_mouse(bool hovering) {
+  m_hover = hovering;
+}
+
+void Control::select() {
+  m_selected = true;
+}
+
+void Control::deselect() {
+  m_selected = false;
 }
 
 void Control::move(int x, int y) {
