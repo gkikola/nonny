@@ -28,11 +28,14 @@ class InputHandler {
   void associate_key(KeyAction action, SDL_Keycode key);
 
   void move_selection(bool horizontal, int amount);
+
+  bool is_point_in_grid(int x, int y) const;
+  bool is_point_in_preview(int x, int y) const;
   
   Game* m_game;
   SDL_Window* m_window;
   
-  enum class DragType { screen, marks, exes, blank_marks, blank_exes };
+  enum class DragType { screen, preview, marks, exes, blank_marks, blank_exes };
   enum class MouseLockType { no_lock, to_row, to_col };
 
   std::map<SDL_Keycode, KeyAction> m_key_mapping;

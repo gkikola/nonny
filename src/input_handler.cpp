@@ -195,9 +195,7 @@ void InputHandler::mouse_press(Uint8 button, bool down) {
       }
 
       //see if mouse is inside the grid    
-      if (m_mouse_x > m_game->info_pane().width()
-          && m_mouse_x >= grid_x && m_mouse_x <= grid_x + grid_width
-          && m_mouse_y >= grid_y && m_mouse_y <= grid_y + grid_height) {
+      if (is_point_in_grid(m_mouse_x, m_mouse_y)) {
         m_mouse_dragging = down;
 
         if (down) {
@@ -247,9 +245,7 @@ void InputHandler::mouse_press(Uint8 button, bool down) {
         SDL_CaptureMouse(SDL_FALSE);
       }
 
-      if (m_mouse_x > m_game->info_pane().width()
-          && m_mouse_x >= grid_x && m_mouse_x <= grid_x + grid_width
-          && m_mouse_y >= grid_y && m_mouse_y <= grid_y + grid_height) {
+      if (is_point_in_grid(m_mouse_x, m_mouse_y)) {
         m_mouse_dragging = down;
 
         if (down) {
@@ -463,6 +459,27 @@ void InputHandler::key_press(SDL_Keycode key, bool down) {
       } //switch
     } //if key mapping was found
   } //if key is up
+}
+
+bool InputHandler::is_point_in_grid(int x, int y) const {
+  int grid_x, grid_y;
+  m_game->get_puzzle_coords(&grid_x, &grid_y);
+  int grid_width = m_game->cell_grid_width();
+  int grid_height =  m_game->cell_grid_height();
+  
+  return (x > m_game->info_pane().width()
+          && x >= grid_x && x <= grid_x + grid_width
+          && y >= grid_y && y <= grid_y + grid_height);
+}
+
+bool InputHandler::is_point_in_preview(int x, int y) const {
+  int preview_x, preview_y;
+  m_game->info_pane().get_preview_position(&preview_x, &preview_y);
+  int preview_w, preview_h;
+  m_game->info_pane().get_preview_size(&preview_w, &preview_h);
+
+  return (x >= preview_x && x <= preview_x + preview_w
+          && y >= preview_y && y <= preview_y + preview_h);
 }
 
 void InputHandler::move_selection(bool horizontal, int amount) {
