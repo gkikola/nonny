@@ -4,7 +4,7 @@
 #include "game.h"
 
 const int cell_size_step = 8;
-const int max_cell_size = 256;
+const int max_cell_size = 112;
 const int cell_age_rate = 50;
 const int default_info_pane_width = 256;
 const double default_screen_coverage = 0.80;
