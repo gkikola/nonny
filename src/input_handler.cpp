@@ -177,102 +177,109 @@ void InputHandler::mouse_press(Uint8 button, bool down) {
 
   SDL_GetMouseState(&m_mouse_x, &m_mouse_y);
   
-  int grid_x, grid_y;
-  m_game->get_puzzle_coords(&grid_x, &grid_y);
+  if (m_game->state() == GameState::puzzle) {  
+    int grid_x, grid_y;
+    m_game->get_puzzle_coords(&grid_x, &grid_y);
 
-  int grid_width = m_game->cell_grid_width();
-  int grid_height = m_game->cell_grid_height();
+    int grid_width = m_game->cell_grid_width();
+    int grid_height = m_game->cell_grid_height();
   
-  switch (button) {
-  case SDL_BUTTON_LEFT:
-    if (!down) {
-      m_mouse_dragging = false;
-      m_mouse_lock_type = MouseLockType::no_lock;
-    }
-
-    //see if mouse is inside the grid    
-    if (m_mouse_x >= grid_x && m_mouse_x <= grid_x + grid_width
-        && m_mouse_y >= grid_y && m_mouse_y <= grid_y + grid_height) {
-      m_mouse_dragging = down;
-
-      if (down) {
-        SDL_CaptureMouse(SDL_TRUE);
-
-        //determine what cell we are on
-        int x, y;
-        m_game->screen_coords_to_cell_coords(m_mouse_x, m_mouse_y, &x, &y);
-
-        //keep track of mouse position for locking drags
-        m_prev_mouse_x = m_mouse_x;
-        m_prev_mouse_y = m_mouse_y;
-
-        //if the cell is blank, mark it
-        if (m_game->puzzle().cell(x, y) == CellState::blank) {
-          m_game->set_cell(x, y, CellState::marked);
-          m_mouse_drag_type = DragType::marks;
-        } else if (m_game->puzzle().cell(x, y) == CellState::marked) {
-          m_game->set_cell(x, y, CellState::blank);
-          m_mouse_drag_type = DragType::blank_marks;
-        } else {
-          m_game->set_cell(x, y, CellState::blank);
-          m_mouse_drag_type = DragType::blank_exes;
-        }
-      } else { //mouse button up
+    switch (button) {
+    case SDL_BUTTON_LEFT:
+      if (!down) {
+        m_mouse_dragging = false;
+        m_mouse_lock_type = MouseLockType::no_lock;
         SDL_CaptureMouse(SDL_FALSE);
       }
 
+      //see if mouse is inside the grid    
+      if (m_mouse_x > m_game->info_pane().width()
+          && m_mouse_x >= grid_x && m_mouse_x <= grid_x + grid_width
+          && m_mouse_y >= grid_y && m_mouse_y <= grid_y + grid_height) {
+        m_mouse_dragging = down;
+
+        if (down) {
+          SDL_CaptureMouse(SDL_TRUE);
+
+          //determine what cell we are on
+          int x, y;
+          m_game->screen_coords_to_cell_coords(m_mouse_x, m_mouse_y, &x, &y);
+
+          //keep track of mouse position for locking drags
+          m_prev_mouse_x = m_mouse_x;
+          m_prev_mouse_y = m_mouse_y;
+
+          //if the cell is blank, mark it
+          if (m_game->puzzle().cell(x, y) == CellState::blank) {
+            m_game->set_cell(x, y, CellState::marked);
+            m_mouse_drag_type = DragType::marks;
+          } else if (m_game->puzzle().cell(x, y) == CellState::marked) {
+            m_game->set_cell(x, y, CellState::blank);
+            m_mouse_drag_type = DragType::blank_marks;
+          } else {
+            m_game->set_cell(x, y, CellState::blank);
+            m_mouse_drag_type = DragType::blank_exes;
+          }
+        } else { //mouse button up
+          SDL_CaptureMouse(SDL_FALSE);
+        }
+
+        break;
+      }
+
+      //outside the grid, do screen_dragging action:
+    case SDL_BUTTON_MIDDLE:
+      if (!down) {
+        m_mouse_dragging = false;
+        SDL_CaptureMouse(SDL_FALSE);
+      } else if (m_mouse_x > m_game->info_pane().width()) {
+        m_mouse_dragging = true;
+        m_mouse_drag_type = DragType::screen;
+        SDL_CaptureMouse(SDL_TRUE);
+      }
+      break;
+    case SDL_BUTTON_RIGHT:
+      if (!down) {
+        m_mouse_dragging = false;
+        m_mouse_lock_type = MouseLockType::no_lock;
+        SDL_CaptureMouse(SDL_FALSE);
+      }
+
+      if (m_mouse_x > m_game->info_pane().width()
+          && m_mouse_x >= grid_x && m_mouse_x <= grid_x + grid_width
+          && m_mouse_y >= grid_y && m_mouse_y <= grid_y + grid_height) {
+        m_mouse_dragging = down;
+
+        if (down) {
+          SDL_CaptureMouse(SDL_TRUE);
+
+          //determine what cell we are on
+          int x, y;
+          m_game->screen_coords_to_cell_coords(m_mouse_x, m_mouse_y, &x, &y);
+
+          //keep track of mouse position for locking drags
+          m_prev_mouse_x = m_mouse_x;
+          m_prev_mouse_y = m_mouse_y;
+          m_mouse_lock_type = MouseLockType::no_lock;
+
+          //if the cell is blank, ex it out
+          if (m_game->puzzle().cell(x, y) == CellState::blank) {
+            m_game->set_cell(x, y, CellState::exedout);
+            m_mouse_drag_type = DragType::exes;
+          } else if (m_game->puzzle().cell(x, y) == CellState::marked) {
+            m_game->set_cell(x, y, CellState::blank);
+            m_mouse_drag_type = DragType::blank_marks;
+          } else {
+            m_game->set_cell(x, y, CellState::blank);
+            m_mouse_drag_type = DragType::blank_exes;
+          }
+        } else { //mouse button up
+          SDL_CaptureMouse(SDL_FALSE);
+        }
+      }
       break;
     }
-
-    //outside the grid, do screen_dragging action:
-  case SDL_BUTTON_MIDDLE:
-    m_mouse_dragging = down;
-
-    if (down) {
-      m_mouse_drag_type = DragType::screen;
-      SDL_CaptureMouse(SDL_TRUE);
-    }
-    else SDL_CaptureMouse(SDL_FALSE);
-    break;
-  case SDL_BUTTON_RIGHT:
-    if (!down) {
-      m_mouse_dragging = false;
-      m_mouse_lock_type = MouseLockType::no_lock;
-    }
-
-    if (m_mouse_x >= grid_x && m_mouse_x <= grid_x + grid_width
-        && m_mouse_y >= grid_y && m_mouse_y <= grid_y + grid_height) {
-      m_mouse_dragging = down;
-
-      if (down) {
-        SDL_CaptureMouse(SDL_TRUE);
-
-        //determine what cell we are on
-        int x, y;
-        m_game->screen_coords_to_cell_coords(m_mouse_x, m_mouse_y, &x, &y);
-
-        //keep track of mouse position for locking drags
-        m_prev_mouse_x = m_mouse_x;
-        m_prev_mouse_y = m_mouse_y;
-        m_mouse_lock_type = MouseLockType::no_lock;
-
-        //if the cell is blank, ex it out
-        if (m_game->puzzle().cell(x, y) == CellState::blank) {
-          m_game->set_cell(x, y, CellState::exedout);
-          m_mouse_drag_type = DragType::exes;
-        } else if (m_game->puzzle().cell(x, y) == CellState::marked) {
-          m_game->set_cell(x, y, CellState::blank);
-          m_mouse_drag_type = DragType::blank_marks;
-        } else {
-          m_game->set_cell(x, y, CellState::blank);
-          m_mouse_drag_type = DragType::blank_exes;
-        }
-      } else { //mouse button up
-        SDL_CaptureMouse(SDL_FALSE);
-      }
-    }
-    break;
-  }
+  } //if game is in puzzle state and mouse is in play area
 }
 
 void InputHandler::mouse_wheel(int y, Uint32 orientation) {
