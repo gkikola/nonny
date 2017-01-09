@@ -32,7 +32,9 @@ Game::~Game() {
 
 void Game::update(int elapsed_time) {
   if (m_cell_size != m_target_cell_size) {
-    m_zoom_duration += zoom_speed * (elapsed_time / 1000.0);
+    int multiplier = (1 + std::abs(m_cell_size - m_target_cell_size)
+                      / cell_size_step);
+    m_zoom_duration += multiplier * zoom_speed * (elapsed_time / 1000.0);
     int amount = round(m_zoom_duration);
     if (amount > 0) {
       m_zoom_duration = 0;
