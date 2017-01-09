@@ -54,13 +54,15 @@ Renderer::Renderer(SDL_Window* window, Game* game, const std::string& data_dir)
 
   //load fonts
   std::string font_path = m_data_dir + font_filename_bold;
+  m_game_title_font = TTF_OpenFont(font_path.c_str(), 56);
   m_title_font = TTF_OpenFont(font_path.c_str(), 32);
 
   font_path = m_data_dir + font_filename_std;
   m_control_font = TTF_OpenFont(font_path.c_str(), 24);
   m_info_font = TTF_OpenFont(font_path.c_str(), 14);
   
-  if (m_title_font == NULL || m_control_font == NULL || m_info_font == NULL)
+  if (m_game_title_font == NULL || m_title_font == NULL
+      || m_control_font == NULL || m_info_font == NULL)
     throw std::runtime_error("TTF_OpenFont: could not open font file");
   
   m_rule_font = nullptr; //will be initialized when rendering starts
@@ -69,6 +71,7 @@ Renderer::Renderer(SDL_Window* window, Game* game, const std::string& data_dir)
 Renderer::~Renderer() {
   if (m_info_font) TTF_CloseFont(m_info_font);
   if (m_title_font) TTF_CloseFont(m_title_font);
+  if (m_game_title_font) TTF_CloseFont(m_game_title_font);
   if (m_control_font) TTF_CloseFont(m_control_font);
   if (m_rule_font) TTF_CloseFont(m_rule_font);
   if (m_cell_sheet) SDL_DestroyTexture(m_cell_sheet);
@@ -118,9 +121,15 @@ void Renderer::render_game() {
   SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
   SDL_RenderClear(m_renderer);
 
-  if (m_game->state() == GameState::puzzle) {
+  switch (m_game->state()) {
+  case GameState::main_menu:
+    render_main_menu();
+    break;
+  default:
+  case GameState::puzzle:
     render_puzzle();
     render_info_pane();
+    break;
   }
     
   SDL_RenderPresent(m_renderer);
@@ -245,6 +254,13 @@ void Renderer::render_info_pane() {
   SDL_RenderFillRect(m_renderer, &info_pane);
 
   m_game->info_pane().draw(this);
+}
+
+void Renderer::render_main_menu() {
+  SDL_SetRenderDrawColor(m_renderer, 123, 175, 212, 255);
+  SDL_RenderClear(m_renderer);
+
+  m_game->main_menu().draw(this);
 }
 
 void Renderer::draw_cells() {
@@ -523,6 +539,9 @@ void Renderer::render_control(const StaticText* stat_text) {
     break;
   case StaticText::Type::small:
     font = m_info_font;
+    break;
+  case StaticText::Type::huge:
+    font = m_game_title_font;
     break;
   }
   

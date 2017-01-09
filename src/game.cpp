@@ -1,6 +1,7 @@
 #include <cmath>
 
 #include "info_pane.h"
+#include "menu.h"
 #include "puzzle.h"
 
 #include "game.h"
@@ -10,6 +11,9 @@ const int zoom_speed = 32;
 const int max_cell_size = 112;
 const int cell_age_rate = 50;
 const int default_info_pane_width = 256;
+const int menu_spacing = 16;
+const int button_width = 192;
+const int button_height = 36;
 const double default_screen_coverage = 0.80;
 
 Game::Game()
@@ -17,15 +21,19 @@ Game::Game()
     m_target_cell_size{32}, m_target_x{0}, m_target_y{0},
     m_selected{false}, m_selection_x{0}, m_selection_y{0},
     m_recalc_size{true}, m_row_rule_width{0}, m_col_rule_height{0},
-    m_info_pane{nullptr},
+    m_info_pane{nullptr}, m_main_menu{nullptr},
     m_screen_width{0}, m_screen_height{0} {
-  m_state = GameState::puzzle;
+  m_state = GameState::main_menu;
 
+  m_main_menu = new Menu(this);
+  setup_main_menu();
+  
   m_info_pane = new InfoPane(this);
   m_info_pane->set_width(default_info_pane_width);
 }
 
 Game::~Game() {
+  if (m_main_menu) delete m_main_menu;
   if (m_info_pane) delete m_info_pane;
   if (m_puzzle) delete m_puzzle;
 }
@@ -75,6 +83,9 @@ void Game::update_screen_size(int width, int height) {
   //update the dimensions
   m_screen_width = width;
   m_screen_height = height;
+
+  if (m_state == GameState::main_menu)
+    setup_main_menu();
 }
 
 void Game::get_puzzle_coords(int* x, int* y) const {
@@ -125,6 +136,46 @@ int Game::cell_grid_width() {
 
 int Game::cell_grid_height() {
   return m_puzzle->height() * (m_cell_size + 1) + 1;
+}
+
+void Game::setup_main_menu() {
+  if (m_main_menu->size() == 0) {
+    StaticText* title = new StaticText(this);
+    title->resize(button_width * 2, 92);
+    title->set_string("Nonny");
+    title->set_type(StaticText::Type::huge);
+    m_main_menu->add_control(title);
+
+    Button* play = new Button(this);
+    play->resize(button_width, button_height);
+    play->set_label("Play");
+    m_main_menu->add_control(play);
+
+    Button* create = new Button(this);
+    create->resize(button_width, button_height);
+    create->set_label("Create");
+    m_main_menu->add_control(create);
+    
+    Button* options = new Button(this);
+    options->resize(button_width, button_height);
+    options->set_label("Options");
+    m_main_menu->add_control(options);
+
+    Button* about = new Button(this);
+    about->resize(button_width, button_height);
+    about->set_label("About");
+    m_main_menu->add_control(about);
+  }
+
+  int y = menu_spacing;
+  
+  for (Control* control : *m_main_menu) {
+    int width, height;
+    control->get_size(&width, &height);
+    control->move(m_screen_width / 2 - width / 2, y);
+    y += height;
+    y += menu_spacing;
+  }
 }
 
 void Game::default_zoom() {

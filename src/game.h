@@ -2,6 +2,7 @@
 #define NONNY_GAME_H
 
 #include "info_pane.h"
+#include "menu.h"
 #include "puzzle.h"
 
 enum class GameState { main_menu, opts_menu, puzzle_selection, puzzle };
@@ -45,8 +46,10 @@ class Game {
   bool is_cell_selected() const { return m_selected; }
   
   InfoPane& info_pane() const { return *m_info_pane; }
+  Menu& main_menu() const { return *m_main_menu; }
   const Puzzle& puzzle() const { return *m_puzzle; }
  private:
+  void setup_main_menu();
   void default_zoom();
   void zoom(int amount, int x, int y);
 
@@ -60,6 +63,7 @@ class Game {
   double m_zoom_duration;
 
   InfoPane* m_info_pane;
+  Menu* m_main_menu;
 
   int m_selection_x, m_selection_y;
   bool m_selected;

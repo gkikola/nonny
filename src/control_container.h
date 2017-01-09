@@ -15,7 +15,10 @@ class ControlContainer {
   iterator begin();
   iterator end();
 
+  int size() const { return m_controls.size(); }
+  
   virtual void draw(Renderer* renderer) const;
+  virtual void clear();
  protected:
   void add_control(Control* control);
  private:

@@ -158,8 +158,8 @@ void Puzzle::load_file(const std::string& filename) {
 
 void Puzzle::unload_puzzle() {
   m_width = m_height = 0;
-  m_grid.empty();
-  m_row_rules.empty();
-  m_col_rules.empty();
+  m_grid.clear();
+  m_row_rules.clear();
+  m_col_rules.clear();
   m_title = "";
 }

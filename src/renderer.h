@@ -37,6 +37,7 @@ class Renderer {
                  int x, int y, int width = 0, int height = 0);
   void render_puzzle();
   void render_info_pane();
+  void render_main_menu();
   void shade_cells();
   void draw_cells();
   void draw_rules();
@@ -54,7 +55,8 @@ class Renderer {
   int m_cell_sheet_frame_size;
   int m_num_animation_frames;
   int m_time_until_cell_aging;
-  
+
+  TTF_Font* m_game_title_font;
   TTF_Font* m_title_font;
   TTF_Font* m_control_font;
   TTF_Font* m_info_font;

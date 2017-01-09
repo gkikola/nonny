@@ -1,11 +1,11 @@
+#include <iostream>
 #include "control.h"
 #include "renderer.h"
 
 #include "control_container.h"
 
 ControlContainer::~ControlContainer() {
-  for (Control* control : m_controls)
-    delete control;
+  clear();
 }
 
 ControlContainer::iterator ControlContainer::begin() {
@@ -19,6 +19,13 @@ ControlContainer::iterator ControlContainer::end() {
 void ControlContainer::draw(Renderer* renderer) const {
   for (auto control : m_controls)
     control->draw(renderer);
+}
+
+void ControlContainer::clear() {
+  for (Control* control : m_controls)
+    delete control;
+
+  m_controls.clear();
 }
 
 void ControlContainer::add_control(Control* control) {

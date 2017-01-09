@@ -2,7 +2,7 @@
 
 #include "button.h"
 
-Button::Button(Game* game) : Control{game} {
+Button::Button(Game* game) : Control{game}, m_callback_func{nullptr} {
 }
 
 void Button::set_label(const std::string& label) {
@@ -14,7 +14,8 @@ void Button::register_callback(callback function) {
 }
 
 void Button::activate() {
-  (*m_callback_func)(m_game);
+  if (m_callback_func)
+    (*m_callback_func)(m_game);
 }
 
 void Button::draw(Renderer* renderer) const {

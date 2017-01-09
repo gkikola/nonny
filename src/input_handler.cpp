@@ -66,112 +66,117 @@ void InputHandler::update(int elapsed_time) {
 }
 
 void InputHandler::mouse_move(int x, int y) {
-  //make sure mouse doesn't skip over cells when moving fast
-  if (m_mouse_dragging) {
-    if (x - m_mouse_x > m_game->cell_size()) {
-      mouse_move(x - m_game->cell_size(), y);
-    } else if (m_mouse_x - x > m_game->cell_size()) {
-      mouse_move(x + m_game->cell_size(), y);
-    } else if (y - m_mouse_y > m_game->cell_size()) {
-      mouse_move(x, y - m_game->cell_size());
-    } else if (m_mouse_y - y > m_game->cell_size()) {
-      mouse_move(x, y + m_game->cell_size());
+  if (m_game->state() == GameState::main_menu) {
+    mouse_move_controls(&m_game->main_menu(), x, y);
+  } else if (m_game->state() == GameState::puzzle) {
+    //make sure mouse doesn't skip over cells when moving fast
+    if (m_mouse_dragging) {
+      if (x - m_mouse_x > m_game->cell_size()) {
+        mouse_move(x - m_game->cell_size(), y);
+      } else if (m_mouse_x - x > m_game->cell_size()) {
+        mouse_move(x + m_game->cell_size(), y);
+      } else if (y - m_mouse_y > m_game->cell_size()) {
+        mouse_move(x, y - m_game->cell_size());
+      } else if (m_mouse_y - y > m_game->cell_size()) {
+        mouse_move(x, y + m_game->cell_size());
+      }
     }
-  }
 
-  mouse_move_controls(&m_game->info_pane(), x, y);
+    mouse_move_controls(&m_game->info_pane(), x, y);
 
-  int grid_x, grid_y;
-  m_game->get_puzzle_coords(&grid_x, &grid_y);
+    int grid_x, grid_y;
+    m_game->get_puzzle_coords(&grid_x, &grid_y);
 
-  int grid_width = m_game->cell_grid_width();
-  int grid_height = m_game->cell_grid_height();
+    int grid_width = m_game->cell_grid_width();
+    int grid_height = m_game->cell_grid_height();
 
-  if (x >= grid_x && x < grid_x + grid_width - 1
-      && y >= grid_y && y < grid_y + grid_height - 1) {
-    int cell_x, cell_y;
-    m_game->screen_coords_to_cell_coords(x, y, &cell_x, &cell_y);
-
-    if (m_mouse_lock_type == MouseLockType::to_row)
-      cell_y = m_mouse_lock_pos;
-    else if (m_mouse_lock_type == MouseLockType::to_col)
-      cell_x = m_mouse_lock_pos;
-
-    m_game->select_cell(cell_x, cell_y);
-  } else { //outside grid
-    m_game->clear_selection();
-  }
-
-  if (m_mouse_dragging
-      && (SDL_GetWindowFlags(m_window) & SDL_WINDOW_MOUSE_CAPTURE)) {
-    if (m_mouse_drag_type == DragType::screen) {
-      m_game->move_puzzle(x - m_mouse_x, y - m_mouse_y);
-    }
-    
-    m_mouse_x = x;
-    m_mouse_y = y;
-
-    if (m_mouse_drag_type != DragType::screen) {
-      if (m_mouse_lock_type == MouseLockType::to_row)
-        m_mouse_y = m_prev_mouse_y;
-      else if (m_mouse_lock_type == MouseLockType::to_col)
-        m_mouse_x = m_prev_mouse_x;
-
+    if (x >= grid_x && x < grid_x + grid_width - 1
+        && y >= grid_y && y < grid_y + grid_height - 1) {
       int cell_x, cell_y;
-      m_game->screen_coords_to_cell_coords(m_mouse_x, m_mouse_y,
-                                           &cell_x, &cell_y);
+      m_game->screen_coords_to_cell_coords(x, y, &cell_x, &cell_y);
 
-      //reset in case there was a lock
+      if (m_mouse_lock_type == MouseLockType::to_row)
+        cell_y = m_mouse_lock_pos;
+      else if (m_mouse_lock_type == MouseLockType::to_col)
+        cell_x = m_mouse_lock_pos;
+
+      m_game->select_cell(cell_x, cell_y);
+    } else { //outside grid
+      m_game->clear_selection();
+    }
+
+    if (m_mouse_dragging
+        && (SDL_GetWindowFlags(m_window) & SDL_WINDOW_MOUSE_CAPTURE)) {
+      if (m_mouse_drag_type == DragType::screen) {
+        m_game->move_puzzle(x - m_mouse_x, y - m_mouse_y);
+      }
+    
       m_mouse_x = x;
       m_mouse_y = y;
 
-      //lock mouse position if necessary
-      int prev_x, prev_y;
-      m_game->screen_coords_to_cell_coords(m_prev_mouse_x, m_prev_mouse_y,
-                                           &prev_x, &prev_y);
+      if (m_mouse_drag_type != DragType::screen) {
+        if (m_mouse_lock_type == MouseLockType::to_row)
+          m_mouse_y = m_prev_mouse_y;
+        else if (m_mouse_lock_type == MouseLockType::to_col)
+          m_mouse_x = m_prev_mouse_x;
 
-      if (m_mouse_lock_type == MouseLockType::no_lock) {
-        if (cell_x != prev_x && cell_y != prev_y) {
-          m_prev_mouse_x = m_mouse_x;
-          m_prev_mouse_y = m_mouse_y;
-        } else if (cell_x == prev_x && abs(cell_y - prev_y) > 0) {
-          m_mouse_lock_type = MouseLockType::to_col;
-          m_mouse_lock_pos = cell_x;
-          m_mouse_lock_time = default_mouse_lock_time;
-        } else if (cell_y == prev_y && abs(cell_x - prev_x) > 0) {
-          m_mouse_lock_type = MouseLockType::to_row;
-          m_mouse_lock_pos = cell_y;
-          m_mouse_lock_time = default_mouse_lock_time;
+        int cell_x, cell_y;
+        m_game->screen_coords_to_cell_coords(m_mouse_x, m_mouse_y,
+                                             &cell_x, &cell_y);
+
+        //reset in case there was a lock
+        m_mouse_x = x;
+        m_mouse_y = y;
+
+        //lock mouse position if necessary
+        int prev_x, prev_y;
+        m_game->screen_coords_to_cell_coords(m_prev_mouse_x, m_prev_mouse_y,
+                                             &prev_x, &prev_y);
+
+        if (m_mouse_lock_type == MouseLockType::no_lock) {
+          if (cell_x != prev_x && cell_y != prev_y) {
+            m_prev_mouse_x = m_mouse_x;
+            m_prev_mouse_y = m_mouse_y;
+          } else if (cell_x == prev_x && abs(cell_y - prev_y) > 0) {
+            m_mouse_lock_type = MouseLockType::to_col;
+            m_mouse_lock_pos = cell_x;
+            m_mouse_lock_time = default_mouse_lock_time;
+          } else if (cell_y == prev_y && abs(cell_x - prev_x) > 0) {
+            m_mouse_lock_type = MouseLockType::to_row;
+            m_mouse_lock_pos = cell_y;
+            m_mouse_lock_time = default_mouse_lock_time;
+          }
         }
-      }
 
-      //update cells
-      CellState state;
-      bool change_cell = false;
-      if (m_mouse_drag_type == DragType::marks
-          && m_game->puzzle().cell(cell_x, cell_y) == CellState::blank) {
-        change_cell = true;
-        state = CellState::marked;
-      } else if (m_mouse_drag_type == DragType::exes
-                 && m_game->puzzle().cell(cell_x, cell_y) == CellState::blank) {
-        change_cell = true;
-        state = CellState::exedout;
-      } else if (m_mouse_drag_type == DragType::blank_marks
-                 && m_game->puzzle().cell(cell_x, cell_y)
-                 == CellState::marked) {
-        change_cell = true;
-        state = CellState::blank;
-      } else if (m_mouse_drag_type == DragType::blank_exes
-                 && m_game->puzzle().cell(cell_x, cell_y)
-                 == CellState::exedout) {
-        change_cell = true;
-        state = CellState::blank;
-      }
+        //update cells
+        CellState state;
+        bool change_cell = false;
+        if (m_mouse_drag_type == DragType::marks
+            && m_game->puzzle().cell(cell_x, cell_y) == CellState::blank) {
+          change_cell = true;
+          state = CellState::marked;
+        } else if (m_mouse_drag_type == DragType::exes
+                   && m_game->puzzle().cell(cell_x, cell_y)
+                   == CellState::blank) {
+          change_cell = true;
+          state = CellState::exedout;
+        } else if (m_mouse_drag_type == DragType::blank_marks
+                   && m_game->puzzle().cell(cell_x, cell_y)
+                   == CellState::marked) {
+          change_cell = true;
+          state = CellState::blank;
+        } else if (m_mouse_drag_type == DragType::blank_exes
+                   && m_game->puzzle().cell(cell_x, cell_y)
+                   == CellState::exedout) {
+          change_cell = true;
+          state = CellState::blank;
+        }
 
-      if (change_cell)
-        m_game->set_cell(cell_x, cell_y, state);
+        if (change_cell)
+          m_game->set_cell(cell_x, cell_y, state);
+      }
     }
-  }
+  } //if state = puzzle
 }
 
 void InputHandler::mouse_press(Uint8 button, bool down) {
@@ -182,7 +187,9 @@ void InputHandler::mouse_press(Uint8 button, bool down) {
 
   SDL_GetMouseState(&m_mouse_x, &m_mouse_y);
 
-  if (m_game->state() == GameState::puzzle) {
+  if (m_game->state() == GameState::main_menu) {
+    mouse_press_controls(&m_game->main_menu(), button, down);
+  } else if (m_game->state() == GameState::puzzle) {
     mouse_press_controls(&m_game->info_pane(), button, down);
     
     int grid_x, grid_y;
@@ -286,188 +293,192 @@ void InputHandler::mouse_press(Uint8 button, bool down) {
 }
 
 void InputHandler::mouse_wheel(int y, Uint32 orientation) {
-  SDL_GetMouseState(&m_mouse_x, &m_mouse_y);
+  if (m_game->state() == GameState::puzzle) {
+    SDL_GetMouseState(&m_mouse_x, &m_mouse_y);
 
-  if (m_mouse_x > m_game->info_pane().width()) {
-    if (orientation = SDL_MOUSEWHEEL_FLIPPED) {
-      y = -y;
-    }
+    if (m_mouse_x > m_game->info_pane().width()) {
+      if (orientation = SDL_MOUSEWHEEL_FLIPPED) {
+        y = -y;
+      }
   
-    if (y < 0)
-      m_game->zoom_in(m_mouse_x, m_mouse_y);
-    else if (y > 0)
-      m_game->zoom_out(m_mouse_x, m_mouse_y);
+      if (y < 0)
+        m_game->zoom_in(m_mouse_x, m_mouse_y);
+      else if (y > 0)
+        m_game->zoom_out(m_mouse_x, m_mouse_y);
+    }
   }
 }
 
 void InputHandler::key_press(SDL_Keycode key, bool down) {
-  key_press_controls(&m_game->info_pane(), key, down);
+  if (m_game->state() == GameState::puzzle) {
+    key_press_controls(&m_game->info_pane(), key, down);
   
-  if (down) {
-    //search for key in map
-    auto iter = m_key_mapping.find(key);
+    if (down) {
+      //search for key in map
+      auto iter = m_key_mapping.find(key);
 
-    //get selected cell in case we need it
-    int sel_x, sel_y;
-    m_game->get_selected_cell(&sel_x, &sel_y);
+      //get selected cell in case we need it
+      int sel_x, sel_y;
+      m_game->get_selected_cell(&sel_x, &sel_y);
 
-    if (iter != m_key_mapping.end()) {
-      KeyAction action = iter->second;
-      switch (action) {
-      case KeyAction::screen_left:
-        m_move_screen_horiz = -move_speed;
-        m_movement_duration = 0.0;
-        break;
-      case KeyAction::screen_right:
-        m_move_screen_horiz = move_speed;
-        m_movement_duration = 0.0;
-        break;
-      case KeyAction::screen_up:
-        m_move_screen_vert = -move_speed;
-        m_movement_duration = 0.0;
-        break;
-      case KeyAction::screen_down:
-        m_move_screen_vert = move_speed;
-        m_movement_duration = 0.0;
-        break;
-      case KeyAction::move_left:
-        move_selection(true, -1);
-        break;
-      case KeyAction::move_right:
-        move_selection(true, 1);
-        break;
-      case KeyAction::move_up:
-        move_selection(false, -1);
-        break;
-      case KeyAction::move_down:
-        move_selection(false, 1);
-        break;
-      case KeyAction::mark:
-        if (m_game->is_cell_selected() && !m_kb_dragging) {
-          m_kb_dragging = true;
+      if (iter != m_key_mapping.end()) {
+        KeyAction action = iter->second;
+        switch (action) {
+        case KeyAction::screen_left:
+          m_move_screen_horiz = -move_speed;
+          m_movement_duration = 0.0;
+          break;
+        case KeyAction::screen_right:
+          m_move_screen_horiz = move_speed;
+          m_movement_duration = 0.0;
+          break;
+        case KeyAction::screen_up:
+          m_move_screen_vert = -move_speed;
+          m_movement_duration = 0.0;
+          break;
+        case KeyAction::screen_down:
+          m_move_screen_vert = move_speed;
+          m_movement_duration = 0.0;
+          break;
+        case KeyAction::move_left:
+          move_selection(true, -1);
+          break;
+        case KeyAction::move_right:
+          move_selection(true, 1);
+          break;
+        case KeyAction::move_up:
+          move_selection(false, -1);
+          break;
+        case KeyAction::move_down:
+          move_selection(false, 1);
+          break;
+        case KeyAction::mark:
+          if (m_game->is_cell_selected() && !m_kb_dragging) {
+            m_kb_dragging = true;
 
-          CellState state;
-          bool change_state = false;
-          if (m_game->puzzle().cell(sel_x, sel_y) == CellState::blank) {
-            m_kb_drag_type = DragType::marks;
-            state = CellState::marked;
-            change_state = true;
-          } else if (m_game->puzzle().cell(sel_x, sel_y)
-                     == CellState::marked) {
-            m_kb_drag_type = DragType::blank_marks;
-            state = CellState::blank;
-            change_state = true;
-          } else if (m_game->puzzle().cell(sel_x, sel_y)
-                     == CellState::exedout) {
-            m_kb_drag_type = DragType::blank_exes;
-            state = CellState::blank;
-            change_state = true;
-          }
-
-          if (change_state)
-            m_game->set_cell(sel_x, sel_y, state);
-        } else { //no selection
-          m_game->select_cell(sel_x, sel_y);
-        }
-        break;
-      case KeyAction::exout:
-        if (m_game->is_cell_selected() && !m_kb_dragging) {
-          m_kb_dragging = true;
-
-          CellState state;
-          bool change_state = false;
-          if (m_game->puzzle().cell(sel_x, sel_y) == CellState::blank) {
-            m_kb_drag_type = DragType::exes;
-            state = CellState::exedout;
-            change_state = true;
-          } else if (m_game->puzzle().cell(sel_x, sel_y)
-                     == CellState::marked) {
-            m_kb_drag_type = DragType::blank_marks;
-            state = CellState::blank;
-            change_state = true;
-          } else if (m_game->puzzle().cell(sel_x, sel_y)
-                     == CellState::exedout) {
-            m_kb_drag_type = DragType::blank_exes;
-            state = CellState::blank;
-            change_state = true;
-          }
-
-          if (change_state)
-            m_game->set_cell(sel_x, sel_y, state);
-        } else { //no selection
-          m_game->select_cell(sel_x, sel_y);
-        }
-        break;
-      }
-
-      if (m_kb_dragging) {
-        if (action == KeyAction::move_left || action == KeyAction::move_right
-            || action == KeyAction::move_up || action == KeyAction::move_down) {
-          CellState state;
-          bool change_state = false;
-          m_game->get_selected_cell(&sel_x, &sel_y);
-
-          switch (m_kb_drag_type) {
-          case DragType::marks:
+            CellState state;
+            bool change_state = false;
             if (m_game->puzzle().cell(sel_x, sel_y) == CellState::blank) {
+              m_kb_drag_type = DragType::marks;
               state = CellState::marked;
               change_state = true;
+            } else if (m_game->puzzle().cell(sel_x, sel_y)
+                       == CellState::marked) {
+              m_kb_drag_type = DragType::blank_marks;
+              state = CellState::blank;
+              change_state = true;
+            } else if (m_game->puzzle().cell(sel_x, sel_y)
+                       == CellState::exedout) {
+              m_kb_drag_type = DragType::blank_exes;
+              state = CellState::blank;
+              change_state = true;
             }
-            break;
-          case DragType::exes:
+
+            if (change_state)
+              m_game->set_cell(sel_x, sel_y, state);
+          } else { //no selection
+            m_game->select_cell(sel_x, sel_y);
+          }
+          break;
+        case KeyAction::exout:
+          if (m_game->is_cell_selected() && !m_kb_dragging) {
+            m_kb_dragging = true;
+
+            CellState state;
+            bool change_state = false;
             if (m_game->puzzle().cell(sel_x, sel_y) == CellState::blank) {
+              m_kb_drag_type = DragType::exes;
               state = CellState::exedout;
               change_state = true;
-            }
-            break;
-          case DragType::blank_marks:
-            if (m_game->puzzle().cell(sel_x, sel_y) == CellState::marked) {
+            } else if (m_game->puzzle().cell(sel_x, sel_y)
+                       == CellState::marked) {
+              m_kb_drag_type = DragType::blank_marks;
+              state = CellState::blank;
+              change_state = true;
+            } else if (m_game->puzzle().cell(sel_x, sel_y)
+                       == CellState::exedout) {
+              m_kb_drag_type = DragType::blank_exes;
               state = CellState::blank;
               change_state = true;
             }
-            break;
-          case DragType::blank_exes:
-            if (m_game->puzzle().cell(sel_x, sel_y) == CellState::exedout) {
-              state = CellState::blank;
-              change_state = true;
-            }
-            break;
-          } //switch
 
-          if (change_state)
-            m_game->set_cell(sel_x, sel_y, state);
-        } //if action is move
-      } //if m_kb_dragging
+            if (change_state)
+              m_game->set_cell(sel_x, sel_y, state);
+          } else { //no selection
+            m_game->select_cell(sel_x, sel_y);
+          }
+          break;
+        }
 
-      //move camera if selection is offscreen
-      if (action == KeyAction::move_left || action == KeyAction::move_right
-          || action == KeyAction::move_up || action == KeyAction::move_down
-          || action == KeyAction::mark || action == KeyAction::exout) {
-        m_game->make_selected_cell_visible();
-      } //if action involves cell selection
-    } //if key found in map
-  } else { //key is up
-    auto iter = m_key_mapping.find(key);
+        if (m_kb_dragging) {
+          if (action == KeyAction::move_left || action == KeyAction::move_right
+              || action == KeyAction::move_up || action == KeyAction::move_down) {
+            CellState state;
+            bool change_state = false;
+            m_game->get_selected_cell(&sel_x, &sel_y);
 
-    if (iter != m_key_mapping.end()) {
-      KeyAction action = iter->second;
+            switch (m_kb_drag_type) {
+            case DragType::marks:
+              if (m_game->puzzle().cell(sel_x, sel_y) == CellState::blank) {
+                state = CellState::marked;
+                change_state = true;
+              }
+              break;
+            case DragType::exes:
+              if (m_game->puzzle().cell(sel_x, sel_y) == CellState::blank) {
+                state = CellState::exedout;
+                change_state = true;
+              }
+              break;
+            case DragType::blank_marks:
+              if (m_game->puzzle().cell(sel_x, sel_y) == CellState::marked) {
+                state = CellState::blank;
+                change_state = true;
+              }
+              break;
+            case DragType::blank_exes:
+              if (m_game->puzzle().cell(sel_x, sel_y) == CellState::exedout) {
+                state = CellState::blank;
+                change_state = true;
+              }
+              break;
+            } //switch
 
-      switch (action) {
-      case KeyAction::screen_left:
-      case KeyAction::screen_right:
-        m_move_screen_horiz = 0;
-        break;
-      case KeyAction::screen_up:
-      case KeyAction::screen_down:
-        m_move_screen_vert = 0;
-        break;
-      case KeyAction::mark:
-      case KeyAction::exout:
-        m_kb_dragging = false;
-        break;
-      } //switch
-    } //if key mapping was found
-  } //if key is up
+            if (change_state)
+              m_game->set_cell(sel_x, sel_y, state);
+          } //if action is move
+        } //if m_kb_dragging
+
+        //move camera if selection is offscreen
+        if (action == KeyAction::move_left || action == KeyAction::move_right
+            || action == KeyAction::move_up || action == KeyAction::move_down
+            || action == KeyAction::mark || action == KeyAction::exout) {
+          m_game->make_selected_cell_visible();
+        } //if action involves cell selection
+      } //if key found in map
+    } else { //key is up
+      auto iter = m_key_mapping.find(key);
+
+      if (iter != m_key_mapping.end()) {
+        KeyAction action = iter->second;
+
+        switch (action) {
+        case KeyAction::screen_left:
+        case KeyAction::screen_right:
+          m_move_screen_horiz = 0;
+          break;
+        case KeyAction::screen_up:
+        case KeyAction::screen_down:
+          m_move_screen_vert = 0;
+          break;
+        case KeyAction::mark:
+        case KeyAction::exout:
+          m_kb_dragging = false;
+          break;
+        } //switch
+      } //if key mapping was found
+    } //if key is up
+  } //if game is in puzzle state
 }
 
 bool InputHandler::is_point_in_grid(int x, int y) const {
