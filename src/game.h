@@ -17,6 +17,7 @@ class Game {
   void update(int elapsed_time);
 
   void load_puzzle(const std::string& filename);
+  bool is_puzzle_loaded() const { return m_puzzle_loaded; }
 
   void get_puzzle_coords(int* x, int* y) const;
   void move_puzzle(int relx, int rely);
@@ -61,6 +62,7 @@ class Game {
   void zoom(int amount, int x, int y);
 
   Puzzle* m_puzzle;
+  bool m_puzzle_loaded;
   
   GameState m_state;
   GameState m_next_state;

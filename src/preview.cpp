@@ -11,8 +11,10 @@ void Preview::update_pixel_size() {
   get_size(&width, &height);
   
   int pixel_width = 1, pixel_height = 1;
-  pixel_width = width / m_game->puzzle().width();
-  pixel_height = height / m_game->puzzle().height();
+  if (m_game->is_puzzle_loaded()) {
+    pixel_width = width / m_game->puzzle().width();
+    pixel_height = height / m_game->puzzle().height();
+  }
   
   m_pixel_size = (pixel_width < pixel_height) ? pixel_width : pixel_height;
 }

@@ -23,7 +23,8 @@ void do_options(Game* game);
 void do_about(Game* game);
 
 Game::Game(const std::string& data_dir, const std::string& save_dir)
-  : m_puzzle{nullptr}, m_grid_x{0}, m_grid_y{0}, m_cell_size{32},
+  : m_puzzle{nullptr}, m_puzzle_loaded{false},
+    m_grid_x{0}, m_grid_y{0}, m_cell_size{32},
     m_target_cell_size{32}, m_target_x{0}, m_target_y{0},
     m_selected{false}, m_selection_x{0}, m_selection_y{0},
     m_recalc_size{true}, m_row_rule_width{0}, m_col_rule_height{0},
@@ -90,6 +91,7 @@ void Game::load_puzzle(const std::string& filename) {
   if (m_puzzle) delete m_puzzle;
 
   m_puzzle = new Puzzle(filename);
+  m_puzzle_loaded = true;
 
   default_zoom();
   m_info_pane->setup_controls(default_info_pane_width);
@@ -113,6 +115,9 @@ void Game::update_screen_size(int width, int height) {
   //recenter the puzzle
   m_grid_x += (width - prev_width) / 2;
   m_grid_y += (height - prev_height) / 2;
+
+  //recenter info pane
+  m_info_pane->setup_controls(default_info_pane_width);
 }
 
 void Game::get_puzzle_coords(int* x, int* y) const {

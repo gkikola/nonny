@@ -75,7 +75,10 @@ void InfoPane::slide_pane(int starting_width, int ending_width) {
 void InfoPane::setup_controls(int pane_width) {
   int y = default_spacing;
 
-  const std::string& title = m_game->puzzle().title();
+  std::string title = "";
+  if (m_game->is_puzzle_loaded())
+    title = m_game->puzzle().title();
+  
   if (title.length() > 0) {  
     m_title->move(default_spacing, y);
     m_title->resize(pane_width - 2 * default_spacing, text_height_heading);
@@ -86,11 +89,15 @@ void InfoPane::setup_controls(int pane_width) {
     y += default_spacing;
   }
 
-  int puzzle_width = m_game->puzzle().width();
-  int puzzle_height = m_game->puzzle().height();
-  std::string size_str = std::to_string(puzzle_width);
-  size_str += " × ";
-  size_str += std::to_string(puzzle_height);
+  std::string size_str = "";
+  int puzzle_width = 0, puzzle_height = 0;
+  if (m_game->is_puzzle_loaded()) {
+    puzzle_width = m_game->puzzle().width();
+    puzzle_height = m_game->puzzle().height();
+    size_str = std::to_string(puzzle_width);
+    size_str += " × ";
+    size_str += std::to_string(puzzle_height);
+  }
   
   m_size->move(default_spacing, y);
   m_size->resize(pane_width - 2 * default_spacing, text_height_std);
@@ -114,7 +121,10 @@ void InfoPane::setup_controls(int pane_width) {
   y += height;
   y += default_spacing;
 
-  const std::string& author = m_game->puzzle().author();
+  std::string author = "";
+  if (m_game->is_puzzle_loaded())
+    author = m_game->puzzle().author();
+
   if (author.length() > 0) {
     m_author->move(default_spacing, y);
     m_author->resize(pane_width - 2 * default_spacing, text_height_small);
@@ -139,6 +149,18 @@ void InfoPane::setup_controls(int pane_width) {
   m_errors->resize(button_size, text_height_std + default_spacing);
   m_errors->set_label("X");
   m_errors->register_callback(toggle_errors);
+
+  y += text_height_std;
+  y += default_spacing;
+
+  //figure out how much space is left over
+  int diff = (m_game->screen_height() - y) / 2;
+
+  for (Control* control : *this) {
+    int x, y;
+    control->get_position(&x, &y);
+    control->move(x, y + diff);
+  }
 }
 
 void open_menu(Game* game) {
