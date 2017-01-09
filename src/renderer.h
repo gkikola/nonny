@@ -32,6 +32,7 @@ class Renderer {
 
   void draw_horiz_line(int x1, int x2, int y, int extra_thickness);
   void draw_vert_line(int x, int y1, int y2, int extra_thickness);
+  void draw_dotted_rect(SDL_Rect* rect);
   void draw_text(TTF_Font* font, SDL_Color* color, const std::string& str,
                  int x, int y, int width = 0, int height = 0);
   void render_puzzle();

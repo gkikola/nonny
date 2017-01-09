@@ -16,6 +16,7 @@ const std::string font_filename_bold = "FreeSansBold.ttf";
 
 const int cell_age_time = 50;
 const bool show_framerate = false;
+const int button_selection_spacing = 4;
 
 Renderer::Renderer(SDL_Window* window, Game* game, const std::string& data_dir)
   : m_window{window}, m_game{game}, m_data_dir{data_dir}, m_framerate{0} {
@@ -153,6 +154,38 @@ void Renderer::draw_vert_line(int x, int y1, int y2, int extra_thickness) {
   rect.w = 1 + 2 * extra_thickness;
   rect.h = y2 - y1;
   SDL_RenderFillRect(m_renderer, &rect);
+}
+
+void Renderer::draw_dotted_rect(SDL_Rect* rect) {
+  int num_points = rect->w + rect->h;
+  SDL_Point* points = new SDL_Point[num_points];
+
+  for (int i = 0; i < num_points; ++i) {
+    int x = 0, y = 0;
+
+    if (i < rect->w) {
+      if (i % 2 == 0) {
+        x = rect->x + i;
+        y = rect->y;
+      } else {
+        x = rect->x + i;
+        y = rect->y + rect->h - 1;
+      }
+    } else {
+      if (i % 2 == 0) {
+        x = rect->x;
+        y = rect->y + (i - rect->w);
+      } else {
+        x = rect->x + rect->w - 1;
+        y = rect->y + (i - rect->w);
+      }
+    }
+
+    points[i].x = x;
+    points[i].y = y;
+  }
+
+  SDL_RenderDrawPoints(m_renderer, points, num_points);
 }
 
 void Renderer::draw_text(TTF_Font* font, SDL_Color* color,
@@ -506,7 +539,20 @@ void Renderer::render_control(const Button* button) {
   SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 255);
   SDL_RenderDrawRect(m_renderer, &rect);
 
-  SDL_Color color = { 0, 0, 0, 255 };
+  if (button->is_selected()) {
+    rect.x += button_selection_spacing;
+    rect.y += button_selection_spacing;
+    rect.w -= button_selection_spacing * 2;
+    rect.h -= button_selection_spacing * 2;
+    
+    draw_dotted_rect(&rect);
+  }
+
+  SDL_Color color;
+  if (button->is_mouse_hovering())
+    color = { 0, 0, 0, 255 };
+  else
+    color = { 64, 64, 64, 255 };
   draw_text(m_control_font, &color, button->label(),
             rect.x, rect.y, rect.w, rect.h);
 }
