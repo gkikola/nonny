@@ -37,7 +37,7 @@ void Game::load_puzzle(const std::string& filename) {
 
   default_zoom();
 
-  m_info_pane->position_controls();
+  m_info_pane->setup_controls();
 }
 
 void Game::set_rule_dimensions(int row_rule_width, int col_rule_height) {

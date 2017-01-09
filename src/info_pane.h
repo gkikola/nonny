@@ -18,17 +18,15 @@ class InfoPane {
   int width() const { return m_width; }
 
   void update();
+  void draw(Renderer* renderer) const;
 
-  void position_controls();
-
-  typedef std::vector<Control*>::const_iterator const_iterator;
-  const_iterator begin() const { return m_controls.begin(); }
-  const_iterator end() const { return m_controls.end(); }
+  void setup_controls();
  private:
   Game* m_game;
 
-  std::vector<Control*> m_controls;
   Preview* m_preview;
+  StaticText* m_title;
+  StaticText* m_size;
 
   int m_width;
 };

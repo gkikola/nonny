@@ -2,6 +2,7 @@
 #include <cctype>
 #include <exception>
 #include <fstream>
+#include <iostream>
 #include <sstream>
 #include <string>
 
@@ -45,6 +46,8 @@ void Puzzle::age_cell(int x, int y, int max) {
 }
 
 void Puzzle::load_file(const std::string& filename) {
+  unload_puzzle();
+
   std::string line;
   std::ifstream file(filename);
 
@@ -57,6 +60,7 @@ void Puzzle::load_file(const std::string& filename) {
   while (getline(file, line)) {
     std::istringstream ss(line);
     std::string property;
+    std::string* str_argument = nullptr;
 
     ss >> property;
     transform(property.begin(), property.end(), property.begin(), tolower);
@@ -75,7 +79,7 @@ void Puzzle::load_file(const std::string& filename) {
         }
 
         char ch;
-        while ((ch = ss.peek()) != EOF) {
+        while (ss && (ch = ss.peek()) != EOF) {
           if (ch == ' ' || ch == ',' || ch == '\t')
             ss.get(); //eat the character
           else { //read rule data
@@ -96,13 +100,51 @@ void Puzzle::load_file(const std::string& filename) {
         ss >> m_width;
       else if (property == "height")
         ss >> m_height;
+      else if (property == "title")
+        str_argument = &m_title;
+      else if (property == "author")
+        str_argument = &m_author;
       else if (property == "rows") {
         reading_rows = true;
       } else if (property == "columns") {
         reading_rows = false;
       }
-    }
-  }
+
+      if (str_argument) { //need to read an argument
+        //ignore whitespace
+        while (ss && (ss.peek() == ' ' || ss.peek() == '\t'))
+          ss.get();
+
+        while (ss) {
+          char ch = ss.get();
+          if (ch == '"') {
+            if (str_argument->length() > 0) //this is the closing quote
+              break;
+          } else if (ch == '\\') { //escape sequence
+            switch (ss.get()) {
+            case 'n':
+              *str_argument += '\n';
+              break;
+            case 't':
+              *str_argument += '\t';
+              break;
+            case '\\':
+              *str_argument += '\\';
+              break;
+            case '"':
+              *str_argument += '"';
+              break;
+            case '\'':
+              *str_argument += '\'';
+              break;
+            }
+          } else { //not a " or \, add it to argument
+            *str_argument += ch;
+          }
+        } //while
+      } //if str_argument
+    } //property length > 0
+  } //while
 
   Cell blank;
   blank.state = CellState::blank;
@@ -112,4 +154,12 @@ void Puzzle::load_file(const std::string& filename) {
   m_grid.resize(m_width * m_height, blank);
 
   file.close();
+}
+
+void Puzzle::unload_puzzle() {
+  m_width = m_height = 0;
+  m_grid.empty();
+  m_row_rules.empty();
+  m_col_rules.empty();
+  m_title = "";
 }

@@ -11,7 +11,8 @@
 #include "renderer.h"
 
 const std::string cell_sheet_filename = "cell.png";
-const std::string font_filename = "FreeSans.ttf";
+const std::string font_filename_std = "FreeSans.ttf";
+const std::string font_filename_bold = "FreeSansBold.ttf";
 
 const int cell_age_time = 50;
 const bool show_framerate = false;
@@ -50,9 +51,15 @@ Renderer::Renderer(SDL_Window* window, Game* game, const std::string& data_dir)
   m_num_animation_frames = width / m_cell_sheet_frame_size;
 
   //load fonts
-  std::string font_path = m_data_dir + font_filename;
-  m_menu_font = TTF_OpenFont(font_path.c_str(), 30);
-  m_info_font = TTF_OpenFont(font_path.c_str(), 16);
+  std::string font_path = m_data_dir + font_filename_bold;
+  m_menu_font = TTF_OpenFont(font_path.c_str(), 32);
+
+  font_path = m_data_dir + font_filename_std;
+  m_info_font = TTF_OpenFont(font_path.c_str(), 24);
+
+  if (m_menu_font == NULL || m_info_font == NULL)
+    throw std::runtime_error("TTF_OpenFont: could not open font file");
+  
   m_rule_font = nullptr; //will be initialized when rendering starts
 }
 
@@ -147,20 +154,24 @@ void Renderer::draw_vert_line(int x, int y1, int y2, int extra_thickness) {
 }
 
 void Renderer::draw_text(TTF_Font* font, SDL_Color* color,
-                         const std::string& str, int x, int y) {
-  SDL_Surface* surface = TTF_RenderText_Blended(font, str.c_str(), *color);
+                         const std::string& str, int x, int y,
+                         int width, int height) {
+  SDL_Surface* surface = TTF_RenderUTF8_Blended(font, str.c_str(), *color);
   SDL_Texture* texture = SDL_CreateTextureFromSurface(m_renderer, surface);
   SDL_FreeSurface(surface);
 
-  int width, height, access;
+  int texture_width, texture_height, access;
   Uint32 fmt;
-  SDL_QueryTexture(texture, &fmt, &access, &width, &height);
+  SDL_QueryTexture(texture, &fmt, &access, &texture_width, &texture_height);
 
+  if (width == 0) width = texture_width;
+  if (height == 0) height = texture_height;
+  
   SDL_Rect dest_rect;
-  dest_rect.x = x;
-  dest_rect.y = y;
-  dest_rect.w = width;
-  dest_rect.h = height;
+  dest_rect.x = x + width / 2 - texture_width / 2;
+  dest_rect.y = y + height / 2 - texture_height / 2;
+  dest_rect.w = texture_width;
+  dest_rect.h = texture_height;
   
   SDL_RenderCopy(m_renderer, texture, NULL, &dest_rect);
   SDL_DestroyTexture(texture);
@@ -197,9 +208,7 @@ void Renderer::render_info_pane() {
   SDL_SetRenderDrawColor(m_renderer, 123, 175, 212, 255);
   SDL_RenderFillRect(m_renderer, &info_pane);
 
-  for (Control* ctrl : m_game->info_pane()) {
-    ctrl->draw(this);
-  }
+  m_game->info_pane().draw(this);
 }
 
 void Renderer::draw_cells() {
@@ -457,6 +466,30 @@ void Renderer::render_control(const Preview* preview) {
   }
 }
 
+void Renderer::render_control(const StaticText* stat_text) {
+  int x, y;
+  stat_text->get_position(&x, &y);
+  int width, height;
+  stat_text->get_size(&width, &height);
+
+  std::string str;
+  stat_text->get_string(&str);
+  
+  SDL_Color color = { 0, 0, 0, 255 };
+  TTF_Font* font;
+  switch (stat_text->type()) {
+  case StaticText::Type::heading:
+    font = m_menu_font;
+    break;
+  default:
+  case StaticText::Type::standard:
+    font = m_info_font;
+    break;
+  }
+  
+  draw_text(font, &color, str, x, y, width, height);
+}
+
 int Renderer::row_rule_width(int row, int buffer) {
   int width = buffer;
 
@@ -489,7 +522,7 @@ void Renderer::reload_font(int font_size) {
   if (m_rule_font)
     TTF_CloseFont(m_rule_font);
 
-  std::string font_path = m_data_dir + font_filename;
+  std::string font_path = m_data_dir + font_filename_std;
   m_rule_font = TTF_OpenFont(font_path.c_str(), font_size);
 
   if (!m_rule_font)

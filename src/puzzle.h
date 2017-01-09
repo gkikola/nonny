@@ -31,17 +31,24 @@ public:
   int cell_age(int x, int y) const { return m_grid[y * m_width + x].age; }
   void set_cell(int x, int y, CellState state);
   void age_cell(int x, int y, int max);
+
+  const std::string& title() const { return m_title; }
+  const std::string& author() const { return m_author; }
   
   const std::vector<RuleEntry>& get_row_rule(int row) const;
   const std::vector<RuleEntry>& get_col_rule(int col) const;
 private:
   void load_file(const std::string& filename);
+  void unload_puzzle();
   
   std::vector<Cell> m_grid;
   std::vector<std::vector<RuleEntry>> m_row_rules;
   std::vector<std::vector<RuleEntry>> m_col_rules;
   int m_width;
   int m_height;
+
+  std::string m_title;
+  std::string m_author;
 };
 
 #endif

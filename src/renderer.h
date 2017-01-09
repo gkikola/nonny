@@ -7,6 +7,7 @@
 
 #include "preview.h"
 #include "puzzle.h"
+#include "static_text.h"
 
 class Control;
 class Game;
@@ -18,6 +19,7 @@ class Renderer {
 
   void render_game();
   void render_control(const Preview* preview);
+  void render_control(const StaticText* stat_text);
   
   void update(int elapsed_time);
  private:
@@ -30,7 +32,7 @@ class Renderer {
   void draw_horiz_line(int x1, int x2, int y, int extra_thickness);
   void draw_vert_line(int x, int y1, int y2, int extra_thickness);
   void draw_text(TTF_Font* font, SDL_Color* color, const std::string& str,
-                 int x, int y);
+                 int x, int y, int width = 0, int height = 0);
   void render_puzzle();
   void render_info_pane();
   void shade_cells();
