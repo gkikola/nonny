@@ -2,17 +2,16 @@
 #define NONNY_INFO_PANE_H
 
 #include <vector>
-#include "renderer.h"
-
 #include "control.h"
+#include "control_container.h"
 #include "preview.h"
+#include "renderer.h"
 
 class Game;
 
-class InfoPane {
+class InfoPane : public ControlContainer {
  public:
-  InfoPane(Game* game);
-  ~InfoPane();
+  explicit InfoPane(Game* game);
 
   void set_width(int width) { m_width = width; }
   int width() const { return m_width; }
@@ -20,8 +19,6 @@ class InfoPane {
   void get_preview_position(int* x, int* y) const;
   void get_preview_size(int* width, int* height) const;
   
-  void draw(Renderer* renderer) const;
-
   void setup_controls();
  private:
   Game* m_game;

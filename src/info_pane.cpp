@@ -14,29 +14,11 @@ const int text_height_small = 14;
 void open_menu(Game* game);
 
 InfoPane::InfoPane(Game* game) : m_game{game}, m_width{0} {
-  m_preview = new Preview(game);
-  m_title = new StaticText(game);
-  m_size = new StaticText(game);
-  m_author = new StaticText(game);
-  
-  m_menu = new Button(game);
-}
-
-InfoPane::~InfoPane() {
-  delete m_menu;
-  delete m_author;
-  delete m_size;
-  delete m_title;
-  delete m_preview;
-}
-
-void InfoPane::draw(Renderer* renderer) const {
-  m_preview->draw(renderer);
-  m_title->draw(renderer);
-  m_size->draw(renderer);
-  m_author->draw(renderer);
-
-  m_menu->draw(renderer);
+  add_control(m_preview = new Preview(game));
+  add_control(m_title = new StaticText(game));
+  add_control(m_size = new StaticText(game));
+  add_control(m_author = new StaticText(game));
+  add_control(m_menu = new Button(game));
 }
 
 void InfoPane::get_preview_position(int* x, int* y) const {

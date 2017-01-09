@@ -4,10 +4,20 @@
 #include <list>
 
 class Control;
+class Renderer;
 
 class ControlContainer {
  public:
+  virtual ~ControlContainer();
+
   typedef std::list<Control*>::iterator iterator;
+
+  iterator begin();
+  iterator end();
+
+  virtual void draw(Renderer* renderer) const;
+ protected:
+  void add_control(Control* control);
  private:
   typedef std::list<Control*> ControlList;
 
