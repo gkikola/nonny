@@ -52,20 +52,20 @@ Renderer::Renderer(SDL_Window* window, Game* game, const std::string& data_dir)
 
   //load fonts
   std::string font_path = m_data_dir + font_filename_bold;
-  m_menu_font = TTF_OpenFont(font_path.c_str(), 32);
+  m_title_font = TTF_OpenFont(font_path.c_str(), 32);
 
   font_path = m_data_dir + font_filename_std;
-  m_info_font = TTF_OpenFont(font_path.c_str(), 24);
+  m_control_font = TTF_OpenFont(font_path.c_str(), 24);
 
-  if (m_menu_font == NULL || m_info_font == NULL)
+  if (m_title_font == NULL || m_control_font == NULL)
     throw std::runtime_error("TTF_OpenFont: could not open font file");
   
   m_rule_font = nullptr; //will be initialized when rendering starts
 }
 
 Renderer::~Renderer() {
-  if (m_menu_font) TTF_CloseFont(m_menu_font);
-  if (m_info_font) TTF_CloseFont(m_info_font);
+  if (m_title_font) TTF_CloseFont(m_title_font);
+  if (m_control_font) TTF_CloseFont(m_control_font);
   if (m_rule_font) TTF_CloseFont(m_rule_font);
   if (m_cell_sheet) SDL_DestroyTexture(m_cell_sheet);
   if (m_renderer) SDL_DestroyRenderer(m_renderer);
@@ -437,7 +437,7 @@ void Renderer::draw_framerate() {
   str += " frames per second";
 
   SDL_Color color = { 0, 0, 0, 255 };
-  draw_text(m_info_font, &color, str, m_game->info_pane().width() + 5, 5);
+  draw_text(m_control_font, &color, str, m_game->info_pane().width() + 5, 5);
 }
 
 void Renderer::render_control(const Preview* preview) {
@@ -479,11 +479,11 @@ void Renderer::render_control(const StaticText* stat_text) {
   TTF_Font* font;
   switch (stat_text->type()) {
   case StaticText::Type::heading:
-    font = m_menu_font;
+    font = m_title_font;
     break;
   default:
   case StaticText::Type::standard:
-    font = m_info_font;
+    font = m_control_font;
     break;
   }
   

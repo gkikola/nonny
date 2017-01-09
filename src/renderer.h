@@ -53,8 +53,8 @@ class Renderer {
   int m_num_animation_frames;
   int m_time_until_cell_aging;
   
-  TTF_Font* m_menu_font;
-  TTF_Font* m_info_font;
+  TTF_Font* m_title_font;
+  TTF_Font* m_control_font;
   TTF_Font* m_rule_font;
 
   std::string m_data_dir;
