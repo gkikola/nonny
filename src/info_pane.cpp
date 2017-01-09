@@ -40,7 +40,8 @@ void InfoPane::get_preview_size(int* width, int* height) const {
 void InfoPane::update(int elapsed_time) {
   if (m_sliding) {
     if (m_width != m_target_width) {
-      m_slide_delta += slide_speed * (elapsed_time / 1000.0);
+      int multiplier = 1 + m_game->screen_width() / 805;
+      m_slide_delta += multiplier * slide_speed * (elapsed_time / 1000.0);
       int amount = floor(m_slide_delta);
       if (amount > 0) {
         m_slide_delta = 0;
@@ -49,8 +50,8 @@ void InfoPane::update(int elapsed_time) {
           amount = -amount;
 
         m_width += amount;
-        if ((amount > 0 && m_width > m_target_width)
-            || (amount < 0 && m_width < m_target_width)) {
+        if ((amount > 0 && m_width >= m_target_width)
+            || (amount < 0 && m_width <= m_target_width)) {
           m_sliding = false;
           m_width = m_target_width;
         } //if m_width overtook m_target_width

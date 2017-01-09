@@ -48,6 +48,9 @@ class Game {
 
   const std::string& data_dir() const { return m_data_dir; }
   const std::string& save_dir() const { return m_save_dir; }
+
+  int screen_width() const { return m_screen_width; }
+  int screen_height() const { return m_screen_height; }
   
   InfoPane& info_pane() const { return *m_info_pane; }
   Menu& main_menu() const { return *m_main_menu; }

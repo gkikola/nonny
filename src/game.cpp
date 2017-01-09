@@ -1,4 +1,5 @@
 #include <cmath>
+#include <iostream>
 #include <string>
 
 #include "info_pane.h"
@@ -64,7 +65,7 @@ void Game::update(int elapsed_time) {
   if (m_state != m_next_state && !m_info_pane->is_sliding())
     m_state = m_next_state;
 
-  if (m_state == GameState::puzzle) {    
+  if (m_state == GameState::puzzle) {
     if (m_cell_size != m_target_cell_size) {
       int multiplier = (1 + std::abs(m_cell_size - m_target_cell_size)
                         / cell_size_step);
@@ -102,16 +103,17 @@ void Game::set_rule_dimensions(int row_rule_width, int col_rule_height) {
 }
 
 void Game::update_screen_size(int width, int height) {
-  //recenter the puzzle
-  m_grid_x += (width - m_screen_width) / 2;
-  m_grid_y += (height - m_screen_height) / 2;
-
-  //update the dimensions
+  int prev_width = m_screen_width;
+  int prev_height = m_screen_height;
   m_screen_width = width;
   m_screen_height = height;
+  
+  //recenter main menu
+  setup_main_menu();
 
-  if (m_state == GameState::main_menu)
-    setup_main_menu();
+  //recenter the puzzle
+  m_grid_x += (width - prev_width) / 2;
+  m_grid_y += (height - prev_height) / 2;
 }
 
 void Game::get_puzzle_coords(int* x, int* y) const {
@@ -197,7 +199,14 @@ void Game::setup_main_menu() {
     m_main_menu->add_control(about);
   }
 
-  int y = menu_spacing;
+  int total_height = menu_spacing;
+  for (Control* control : *m_main_menu) {
+    int width, height;
+    control->get_size(&width, &height);
+    total_height += menu_spacing + height;
+  }
+
+  int y = m_screen_height / 2 - total_height / 2;
   
   for (Control* control : *m_main_menu) {
     int width, height;
