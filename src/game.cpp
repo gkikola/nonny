@@ -27,7 +27,6 @@ Game::~Game() {
 }
 
 void Game::update(int elapsed_time) {
-  m_info_pane->update();
 }
 
 void Game::load_puzzle(const std::string& filename) {

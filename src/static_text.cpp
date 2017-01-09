@@ -8,9 +8,6 @@ StaticText::StaticText(Game* game)
   : Control{game}, m_type{Type::standard} {
 }
 
-void StaticText::update() {
-}
-
 void StaticText::draw(Renderer* renderer) const {
   renderer->render_control(this);
 }

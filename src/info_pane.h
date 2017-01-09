@@ -20,7 +20,6 @@ class InfoPane {
   void get_preview_position(int* x, int* y) const;
   void get_preview_size(int* width, int* height) const;
   
-  void update();
   void draw(Renderer* renderer) const;
 
   void setup_controls();

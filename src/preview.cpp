@@ -17,9 +17,6 @@ void Preview::update_pixel_size() {
   m_pixel_size = (pixel_width < pixel_height) ? pixel_width : pixel_height;
 }
 
-void Preview::update() {
-}
-
 void Preview::draw(Renderer* renderer) const {
   renderer->render_control(this);
 }

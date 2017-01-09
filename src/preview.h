@@ -12,8 +12,7 @@ class Preview : public Control {
   int pixel_size() const { return m_pixel_size; }
   void update_pixel_size();
 
-  void update() override;
-  void draw(Renderer* renderer) const override;
+  virtual void draw(Renderer* renderer) const override;
  private:
   int m_pixel_size;
 };

@@ -11,8 +11,7 @@ class StaticText : public Control {
  public:
   explicit StaticText(Game* game);
 
-  void update() override;
-  void draw(Renderer* renderer) const override;
+  virtual void draw(Renderer* renderer) const override;
 
   void set_string(const std::string& str);
   void get_string(std::string* str) const;

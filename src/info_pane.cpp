@@ -30,15 +30,6 @@ InfoPane::~InfoPane() {
   delete m_preview;
 }
 
-void InfoPane::update() {
-  m_preview->update();
-  m_title->update();
-  m_size->update();
-  m_author->update();
-
-  m_menu->update();
-}
-
 void InfoPane::draw(Renderer* renderer) const {
   m_preview->draw(renderer);
   m_title->draw(renderer);

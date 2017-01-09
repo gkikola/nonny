@@ -23,7 +23,6 @@ class Button : public Control {
   void register_callback(callback function);
   void activate();
 
-  virtual void update() override;
   virtual void draw(Renderer* renderer) const override;
  private:
   std::string m_label;
