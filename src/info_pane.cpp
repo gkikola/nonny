@@ -37,6 +37,14 @@ void InfoPane::draw(Renderer* renderer) const {
   m_author->draw(renderer);
 }
 
+void InfoPane::get_preview_position(int* x, int* y) const {
+  m_preview->get_position(x, y);
+}
+
+void InfoPane::get_preview_size(int* width, int* height) const {
+  m_preview->get_size(width, height);
+}
+
 void InfoPane::setup_controls() {
   int y = default_spacing;
 

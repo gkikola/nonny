@@ -17,6 +17,9 @@ class InfoPane {
   void set_width(int width) { m_width = width; }
   int width() const { return m_width; }
 
+  void get_preview_position(int* x, int* y) const;
+  void get_preview_size(int* width, int* height) const;
+  
   void update();
   void draw(Renderer* renderer) const;
 

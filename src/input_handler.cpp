@@ -66,14 +66,16 @@ void InputHandler::update(int elapsed_time) {
 
 void InputHandler::mouse_move(int x, int y) {
   //make sure mouse doesn't skip over cells when moving fast
-  if (x - m_mouse_x > m_game->cell_size()) {
-    mouse_move(x - m_game->cell_size(), y);
-  } else if (m_mouse_x - x > m_game->cell_size()) {
-    mouse_move(x + m_game->cell_size(), y);
-  } else if (y - m_mouse_y > m_game->cell_size()) {
-    mouse_move(x, y - m_game->cell_size());
-  } else if (m_mouse_y - y > m_game->cell_size()) {
-    mouse_move(x, y + m_game->cell_size());
+  if (m_mouse_dragging) {
+    if (x - m_mouse_x > m_game->cell_size()) {
+      mouse_move(x - m_game->cell_size(), y);
+    } else if (m_mouse_x - x > m_game->cell_size()) {
+      mouse_move(x + m_game->cell_size(), y);
+    } else if (y - m_mouse_y > m_game->cell_size()) {
+      mouse_move(x, y - m_game->cell_size());
+    } else if (m_mouse_y - y > m_game->cell_size()) {
+      mouse_move(x, y + m_game->cell_size());
+    }
   }
 
   int grid_x, grid_y;
