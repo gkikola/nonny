@@ -17,7 +17,7 @@ class StaticText : public Control {
   void set_string(const std::string& str);
   void get_string(std::string* str) const;
 
-  enum class Type { standard, heading };
+  enum class Type { standard, heading, small };
 
   void set_type(Type type) { m_type = type; }
   Type type() const { return m_type; }

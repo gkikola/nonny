@@ -27,6 +27,7 @@ class InfoPane {
   Preview* m_preview;
   StaticText* m_title;
   StaticText* m_size;
+  StaticText* m_author;
 
   int m_width;
 };
