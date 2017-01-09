@@ -22,6 +22,9 @@ class Button : public Control {
   typedef void (*callback)(Game*);
   void register_callback(callback function);
   void activate();
+
+  virtual void update() override;
+  virtual void draw(Renderer* renderer) const override;
  private:
   std::string m_label;
   bool m_hover;

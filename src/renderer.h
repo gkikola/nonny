@@ -5,11 +5,11 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
+#include "button.h"
 #include "preview.h"
 #include "puzzle.h"
 #include "static_text.h"
 
-class Control;
 class Game;
 
 class Renderer {
@@ -20,6 +20,7 @@ class Renderer {
   void render_game();
   void render_control(const Preview* preview);
   void render_control(const StaticText* stat_text);
+  void render_control(const Button* button);
   
   void update(int elapsed_time);
  private:

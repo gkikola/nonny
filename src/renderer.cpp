@@ -495,6 +495,9 @@ void Renderer::render_control(const StaticText* stat_text) {
   draw_text(font, &color, str, x, y, width, height);
 }
 
+void Renderer::render_control(const Button* button) {
+}
+
 int Renderer::row_rule_width(int row, int buffer) {
   int width = buffer;
 

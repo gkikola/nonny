@@ -28,3 +28,10 @@ void Button::register_callback(callback function) {
 void Button::activate() {
   (*m_callback_func)(m_game);
 }
+
+void Button::update() {
+}
+
+void Button::draw(Renderer* renderer) const {
+  renderer->render_control(this);
+}
