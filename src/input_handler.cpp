@@ -3,6 +3,7 @@
 #include <vector>
 #include <SDL2/SDL.h>
 
+#include "control_container.h"
 #include "game.h"
 #include "puzzle.h"
 
@@ -77,6 +78,8 @@ void InputHandler::mouse_move(int x, int y) {
       mouse_move(x, y + m_game->cell_size());
     }
   }
+
+  mouse_move_controls(&m_game->info_pane(), x, y);
 
   int grid_x, grid_y;
   m_game->get_puzzle_coords(&grid_x, &grid_y);
@@ -178,8 +181,10 @@ void InputHandler::mouse_press(Uint8 button, bool down) {
   }
 
   SDL_GetMouseState(&m_mouse_x, &m_mouse_y);
-  
-  if (m_game->state() == GameState::puzzle) {  
+
+  if (m_game->state() == GameState::puzzle) {
+    mouse_press_controls(&m_game->info_pane(), button, down);
+    
     int grid_x, grid_y;
     m_game->get_puzzle_coords(&grid_x, &grid_y);
 
@@ -296,6 +301,8 @@ void InputHandler::mouse_wheel(int y, Uint32 orientation) {
 }
 
 void InputHandler::key_press(SDL_Keycode key, bool down) {
+  key_press_controls(&m_game->info_pane(), key, down);
+  
   if (down) {
     //search for key in map
     auto iter = m_key_mapping.find(key);
@@ -484,6 +491,16 @@ bool InputHandler::is_point_in_preview(int x, int y) const {
           && y >= preview_y && y <= preview_y + preview_h);
 }
 
+bool InputHandler::is_point_in_control(int x, int y, Control* control) const {
+  int cx, cy;
+  control->get_position(&cx, &cy);
+  int cwidth, cheight;
+  control->get_size(&cwidth, &cheight);
+
+  return (x >= cx && x <= cx + cwidth
+          && y >= cy && y <= cy + cheight);
+}
+
 void InputHandler::move_selection(bool horizontal, int amount) {
   int sel_x, sel_y;
   m_game->get_selected_cell(&sel_x, &sel_y);
@@ -516,6 +533,37 @@ void InputHandler::move_selection(bool horizontal, int amount) {
   }
 
   m_game->select_cell(sel_x, sel_y);
+}
+
+void InputHandler::mouse_move_controls(ControlContainer* controls,
+                                       int x, int y) {
+  for (Control* control : *controls) {
+    if (is_point_in_control(x, y, control))
+      control->hover_mouse(true);
+    else
+      control->hover_mouse(false);
+  }
+}
+
+void InputHandler::mouse_press_controls(ControlContainer* controls,
+                                        Uint8 button, bool down) {
+  for (Control* control : *controls) {
+    if (down) {
+      control->deselect();
+    
+      if (is_point_in_control(m_mouse_x, m_mouse_y, control)) {
+        control->select();
+
+        if (button == SDL_BUTTON_LEFT)
+          control->activate();
+      } //if mouse is on control
+    } //if down
+  } //for
+}
+
+void InputHandler::key_press_controls(ControlContainer* controls,
+                                      SDL_Keycode key, bool down) {
+
 }
 
 void InputHandler::set_default_controls() {

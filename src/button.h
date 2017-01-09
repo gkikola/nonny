@@ -14,8 +14,8 @@ class Button : public Control {
 
   typedef void (*callback)(Game*);
   void register_callback(callback function);
-  void activate();
 
+  virtual void activate() override;
   virtual void draw(Renderer* renderer) const override;
  private:
   std::string m_label;

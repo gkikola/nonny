@@ -29,6 +29,8 @@ class InfoPane : public ControlContainer {
   StaticText* m_author;
 
   Button* m_menu;
+  Button* m_hints;
+  Button* m_errors;
 
   int m_width;
 };

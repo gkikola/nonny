@@ -21,6 +21,8 @@ class Control {
   virtual void move(int x, int y);
   virtual void resize(int width, int height);
 
+  virtual void activate() = 0;
+
   virtual void draw(Renderer* renderer) const = 0;
  protected:
   Game* m_game;

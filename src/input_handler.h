@@ -6,6 +6,7 @@
 #include <SDL2/SDL.h>
 
 class Game;
+class ControlContainer;
 
 class InputHandler {
  public:
@@ -29,13 +30,20 @@ class InputHandler {
 
   void move_selection(bool horizontal, int amount);
 
+  void mouse_move_controls(ControlContainer* controls, int x, int y);
+  void mouse_press_controls(ControlContainer* controls, Uint8 button,
+                            bool down = true);
+  void key_press_controls(ControlContainer* controls,
+                          SDL_Keycode key, bool down = true);
+  
   bool is_point_in_grid(int x, int y) const;
   bool is_point_in_preview(int x, int y) const;
+  bool is_point_in_control(int x, int y, Control* control) const;
   
   Game* m_game;
   SDL_Window* m_window;
   
-  enum class DragType { screen, preview, marks, exes, blank_marks, blank_exes };
+  enum class DragType { screen, control, marks, exes, blank_marks, blank_exes };
   enum class MouseLockType { no_lock, to_row, to_col };
 
   std::map<SDL_Keycode, KeyAction> m_key_mapping;

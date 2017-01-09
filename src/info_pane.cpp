@@ -10,8 +10,12 @@ const int default_spacing = 20;
 const int text_height_std = 18;
 const int text_height_heading = 32;
 const int text_height_small = 14;
+const int button_size = 48;
+const int space_between_buttons = 12;
 
 void open_menu(Game* game);
+void toggle_hints(Game* game);
+void toggle_errors(Game* game);
 
 InfoPane::InfoPane(Game* game) : m_game{game}, m_width{0} {
   add_control(m_preview = new Preview(game));
@@ -19,6 +23,8 @@ InfoPane::InfoPane(Game* game) : m_game{game}, m_width{0} {
   add_control(m_size = new StaticText(game));
   add_control(m_author = new StaticText(game));
   add_control(m_menu = new Button(game));
+  add_control(m_hints = new Button(game));
+  add_control(m_errors = new Button(game));
 }
 
 void InfoPane::get_preview_position(int* x, int* y) const {
@@ -82,12 +88,27 @@ void InfoPane::setup_controls() {
     y += default_spacing;
   }
 
-  // m_menu->move(default_spacing, y);
-  // m_menu->resize(64, text_height_std + default_spacing);
-  // m_menu->set_label("M");
-  // m_menu->register_callback(open_menu);
+  m_menu->move(m_width / 2 - 3 * button_size / 2 - space_between_buttons, y);
+  m_menu->resize(button_size, text_height_std + default_spacing);
+  m_menu->set_label("MENU_SYMBOL");
+  m_menu->register_callback(open_menu);
+
+  m_hints->move(m_width / 2 - button_size / 2, y);
+  m_hints->resize(48, text_height_std + default_spacing);
+  m_hints->set_label("?");
+  m_hints->register_callback(toggle_hints);
+
+  m_errors->move(m_width / 2 + button_size / 2 + space_between_buttons, y);
+  m_errors->resize(button_size, text_height_std + default_spacing);
+  m_errors->set_label("X");
+  m_errors->register_callback(toggle_errors);
 }
 
 void open_menu(Game* game) {
-  std::cout << "Menu opened." << std::endl;
+}
+
+void toggle_hints(Game* game) {
+}
+
+void toggle_errors(Game* game) {
 }

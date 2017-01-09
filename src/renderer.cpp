@@ -17,6 +17,7 @@ const std::string font_filename_bold = "FreeSansBold.ttf";
 const int cell_age_time = 50;
 const bool show_framerate = false;
 const int button_selection_spacing = 4;
+const int button_menu_symbol_spacing = 10;
 
 Renderer::Renderer(SDL_Window* window, Game* game, const std::string& data_dir)
   : m_window{window}, m_game{game}, m_data_dir{data_dir}, m_framerate{0} {
@@ -529,7 +530,7 @@ void Renderer::render_control(const StaticText* stat_text) {
 }
 
 void Renderer::render_control(const Button* button) {
-  SDL_SetRenderDrawColor(m_renderer, 240, 248, 255, 255);
+  SDL_SetRenderDrawColor(m_renderer, 225, 235, 238, 255);
 
   SDL_Rect rect;
   button->get_position(&rect.x, &rect.y);
@@ -537,7 +538,31 @@ void Renderer::render_control(const Button* button) {
 
   SDL_RenderFillRect(m_renderer, &rect);
   SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 255);
-  SDL_RenderDrawRect(m_renderer, &rect);
+
+  if (button->is_mouse_hovering() || button->is_selected())
+    SDL_RenderDrawRect(m_renderer, &rect);
+  
+  SDL_Color color;
+  if (button->is_mouse_hovering())
+    color = { 0, 0, 0, 255 };
+  else
+    color = { 123, 175, 212, 255 };
+
+  if (button->label() == "MENU_SYMBOL") {
+    SDL_SetRenderDrawColor(m_renderer, color.r, color.g, color.b, color.a);
+    draw_horiz_line(rect.x + button_menu_symbol_spacing,
+                    rect.x + rect.w - button_menu_symbol_spacing,
+                    rect.y + button_menu_symbol_spacing, 2);
+    draw_horiz_line(rect.x + button_menu_symbol_spacing,
+                    rect.x + rect.w - button_menu_symbol_spacing,
+                    rect.y + rect.h / 2, 2);
+    draw_horiz_line(rect.x + button_menu_symbol_spacing,
+                    rect.x + rect.w - button_menu_symbol_spacing,
+                    rect.y + rect.h - button_menu_symbol_spacing, 2);
+  } else {
+    draw_text(m_control_font, &color, button->label(),
+              rect.x, rect.y, rect.w, rect.h);
+  }
 
   if (button->is_selected()) {
     rect.x += button_selection_spacing;
@@ -545,16 +570,9 @@ void Renderer::render_control(const Button* button) {
     rect.w -= button_selection_spacing * 2;
     rect.h -= button_selection_spacing * 2;
     
+    SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 255);
     draw_dotted_rect(&rect);
   }
-
-  SDL_Color color;
-  if (button->is_mouse_hovering())
-    color = { 0, 0, 0, 255 };
-  else
-    color = { 64, 64, 64, 255 };
-  draw_text(m_control_font, &color, button->label(),
-            rect.x, rect.y, rect.w, rect.h);
 }
 
 int Renderer::row_rule_width(int row, int buffer) {

@@ -44,7 +44,7 @@ class Game {
   void get_selected_cell(int* x, int* y) const;
   bool is_cell_selected() const { return m_selected; }
   
-  const InfoPane& info_pane() const { return *m_info_pane; }
+  InfoPane& info_pane() const { return *m_info_pane; }
   const Puzzle& puzzle() const { return *m_puzzle; }
  private:
   void default_zoom();
