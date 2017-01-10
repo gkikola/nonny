@@ -86,3 +86,10 @@ Control* ControlContainer::selection() {
 
   return nullptr;
 }
+
+void ControlContainer::clear_selection() {
+  Control* control = selection();
+
+  if (control)
+    control->deselect();
+}

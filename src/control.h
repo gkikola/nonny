@@ -19,6 +19,7 @@ class Control {
   bool is_selected() const { return m_selected; }
 
   void depress();
+  void unpress();
   bool is_depressed() const { return m_depressed; }
 
   virtual void move(int x, int y);

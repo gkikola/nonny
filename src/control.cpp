@@ -33,6 +33,10 @@ void Control::depress() {
   m_depressed = true;
 }
 
+void Control::unpress() {
+  m_depressed = false;
+}
+
 void Control::move(int x, int y) {
   m_x = x;
   m_y = y;

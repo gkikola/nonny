@@ -19,6 +19,7 @@ class ControlContainer {
 
   void select_next(bool backwards = false);
   Control* selection();
+  void clear_selection();
 
   virtual void draw(Renderer* renderer) const;
   virtual void clear();

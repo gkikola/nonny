@@ -22,8 +22,8 @@ class InputHandler {
  private:
   enum class KeyAction { move_left, move_right, move_up, move_down,
       screen_left, screen_right, screen_up, screen_down,
-      mark, exout, zoom_in, zoom_out, next_control,
-      activate_control, depress_control, open_menu, open_help };
+      mark, mark_alt, exout, zoom_in, zoom_out, next_control,
+      open_menu, open_help };
 
   void set_key_mapping();
   void associate_key(KeyAction action, SDL_Keycode key);

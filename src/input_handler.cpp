@@ -345,17 +345,22 @@ void InputHandler::key_press(SDL_Keycode key, bool down) {
           break;
         case KeyAction::move_left:
           move_selection(true, -1);
+          m_game->info_pane().clear_selection();
           break;
         case KeyAction::move_right:
           move_selection(true, 1);
+          m_game->info_pane().clear_selection();
           break;
         case KeyAction::move_up:
           move_selection(false, -1);
+          m_game->info_pane().clear_selection();
           break;
         case KeyAction::move_down:
           move_selection(false, 1);
+          m_game->info_pane().clear_selection();
           break;
         case KeyAction::mark:
+        case KeyAction::mark_alt:
           if (m_game->is_cell_selected() && !m_kb_dragging) {
             m_kb_dragging = true;
 
@@ -380,7 +385,11 @@ void InputHandler::key_press(SDL_Keycode key, bool down) {
             if (change_state)
               m_game->set_cell(sel_x, sel_y, state);
           } else { //no selection
-            m_game->select_cell(sel_x, sel_y);
+            //is an info pane button selected?
+            Control* control = m_game->info_pane().selection();
+            
+            if (control == nullptr)
+              m_game->select_cell(sel_x, sel_y); //if not, show cell selection
           }
           break;
         case KeyAction::exout:
@@ -408,7 +417,10 @@ void InputHandler::key_press(SDL_Keycode key, bool down) {
             if (change_state)
               m_game->set_cell(sel_x, sel_y, state);
           } else { //no selection
-            m_game->select_cell(sel_x, sel_y);
+            Control* control = m_game->info_pane().selection();
+
+            if (control == nullptr)
+              m_game->select_cell(sel_x, sel_y);
           }
           break;
         }
@@ -476,6 +488,7 @@ void InputHandler::key_press(SDL_Keycode key, bool down) {
           m_move_screen_vert = 0;
           break;
         case KeyAction::mark:
+        case KeyAction::mark_alt:
         case KeyAction::exout:
           m_kb_dragging = false;
           break;
@@ -586,6 +599,10 @@ void InputHandler::key_press_controls(ControlContainer* controls,
     switch (action) {
     case KeyAction::next_control:
       if (down) {
+        //if we're in puzzle mode, hide the grid selection
+        if (m_game->state() == GameState::puzzle)
+          m_game->clear_selection();
+        
         if (SDL_GetModState() & KMOD_SHIFT)
           controls->select_next(true);
         else
@@ -601,6 +618,27 @@ void InputHandler::key_press_controls(ControlContainer* controls,
     case KeyAction::move_down:
       if (down && m_game->state() != GameState::puzzle)
         controls->select_next(false);
+      break;
+    case KeyAction::mark:
+      if (down) {
+        Control* selected = controls->selection();
+
+        if (selected)
+          selected->activate();
+      }
+      break;
+    case KeyAction::mark_alt:
+      Control* selected = controls->selection();
+
+      if (down) {
+        if (selected)
+          selected->depress();
+      } else {
+        if (selected && selected->is_depressed()) {
+          selected->activate();
+          selected->unpress();
+        }
+      }
       break;
     }
   }
@@ -623,7 +661,7 @@ void InputHandler::set_default_controls() {
 
   associate_key(KeyAction::mark, SDLK_RETURN);
   associate_key(KeyAction::mark, SDLK_KP_ENTER);
-  associate_key(KeyAction::mark, SDLK_SPACE);
+  associate_key(KeyAction::mark_alt, SDLK_SPACE);
   associate_key(KeyAction::exout, SDLK_LCTRL);
   associate_key(KeyAction::exout, SDLK_RCTRL);
 
@@ -631,9 +669,6 @@ void InputHandler::set_default_controls() {
   associate_key(KeyAction::zoom_out, SDLK_PAGEDOWN);
 
   associate_key(KeyAction::next_control, SDLK_TAB);
-  associate_key(KeyAction::activate_control, SDLK_RETURN);
-  associate_key(KeyAction::activate_control, SDLK_KP_ENTER);
-  associate_key(KeyAction::depress_control, SDLK_SPACE);
   
   associate_key(KeyAction::open_menu, SDLK_ESCAPE);
   associate_key(KeyAction::open_help, SDLK_F1);
