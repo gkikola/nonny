@@ -6,6 +6,7 @@
 #include <SDL2/SDL_ttf.h>
 
 #include "button.h"
+#include "menu.h"
 #include "preview.h"
 #include "puzzle.h"
 #include "static_text.h"
@@ -37,7 +38,7 @@ class Renderer {
                  int x, int y, int width = 0, int height = 0);
   void render_puzzle();
   void render_info_pane();
-  void render_main_menu();
+  void render_menu(const Menu& menu);
   void shade_cells();
   void draw_cells();
   void draw_rules();

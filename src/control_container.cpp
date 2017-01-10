@@ -88,8 +88,7 @@ Control* ControlContainer::selection() {
 }
 
 void ControlContainer::clear_selection() {
-  Control* control = selection();
-
-  if (control)
+  for (Control* control : *this) {
     control->deselect();
+  }
 }

@@ -5,7 +5,7 @@
 #include "menu.h"
 #include "puzzle.h"
 
-enum class GameState { main_menu, opts_menu, puzzle_selection, puzzle };
+enum class GameState { main_menu, opts_menu, about, puzzle_selection, puzzle };
 
 class Game {
  public:
@@ -56,11 +56,13 @@ class Game {
   int screen_width() const { return m_screen_width; }
   int screen_height() const { return m_screen_height; }
   
-  InfoPane& info_pane() const { return *m_info_pane; }
-  Menu& main_menu() const { return *m_main_menu; }
+  InfoPane& info_pane() { return *m_info_pane; }
+  Menu& main_menu() { return *m_main_menu; }
+  Menu& about_menu() { return *m_about_menu; }
   const Puzzle& puzzle() const { return *m_puzzle; }
  private:
   void setup_main_menu();
+  void setup_about_menu();
   void default_zoom();
   void zoom(int amount, int x, int y);
 
@@ -77,6 +79,7 @@ class Game {
 
   InfoPane* m_info_pane;
   Menu* m_main_menu;
+  Menu* m_about_menu;
 
   int m_selection_x, m_selection_y;
   bool m_selected;

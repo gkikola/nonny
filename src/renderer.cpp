@@ -6,6 +6,7 @@
 #include <SDL2/SDL_ttf.h>
 
 #include "game.h"
+#include "menu.h"
 #include "puzzle.h"
 
 #include "renderer.h"
@@ -59,7 +60,7 @@ Renderer::Renderer(SDL_Window* window, Game* game, const std::string& data_dir)
 
   font_path = m_data_dir + font_filename_std;
   m_control_font = TTF_OpenFont(font_path.c_str(), 24);
-  m_info_font = TTF_OpenFont(font_path.c_str(), 14);
+  m_info_font = TTF_OpenFont(font_path.c_str(), 18);
   
   if (m_game_title_font == NULL || m_title_font == NULL
       || m_control_font == NULL || m_info_font == NULL)
@@ -123,7 +124,10 @@ void Renderer::render_game() {
 
   switch (m_game->state()) {
   case GameState::main_menu:
-    render_main_menu();
+    render_menu(m_game->main_menu());
+    break;
+  case GameState::about:
+    render_menu(m_game->about_menu());
     break;
   default:
   case GameState::puzzle:
@@ -256,11 +260,11 @@ void Renderer::render_info_pane() {
   m_game->info_pane().draw(this);
 }
 
-void Renderer::render_main_menu() {
+void Renderer::render_menu(const Menu& menu) {
   SDL_SetRenderDrawColor(m_renderer, 123, 175, 212, 255);
   SDL_RenderClear(m_renderer);
 
-  m_game->main_menu().draw(this);
+  menu.draw(this);
 }
 
 void Renderer::draw_cells() {

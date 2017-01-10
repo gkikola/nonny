@@ -17,8 +17,14 @@ const int button_width = 192;
 const int button_height = 36;
 const double default_screen_coverage = 0.80;
 
+const std::string program_name = "Nonny";
+const std::string program_version = "0.1";
+const std::string copyright_str = "Copyright © 2017 Gregory Kikola";
+const std::string license_str = "License GPLv3+: GNU GPL version 3 or later";
+
 void do_play(Game* game);
 void do_create(Game* game);
+void do_main_menu(Game* game);
 void do_options(Game* game);
 void do_about(Game* game);
 void do_quit(Game* game);
@@ -36,11 +42,15 @@ Game::Game(const std::string& data_dir, const std::string& save_dir)
 
   m_main_menu = new Menu(this);
   setup_main_menu();
+
+  m_about_menu = new Menu(this);
+  setup_about_menu();
   
   m_info_pane = new InfoPane(this);
 }
 
 Game::~Game() {
+  if (m_about_menu) delete m_about_menu;
   if (m_main_menu) delete m_main_menu;
   if (m_info_pane) delete m_info_pane;
   if (m_puzzle) delete m_puzzle;
@@ -48,14 +58,20 @@ Game::~Game() {
 
 void Game::set_state(GameState state) {
   m_next_state = state;
-  
+
   switch (state) {
   case GameState::puzzle:
     m_state = state;
     m_info_pane->slide_pane(m_screen_width, default_info_pane_width);
     break;
   case GameState::main_menu:
-    m_info_pane->slide_pane(default_info_pane_width, m_screen_width);
+    if (m_state == GameState::puzzle)
+      m_info_pane->slide_pane(default_info_pane_width, m_screen_width);
+    else
+      m_state = state;
+    break;
+  case GameState::about:
+    m_state = state;
     break;
   }
 }
@@ -112,6 +128,9 @@ void Game::update_screen_size(int width, int height) {
   
   //recenter main menu
   setup_main_menu();
+
+  //recenter about menu
+  setup_about_menu();
 
   //recenter the puzzle
   m_grid_x += (width - prev_width) / 2;
@@ -175,7 +194,7 @@ void Game::setup_main_menu() {
   if (m_main_menu->size() == 0) {
     StaticText* title = new StaticText(this);
     title->resize(button_width * 2, 92);
-    title->set_string("Nonny");
+    title->set_string(program_name);
     title->set_type(StaticText::Type::huge);
     m_main_menu->add_control(title);
 
@@ -212,6 +231,57 @@ void Game::setup_main_menu() {
   }
 
   m_main_menu->arrange_controls(m_screen_width, m_screen_height);
+}
+
+void Game::setup_about_menu() {
+  if (m_about_menu->size() == 0) {
+    StaticText* title = new StaticText(this);
+    title->resize(button_width * 2, 32);
+    title->set_string(program_name);
+    title->set_type(StaticText::Type::heading);
+    m_about_menu->add_control(title);
+
+    StaticText* version = new StaticText(this);
+    version->resize(button_width * 2, 24);
+    version->set_string("Version " + program_version);
+    version->set_type(StaticText::Type::standard);
+    m_about_menu->add_control(version);
+
+    StaticText* copyright = new StaticText(this);
+    copyright->resize(button_width * 4, 18);
+    copyright->set_string(copyright_str + ".");
+    copyright->set_type(StaticText::Type::small);
+    m_about_menu->add_control(copyright);
+
+    StaticText* license = new StaticText(this);
+    license->resize(button_width * 4, 18);
+    license->set_string(license_str + ".");
+    license->set_type(StaticText::Type::small);
+    m_about_menu->add_control(license);
+
+    StaticText* free_software = new StaticText(this);
+    free_software->resize(button_width * 4, 18);
+    free_software->set_string(program_name + " is free software: "
+                              "you are free to change and redistribute it.");
+    free_software->set_type(StaticText::Type::small);
+    m_about_menu->add_control(free_software);
+
+    StaticText* no_warranty = new StaticText(this);
+    no_warranty->resize(button_width * 4, 18);
+    no_warranty->set_string("There is NO WARRANTY, to the extent permitted "
+                            "by law.");
+    no_warranty->set_type(StaticText::Type::small);
+    m_about_menu->add_control(no_warranty);
+
+    Button* done_button = new Button(this);
+    done_button->resize(button_width, button_height);
+    done_button->set_label("Done");
+    done_button->register_callback(do_main_menu);
+    done_button->select();
+    m_about_menu->add_control(done_button);
+  }
+
+  m_about_menu->arrange_controls(m_screen_width, m_screen_height);
 }
 
 void Game::default_zoom() {
@@ -302,10 +372,15 @@ void do_play(Game* game) {
 void do_create(Game* game) {
 }
 
+void do_main_menu(Game* game) {
+  game->set_state(GameState::main_menu);
+}
+
 void do_options(Game* game) {
 }
 
 void do_about(Game* game) {
+  game->set_state(GameState::about);
 }
 
 void do_quit(Game* game) {
