@@ -27,6 +27,7 @@ void Control::select() {
 
 void Control::deselect() {
   m_selected = false;
+  m_depressed = false;
 }
 
 void Control::depress() {
