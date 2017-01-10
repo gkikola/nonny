@@ -1,5 +1,4 @@
-**Nonny is in very early development. Please check back later.**
-
+**Nonny is in early development. Please check back later.**
 
 Nonny: free nonograms
 =====================
@@ -12,7 +11,7 @@ within a grid in order to reveal a picture.
 Copyright
 ---------
 
-Copyright &copy; 2016 Gregory Kikola. License GPLv3+: [GNU GPL version 3
+Copyright &copy; 2017 Gregory Kikola. License GPLv3+: [GNU GPL version 3
 or later](http://www.gnu.org/licenses/gpl.html).
 
 **Nonny** is free software: you are free to change and redistribute it. There
