@@ -564,6 +564,10 @@ void Renderer::render_control(const Button* button) {
   SDL_Color color;
   if (button->is_mouse_hovering())
     color = { 0, 0, 0, 255 };
+  else if (button->is_depressed())
+    color = { 0, 0, 255, 255 };
+  else if (button->is_selected())
+    color = { 0, 115, 207, 255 };
   else
     color = { 123, 175, 212, 255 };
 

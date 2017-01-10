@@ -4,7 +4,8 @@
 
 Control::Control(Game* game) : m_game{game}, m_x{0}, m_y{0},
                                m_width{0}, m_height{0},
-                               m_hover{false}, m_selected{false} {
+                               m_hover{false}, m_selected{false},
+                               m_depressed{false} {
 }
 
 void Control::get_position(int* x, int* y) const {
