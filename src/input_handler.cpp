@@ -594,12 +594,12 @@ void InputHandler::key_press_controls(ControlContainer* controls,
       break;
     case KeyAction::move_left:
     case KeyAction::move_up:
-      if (down)
+      if (down && m_game->state() != GameState::puzzle)
         controls->select_next(true);
       break;
     case KeyAction::move_right:
     case KeyAction::move_down:
-      if (down)
+      if (down && m_game->state() != GameState::puzzle)
         controls->select_next(false);
       break;
     }
