@@ -581,12 +581,17 @@ void InputHandler::mouse_press_controls(ControlContainer* controls,
     
       if (is_point_in_control(m_mouse_x, m_mouse_y, control)) {
         control->select();
-        control->depress();
 
         if (button == SDL_BUTTON_LEFT)
-          control->activate();
+          control->depress();
       } //if mouse is on control
-    } //if down
+    } else { //not down
+      if (control->is_depressed()
+          && is_point_in_control(m_mouse_x, m_mouse_y, control))
+        control->activate();
+      else
+        control->unpress();
+    }
   } //for
 }
 
