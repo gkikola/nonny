@@ -47,6 +47,9 @@ class Game {
   void get_selected_cell(int* x, int* y) const;
   bool is_cell_selected() const { return m_selected; }
 
+  void quit();
+  bool is_running() const { return m_running; }
+
   const std::string& data_dir() const { return m_data_dir; }
   const std::string& save_dir() const { return m_save_dir; }
 
@@ -84,6 +87,8 @@ class Game {
 
   int m_screen_width;
   int m_screen_height;
+
+  bool m_running;
 
   std::string m_data_dir;
   std::string m_save_dir;

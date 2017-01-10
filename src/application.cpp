@@ -69,11 +69,9 @@ void Application::SDL_error(const std::string& function) {
 
 void Application::run() {
   SDL_Event event;
-  bool exit = false;
-
   Uint32 time = SDL_GetTicks();
   
-  while (!exit) {
+  while (m_game->is_running()) {
     while (SDL_PollEvent(&event)) {
       //process SDL event
       switch (event.type) {
@@ -104,7 +102,7 @@ void Application::run() {
         m_input_handler->key_press(event.key.keysym.sym, false);
         break;
       case SDL_QUIT:
-        exit = true;
+        m_game->quit();
         break;
       }
     }

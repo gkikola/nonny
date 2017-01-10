@@ -21,6 +21,7 @@ void do_play(Game* game);
 void do_create(Game* game);
 void do_options(Game* game);
 void do_about(Game* game);
+void do_quit(Game* game);
 
 Game::Game(const std::string& data_dir, const std::string& save_dir)
   : m_puzzle{nullptr}, m_puzzle_loaded{false},
@@ -30,7 +31,7 @@ Game::Game(const std::string& data_dir, const std::string& save_dir)
     m_recalc_size{true}, m_row_rule_width{0}, m_col_rule_height{0},
     m_info_pane{nullptr}, m_main_menu{nullptr},
     m_screen_width{0}, m_screen_height{0},
-    m_data_dir{data_dir}, m_save_dir{save_dir} {
+    m_data_dir{data_dir}, m_save_dir{save_dir}, m_running{true} {
   m_state = m_next_state = GameState::main_menu;
 
   m_main_menu = new Menu(this);
@@ -202,6 +203,12 @@ void Game::setup_main_menu() {
     about->set_label("About");
     about->register_callback(do_about);
     m_main_menu->add_control(about);
+
+    Button* quit = new Button(this);
+    quit->resize(button_width, button_height);
+    quit->set_label("Quit");
+    quit->register_callback(do_quit);
+    m_main_menu->add_control(quit);
   }
 
   m_main_menu->arrange_controls(m_screen_width, m_screen_height);
@@ -284,6 +291,10 @@ void Game::zoom(int amount, int x, int y) {
   }
 }
 
+void Game::quit() {
+  m_running = false;
+}
+
 void do_play(Game* game) {
   game->set_state(GameState::puzzle);
 }
@@ -295,4 +306,8 @@ void do_options(Game* game) {
 }
 
 void do_about(Game* game) {
+}
+
+void do_quit(Game* game) {
+  game->quit();
 }
