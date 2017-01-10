@@ -182,6 +182,7 @@ void Game::setup_main_menu() {
     play->resize(button_width, button_height);
     play->set_label("Play");
     play->register_callback(do_play);
+    play->select();
     m_main_menu->add_control(play);
 
     Button* create = new Button(this);
