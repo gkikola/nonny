@@ -15,6 +15,7 @@ class InfoPane : public ControlContainer {
 
   void set_width(int width) { m_target_width = width; }
   int width() const { return m_width; }
+  int target_width() const { return m_target_width; }
 
   void update(int elapsed_time);
   void draw(Renderer* renderer) const override;

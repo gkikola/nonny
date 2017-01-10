@@ -148,6 +148,16 @@ void Game::get_puzzle_coords(int* x, int* y) const {
 void Game::move_puzzle(int relx, int rely) {
   m_grid_x += relx;
   m_grid_y += rely;
+
+  //make sure puzzle is not completely off screen
+  if (m_grid_x >= m_screen_width)
+    m_grid_x = m_screen_width - 1;
+  else if (m_grid_x + cell_grid_width() <= m_info_pane->target_width())
+    m_grid_x = m_info_pane->target_width() - cell_grid_width() + 1;
+  if (m_grid_y >= m_screen_height)
+    m_grid_y = m_screen_height - 1;
+  else if (m_grid_y + cell_grid_height() <= 0)
+    m_grid_y = -cell_grid_height() + 1;
 }
 
 void Game::make_selected_cell_visible() {
