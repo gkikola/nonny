@@ -14,6 +14,8 @@ class Preview : public Control {
 
   virtual void activate() override {}
   virtual void draw(Renderer* renderer) const override;
+
+  virtual bool is_selectable() const override { return false; }
  private:
   int m_pixel_size;
 };

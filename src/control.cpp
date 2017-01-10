@@ -29,6 +29,10 @@ void Control::deselect() {
   m_selected = false;
 }
 
+void Control::depress() {
+  m_depressed = true;
+}
+
 void Control::move(int x, int y) {
   m_x = x;
   m_y = y;

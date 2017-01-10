@@ -14,6 +14,8 @@ class StaticText : public Control {
   virtual void draw(Renderer* renderer) const override;
   virtual void activate() override {}
 
+  virtual bool is_selectable() const override { return false; }
+  
   void set_string(const std::string& str);
   void get_string(std::string* str) const;
 

@@ -18,12 +18,16 @@ class Control {
   void deselect();
   bool is_selected() const { return m_selected; }
 
+  void depress();
+  bool is_depressed() const { return m_depressed; }
+
   virtual void move(int x, int y);
   virtual void resize(int width, int height);
 
   virtual void activate() = 0;
 
   virtual void draw(Renderer* renderer) const = 0;
+  virtual bool is_selectable() const { return true; }
  protected:
   Game* m_game;
 
@@ -32,6 +36,7 @@ class Control {
   int m_width, m_height;
   bool m_hover;
   bool m_selected;
+  bool m_depressed;
 };
 
 #endif

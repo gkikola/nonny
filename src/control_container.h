@@ -16,7 +16,10 @@ class ControlContainer {
   iterator end();
 
   int size() const { return m_controls.size(); }
-  
+
+  void select_next(bool backwards = false);
+  Control* selection();
+
   virtual void draw(Renderer* renderer) const;
   virtual void clear();
  protected:

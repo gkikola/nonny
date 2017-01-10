@@ -1,4 +1,5 @@
 #include <cmath>
+#include <iostream>
 #include <map>
 #include <vector>
 #include <SDL2/SDL.h>
@@ -310,7 +311,9 @@ void InputHandler::mouse_wheel(int y, Uint32 orientation) {
 }
 
 void InputHandler::key_press(SDL_Keycode key, bool down) {
-  if (m_game->state() == GameState::puzzle) {
+  if (m_game->state() == GameState::main_menu) {
+    key_press_controls(&m_game->main_menu(), key, down);
+  } else if (m_game->state() == GameState::puzzle) {
     key_press_controls(&m_game->info_pane(), key, down);
   
     if (down) {
@@ -412,7 +415,8 @@ void InputHandler::key_press(SDL_Keycode key, bool down) {
 
         if (m_kb_dragging) {
           if (action == KeyAction::move_left || action == KeyAction::move_right
-              || action == KeyAction::move_up || action == KeyAction::move_down) {
+              || action == KeyAction::move_up
+              || action == KeyAction::move_down) {
             CellState state;
             bool change_state = false;
             m_game->get_selected_cell(&sel_x, &sel_y);
@@ -564,6 +568,7 @@ void InputHandler::mouse_press_controls(ControlContainer* controls,
     
       if (is_point_in_control(m_mouse_x, m_mouse_y, control)) {
         control->select();
+        control->depress();
 
         if (button == SDL_BUTTON_LEFT)
           control->activate();
@@ -574,7 +579,31 @@ void InputHandler::mouse_press_controls(ControlContainer* controls,
 
 void InputHandler::key_press_controls(ControlContainer* controls,
                                       SDL_Keycode key, bool down) {
+  auto iter = m_key_mapping.find(key);
 
+  if (iter != m_key_mapping.end()) {
+    KeyAction action = iter->second;
+    switch (action) {
+    case KeyAction::next_control:
+      if (down) {
+        if (SDL_GetModState() & KMOD_SHIFT)
+          controls->select_next(true);
+        else
+          controls->select_next(false);
+      }
+      break;
+    case KeyAction::move_left:
+    case KeyAction::move_up:
+      if (down)
+        controls->select_next(true);
+      break;
+    case KeyAction::move_right:
+    case KeyAction::move_down:
+      if (down)
+        controls->select_next(false);
+      break;
+    }
+  }
 }
 
 void InputHandler::set_default_controls() {
@@ -602,6 +631,9 @@ void InputHandler::set_default_controls() {
   associate_key(KeyAction::zoom_out, SDLK_PAGEDOWN);
 
   associate_key(KeyAction::next_control, SDLK_TAB);
+  associate_key(KeyAction::activate_control, SDLK_RETURN);
+  associate_key(KeyAction::activate_control, SDLK_KP_ENTER);
+  associate_key(KeyAction::depress_control, SDLK_SPACE);
   
   associate_key(KeyAction::open_menu, SDLK_ESCAPE);
   associate_key(KeyAction::open_help, SDLK_F1);
