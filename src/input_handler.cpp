@@ -349,6 +349,18 @@ void InputHandler::key_press(SDL_Keycode key, bool down) {
           m_move_screen_vert = move_speed;
           m_movement_duration = 0.0;
           break;
+        case KeyAction::zoom_in:
+        case KeyAction::zoom_out:
+          {
+            int x = (m_game->screen_width() + m_game->info_pane().width()) / 2;
+            int y = m_game->screen_height() / 2;
+
+            if (action == KeyAction::zoom_in)
+              m_game->zoom_in(x, y);
+            else if (action == KeyAction::zoom_out)
+              m_game->zoom_out(x, y);
+          }
+          break;
         case KeyAction::move_left:
           move_selection(true, -1);
           m_game->info_pane().clear_selection();
