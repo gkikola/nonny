@@ -61,7 +61,7 @@ class Game {
   Menu& about_menu() { return *m_about_menu; }
   const Puzzle& puzzle() const { return *m_puzzle; }
  private:
-  void setup_main_menu();
+  void setup_main_menu(bool full_reset);
   void setup_about_menu();
   void default_zoom();
   void zoom(int amount, int x, int y);

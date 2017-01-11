@@ -23,6 +23,7 @@ const std::string copyright_str = "Copyright © 2017 Gregory Kikola";
 const std::string license_str = "License GPLv3+: GNU GPL version 3 or later";
 
 void do_play(Game* game);
+void do_resume(Game* game);
 void do_create(Game* game);
 void do_main_menu(Game* game);
 void do_options(Game* game);
@@ -41,7 +42,7 @@ Game::Game(const std::string& data_dir, const std::string& save_dir)
   m_state = m_next_state = GameState::main_menu;
 
   m_main_menu = new Menu(this);
-  setup_main_menu();
+  setup_main_menu(true);
 
   m_about_menu = new Menu(this);
   setup_about_menu();
@@ -69,6 +70,7 @@ void Game::set_state(GameState state) {
       m_info_pane->slide_pane(default_info_pane_width, m_screen_width);
     else
       m_state = state;
+    setup_main_menu(true);
     break;
   case GameState::about:
     m_state = state;
@@ -127,7 +129,7 @@ void Game::update_screen_size(int width, int height) {
   m_screen_height = height;
   
   //recenter main menu
-  setup_main_menu();
+  setup_main_menu(false);
 
   //recenter about menu
   setup_about_menu();
@@ -200,21 +202,36 @@ int Game::cell_grid_height() {
   return m_puzzle->height() * (m_cell_size + 1) + 1;
 }
 
-void Game::setup_main_menu() {
-  if (m_main_menu->size() == 0) {
+void Game::setup_main_menu(bool full_reset) {
+  if (full_reset || m_main_menu->size() == 0) {
+    m_main_menu->clear();
+    
     StaticText* title = new StaticText(this);
     title->resize(button_width * 2, 92);
     title->set_string(program_name);
     title->set_type(StaticText::Type::huge);
     m_main_menu->add_control(title);
 
+    Button* resume;
+    if (is_puzzle_loaded()) {
+      resume = new Button(this);
+      resume->resize(button_width, button_height);
+      resume->set_label("Resume Game");
+      resume->register_callback(do_resume);
+      m_main_menu->add_control(resume);
+    }
+    
     Button* play = new Button(this);
     play->resize(button_width, button_height);
     play->set_label("Play");
     play->register_callback(do_play);
-    play->select();
     m_main_menu->add_control(play);
 
+    if (is_puzzle_loaded())
+      resume->select();
+    else
+      play->select();
+    
     Button* create = new Button(this);
     create->resize(button_width, button_height);
     create->set_label("Create");
@@ -239,7 +256,7 @@ void Game::setup_main_menu() {
     quit->register_callback(do_quit);
     m_main_menu->add_control(quit);
   }
-
+  
   m_main_menu->arrange_controls(m_screen_width, m_screen_height);
 }
 
@@ -376,6 +393,10 @@ void Game::quit() {
 }
 
 void do_play(Game* game) {
+  game->set_state(GameState::puzzle);
+}
+
+void do_resume(Game* game) {
   game->set_state(GameState::puzzle);
 }
 
