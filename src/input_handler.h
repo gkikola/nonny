@@ -35,6 +35,8 @@ class InputHandler {
                             bool down = true);
   void key_press_controls(ControlContainer* controls,
                           SDL_Keycode key, bool down = true);
+
+  void preview_jump();
   
   bool is_point_in_grid(int x, int y) const;
   bool is_point_in_preview(int x, int y) const;

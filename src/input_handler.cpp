@@ -85,7 +85,8 @@ void InputHandler::mouse_move(int x, int y) {
       }
     }
 
-    mouse_move_controls(&m_game->info_pane(), x, y);
+    if (x < m_game->info_pane().width())
+      mouse_move_controls(&m_game->info_pane(), x, y);
 
     int grid_x, grid_y;
     m_game->get_puzzle_coords(&grid_x, &grid_y);
@@ -93,7 +94,8 @@ void InputHandler::mouse_move(int x, int y) {
     int grid_width = m_game->cell_grid_width();
     int grid_height = m_game->cell_grid_height();
 
-    if (x >= grid_x && x < grid_x + grid_width - 1
+    if (x >= m_game->info_pane().width()
+        && x >= grid_x && x < grid_x + grid_width - 1
         && y >= grid_y && y < grid_y + grid_height - 1) {
       int cell_x, cell_y;
       m_game->screen_coords_to_cell_coords(x, y, &cell_x, &cell_y);
@@ -117,7 +119,12 @@ void InputHandler::mouse_move(int x, int y) {
       m_mouse_x = x;
       m_mouse_y = y;
 
-      if (m_mouse_drag_type != DragType::screen) {
+      if (m_mouse_drag_type == DragType::control
+          && is_point_in_preview(x, y))
+        preview_jump();
+
+      if (m_mouse_drag_type != DragType::screen
+          && m_mouse_drag_type != DragType::control) {
         if (m_mouse_lock_type == MouseLockType::to_row)
           m_mouse_y = m_prev_mouse_y;
         else if (m_mouse_lock_type == MouseLockType::to_col)
@@ -242,6 +249,14 @@ void InputHandler::mouse_press(Uint8 button, bool down) {
         }
 
         break;
+      } else { //see if mouse is on the preview
+        if (down && is_point_in_preview(m_mouse_x, m_mouse_y)) {
+          m_mouse_drag_type = DragType::control;
+          m_mouse_dragging = true;
+          preview_jump();
+          SDL_CaptureMouse(SDL_TRUE);
+          break;
+        }
       }
 
       //outside the grid, do screen_dragging action:
@@ -514,6 +529,30 @@ void InputHandler::key_press(SDL_Keycode key, bool down) {
       } //if key mapping was found
     } //if key is up
   } //if game is in puzzle state
+}
+
+void InputHandler::preview_jump() {
+  int preview_x, preview_y;
+  m_game->info_pane().get_preview_position(&preview_x, &preview_y);
+  int preview_w, preview_h;
+  m_game->info_pane().get_preview_size(&preview_w, &preview_h);
+
+  double x_proportion = (m_mouse_x - preview_x) / (double)preview_w;
+  double y_proportion = (m_mouse_y - preview_y) / (double)preview_y;
+
+  int center_x, center_y;
+  center_x = std::round(x_proportion * m_game->cell_grid_width());
+  center_y = std::round(y_proportion * m_game->cell_grid_height());
+
+  int new_x, new_y;
+  new_x = (m_game->screen_width()
+           + m_game->info_pane().width())/ 2 - center_x;
+  new_y = m_game->screen_height() / 2 - center_y;
+
+  int old_x, old_y;
+  m_game->get_puzzle_coords(&old_x, &old_y);
+          
+  m_game->move_puzzle(new_x - old_x, new_y - old_y);
 }
 
 bool InputHandler::is_point_in_grid(int x, int y) const {
