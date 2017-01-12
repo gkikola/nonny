@@ -623,33 +623,28 @@ void InputHandler::move_selection(bool horizontal, int amount) {
 void InputHandler::mouse_move_controls(ControlContainer* controls,
                                        int x, int y) {
   for (Control* control : *controls) {
-    if (is_point_in_control(x, y, control))
-      control->hover_mouse(true);
-    else
-      control->hover_mouse(false);
+    control->mouse_move(x, y);
   }
 }
 
 void InputHandler::mouse_press_controls(ControlContainer* controls,
                                         Uint8 button, bool down) {
   for (Control* control : *controls) {
-    if (down) {
-      control->deselect();
-    
-      if (is_point_in_control(m_mouse_x, m_mouse_y, control)) {
-        control->select();
-
-        if (button == SDL_BUTTON_LEFT)
-          control->depress();
-      } //if mouse is on control
-    } else { //not down
-      if (control->is_depressed()
-          && is_point_in_control(m_mouse_x, m_mouse_y, control))
-        control->activate();
-      else
-        control->unpress();
+    switch (button) {
+    case SDL_BUTTON_LEFT:
+      control->mouse_press(Control::MouseAction::left,
+                           m_mouse_x, m_mouse_y, down);
+      break;
+    case SDL_BUTTON_MIDDLE:
+      control->mouse_press(Control::MouseAction::middle,
+                           m_mouse_x, m_mouse_y, down);
+      break;
+    case SDL_BUTTON_RIGHT:
+      control->mouse_press(Control::MouseAction::right,
+                           m_mouse_x, m_mouse_y, down);
+      break;
     }
-  } //for
+  }
 }
 
 void InputHandler::key_press_controls(ControlContainer* controls,

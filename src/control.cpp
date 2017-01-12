@@ -67,7 +67,30 @@ void Control::key_press(KeyAction action, bool down) {
 }
 
 void Control::mouse_press(MouseAction action, int x, int y, bool down) {
+  bool mouse_over = false;
+  if (x >= m_x && x <= m_x + m_width && y >= m_y && y <= m_y + m_height)
+    mouse_over = true;
+
+  if (down) {
+    if (!mouse_over) {
+      deselect();
+      unpress();
+    } else {
+      if (action == MouseAction::left)
+        select();
+        depress();
+    }
+  } else { //not down
+    if (is_depressed() && mouse_over)
+      activate();
+
+    unpress();
+  }
 }
 
 void Control::mouse_move(int x, int y) {
+  if (x >= m_x && x <= m_x + m_width && y >= m_y && y <= m_y + m_height)
+    hover_mouse(true);
+  else
+    hover_mouse(false);
 }
