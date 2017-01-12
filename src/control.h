@@ -29,6 +29,13 @@ class Control {
 
   virtual void draw(Renderer* renderer) const = 0;
   virtual bool is_selectable() const { return true; }
+
+  enum class MouseAction { left, middle, right };
+  enum class KeyAction { activate, depress, next_ctrl };
+
+  virtual void key_press(KeyAction action, bool down);
+  virtual void mouse_press(MouseAction action, int x, int y, bool down);
+  virtual void mouse_move(int x, int y);
  protected:
   Game* m_game;
 

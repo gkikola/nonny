@@ -682,25 +682,12 @@ void InputHandler::key_press_controls(ControlContainer* controls,
         controls->select_next(false);
       break;
     case KeyAction::mark:
-      if (down) {
-        Control* selected = controls->selection();
-
-        if (selected)
-          selected->activate();
-      }
+      for (Control* control : *controls)
+        control->key_press(Control::KeyAction::activate, down);
       break;
     case KeyAction::mark_alt:
-      Control* selected = controls->selection();
-
-      if (down) {
-        if (selected)
-          selected->depress();
-      } else {
-        if (selected && selected->is_depressed()) {
-          selected->activate();
-          selected->unpress();
-        }
-      }
+      for (Control* control : *controls)
+        control->key_press(Control::KeyAction::depress, down);
       break;
     }
   }

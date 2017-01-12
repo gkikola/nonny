@@ -48,3 +48,26 @@ void Control::resize(int width, int height) {
   m_width = width;
   m_height = height;
 }
+
+void Control::key_press(KeyAction action, bool down) {
+  switch (action) {
+  case KeyAction::activate:
+    if (down && is_selected())
+      activate();
+    break;
+  case KeyAction::depress:
+    if (down && is_selected()) {
+      depress();
+    } else if (!down && is_selected() && is_depressed()) {
+      activate();
+      unpress();
+    }
+    break;
+  }
+}
+
+void Control::mouse_press(MouseAction action, int x, int y, bool down) {
+}
+
+void Control::mouse_move(int x, int y) {
+}
