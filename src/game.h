@@ -4,6 +4,7 @@
 #include "info_pane.h"
 #include "menu.h"
 #include "puzzle.h"
+#include "scrollbar.h"
 
 enum class GameState { main_menu, opts_menu, about, puzzle_selection, puzzle };
 
@@ -23,6 +24,10 @@ class Game {
   void move_puzzle(int relx, int rely);
   void make_selected_cell_visible();
   int cell_size() const { return m_cell_size; }
+
+  int vert_scrollbar_width() const;
+  int horiz_scrollbar_height() const;
+  void get_play_area(int* x, int* y, int* width, int* height) const;
 
   void set_rule_dimensions(int row_rule_width, int col_rule_height);
   bool has_size_changed() const { return m_recalc_size; }
@@ -59,12 +64,16 @@ class Game {
   InfoPane& info_pane() { return *m_info_pane; }
   Menu& main_menu() { return *m_main_menu; }
   Menu& about_menu() { return *m_about_menu; }
+  Scrollbar& vscrollbar() { return *m_vscroll; }
+  Scrollbar& hscrollbar() { return *m_hscroll; }
   const Puzzle& puzzle() const { return *m_puzzle; }
  private:
   void setup_main_menu(bool full_reset);
   void setup_about_menu();
   void default_zoom();
   void zoom(int amount, int x, int y);
+  void move_puzzle_in_bounds();
+  void update_scrollbars();
 
   Puzzle* m_puzzle;
   bool m_puzzle_loaded;
@@ -80,6 +89,8 @@ class Game {
   InfoPane* m_info_pane;
   Menu* m_main_menu;
   Menu* m_about_menu;
+  Scrollbar* m_vscroll;
+  Scrollbar* m_hscroll;
 
   int m_selection_x, m_selection_y;
   bool m_selected;

@@ -9,6 +9,7 @@
 #include "menu.h"
 #include "preview.h"
 #include "puzzle.h"
+#include "scrollbar.h"
 #include "static_text.h"
 
 class Game;
@@ -22,6 +23,7 @@ class Renderer {
   void render_control(const Preview* preview);
   void render_control(const StaticText* stat_text);
   void render_control(const Button* button);
+  void render_control(const Scrollbar* scrollbar);
   
   void update(int elapsed_time);
  private:

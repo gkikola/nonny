@@ -132,6 +132,8 @@ void Renderer::render_game() {
   default:
   case GameState::puzzle:
     render_puzzle();
+    render_control(&m_game->vscrollbar());
+    render_control(&m_game->hscrollbar());
     render_info_pane();
     break;
   }
@@ -600,6 +602,35 @@ void Renderer::render_control(const Button* button) {
     SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 255);
     draw_dotted_rect(&rect);
   }
+}
+
+void Renderer::render_control(const Scrollbar* scrollbar) {
+  SDL_SetRenderDrawColor(m_renderer, 196, 196, 196, 255);
+  
+  SDL_Rect rect;
+  scrollbar->get_position(&rect.x, &rect.y);
+  scrollbar->get_size(&rect.w, &rect.h);
+  
+  SDL_RenderFillRect(m_renderer, &rect);
+
+  SDL_SetRenderDrawColor(m_renderer, 128, 128, 128, 255);
+
+  int scroll_buffer = Scrollbar::thumb_spacing();
+  if (scrollbar->is_vertical()) {
+    rect.x += scroll_buffer;
+    rect.w -= 2 * scroll_buffer;
+    
+    rect.y = scrollbar->thumb_position();
+    rect.h = scrollbar->thumb_size();
+  } else {
+    rect.y += scroll_buffer;
+    rect.h -= 2 * scroll_buffer;
+    
+    rect.x = scrollbar->thumb_position();
+    rect.w = scrollbar->thumb_size();
+  }
+
+  SDL_RenderFillRect(m_renderer, &rect);
 }
 
 int Renderer::row_rule_width(int row, int buffer) {

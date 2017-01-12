@@ -13,6 +13,7 @@ const int zoom_speed = 32;
 const int max_cell_size = 112;
 const int cell_age_rate = 50;
 const int default_info_pane_width = 256;
+const int scrollbar_size = 16;
 const int button_width = 192;
 const int button_height = 36;
 const double default_screen_coverage = 0.80;
@@ -48,12 +49,16 @@ Game::Game(const std::string& data_dir, const std::string& save_dir)
   setup_about_menu();
   
   m_info_pane = new InfoPane(this);
+  m_vscroll = new Scrollbar(this, true);
+  m_hscroll = new Scrollbar(this, false);
 }
 
 Game::~Game() {
   if (m_about_menu) delete m_about_menu;
   if (m_main_menu) delete m_main_menu;
   if (m_info_pane) delete m_info_pane;
+  if (m_vscroll) delete m_vscroll;
+  if (m_hscroll) delete m_hscroll;
   if (m_puzzle) delete m_puzzle;
 }
 
@@ -64,6 +69,7 @@ void Game::set_state(GameState state) {
   case GameState::puzzle:
     m_state = state;
     m_info_pane->slide_pane(m_screen_width, default_info_pane_width);
+    update_screen_size(m_screen_width, m_screen_height);
     break;
   case GameState::main_menu:
     if (m_state == GameState::puzzle)
@@ -101,6 +107,7 @@ void Game::update(int elapsed_time) {
 
         m_cell_size += amount;
         m_recalc_size = true;
+        move_puzzle_in_bounds();
       }
     }
   } //if game in puzzle state
@@ -113,7 +120,7 @@ void Game::load_puzzle(const std::string& filename) {
   m_puzzle_loaded = true;
 
   default_zoom();
-  m_info_pane->setup_controls(default_info_pane_width);
+  update_screen_size(m_screen_width, m_screen_height);
 }
 
 void Game::set_rule_dimensions(int row_rule_width, int col_rule_height) {
@@ -140,6 +147,15 @@ void Game::update_screen_size(int width, int height) {
 
   //recenter info pane
   m_info_pane->setup_controls(default_info_pane_width);
+
+  //update scrollbars
+  m_vscroll->move(m_screen_width - scrollbar_size, 0);
+  m_vscroll->resize(scrollbar_size, m_screen_height);
+  m_hscroll->move(m_info_pane->target_width(),
+                  m_screen_height - scrollbar_size);
+  m_hscroll->resize(m_screen_width - scrollbar_size
+                    - m_info_pane->target_width(), scrollbar_size);
+  update_scrollbars();
 }
 
 void Game::get_puzzle_coords(int* x, int* y) const {
@@ -152,14 +168,20 @@ void Game::move_puzzle(int relx, int rely) {
   m_grid_y += rely;
 
   //make sure puzzle is not completely off screen
-  if (m_grid_x >= m_screen_width)
-    m_grid_x = m_screen_width - 1;
+  move_puzzle_in_bounds();
+}
+
+void Game::move_puzzle_in_bounds() {
+  if (m_grid_x >= m_screen_width - scrollbar_size)
+    m_grid_x = m_screen_width - scrollbar_size - 1;
   else if (m_grid_x + cell_grid_width() <= m_info_pane->target_width())
     m_grid_x = m_info_pane->target_width() - cell_grid_width() + 1;
-  if (m_grid_y >= m_screen_height)
-    m_grid_y = m_screen_height - 1;
+  if (m_grid_y >= m_screen_height - scrollbar_size)
+    m_grid_y = m_screen_height - scrollbar_size - 1;
   else if (m_grid_y + cell_grid_height() <= 0)
     m_grid_y = -cell_grid_height() + 1;
+
+  update_scrollbars();
 }
 
 void Game::make_selected_cell_visible() {
@@ -174,6 +196,28 @@ void Game::make_selected_cell_visible() {
     m_grid_y -= y;
   else if (y + m_cell_size > m_screen_height)
     m_grid_y -= y + m_cell_size - m_screen_height;
+
+  update_scrollbars();
+}
+
+int Game::vert_scrollbar_width() const {
+  int w, h;
+  m_vscroll->get_size(&w, &h);
+  return w;
+}
+
+int Game::horiz_scrollbar_height() const {
+  int w, h;
+  m_hscroll->get_size(&w, &h);
+  return h;
+}
+
+void Game::get_play_area(int* x, int* y, int* width, int* height) const {
+  *x = m_info_pane->target_width();
+  *y = 0;
+  *width = m_screen_width - vert_scrollbar_width()
+    - m_info_pane->target_width();
+  *height = m_screen_height - horiz_scrollbar_height();
 }
 
 void Game::age_cells(int max_age) {
@@ -346,8 +390,11 @@ void Game::default_zoom() {
   m_recalc_size = true;
 
   m_grid_x = default_info_pane_width
-    + (m_screen_width - default_info_pane_width) / 2 - cell_grid_width() / 2;
-  m_grid_y = m_screen_height / 2 - cell_grid_height() / 2;
+    + (m_screen_width - default_info_pane_width - scrollbar_size)
+    / 2 - cell_grid_width() / 2;
+  m_grid_y = (m_screen_height - scrollbar_size) / 2 - cell_grid_height() / 2;
+
+  update_scrollbars();
 }
 
 void Game::select_cell(int x, int y) {
@@ -385,6 +432,20 @@ void Game::zoom(int amount, int x, int y) {
     m_target_cell_size += amount;
     m_recalc_size = true;
     m_zoom_delta = 0.0;
+  }
+}
+
+void Game::update_scrollbars() {  
+  if (m_puzzle_loaded) {
+    m_vscroll->update_thumb(m_screen_height - horiz_scrollbar_height() - 1
+                            - m_grid_y,
+                            2 * (m_screen_height - 1) - m_grid_y,
+                            cell_grid_height() + 2 * m_screen_height - 2);
+    m_hscroll->update_thumb(m_screen_width - vert_scrollbar_width() - 1
+                            - m_grid_x,
+                            2 * (m_screen_width - 1)
+                            + m_info_pane->target_width() - m_grid_x,
+                            cell_grid_width() + 2 * m_screen_width - 2);
   }
 }
 
