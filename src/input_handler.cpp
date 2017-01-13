@@ -88,6 +88,9 @@ void InputHandler::mouse_move(int x, int y) {
     if (x < m_game->info_pane().width())
       mouse_move_controls(&m_game->info_pane(), x, y);
 
+    m_game->vscrollbar().mouse_move(x, y);
+    m_game->hscrollbar().mouse_move(x, y);
+
     int grid_x, grid_y;
     m_game->get_puzzle_coords(&grid_x, &grid_y);
 
@@ -96,7 +99,8 @@ void InputHandler::mouse_move(int x, int y) {
 
     if (x >= m_game->info_pane().width()
         && x >= grid_x && x < grid_x + grid_width - 1
-        && y >= grid_y && y < grid_y + grid_height - 1) {
+        && y >= grid_y && y < grid_y + grid_height - 1
+        && !is_point_in_scrollbars(x, y)) {
       int cell_x, cell_y;
       m_game->screen_coords_to_cell_coords(x, y, &cell_x, &cell_y);
 
