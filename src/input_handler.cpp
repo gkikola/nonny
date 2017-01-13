@@ -37,7 +37,7 @@ void InputHandler::update(int elapsed_time) {
   
   int cell_x, cell_y;
   m_game->screen_coords_to_cell_coords(mouse_x, mouse_y, &cell_x, &cell_y);
-  
+
   //move the screen
   m_movement_duration += elapsed_time;
   int move_x = m_move_screen_horiz * (m_movement_duration / 1000);
@@ -211,6 +211,10 @@ void InputHandler::mouse_press(Uint8 button, bool down) {
     m_game->vscrollbar().mouse_press(action, m_mouse_x, m_mouse_y, down);
     m_game->hscrollbar().mouse_press(action, m_mouse_x, m_mouse_y, down);
 
+    if (down && (m_game->vscrollbar().is_thumb_being_dragged()
+                 || m_game->hscrollbar().is_thumb_being_dragged()))
+      SDL_CaptureMouse(SDL_TRUE);
+    
     if (m_reverse_mouse) {
       if (button = SDL_BUTTON_LEFT) button = SDL_BUTTON_RIGHT;
       else if (button = SDL_BUTTON_RIGHT) button = SDL_BUTTON_LEFT;

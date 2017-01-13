@@ -76,12 +76,15 @@ void Control::mouse_press(MouseAction action, int x, int y, bool down) {
       deselect();
       unpress();
     } else {
-      if (action == MouseAction::left)
+      if (action == MouseAction::left) {
         select();
         depress();
+      } else if (action == MouseAction::right) {
+        select();
+      }
     }
   } else { //not down
-    if (is_depressed() && mouse_over)
+    if (is_depressed() && mouse_over && action == MouseAction::left)
       activate();
 
     unpress();

@@ -21,7 +21,7 @@ class Game {
   bool is_puzzle_loaded() const { return m_puzzle_loaded; }
 
   void get_puzzle_coords(int* x, int* y) const;
-  void move_puzzle(int relx, int rely);
+  void move_puzzle(int relx, int rely, bool instant = true);
   void make_selected_cell_visible();
   int cell_size() const { return m_cell_size; }
 
@@ -81,10 +81,12 @@ class Game {
   GameState m_state;
   GameState m_next_state;
   int m_grid_x, m_grid_y;
+  int m_target_grid_x, m_target_grid_y;
   int m_cell_size;
   int m_target_cell_size;
-  int m_target_x, m_target_y;
   double m_zoom_delta;
+  int m_target_x, m_target_y;
+  double m_grid_x_delta, m_grid_y_delta;
 
   InfoPane* m_info_pane;
   Menu* m_main_menu;

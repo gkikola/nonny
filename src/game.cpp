@@ -9,6 +9,7 @@
 #include "game.h"
 
 const int cell_size_step = 8;
+const int move_speed = 1024;
 const int zoom_speed = 32;
 const int max_cell_size = 112;
 const int cell_age_rate = 50;
@@ -34,7 +35,9 @@ void do_quit(Game* game);
 Game::Game(const std::string& data_dir, const std::string& save_dir)
   : m_puzzle{nullptr}, m_puzzle_loaded{false},
     m_grid_x{0}, m_grid_y{0}, m_cell_size{32},
-    m_target_cell_size{32}, m_target_x{0}, m_target_y{0},
+    m_target_grid_x{0}, m_target_grid_y{0},
+    m_grid_x_delta{0}, m_grid_y_delta{0},
+    m_target_cell_size{32}, m_target_x{0}, m_target_y{0}, m_zoom_delta{0},
     m_selected{false}, m_selection_x{0}, m_selection_y{0},
     m_recalc_size{true}, m_row_rule_width{0}, m_col_rule_height{0},
     m_info_pane{nullptr}, m_main_menu{nullptr},
@@ -95,7 +98,7 @@ void Game::update(int elapsed_time) {
       int multiplier = (1 + std::abs(m_cell_size - m_target_cell_size)
                         / cell_size_step);
       m_zoom_delta += multiplier * zoom_speed * (elapsed_time / 1000.0);
-      int amount = round(m_zoom_delta);
+      int amount = std::floor(m_zoom_delta);
       if (amount > 0) {
         m_zoom_delta = 0;
 
@@ -104,9 +107,49 @@ void Game::update(int elapsed_time) {
     
         m_grid_x -= amount * (m_target_x - m_grid_x) / (m_cell_size + 1);
         m_grid_y -= amount * (m_target_y - m_grid_y) / (m_cell_size + 1);
+        m_target_grid_x = m_grid_x;
+        m_target_grid_y = m_grid_y;
 
         m_cell_size += amount;
         m_recalc_size = true;
+        move_puzzle_in_bounds();
+      }
+    }
+
+    if (m_target_grid_x != m_grid_x) {
+      m_grid_x_delta += move_speed * (elapsed_time / 1000.0);
+      int amount = std::floor(m_grid_x_delta);
+      if (amount > 0) {
+        m_grid_x_delta = 0;
+
+        if (m_grid_x > m_target_grid_x)
+          amount = -amount;
+        
+        m_grid_x += amount;
+
+        if ((amount > 0 && m_grid_x > m_target_grid_x)
+            || (amount < 0 && m_grid_x < m_target_grid_x))
+          m_grid_x = m_target_grid_x;
+        
+        move_puzzle_in_bounds();
+      }
+    }
+
+    if (m_target_grid_y != m_grid_y) {
+      m_grid_y_delta += move_speed * (elapsed_time / 1000.0);
+      int amount = std::floor(m_grid_y_delta);
+      if (amount > 0) {
+        m_grid_y_delta = 0;
+
+        if (m_grid_y > m_target_grid_y)
+          amount = -amount;
+        
+        m_grid_y += amount;
+
+        if ((amount > 0 && m_grid_y > m_target_grid_y)
+            || (amount < 0 && m_grid_y < m_target_grid_y))
+          m_grid_y = m_target_grid_y;
+        
         move_puzzle_in_bounds();
       }
     }
@@ -163,15 +206,27 @@ void Game::get_puzzle_coords(int* x, int* y) const {
   *y = m_grid_y;
 }
 
-void Game::move_puzzle(int relx, int rely) {
-  m_grid_x += relx;
-  m_grid_y += rely;
+void Game::move_puzzle(int relx, int rely, bool instant) {
+  if (instant) {
+    m_grid_x += relx;
+    m_grid_y += rely;
+    m_target_grid_x = m_grid_x;
+    m_target_grid_y = m_grid_y;
 
-  //make sure puzzle is not completely off screen
-  move_puzzle_in_bounds();
+    //make sure puzzle is not completely off screen
+    move_puzzle_in_bounds();
+  } else {
+    m_target_grid_x += relx;
+    m_target_grid_y += rely;
+  }
+
+  m_grid_x_delta = m_grid_y_delta = 0;
 }
 
 void Game::move_puzzle_in_bounds() {
+  int prev_x = m_grid_x;
+  int prev_y = m_grid_y;
+  
   if (m_grid_x >= m_screen_width - scrollbar_size)
     m_grid_x = m_screen_width - scrollbar_size - 1;
   else if (m_grid_x + cell_grid_width() <= m_info_pane->target_width())
@@ -180,6 +235,11 @@ void Game::move_puzzle_in_bounds() {
     m_grid_y = m_screen_height - scrollbar_size - 1;
   else if (m_grid_y + cell_grid_height() <= 0)
     m_grid_y = -cell_grid_height() + 1;
+
+  if (m_grid_x != prev_x)
+    m_target_grid_x = m_grid_x;
+  if (m_grid_y != prev_y)
+    m_target_grid_y = m_grid_y;
 
   update_scrollbars();
 }
@@ -393,6 +453,8 @@ void Game::default_zoom() {
     + (m_screen_width - default_info_pane_width - scrollbar_size)
     / 2 - cell_grid_width() / 2;
   m_grid_y = (m_screen_height - scrollbar_size) / 2 - cell_grid_height() / 2;
+  m_target_grid_x = m_grid_x;
+  m_target_grid_y = m_grid_y;
 
   update_scrollbars();
 }
