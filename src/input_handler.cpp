@@ -10,7 +10,7 @@
 
 #include "input_handler.h"
 
-const int move_speed = 250; //pixels per second
+const int move_speed = 1024; //pixels per second
 const int default_mouse_lock_time = 150; //ms
 
 InputHandler::InputHandler(SDL_Window* window, Game* game)
@@ -349,19 +349,19 @@ void InputHandler::key_press(SDL_Keycode key, bool down) {
         KeyAction action = iter->second;
         switch (action) {
         case KeyAction::screen_left:
-          m_move_screen_horiz = -move_speed;
-          m_movement_duration = 0.0;
-          break;
-        case KeyAction::screen_right:
           m_move_screen_horiz = move_speed;
           m_movement_duration = 0.0;
           break;
+        case KeyAction::screen_right:
+          m_move_screen_horiz = -move_speed;
+          m_movement_duration = 0.0;
+          break;
         case KeyAction::screen_up:
-          m_move_screen_vert = -move_speed;
+          m_move_screen_vert = move_speed;
           m_movement_duration = 0.0;
           break;
         case KeyAction::screen_down:
-          m_move_screen_vert = move_speed;
+          m_move_screen_vert = -move_speed;
           m_movement_duration = 0.0;
           break;
         case KeyAction::zoom_in:
