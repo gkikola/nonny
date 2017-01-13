@@ -41,6 +41,7 @@ class InputHandler {
   bool is_point_in_grid(int x, int y) const;
   bool is_point_in_preview(int x, int y) const;
   bool is_point_in_control(int x, int y, Control* control) const;
+  bool is_point_in_scrollbars(int x, int y) const;
   
   Game* m_game;
   SDL_Window* m_window;

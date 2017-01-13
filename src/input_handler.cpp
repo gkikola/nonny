@@ -190,11 +190,6 @@ void InputHandler::mouse_move(int x, int y) {
 }
 
 void InputHandler::mouse_press(Uint8 button, bool down) {
-  if (m_reverse_mouse) {
-    if (button = SDL_BUTTON_LEFT) button = SDL_BUTTON_RIGHT;
-    else if (button = SDL_BUTTON_RIGHT) button = SDL_BUTTON_LEFT;
-  }
-
   SDL_GetMouseState(&m_mouse_x, &m_mouse_y);
 
   if (m_game->state() == GameState::main_menu) {
@@ -203,6 +198,19 @@ void InputHandler::mouse_press(Uint8 button, bool down) {
     mouse_press_controls(&m_game->about_menu(), button, down);
   } else if (m_game->state() == GameState::puzzle) {
     mouse_press_controls(&m_game->info_pane(), button, down);
+
+    Control::MouseAction action;
+    if (button == SDL_BUTTON_LEFT)
+      action = Control::MouseAction::left;
+    else if (button == SDL_BUTTON_RIGHT)
+      action = Control::MouseAction::right;
+    m_game->vscrollbar().mouse_press(action, m_mouse_x, m_mouse_y, down);
+    m_game->hscrollbar().mouse_press(action, m_mouse_x, m_mouse_y, down);
+
+    if (m_reverse_mouse) {
+      if (button = SDL_BUTTON_LEFT) button = SDL_BUTTON_RIGHT;
+      else if (button = SDL_BUTTON_RIGHT) button = SDL_BUTTON_LEFT;
+    }
     
     int grid_x, grid_y;
     m_game->get_puzzle_coords(&grid_x, &grid_y);
@@ -264,7 +272,8 @@ void InputHandler::mouse_press(Uint8 button, bool down) {
       if (!down) {
         m_mouse_dragging = false;
         SDL_CaptureMouse(SDL_FALSE);
-      } else if (m_mouse_x > m_game->info_pane().width()) {
+      } else if (m_mouse_x > m_game->info_pane().width()
+                 && !is_point_in_scrollbars(m_mouse_x, m_mouse_y)) {
         m_mouse_dragging = true;
         m_mouse_drag_type = DragType::screen;
         SDL_CaptureMouse(SDL_TRUE);
@@ -562,7 +571,9 @@ bool InputHandler::is_point_in_grid(int x, int y) const {
   int grid_height =  m_game->cell_grid_height();
   
   return (x > m_game->info_pane().width()
+          && x < m_game->screen_width() - m_game->vert_scrollbar_width()
           && x >= grid_x && x <= grid_x + grid_width
+          && y < m_game->screen_height() - m_game->horiz_scrollbar_height()
           && y >= grid_y && y <= grid_y + grid_height);
 }
 
@@ -584,6 +595,12 @@ bool InputHandler::is_point_in_control(int x, int y, Control* control) const {
 
   return (x >= cx && x <= cx + cwidth
           && y >= cy && y <= cy + cheight);
+}
+
+bool InputHandler::is_point_in_scrollbars(int x, int y) const {
+  return x >= m_game->screen_width() - m_game->vert_scrollbar_width()
+    || (x > m_game->info_pane().width()
+        && y >= m_game->screen_height() - m_game->horiz_scrollbar_height());
 }
 
 void InputHandler::move_selection(bool horizontal, int amount) {
