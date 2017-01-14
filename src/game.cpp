@@ -94,6 +94,9 @@ void Game::update(int elapsed_time) {
     m_state = m_next_state;
 
   if (m_state == GameState::puzzle) {
+    m_vscroll->update(elapsed_time);
+    m_hscroll->update(elapsed_time);
+    
     if (m_cell_size != m_target_cell_size) {
       int multiplier = (1 + std::abs(m_cell_size - m_target_cell_size)
                         / cell_size_step);

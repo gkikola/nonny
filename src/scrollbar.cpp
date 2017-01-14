@@ -5,11 +5,23 @@
 #include "scrollbar.h"
 
 const int scroll_buffer = 4;
+const int move_step = 192;
+const int move_delay = 100;
 
 Scrollbar::Scrollbar(Game* game, bool vertical)
  : Control(game), m_thumb_pos{0}, m_thumb_size{1}, m_vertical{vertical},
    m_dragging_left{false}, m_dragging_right{false}, m_holding_right{false},
-   m_down_pos{0} {
+   m_holding_time{0}, m_holding_x{0}, m_holding_y{0}, m_down_pos{0} {
+}
+
+void Scrollbar::update(int elapsed_time) {
+  if (m_holding_right) {
+    m_holding_time += elapsed_time;
+    if (m_holding_time >= move_delay) {
+      m_holding_time %= move_delay;
+      mouse_move(m_holding_x, m_holding_y);
+    }
+  }
 }
 
 void Scrollbar::update_thumb(int visible_start, int visible_end,
@@ -58,10 +70,16 @@ void Scrollbar::mouse_press(MouseAction action, int x, int y, bool down) {
   int* pos = m_vertical ? &y : &x;
 
   if (!down) {
-    if (action == MouseAction::left)
+    if (action == MouseAction::left) {
       m_dragging_left = false;
-    else if (action == MouseAction::right)
+    } else if (action == MouseAction::right) {
+      //stop scrolling
+      if (m_holding_right)
+        m_game->move_puzzle(0, 0, true);
+      
       m_dragging_right = false;
+      m_holding_right = false;
+    }
 
     deselect();
     unpress();
@@ -70,10 +88,26 @@ void Scrollbar::mouse_press(MouseAction action, int x, int y, bool down) {
   if (is_selected() && action == MouseAction::left) {
     m_dragging_left = true;
     set_thumb_position(*pos - m_thumb_size / 2);
-  } else if (is_selected() && action == MouseAction::right
-             && *pos >= m_thumb_pos && *pos <= m_thumb_pos + m_thumb_size) {
-    m_down_pos = *pos - m_thumb_pos;
-    m_dragging_right = true;
+  } else if (is_selected() && action == MouseAction::right) {
+    if (*pos >= m_thumb_pos && *pos <= m_thumb_pos + m_thumb_size) {
+      m_down_pos = *pos - m_thumb_pos;
+      m_dragging_right = true;
+    } else {
+      m_holding_right = true;
+      m_holding_x = x;
+      m_holding_y = y;
+      m_holding_time = 0;
+      
+      int move_x = 0, move_y = 0;
+      int* coord = m_vertical ? &move_y : &move_x;
+
+      if (*pos < m_thumb_pos)
+        *coord = move_step;
+      else if (*pos > m_thumb_pos + m_thumb_size)
+        *coord = -move_step;
+
+      m_game->move_puzzle(move_x, move_y, false);
+    }
   }
 }
 
@@ -87,6 +121,21 @@ void Scrollbar::mouse_move(int x, int y) {
 
   if (m_dragging_right)
     set_thumb_position(*pos - m_down_pos);
+
+  if (m_holding_right) {
+    int delta_x = 0, delta_y = 0;
+    int* delta = m_vertical ? &delta_y : &delta_x;  
+    
+    if (*pos < m_thumb_pos)
+      *delta = move_step;
+    else if (*pos > m_thumb_pos + m_thumb_size)
+      *delta = -move_step;
+
+    m_game->move_puzzle(delta_x, delta_y, false);
+
+    m_holding_x = x;
+    m_holding_y = y;
+  }
 }
 
 void Scrollbar::set_thumb_position(int pos) {

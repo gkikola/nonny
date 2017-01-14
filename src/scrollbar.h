@@ -15,6 +15,8 @@ class Scrollbar : public Control {
   void update_thumb(int visible_start, int visible_end, int total_size);
   bool is_thumb_being_dragged() const;
 
+  void update(int elapsed_time);
+
   static int thumb_spacing();
   
   virtual void activate();
@@ -37,6 +39,8 @@ class Scrollbar : public Control {
   bool m_dragging_left;
   bool m_dragging_right;
   bool m_holding_right;
+  int m_holding_time;
+  int m_holding_x, m_holding_y;
   int m_down_pos;
 };
 
