@@ -55,6 +55,7 @@ class Renderer {
   Game* m_game;
   
   SDL_Texture* m_cell_sheet;
+  SDL_Texture* m_logo;
   int m_cell_sheet_frame_size;
   int m_num_animation_frames;
   int m_time_until_cell_aging;

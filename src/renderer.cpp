@@ -12,6 +12,7 @@
 #include "renderer.h"
 
 const std::string cell_sheet_filename = "cell.png";
+const std::string logo_filename = "nonny.png";
 const std::string font_filename_std = "FreeSans.ttf";
 const std::string font_filename_bold = "FreeSansBold.ttf";
 
@@ -53,6 +54,10 @@ Renderer::Renderer(SDL_Window* window, Game* game, const std::string& data_dir)
 
   m_num_animation_frames = width / m_cell_sheet_frame_size;
 
+  //load logo image
+  sprite_path = m_data_dir + logo_filename;
+  m_logo = IMG_LoadTexture(m_renderer, sprite_path.c_str());
+
   //load fonts
   std::string font_path = m_data_dir + font_filename_bold;
   m_game_title_font = TTF_OpenFont(font_path.c_str(), 56);
@@ -75,6 +80,7 @@ Renderer::~Renderer() {
   if (m_game_title_font) TTF_CloseFont(m_game_title_font);
   if (m_control_font) TTF_CloseFont(m_control_font);
   if (m_rule_font) TTF_CloseFont(m_rule_font);
+  if (m_logo) SDL_DestroyTexture(m_logo);
   if (m_cell_sheet) SDL_DestroyTexture(m_cell_sheet);
   if (m_renderer) SDL_DestroyRenderer(m_renderer);
 }
@@ -558,26 +564,37 @@ void Renderer::render_control(const StaticText* stat_text) {
 
   std::string str;
   stat_text->get_string(&str);
-  
-  SDL_Color color = { 0, 0, 0, 255 };
-  TTF_Font* font;
-  switch (stat_text->type()) {
-  case StaticText::Type::heading:
-    font = m_title_font;
-    break;
-  default:
-  case StaticText::Type::standard:
-    font = m_control_font;
-    break;
-  case StaticText::Type::small:
-    font = m_info_font;
-    break;
-  case StaticText::Type::huge:
-    font = m_game_title_font;
-    break;
+
+  if (str == "NONNY_LOGO") {
+    Uint32 fmt;
+    int access;
+    SDL_Rect dst;
+    SDL_QueryTexture(m_logo, &fmt, &access, &dst.w, &dst.h);
+
+    dst.x = x + width / 2 - dst.w / 2;
+    dst.y = y + height / 2 - dst.h / 2;
+    SDL_RenderCopy(m_renderer, m_logo, NULL, &dst);
+  } else {
+    SDL_Color color = { 0, 0, 0, 255 };
+    TTF_Font* font;
+    switch (stat_text->type()) {
+    case StaticText::Type::heading:
+      font = m_title_font;
+      break;
+    default:
+    case StaticText::Type::standard:
+      font = m_control_font;
+      break;
+    case StaticText::Type::small:
+      font = m_info_font;
+      break;
+    case StaticText::Type::huge:
+      font = m_game_title_font;
+      break;
+    }
+
+    draw_text(font, &color, str, x, y, width, height);
   }
-  
-  draw_text(font, &color, str, x, y, width, height);
 }
 
 void Renderer::render_control(const Button* button) {
