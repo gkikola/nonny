@@ -10,7 +10,8 @@ enum class GameState { main_menu, opts_menu, about, puzzle_selection, puzzle };
 
 class Game {
  public:
-  Game(const std::string& data_dir, const std::string& save_dir);
+  Game(const std::string& data_dir, const std::string& save_dir,
+       char filesystem_separator);
   ~Game();
 
   GameState state() const { return m_state; }
@@ -57,6 +58,7 @@ class Game {
 
   const std::string& data_dir() const { return m_data_dir; }
   const std::string& save_dir() const { return m_save_dir; }
+  char filesystem_separator() const { return m_filesystem_separator; }
 
   int screen_width() const { return m_screen_width; }
   int screen_height() const { return m_screen_height; }
@@ -108,6 +110,7 @@ class Game {
 
   std::string m_data_dir;
   std::string m_save_dir;
+  char m_filesystem_separator;
 };
 
 #endif

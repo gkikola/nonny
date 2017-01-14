@@ -16,7 +16,7 @@ class Game;
 
 class Renderer {
  public:
-  Renderer(SDL_Window* window, Game* game, const std::string& data_dir);
+  Renderer(SDL_Window* window, Game* game);
   ~Renderer();
 
   void render_game();
@@ -67,8 +67,6 @@ class Renderer {
   TTF_Font* m_control_font;
   TTF_Font* m_info_font;
   TTF_Font* m_rule_font;
-
-  std::string m_data_dir;
 
   int m_widest_rule;
   int m_tallest_rule;

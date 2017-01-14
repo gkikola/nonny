@@ -21,6 +21,9 @@ AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([
   Makefile
   data/Makefile
+  data/fonts/Makefile
+  data/images/Makefile
+  data/puzzles/Makefile
   src/Makefile
 ])
 AC_OUTPUT

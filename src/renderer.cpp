@@ -11,6 +11,8 @@
 
 #include "renderer.h"
 
+const std::string font_dir = "fonts";
+const std::string image_dir = "images";
 const std::string cell_sheet_filename = "cell.png";
 const std::string logo_filename = "nonny.png";
 const std::string font_filename_std = "FreeSans.ttf";
@@ -24,8 +26,8 @@ const int tooltip_x_offset = 0;
 const int tooltip_y_offset = 24;
 const int tooltip_border_space = 4;
 
-Renderer::Renderer(SDL_Window* window, Game* game, const std::string& data_dir)
-  : m_window{window}, m_game{game}, m_data_dir{data_dir}, m_framerate{0} {
+Renderer::Renderer(SDL_Window* window, Game* game)
+  : m_window{window}, m_game{game}, m_framerate{0} {
   m_renderer = SDL_CreateRenderer(m_window, -1, SDL_RENDERER_ACCELERATED
                                   | SDL_RENDERER_PRESENTVSYNC);
   if (!m_renderer) SDL_error("SDL_CreateRenderer");
@@ -35,8 +37,11 @@ Renderer::Renderer(SDL_Window* window, Game* game, const std::string& data_dir)
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
   }
 
+  std::string data_dir = m_game->data_dir();
+  char sep = m_game->filesystem_separator();
+
   //load sprite sheet
-  std::string sprite_path = m_data_dir + cell_sheet_filename;
+  std::string sprite_path = data_dir + image_dir + sep + cell_sheet_filename;
   m_cell_sheet = IMG_LoadTexture(m_renderer, sprite_path.c_str());
   if (!m_cell_sheet)
     throw std::runtime_error("IMG_LoadTexture: failed to load texture");
@@ -58,15 +63,15 @@ Renderer::Renderer(SDL_Window* window, Game* game, const std::string& data_dir)
   m_num_animation_frames = width / m_cell_sheet_frame_size;
 
   //load logo image
-  sprite_path = m_data_dir + logo_filename;
+  sprite_path = data_dir + image_dir + sep + logo_filename;
   m_logo = IMG_LoadTexture(m_renderer, sprite_path.c_str());
 
   //load fonts
-  std::string font_path = m_data_dir + font_filename_bold;
+  std::string font_path = data_dir + font_dir + sep + font_filename_bold;
   m_game_title_font = TTF_OpenFont(font_path.c_str(), 56);
   m_title_font = TTF_OpenFont(font_path.c_str(), 32);
 
-  font_path = m_data_dir + font_filename_std;
+  font_path = data_dir + font_dir + sep + font_filename_std;
   m_control_font = TTF_OpenFont(font_path.c_str(), 24);
   m_info_font = TTF_OpenFont(font_path.c_str(), 18);
   
@@ -758,7 +763,8 @@ void Renderer::reload_font(int font_size) {
   if (m_rule_font)
     TTF_CloseFont(m_rule_font);
 
-  std::string font_path = m_data_dir + font_filename_std;
+  std::string font_path = m_game->data_dir() + font_dir
+    + m_game->filesystem_separator() + font_filename_std;
   m_rule_font = TTF_OpenFont(font_path.c_str(), font_size);
 
   if (!m_rule_font)

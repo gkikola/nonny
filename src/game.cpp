@@ -32,7 +32,8 @@ void do_options(Game* game);
 void do_about(Game* game);
 void do_quit(Game* game);
 
-Game::Game(const std::string& data_dir, const std::string& save_dir)
+Game::Game(const std::string& data_dir, const std::string& save_dir,
+           char filesystem_separator)
   : m_puzzle{nullptr}, m_puzzle_loaded{false},
     m_grid_x{0}, m_grid_y{0}, m_cell_size{32},
     m_target_grid_x{0}, m_target_grid_y{0},
@@ -42,7 +43,9 @@ Game::Game(const std::string& data_dir, const std::string& save_dir)
     m_recalc_size{true}, m_row_rule_width{0}, m_col_rule_height{0},
     m_info_pane{nullptr}, m_main_menu{nullptr},
     m_screen_width{0}, m_screen_height{0},
-    m_data_dir{data_dir}, m_save_dir{save_dir}, m_running{true} {
+    m_data_dir{data_dir}, m_save_dir{save_dir},
+    m_filesystem_separator{filesystem_separator},
+    m_running{true} {
   m_state = m_next_state = GameState::main_menu;
 
   m_main_menu = new Menu(this);
