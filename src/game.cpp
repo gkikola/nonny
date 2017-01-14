@@ -314,7 +314,7 @@ void Game::setup_main_menu(bool full_reset) {
     m_main_menu->clear();
     
     StaticText* title = new StaticText(this);
-    title->resize(256, 256);
+    title->resize(200, 200);
     title->set_string("NONNY_LOGO");
     title->set_type(StaticText::Type::huge);
     m_main_menu->add_control(title);
