@@ -393,8 +393,21 @@ void Renderer::draw_rules() {
     if (col_height > m_tallest_rule)
       m_tallest_rule = col_height;
 
-    if (y < buffer)
+    //if number is offscreen, push it down and give it a background
+    if (y < buffer) {
       y = buffer;
+
+      SDL_Rect bkgd_rect;
+      bkgd_rect.x = x - 1;
+      bkgd_rect.y = y - buffer;
+      bkgd_rect.w = cell_size + 2;
+      bkgd_rect.h = col_height;
+
+      SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
+      SDL_RenderFillRect(m_renderer, &bkgd_rect);
+      SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 255);
+      SDL_RenderDrawRect(m_renderer, &bkgd_rect);
+    }
 
     //keep track of how far down the column numbers go
     if (col_rule_bottom < y + col_height)
@@ -409,7 +422,7 @@ void Renderer::draw_rules() {
       dst_rect.y = y;
       dst_rect.w = w;
       dst_rect.h = h;
-
+      
       SDL_RenderCopy(m_renderer, tex, NULL, &dst_rect);
       SDL_DestroyTexture(tex);
 
@@ -428,9 +441,22 @@ void Renderer::draw_rules() {
     if (row_width > m_widest_rule)
       m_widest_rule = row_width;
 
+    //if number is offscreen, push it over and give it a background
     if (x < m_game->info_pane().width() + buffer
-        && y >= col_rule_bottom - buffer)
+        && y >= col_rule_bottom - buffer) {
       x = m_game->info_pane().width() + buffer;
+
+      SDL_Rect bkgd_rect;
+      bkgd_rect.x = x - buffer;
+      bkgd_rect.y = y - 1;
+      bkgd_rect.w = row_width;
+      bkgd_rect.h = cell_size + 2;
+
+      SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
+      SDL_RenderFillRect(m_renderer, &bkgd_rect);
+      SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 255);
+      SDL_RenderDrawRect(m_renderer, &bkgd_rect);
+    }
 
     for (auto entry : m_game->puzzle().get_row_rule(j)) {
       int w, h;
