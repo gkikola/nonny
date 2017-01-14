@@ -313,10 +313,16 @@ void Game::setup_main_menu(bool full_reset) {
   if (full_reset || m_main_menu->size() == 0) {
     m_main_menu->clear();
     
+    StaticText* logo = new StaticText(this);
+    logo->resize(150, 150);
+    logo->set_string("NONNY_LOGO");
+    logo->set_type(StaticText::Type::huge);
+    m_main_menu->add_control(logo);
+
     StaticText* title = new StaticText(this);
-    title->resize(200, 200);
-    title->set_string("NONNY_LOGO");
-    title->set_type(StaticText::Type::huge);
+    title->resize(button_width * 2, 24);
+    title->set_string(program_name);
+    title->set_type(StaticText::Type::heading);
     m_main_menu->add_control(title);
 
     Button* resume;
