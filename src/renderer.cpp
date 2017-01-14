@@ -613,8 +613,6 @@ void Renderer::render_control(const Scrollbar* scrollbar) {
   
   SDL_RenderFillRect(m_renderer, &rect);
 
-  SDL_SetRenderDrawColor(m_renderer, 128, 128, 128, 255);
-
   int scroll_buffer = Scrollbar::thumb_spacing();
   if (scrollbar->is_vertical()) {
     rect.x += scroll_buffer;
@@ -629,6 +627,13 @@ void Renderer::render_control(const Scrollbar* scrollbar) {
     rect.x = scrollbar->thumb_position();
     rect.w = scrollbar->thumb_size();
   }
+
+  if (scrollbar->is_selected())
+    SDL_SetRenderDrawColor(m_renderer, 42, 118, 198, 255);
+  else if (scrollbar->is_mouse_hovering())
+    SDL_SetRenderDrawColor(m_renderer, 88, 88, 88, 255);
+  else
+    SDL_SetRenderDrawColor(m_renderer, 128, 128, 128, 255);
 
   SDL_RenderFillRect(m_renderer, &rect);
 }

@@ -107,6 +107,8 @@ void Scrollbar::mouse_press(MouseAction action, int x, int y, bool down) {
         *coord = -move_step;
 
       m_game->move_puzzle(move_x, move_y, false);
+
+      deselect();
     }
   }
 }
@@ -115,6 +117,9 @@ void Scrollbar::mouse_move(int x, int y) {
   Control::mouse_move(x, y);
 
   int* pos = m_vertical ? &y : &x;
+
+  if (*pos < m_thumb_pos || *pos > m_thumb_pos + m_thumb_size)
+    hover_mouse(false);
   
   if (m_dragging_left)
     set_thumb_position(*pos - m_thumb_size / 2);
