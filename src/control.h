@@ -1,6 +1,8 @@
 #ifndef NONNY_CONTROL_H
 #define NONNY_CONTROL_H
 
+#include <string>
+
 class Game;
 class Renderer;
 
@@ -14,6 +16,9 @@ class Control {
   void hover_mouse(bool hovering = true);
   bool is_mouse_hovering() const { return m_hover; }
 
+  void set_help_text(const std::string& text);
+  const std::string& help_text() const { return m_help_text; }
+  
   void select();
   void deselect();
   bool is_selected() const { return m_selected; }
@@ -45,6 +50,8 @@ class Control {
   bool m_hover;
   bool m_selected;
   bool m_depressed;
+
+  std::string m_help_text;
 };
 
 #endif

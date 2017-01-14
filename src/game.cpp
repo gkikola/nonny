@@ -330,6 +330,7 @@ void Game::setup_main_menu(bool full_reset) {
       resume = new Button(this);
       resume->resize(button_width, button_height);
       resume->set_label("Resume Game");
+      resume->set_help_text("Continue your current game");
       resume->register_callback(do_resume);
       m_main_menu->add_control(resume);
     }
@@ -337,6 +338,7 @@ void Game::setup_main_menu(bool full_reset) {
     Button* play = new Button(this);
     play->resize(button_width, button_height);
     play->set_label("Play");
+    play->set_help_text("Open a puzzle to play");
     play->register_callback(do_play);
     m_main_menu->add_control(play);
 
@@ -348,24 +350,28 @@ void Game::setup_main_menu(bool full_reset) {
     Button* create = new Button(this);
     create->resize(button_width, button_height);
     create->set_label("Create");
+    create->set_help_text("Create your own puzzle");
     create->register_callback(do_create);
     m_main_menu->add_control(create);
     
     Button* options = new Button(this);
     options->resize(button_width, button_height);
     options->set_label("Options");
+    options->set_help_text("Change game settings");
     options->register_callback(do_options);
     m_main_menu->add_control(options);
 
     Button* about = new Button(this);
     about->resize(button_width, button_height);
     about->set_label("About");
+    about->set_help_text("About Nonny");
     about->register_callback(do_about);
     m_main_menu->add_control(about);
 
     Button* quit = new Button(this);
     quit->resize(button_width, button_height);
     quit->set_label("Quit");
+    quit->set_help_text("Exit the game");
     quit->register_callback(do_quit);
     m_main_menu->add_control(quit);
   }
@@ -416,6 +422,7 @@ void Game::setup_about_menu() {
     Button* done_button = new Button(this);
     done_button->resize(button_width, button_height);
     done_button->set_label("Done");
+    done_button->set_help_text("Go back to the main menu");
     done_button->register_callback(do_main_menu);
     done_button->select();
     m_about_menu->add_control(done_button);

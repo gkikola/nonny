@@ -20,6 +20,9 @@ const int cell_age_time = 50;
 const bool show_framerate = false;
 const int button_selection_spacing = 4;
 const int button_menu_symbol_spacing = 10;
+const int tooltip_x_offset = 0;
+const int tooltip_y_offset = 24;
+const int tooltip_border_space = 4;
 
 Renderer::Renderer(SDL_Window* window, Game* game, const std::string& data_dir)
   : m_window{window}, m_game{game}, m_data_dir{data_dir}, m_framerate{0} {
@@ -266,6 +269,10 @@ void Renderer::render_info_pane() {
   SDL_RenderFillRect(m_renderer, &info_pane);
 
   m_game->info_pane().draw(this);
+
+  for (Control* control : m_game->info_pane()) {
+    draw_tooltip(control);
+  }
 }
 
 void Renderer::render_menu(const Menu& menu) {
@@ -273,6 +280,10 @@ void Renderer::render_menu(const Menu& menu) {
   SDL_RenderClear(m_renderer);
 
   menu.draw(this);
+
+  for (Control* control : menu) {
+    draw_tooltip(control);
+  }
 }
 
 void Renderer::draw_cells() {
@@ -528,6 +539,40 @@ void Renderer::draw_framerate() {
 
   SDL_Color color = { 0, 0, 0, 255 };
   draw_text(m_info_font, &color, str, m_game->info_pane().width() + 5, 5);
+}
+
+void Renderer::draw_tooltip(Control* control) {
+  std::string text = control->help_text();
+
+  if (text.length() > 0 && control->is_mouse_hovering()) {
+    int x, y;
+    SDL_GetMouseState(&x, &y);
+
+    x += tooltip_x_offset;
+    y += tooltip_y_offset;
+    draw_tooltip(text, x, y);
+  }
+}
+
+void Renderer::draw_tooltip(const std::string& text, int x, int y) {
+  SDL_Rect rect;
+  rect.x = x;
+  rect.y = y;
+
+  TTF_SizeText(m_info_font, text.c_str(), &rect.w, &rect.h);
+
+  rect.x -= tooltip_border_space;
+  rect.y -= tooltip_border_space;
+  rect.w += 2 * tooltip_border_space;
+  rect.h += 2 * tooltip_border_space;
+  
+  SDL_SetRenderDrawColor(m_renderer, 32, 32, 32, 255);
+  SDL_RenderFillRect(m_renderer, &rect);
+  SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
+  SDL_RenderDrawRect(m_renderer, &rect);
+  
+  SDL_Color color = { 255, 255, 255, 255 };
+  draw_text(m_info_font, &color, text, x, y);
 }
 
 void Renderer::render_control(const Preview* preview) {

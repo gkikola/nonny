@@ -46,6 +46,8 @@ class Renderer {
   void draw_rules();
   void draw_cell_selection();
   void draw_framerate();
+  void draw_tooltip(Control* control);
+  void draw_tooltip(const std::string& text, int x, int y);
 
   int row_rule_width(int row, int buffer);
   int col_rule_height(int col, int buffer);

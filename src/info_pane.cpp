@@ -83,6 +83,7 @@ void InfoPane::setup_controls(int pane_width) {
     m_title->move(default_spacing, y);
     m_title->resize(pane_width - 2 * default_spacing, text_height_heading);
     m_title->set_string(m_game->puzzle().title());
+    m_title->set_help_text(m_game->puzzle().title());
     m_title->set_type(StaticText::Type::heading);
   
     y += text_height_heading;
@@ -102,6 +103,7 @@ void InfoPane::setup_controls(int pane_width) {
   m_size->move(default_spacing, y);
   m_size->resize(pane_width - 2 * default_spacing, text_height_std);
   m_size->set_string(size_str);
+  m_size->set_help_text("Puzzle size");
   m_size->set_type(StaticText::Type::standard);
 
   y += text_height_std;
@@ -129,6 +131,7 @@ void InfoPane::setup_controls(int pane_width) {
     m_author->move(default_spacing, y);
     m_author->resize(pane_width - 2 * default_spacing, text_height_small);
     m_author->set_string("Author: " + m_game->puzzle().author());
+    m_author->set_help_text("Puzzle creator");
     m_author->set_type(StaticText::Type::small);
 
     y += text_height_small;
@@ -138,16 +141,19 @@ void InfoPane::setup_controls(int pane_width) {
   m_menu->move(pane_width / 2 - 3 * button_size / 2 - space_between_buttons, y);
   m_menu->resize(button_size, text_height_std + default_spacing);
   m_menu->set_label("MENU_SYMBOL");
+  m_menu->set_help_text("Open menu");
   m_menu->register_callback(open_menu);
 
   m_hints->move(pane_width / 2 - button_size / 2, y);
   m_hints->resize(48, text_height_std + default_spacing);
   m_hints->set_label("?");
+  m_hints->set_help_text("Toggle blue hint numbers");
   m_hints->register_callback(toggle_hints);
 
   m_errors->move(pane_width / 2 + button_size / 2 + space_between_buttons, y);
   m_errors->resize(button_size, text_height_std + default_spacing);
   m_errors->set_label("X");
+  m_errors->set_help_text("Toggle error visibility");
   m_errors->register_callback(toggle_errors);
 
   y += text_height_std;

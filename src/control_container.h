@@ -11,9 +11,13 @@ class ControlContainer {
   virtual ~ControlContainer();
   
   typedef std::list<Control*>::iterator iterator;
+  typedef std::list<Control*>::const_iterator const_iterator;
 
   iterator begin();
   iterator end();
+
+  const_iterator begin() const;
+  const_iterator end() const;
 
   int size() const { return m_controls.size(); }
 

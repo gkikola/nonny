@@ -16,6 +16,14 @@ ControlContainer::iterator ControlContainer::end() {
   return m_controls.end();
 }
 
+ControlContainer::const_iterator ControlContainer::begin() const {
+  return m_controls.begin();
+}
+
+ControlContainer::const_iterator ControlContainer::end() const {
+  return m_controls.end();
+}
+
 void ControlContainer::draw(Renderer* renderer) const {
   for (auto control : m_controls)
     control->draw(renderer);

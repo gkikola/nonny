@@ -22,6 +22,10 @@ void Control::hover_mouse(bool hovering) {
   m_hover = hovering;
 }
 
+void Control::set_help_text(const std::string& text) {
+  m_help_text = text;
+}
+
 void Control::select() {
   m_selected = true;
 }
