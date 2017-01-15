@@ -1,3 +1,4 @@
+#include <cmath>
 #include <iostream>
 #include <stdexcept>
 #include <string>
@@ -539,7 +540,7 @@ void Renderer::draw_cell_selection() {
 
 void Renderer::draw_framerate() {
   std::string str = "Rendering ";
-  str += std::to_string((int)round(m_framerate));
+  str += std::to_string((int)std::round(m_framerate));
   str += " frames per second";
 
   SDL_Color color = { 0, 0, 0, 255 };
