@@ -1,2 +1,2 @@
 easydir=$(pkgdatadir)/puzzles/easy
-easy_DATA = test.non test2.non
+easy_DATA = briefcase.non spiral.non test.non test2.non
