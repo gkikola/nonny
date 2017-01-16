@@ -6,7 +6,8 @@
 #include "puzzle.h"
 #include "scrollbar.h"
 
-enum class GameState { main_menu, opts_menu, about, puzzle_selection, puzzle };
+enum class GameState { main_menu, opts_menu, about, collection_selection,
+    puzzle_selection, puzzle };
 
 class Game {
  public:

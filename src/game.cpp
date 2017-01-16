@@ -1,7 +1,6 @@
 #include <cmath>
 #include <iostream>
 #include <string>
-#include <boost/filesystem.hpp>
 
 #include "info_pane.h"
 #include "menu.h"
