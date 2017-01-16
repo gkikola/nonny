@@ -28,6 +28,8 @@ AC_CONFIG_FILES([
   data/fonts/Makefile
   data/images/Makefile
   data/puzzles/Makefile
+  data/puzzles/easy/Makefile
+  data/puzzles/normal/Makefile
   src/Makefile
 ])
 AC_OUTPUT

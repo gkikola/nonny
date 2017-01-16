@@ -1,0 +1,1 @@
+normaldir=$(pkgdatadir)/puzzles/normal
