@@ -11,7 +11,8 @@ void Menu::add_control(Control* control) {
   ControlContainer::add_control(control);
 }
 
-void Menu::arrange_controls(int screen_width, int screen_height) {
+void Menu::arrange_controls(int screen_width, int screen_height,
+                            int columns) {
   int total_height = menu_spacing;
   for (Control* control : *this) {
     int width, height;

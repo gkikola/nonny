@@ -1,6 +1,7 @@
 #ifndef NONNY_GAME_H
 #define NONNY_GAME_H
 
+#include "collection_index.h"
 #include "info_pane.h"
 #include "menu.h"
 #include "puzzle.h"
@@ -67,12 +68,14 @@ class Game {
   InfoPane& info_pane() { return *m_info_pane; }
   Menu& main_menu() { return *m_main_menu; }
   Menu& about_menu() { return *m_about_menu; }
+  Menu& collection_menu() { return *m_collection_menu; }
   Scrollbar& vscrollbar() { return *m_vscroll; }
   Scrollbar& hscrollbar() { return *m_hscroll; }
   const Puzzle& puzzle() const { return *m_puzzle; }
  private:
   void setup_main_menu(bool full_reset);
   void setup_about_menu();
+  void setup_collection_menu();
   void default_zoom();
   void zoom(int amount, int x, int y);
   void move_puzzle_in_bounds();
@@ -80,6 +83,8 @@ class Game {
 
   Puzzle* m_puzzle;
   bool m_puzzle_loaded;
+
+  CollectionIndex* m_puzzle_collections;
   
   GameState m_state;
   GameState m_next_state;
@@ -94,6 +99,7 @@ class Game {
   InfoPane* m_info_pane;
   Menu* m_main_menu;
   Menu* m_about_menu;
+  Menu* m_collection_menu;
   Scrollbar* m_vscroll;
   Scrollbar* m_hscroll;
 

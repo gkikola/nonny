@@ -24,6 +24,9 @@ const std::string program_version = "0.1";
 const std::string copyright_str = "Copyright © 2017 Gregory Kikola";
 const std::string license_str = "License GPLv3+: GNU GPL version 3 or later";
 
+const std::string puzzle_dir = "puzzles";
+const std::string index_file = "index.nin";
+
 void do_play(Game* game);
 void do_resume(Game* game);
 void do_create(Game* game);
@@ -41,7 +44,7 @@ Game::Game(const std::string& data_dir, const std::string& save_dir,
     m_target_cell_size{32}, m_target_x{0}, m_target_y{0}, m_zoom_delta{0},
     m_selected{false}, m_selection_x{0}, m_selection_y{0},
     m_recalc_size{true}, m_row_rule_width{0}, m_col_rule_height{0},
-    m_info_pane{nullptr}, m_main_menu{nullptr},
+    m_info_pane{nullptr}, m_main_menu{nullptr}, m_collection_menu{nullptr},
     m_screen_width{0}, m_screen_height{0},
     m_data_dir{data_dir}, m_save_dir{save_dir},
     m_filesystem_separator{filesystem_separator},
@@ -57,9 +60,17 @@ Game::Game(const std::string& data_dir, const std::string& save_dir,
   m_info_pane = new InfoPane(this);
   m_vscroll = new Scrollbar(this, true);
   m_hscroll = new Scrollbar(this, false);
+
+  std::string puzzles = m_data_dir + puzzle_dir;
+  m_puzzle_collections = new CollectionIndex(puzzles, index_file);
+
+  m_collection_menu = new Menu(this);
+  setup_collection_menu();
 }
 
 Game::~Game() {
+  if (m_puzzle_collections) delete m_puzzle_collections;
+  if (m_collection_menu) delete m_collection_menu;
   if (m_about_menu) delete m_about_menu;
   if (m_main_menu) delete m_main_menu;
   if (m_info_pane) delete m_info_pane;
@@ -76,6 +87,9 @@ void Game::set_state(GameState state) {
     m_state = state;
     m_info_pane->slide_pane(m_screen_width, default_info_pane_width);
     update_screen_size(m_screen_width, m_screen_height);
+    break;
+  case GameState::collection_selection:
+    m_state = state;
     break;
   case GameState::main_menu:
     if (m_state == GameState::puzzle)
@@ -189,6 +203,9 @@ void Game::update_screen_size(int width, int height) {
 
   //recenter about menu
   setup_about_menu();
+
+  //recenter collection menu
+  setup_collection_menu();
 
   //recenter the puzzle
   m_grid_x += (width - prev_width) / 2;
@@ -434,6 +451,19 @@ void Game::setup_about_menu() {
   m_about_menu->arrange_controls(m_screen_width, m_screen_height);
 }
 
+void Game::setup_collection_menu() {
+  if (m_collection_menu->size() == 0) {
+    for (auto col_entry : *m_puzzle_collections) {
+      Button* entry_button = new Button(this);
+      entry_button->resize(button_width, button_height);
+      entry_button->set_label(col_entry->title);
+      m_collection_menu->add_control(entry_button);
+    }
+  }
+
+  m_collection_menu->arrange_controls(m_screen_width, m_screen_height, 3);
+}
+
 void Game::default_zoom() {
   //add rule numbers to grid size
   int max_row_rule_width = 0, max_col_rule_height = 0;
@@ -535,7 +565,7 @@ void Game::quit() {
 }
 
 void do_play(Game* game) {
-  game->set_state(GameState::puzzle);
+  game->set_state(GameState::collection_selection);
 }
 
 void do_resume(Game* game) {

@@ -1,2 +1,2 @@
 normaldir=$(pkgdatadir)/puzzles/normal
-normal_DATA = enterprise.non
+normal_DATA = collection.nco enterprise.non
