@@ -34,6 +34,7 @@ void do_main_menu(Game* game);
 void do_options(Game* game);
 void do_about(Game* game);
 void do_quit(Game* game);
+void select_collection(Game* game);
 
 Game::Game(const std::string& data_dir, const std::string& save_dir,
            char filesystem_separator)
@@ -557,6 +558,24 @@ void Game::update_scrollbars() {
                             2 * (m_screen_width - 1)
                             + m_info_pane->target_width() - m_grid_x,
                             cell_grid_width() + 2 * m_screen_width - 2);
+  }
+}
+
+void Game::escape_to_menu() {
+  switch (m_state) {
+  default:
+  case GameState::puzzle:
+    set_state(GameState::main_menu);
+    break;
+  case GameState::main_menu:
+    quit();
+    break;
+  case GameState::about:
+    set_state(GameState::main_menu);
+    break;
+  case GameState::collection_selection:
+    set_state(GameState::main_menu);
+    break;
   }
 }
 

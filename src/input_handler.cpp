@@ -715,6 +715,10 @@ void InputHandler::key_press_controls(ControlContainer* controls,
       for (Control* control : *controls)
         control->key_press(Control::KeyAction::depress, down);
       break;
+    case KeyAction::prev_menu:
+      if (down)
+        m_game->escape_to_menu();
+      break;
     }
   }
 }
@@ -745,6 +749,6 @@ void InputHandler::set_default_controls() {
 
   associate_key(KeyAction::next_control, SDLK_TAB);
   
-  associate_key(KeyAction::open_menu, SDLK_ESCAPE);
+  associate_key(KeyAction::prev_menu, SDLK_ESCAPE);
   associate_key(KeyAction::open_help, SDLK_F1);
 }

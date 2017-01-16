@@ -64,6 +64,8 @@ class Game {
 
   int screen_width() const { return m_screen_width; }
   int screen_height() const { return m_screen_height; }
+
+  void escape_to_menu();
   
   InfoPane& info_pane() { return *m_info_pane; }
   Menu& main_menu() { return *m_main_menu; }
