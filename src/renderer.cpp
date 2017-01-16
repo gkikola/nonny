@@ -662,14 +662,14 @@ void Renderer::render_control(const Button* button) {
     SDL_RenderDrawRect(m_renderer, &rect);
   
   SDL_Color color;
-  if (button->is_mouse_hovering())
+  if (button->is_depressed())
+    color = { 25, 25, 112, 255 };
+  else if (button->is_mouse_hovering())
     color = { 0, 0, 0, 255 };
-  else if (button->is_depressed())
-    color = { 0, 0, 255, 255 };
   else if (button->is_selected())
-    color = { 0, 115, 207, 255 };
+    color = { 0, 0, 255, 255 };
   else
-    color = { 123, 175, 212, 255 };
+    color = { 0, 115, 207, 255 };
 
   if (button->label() == "MENU_SYMBOL") {
     SDL_SetRenderDrawColor(m_renderer, color.r, color.g, color.b, color.a);
