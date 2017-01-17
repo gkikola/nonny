@@ -546,7 +546,8 @@ void Game::default_zoom() {
 
   //make sure cell_size is a multiple of cell_size_step
   m_cell_size -= m_cell_size % cell_size_step;
-
+  m_target_cell_size = m_cell_size;
+  
   m_recalc_size = true;
 
   m_grid_x = default_info_pane_width
