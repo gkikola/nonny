@@ -192,9 +192,9 @@ void Game::load_puzzle(const std::string& filename) {
   m_puzzle_loaded = true;
 
   set_state(GameState::puzzle);
-  
-  default_zoom();
+
   update_screen_size(m_screen_width, m_screen_height);
+  default_zoom();
 }
 
 void Game::open_puzzle_collection(const std::string& path) {
@@ -534,7 +534,7 @@ void Game::default_zoom() {
   int width = m_puzzle->width() + max_row_rule_width;
   int height = m_puzzle->height() + max_col_rule_height;
 
-  int max_cell_width = ((m_screen_width - m_info_pane->width() - width)
+  int max_cell_width = ((m_screen_width - default_info_pane_width - width)
                         * default_screen_coverage / width);
   int max_cell_height = ((m_screen_height - height)
                          * default_screen_coverage / height);
