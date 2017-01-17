@@ -237,8 +237,7 @@ void Game::update_screen_size(int width, int height) {
   setup_puzzle_menu();
 
   //recenter the puzzle
-  m_grid_x += (width - prev_width) / 2;
-  m_grid_y += (height - prev_height) / 2;
+  move_puzzle((width - prev_width) / 2, (height - prev_height) / 2, true);
 
   //recenter info pane
   m_info_pane->setup_controls(default_info_pane_width);
@@ -276,24 +275,26 @@ void Game::move_puzzle(int relx, int rely, bool instant) {
 }
 
 void Game::move_puzzle_in_bounds() {
-  int prev_x = m_grid_x;
-  int prev_y = m_grid_y;
+  if (m_puzzle_loaded) {
+    int prev_x = m_grid_x;
+    int prev_y = m_grid_y;
   
-  if (m_grid_x >= m_screen_width - scrollbar_size)
-    m_grid_x = m_screen_width - scrollbar_size - 1;
-  else if (m_grid_x + cell_grid_width() <= m_info_pane->target_width())
-    m_grid_x = m_info_pane->target_width() - cell_grid_width() + 1;
-  if (m_grid_y >= m_screen_height - scrollbar_size)
-    m_grid_y = m_screen_height - scrollbar_size - 1;
-  else if (m_grid_y + cell_grid_height() <= 0)
-    m_grid_y = -cell_grid_height() + 1;
+    if (m_grid_x >= m_screen_width - scrollbar_size)
+      m_grid_x = m_screen_width - scrollbar_size - 1;
+    else if (m_grid_x + cell_grid_width() <= m_info_pane->target_width())
+      m_grid_x = m_info_pane->target_width() - cell_grid_width() + 1;
+    if (m_grid_y >= m_screen_height - scrollbar_size)
+      m_grid_y = m_screen_height - scrollbar_size - 1;
+    else if (m_grid_y + cell_grid_height() <= 0)
+      m_grid_y = -cell_grid_height() + 1;
 
-  if (m_grid_x != prev_x)
-    m_target_grid_x = m_grid_x;
-  if (m_grid_y != prev_y)
-    m_target_grid_y = m_grid_y;
+    if (m_grid_x != prev_x)
+      m_target_grid_x = m_grid_x;
+    if (m_grid_y != prev_y)
+      m_target_grid_y = m_grid_y;
 
-  update_scrollbars();
+    update_scrollbars();
+  }
 }
 
 void Game::make_selected_cell_visible() {
