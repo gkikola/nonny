@@ -73,6 +73,8 @@ void InputHandler::mouse_move(int x, int y) {
     mouse_move_controls(&m_game->about_menu(), x, y);
   } else if (m_game->state() == GameState::collection_selection) {
     mouse_move_controls(&m_game->collection_menu(), x, y);
+  } else if (m_game->state() == GameState::puzzle_selection) {
+    mouse_move_controls(&m_game->puzzle_menu(), x, y);
   } else if (m_game->state() == GameState::puzzle) {
     //make sure mouse doesn't skip over cells when moving fast
     if (m_mouse_dragging) {
@@ -204,6 +206,8 @@ void InputHandler::mouse_press(Uint8 button, bool down) {
     mouse_press_controls(&m_game->about_menu(), button, down);
   } else if (m_game->state() == GameState::collection_selection) {
     mouse_press_controls(&m_game->collection_menu(), button, down);
+  } else if (m_game->state() == GameState::puzzle_selection) {
+    mouse_press_controls(&m_game->puzzle_menu(), button, down);
   } else if (m_game->state() == GameState::puzzle) {
     mouse_press_controls(&m_game->info_pane(), button, down);
 
@@ -357,6 +361,8 @@ void InputHandler::key_press(SDL_Keycode key, bool down) {
     key_press_controls(&m_game->about_menu(), key, down);
   } else if (m_game->state() == GameState::collection_selection) {
     key_press_controls(&m_game->collection_menu(), key, down);
+  } else if (m_game->state() == GameState::puzzle_selection) {
+    key_press_controls(&m_game->puzzle_menu(), key, down);
   } else if (m_game->state() == GameState::puzzle) {
     key_press_controls(&m_game->info_pane(), key, down);
   

@@ -147,6 +147,9 @@ void Renderer::render_game() {
   case GameState::collection_selection:
     render_menu(m_game->collection_menu());
     break;
+  case GameState::puzzle_selection:
+    render_menu(m_game->puzzle_menu());
+    break;
   default:
   case GameState::puzzle:
     render_puzzle();

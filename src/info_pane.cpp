@@ -14,9 +14,9 @@ const int button_size = 48;
 const int space_between_buttons = 12;
 const int slide_speed = 2048;
 
-void open_menu(Game* game);
-void toggle_hints(Game* game);
-void toggle_errors(Game* game);
+void open_menu(Game* game, const std::string& data);
+void toggle_hints(Game* game, const std::string& data);
+void toggle_errors(Game* game, const std::string& data);
 
 InfoPane::InfoPane(Game* game) : m_game{game}, m_width{0}, m_target_width{0},
                                  m_slide_delta{0.0}, m_sliding{false} {
@@ -169,12 +169,12 @@ void InfoPane::setup_controls(int pane_width) {
   }
 }
 
-void open_menu(Game* game) {
+void open_menu(Game* game, const std::string& data) {
   game->set_state(GameState::main_menu);
 }
 
-void toggle_hints(Game* game) {
+void toggle_hints(Game* game, const std::string& data) {
 }
 
-void toggle_errors(Game* game) {
+void toggle_errors(Game* game, const std::string& data) {
 }

@@ -13,13 +13,17 @@ class Button : public Control {
   const std::string& label() const { return m_label; }
   void set_label(const std::string& label);
 
-  typedef void (*callback)(Game*);
+  const std::string& data() const { return m_data; }
+  void set_data(const std::string& data);
+
+  typedef void (*callback)(Game*, const std::string&);
   void register_callback(callback function);
 
   virtual void activate() override;
   virtual void draw(Renderer* renderer) const override;
  private:
   std::string m_label;
+  std::string m_data;
   callback m_callback_func;
 };
 

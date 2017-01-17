@@ -23,7 +23,7 @@ class CollectionIndex {
   const_iterator begin() const;
   const_iterator end() const;
   
-  PuzzleCollection* open_collection(const CollectionEntry* collection) const;
+  PuzzleCollection* open_collection(const std::string& collection) const;
  private:
   void read_collection(const std::string& path);
   

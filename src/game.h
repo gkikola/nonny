@@ -23,6 +23,8 @@ class Game {
   void load_puzzle(const std::string& filename);
   bool is_puzzle_loaded() const { return m_puzzle_loaded; }
 
+  void open_puzzle_collection(const std::string& path);
+
   void get_puzzle_coords(int* x, int* y) const;
   void move_puzzle(int relx, int rely, bool instant = true);
   void make_selected_cell_visible();
@@ -71,6 +73,7 @@ class Game {
   Menu& main_menu() { return *m_main_menu; }
   Menu& about_menu() { return *m_about_menu; }
   Menu& collection_menu() { return *m_collection_menu; }
+  Menu& puzzle_menu() { return *m_puzzle_menu; }
   Scrollbar& vscrollbar() { return *m_vscroll; }
   Scrollbar& hscrollbar() { return *m_hscroll; }
   const Puzzle& puzzle() const { return *m_puzzle; }
@@ -78,6 +81,7 @@ class Game {
   void setup_main_menu(bool full_reset);
   void setup_about_menu();
   void setup_collection_menu();
+  void setup_puzzle_menu();
   void default_zoom();
   void zoom(int amount, int x, int y);
   void move_puzzle_in_bounds();
@@ -86,7 +90,8 @@ class Game {
   Puzzle* m_puzzle;
   bool m_puzzle_loaded;
 
-  CollectionIndex* m_puzzle_collections;
+  CollectionIndex* m_collection_index;
+  PuzzleCollection* m_collection;
   
   GameState m_state;
   GameState m_next_state;
@@ -102,6 +107,7 @@ class Game {
   Menu* m_main_menu;
   Menu* m_about_menu;
   Menu* m_collection_menu;
+  Menu* m_puzzle_menu;
   Scrollbar* m_vscroll;
   Scrollbar* m_hscroll;
 

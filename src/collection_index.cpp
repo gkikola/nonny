@@ -1,13 +1,10 @@
-#include <algorithm>
 #include <fstream>
-#include <sstream>
 #include <string>
 #include <vector>
 #include <boost/filesystem.hpp>
+#include "puzzle_collection.h"
 
 #include "collection_index.h"
-
-const std::string info_file = "collection.nco";
 
 CollectionIndex::CollectionIndex(const std::string& path,
                                  const std::string& index_file)
@@ -28,7 +25,7 @@ CollectionIndex::CollectionIndex(const std::string& path,
       auto p = dir.path();
 
       if (boost::filesystem::is_directory(p))
-        read_collection(dir.path().string());
+        read_collection(p.string());
     }
   }
 }
@@ -86,6 +83,6 @@ void CollectionIndex::read_collection(const std::string& path) {
 }
 
 PuzzleCollection*
-CollectionIndex::open_collection(const CollectionEntry* collection) const {
-  return nullptr;
+CollectionIndex::open_collection(const std::string& collection) const {
+  return new PuzzleCollection(collection);
 }
