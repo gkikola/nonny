@@ -87,7 +87,12 @@ void Scrollbar::mouse_press(MouseAction action, int x, int y, bool down) {
 
   if (is_selected() && action == MouseAction::left) {
     m_dragging_left = true;
-    set_thumb_position(*pos - m_thumb_size / 2);
+
+    if (*pos >= m_thumb_pos && *pos <= m_thumb_pos + m_thumb_size)
+      m_down_pos = *pos - m_thumb_pos;
+    else
+      m_down_pos = m_thumb_size / 2;
+    set_thumb_position(*pos - m_down_pos);
   } else if (is_selected() && action == MouseAction::right) {
     if (*pos >= m_thumb_pos && *pos <= m_thumb_pos + m_thumb_size) {
       m_down_pos = *pos - m_thumb_pos;
@@ -121,10 +126,7 @@ void Scrollbar::mouse_move(int x, int y) {
   if (*pos < m_thumb_pos || *pos > m_thumb_pos + m_thumb_size)
     hover_mouse(false);
   
-  if (m_dragging_left)
-    set_thumb_position(*pos - m_thumb_size / 2);
-
-  if (m_dragging_right)
+  if (m_dragging_left || m_dragging_right)
     set_thumb_position(*pos - m_down_pos);
 
   if (m_holding_right) {
