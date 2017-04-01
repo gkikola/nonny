@@ -1,5 +1,0 @@
-#! /bin/sh
-
-aclocal -I m4 --install \
-    && automake --gnu --add-missing \
-    && autoconf

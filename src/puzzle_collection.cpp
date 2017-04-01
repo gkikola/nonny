@@ -1,15 +1,15 @@
 #include <fstream>
 #include <iostream>
+#include <stdexcept>
 #include <string>
 #include <vector>
-#include <boost/filesystem.hpp>
 #include "puzzle.h"
 
 #include "puzzle_collection.h"
 
 PuzzleCollection::PuzzleCollection(const std::string& path)
   : m_path{path} {
-  char sep = boost::filesystem::path::preferred_separator;
+  char sep = '/';//TODO REPLACE: boost::filesystem::path::preferred_separator;
 
   //see if a collection file exists
   std::string filename = path + sep + info_file;
@@ -21,6 +21,7 @@ PuzzleCollection::PuzzleCollection(const std::string& path)
     while (getline(file, line))
       read_puzzle(path + sep + line);
   } else {
+    /*
     //no collection file, just read all files in the directory
     for (auto& puzzle_file : boost::filesystem::directory_iterator(path)) {
       auto f = puzzle_file.path();
@@ -28,7 +29,8 @@ PuzzleCollection::PuzzleCollection(const std::string& path)
       if (boost::filesystem::is_regular_file(f)
           && f.extension().string() == ".non")
         read_puzzle(f.string());
-    }
+        }*/
+    throw std::runtime_error("unimplemented"); //TODO REPLACE
   }
 }
 

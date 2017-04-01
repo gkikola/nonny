@@ -1,1 +1,0 @@
-SUBDIRS = images fonts puzzles

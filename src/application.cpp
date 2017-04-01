@@ -5,6 +5,7 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 
+#include "config.h"
 #include "game.h"
 #include "input_handler.h"
 #include "renderer.h"

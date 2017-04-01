@@ -1,0 +1,7 @@
+#ifndef NONNY_CONFIG_H
+#define NONNY_CONFIG_H
+
+#define NONNY_VERSION "${NONNY_VERSION}"
+#define DATADIR "../data/"
+
+#endif
