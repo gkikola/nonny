@@ -2,6 +2,7 @@
 #define NONNY_CONFIG_H
 
 #define NONNY_VERSION "${NONNY_VERSION}"
-#define DATADIR "../data/"
+#define DATADIR "../"
+#define INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}"
 
 #endif

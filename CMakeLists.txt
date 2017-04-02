@@ -51,3 +51,6 @@ target_link_libraries (
   ${SDL2IMAGE_LIBRARIES}
   ${SDL2TTF_LIBRARIES}
   )
+
+install (TARGETS nonny DESTINATION bin)
+install (DIRECTORY data/ DESTINATION share/nonny)
