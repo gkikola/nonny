@@ -7,31 +7,31 @@
 #include <stdexcept>
 #include <string>
 
-#include "puzzle.h"
+#include "oldpuzzle.h"
 
-Puzzle::Puzzle(const std::string& filename) : m_width{0}, m_height{0} {
+OldPuzzle::OldPuzzle(const std::string& filename) : m_width{0}, m_height{0} {
   load_file(filename);
 }
 
-const std::vector<RuleEntry>& Puzzle::get_row_rule(int row) const {
+const std::vector<RuleEntry>& OldPuzzle::get_row_rule(int row) const {
   if (row >= m_row_rules.size() || row < 0)
     throw std::runtime_error("Puzzle::get_row_rule: invalid row");
 
   return m_row_rules[row];
 }
 
-const std::vector<RuleEntry>& Puzzle::get_col_rule(int col) const {
+const std::vector<RuleEntry>& OldPuzzle::get_col_rule(int col) const {
   if (col >= m_col_rules.size() || col < 0)
     throw std::runtime_error("Puzzle::get_col_rule: invalid column");
 
   return m_col_rules[col];
 }
 
-CellState Puzzle::prev_cell_state(int x, int y) const {
+CellState OldPuzzle::prev_cell_state(int x, int y) const {
   return m_grid[y * width() + x].prev_state;
 }
 
-void Puzzle::set_cell(int x, int y, CellState state) {
+void OldPuzzle::set_cell(int x, int y, CellState state) {
   if (x >= 0 && y >= 0 && x < width() && y < height()) {
     int index = y * width() + x;
 
@@ -41,12 +41,12 @@ void Puzzle::set_cell(int x, int y, CellState state) {
   }
 }
 
-void Puzzle::age_cell(int x, int y, int max) {
+void OldPuzzle::age_cell(int x, int y, int max) {
   if (cell_age(x, y) < max)
     m_grid[y * width() + x].age++;
 }
 
-void Puzzle::load_file(const std::string& filename) {
+void OldPuzzle::load_file(const std::string& filename) {
   unload_puzzle();
 
   std::string line;
@@ -157,7 +157,7 @@ void Puzzle::load_file(const std::string& filename) {
   file.close();
 }
 
-void Puzzle::unload_puzzle() {
+void OldPuzzle::unload_puzzle() {
   m_width = m_height = 0;
   m_grid.clear();
   m_row_rules.clear();

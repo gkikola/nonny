@@ -6,7 +6,7 @@
 #include "collection_index.h"
 #include "info_pane.h"
 #include "menu.h"
-#include "puzzle.h"
+#include "oldpuzzle.h"
 
 #include "game.h"
 
@@ -188,7 +188,7 @@ void Game::update(int elapsed_time) {
 void Game::load_puzzle(const std::string& filename) {
   if (m_puzzle) delete m_puzzle;
 
-  m_puzzle = new Puzzle(filename);
+  m_puzzle = new OldPuzzle(filename);
   m_puzzle_loaded = true;
 
   set_state(GameState::puzzle);

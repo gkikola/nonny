@@ -6,7 +6,7 @@
 
 #include "control_container.h"
 #include "game.h"
-#include "puzzle.h"
+#include "oldpuzzle.h"
 
 #include "input_handler.h"
 

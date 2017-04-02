@@ -1,5 +1,5 @@
-#ifndef NONNY_PUZZLE_H
-#define NONNY_PUZZLE_H
+#ifndef NONNY_OLDPUZZLE_H
+#define NONNY_OLDPUZZLE_H
 
 #include <string>
 #include <vector>
@@ -19,9 +19,9 @@ struct RuleEntry {
   bool error;
 };
 
-class Puzzle {
+class OldPuzzle {
 public:
-  explicit Puzzle(const std::string& filename);
+  explicit OldPuzzle(const std::string& filename);
 
   int width() const { return m_width; }
   int height() const { return m_height; }

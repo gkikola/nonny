@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
-#include "puzzle.h"
+#include "oldpuzzle.h"
 
 #include "puzzle_collection.h"
 
@@ -57,7 +57,7 @@ PuzzleCollection::const_iterator PuzzleCollection::end() const {
 }
 
 void PuzzleCollection::read_puzzle(const std::string& path) {
-  Puzzle puzzle(path);
+  OldPuzzle puzzle(path);
   PuzzleEntry *entry = new PuzzleEntry;
 
   if (puzzle.title().length() > 0)

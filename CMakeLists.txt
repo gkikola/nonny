@@ -37,9 +37,9 @@ add_executable (
   src/input_handler.cpp
   src/main.cpp
   src/menu.cpp
+  src/oldpuzzle.cpp
   src/preview.cpp
   src/puzzle_collection.cpp
-  src/puzzle.cpp
   src/renderer.cpp
   src/scrollbar.cpp
   src/static_text.cpp
