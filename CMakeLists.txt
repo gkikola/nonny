@@ -23,10 +23,19 @@ include_directories (
   ${SDL2IMAGE_INCLUDE_DIRS}
   ${SDL2TTF_INCLUDE_DIRS}
   )
+include_directories ("src")
 include_directories ("${PROJECT_BINARY_DIR}")
 
 add_executable (
   nonny
+  src/color/color.cpp
+  src/color/color_palette.cpp
+  src/nonny/utility.cpp
+  src/puzzle/puzzle.cpp
+  src/puzzle/puzzle_cell.cpp
+  src/puzzle/puzzle_clue.cpp
+  src/puzzle/puzzle_grid.cpp
+  src/puzzle/puzzle_io.cpp
   src/application.cpp
   src/button.cpp
   src/collection_index.cpp
