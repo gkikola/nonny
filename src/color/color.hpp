@@ -22,6 +22,7 @@
 #ifndef NONNY_COLOR_HPP
 #define NONNY_COLOR_HPP
 
+#include <iosfwd>
 #include <stdexcept>
 
 /*
@@ -29,6 +30,8 @@
  * components each in the range 0-255.
  */
 class Color {
+  friend std::ostream& operator<<(std::ostream&, const Color&);
+  friend std::istream& operator>>(std::istream&, Color&);
 public:
   Color() : m_r(0), m_g(0), m_b(0) { }
   Color(const Color&) = default;
@@ -40,7 +43,7 @@ public:
   unsigned green_component() const { return m_g; }
   unsigned blue_component() const { return m_b; }
 
-  Color& operator=(const Color&) = default;
+  Color& operator=(const Color&) & = default;
 private:
   inline void validate() const;
   
@@ -55,6 +58,19 @@ class BadColor : public std::logic_error {
 public:
   BadColor() : logic_error("invalid color value") { }
 };
+
+// Read/write colors from/to a stream
+std::ostream& operator<<(std::ostream& os, const Color& color);
+std::istream& operator>>(std::istream& is, Color& color);
+
+// Predefined default colors
+namespace default_colors {
+  extern const Color black;
+  extern const Color white;
+  extern const Color red;
+  extern const Color green;
+  extern const Color blue;
+}
 
 
 /* implementation */

@@ -22,8 +22,14 @@
 #include "color/color_palette.hpp"
 
 ColorPalette::ColorPalette()
-  : m_colors({ {"black", Color(0, 0, 0)}, {"white", Color(255, 255, 255)} }),
-    m_colors_by_sym({ {'X', Color(0, 0, 0)}, {'.', Color(255, 255, 255)} })
+  : m_colors({
+      {"default", default_colors::black},
+      {"background", default_colors::white}
+    }),
+    m_colors_by_sym({
+      {'X', default_colors::black},
+      {'.', default_colors::white}
+    })
 {
 }
 

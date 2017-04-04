@@ -22,6 +22,7 @@
 #include "puzzle/puzzle_io.hpp"
 
 #include <algorithm>
+#include <cstddef>
 #include <iostream>
 #include <iterator>
 #include <stdexcept>
@@ -70,15 +71,42 @@ std::ostream& write_non(std::ostream& os, const Puzzle& puzzle)
 /*
  * Interprets a line representing a set of clue numbers and their
  * associated colors. The line should contain a comma-separated list
- * of clue numbers each of which may optionally be followed by a color
- * specifier. The palette parameter should contain all the colors that
- * have been read from the file so far.
+ * of clue numbers with optional color specifiers (a color name
+ * followed by an optional colon). The palette parameter should
+ * contain all the colors that have been read from the file so far.
+ *
+ * An typical line of clues might look like
+ * 
+ *   blue: 3, 1, 2  red: 4  blue: 1, 1  black: 3
+ *
+ * A color specifier affects all remaining clues up until the next
+ * specifier or until the end of the line. The default color at the
+ * start of each line is "default" which is usually an alias for
+ * black.
  */
 std::vector<PuzzleClue>
 parse_clue_line(const std::string& line, const ColorPalette& palette)
 {
+  std::vector<PuzzleClue> result;
   std::vector<std::string> clue_strs;
-  split(line, std::back_inserter(clue_strs), ", \t\v\f");
+  split(line, std::back_inserter(clue_strs), ",: \t\v\f");
+
+  Color color = palette["default"];
+  PuzzleClue clue;
+  for (auto& s : clue_strs) {
+    if (!s.empty() && is_digit(s[0])) { //read clue number
+      std::size_t chars_read = 0;
+      clue.value = str_to_uint(s, chars_read);
+      clue.color = color;
+      result.push_back(clue);
+      
+      s.erase(0, chars_read); //in case there's a color trailing the number
+    }
+
+    if (!s.empty() && is_alpha(s[0])) { //read color
+      color = palette[s];
+    }
+  }
 }
 
 std::istream& read_non(std::istream& is, Puzzle& puzzle)

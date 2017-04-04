@@ -30,7 +30,7 @@
 // Converts an escape sequence code to its corresponding character
 char escape(char c);
 
-/* 
+/*
  * Converts all escape sequences in the given string and removes an outer
  * pair of quotation marks if present
  */
