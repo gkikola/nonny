@@ -41,4 +41,5 @@ std::ostream& operator<<(std::ostream& os, const Color& color)
 
 std::istream& operator>>(std::istream& is, Color& color)
 {
+  return is;
 }

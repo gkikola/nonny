@@ -53,7 +53,7 @@ namespace non_format {
 
 std::ostream& write_puzzle(std::ostream& os, const Puzzle& puzzle)
 {
-  non_format::write(os, puzzle);
+  return non_format::write(os, puzzle);
 }
 
 std::istream& read_puzzle(std::istream& is, Puzzle& puzzle)
@@ -91,6 +91,7 @@ namespace non_format {
       }
       os << "\n";
     }
+    return os;
   }
 
   std::ostream& write(std::ostream& os, const Puzzle& puzzle)
@@ -98,13 +99,13 @@ namespace non_format {
     //basic properties
     const std::string* val;
 
-    if (val = puzzle.find_property("title"))
+    if ( (val = puzzle.find_property("title")) )
       os << "title \"" << *val << "\"\n";
-    if (val = puzzle.find_property("by"))
+    if ( (val = puzzle.find_property("by")) )
       os << "by \"" << *val << "\"\n";
-    if (val = puzzle.find_property("copyright"))
+    if ( (val = puzzle.find_property("copyright")) )
       os << "copyright \"" << *val << "\"\n";
-    if (val = puzzle.find_property("catalogue"))
+    if ( (val = puzzle.find_property("catalogue")) )
       os << "catalogue \"" << *val << "\"\n";
 
     os << "width " << puzzle.width() << "\n"
