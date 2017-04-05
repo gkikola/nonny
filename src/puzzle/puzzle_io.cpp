@@ -111,9 +111,9 @@ namespace non_format {
     os << "width " << puzzle.width() << "\n"
        << "height " << puzzle.height() << "\n";
 
-    os << "rows\n";
-    write_clues(os, puzzle.row_clues()) << "\n";
-    os << "columns\n";
+    os << "\nrows\n";
+    write_clues(os, puzzle.row_clues());
+    os << "\ncolumns\n";
     write_clues(os, puzzle.col_clues());
     return os;
   }
