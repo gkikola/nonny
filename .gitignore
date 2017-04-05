@@ -1,5 +1,1 @@
-*.gz
-*.log
-*.o
-*.tar
 build/
