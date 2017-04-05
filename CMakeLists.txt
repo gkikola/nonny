@@ -30,6 +30,7 @@ add_executable (
   nonny
   src/color/color.cpp
   src/color/color_palette.cpp
+  src/nonny/main.cpp
   src/nonny/utility.cpp
   src/puzzle/puzzle.cpp
   src/puzzle/puzzle_cell.cpp
@@ -44,7 +45,6 @@ add_executable (
   src/game.cpp
   src/info_pane.cpp
   src/input_handler.cpp
-  src/main.cpp
   src/menu.cpp
   src/oldpuzzle.cpp
   src/preview.cpp
