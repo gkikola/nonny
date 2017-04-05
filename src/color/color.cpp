@@ -20,8 +20,10 @@
 
 #include "color/color.hpp"
 
-#include <ios>
+#include <iomanip>
 #include <iostream>
+#include <sstream>
+#include "nonny/utility.hpp"
 
 namespace default_colors {
   extern const Color black(0, 0, 0);
@@ -33,13 +35,36 @@ namespace default_colors {
 
 std::ostream& operator<<(std::ostream& os, const Color& color)
 {
-  auto old_flags = os.setf(std::ios_base::hex | std::ios_base::uppercase);
-  os << color.m_r << color.m_g << color.m_b;
-  os.setf(old_flags);
-  return os;
+  os << std::hex << std::uppercase
+     << std::setfill('0')
+     << std::setw(2) << color.m_r
+     << std::setw(2) << color.m_g
+     << std::setw(2) << color.m_b;
+  return os << std::dec << std::nouppercase << std::setfill(' ');
+}
+
+std::istream& read_component(std::istream& is, unsigned& val)
+{
+  //ignore whitespace
+  while (is_space(is.peek())) is.get();
+
+  //read exactly two characters
+  char comp[3];
+  comp[0] = is.get();
+  comp[1] = is.get();
+  comp[2] = '\0';
+
+  //interpret
+  std::istringstream ss(comp);
+  ss >> std::hex >> val;
+
+  return is;
 }
 
 std::istream& operator>>(std::istream& is, Color& color)
 {
+  read_component(is, color.m_r);
+  read_component(is, color.m_g);
+  read_component(is, color.m_b);
   return is;
 }
