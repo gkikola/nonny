@@ -22,11 +22,20 @@
 #define NONNY_PUZZLE_IO_HPP
 
 #include <iosfwd>
+#include <stdexcept>
+#include <string>
 
 class Puzzle;
 
-// Read or write puzzles in the .non format
-std::ostream& write_non(std::ostream& os, const Puzzle& puzzle);
-std::istream& read_non(std::istream& is, Puzzle& puzzle);
+class InvalidPuzzleFile : std::logic_error {
+public:
+  explicit InvalidPuzzleFile(const std::string& what_arg)
+    : std::logic_error(what_arg) { }
+private:
+};
+
+// Read or write puzzles from/to a stream
+std::ostream& write_puzzle(std::ostream& os, const Puzzle& puzzle);
+std::istream& read_puzzle(std::istream& is, Puzzle& puzzle);
 
 #endif

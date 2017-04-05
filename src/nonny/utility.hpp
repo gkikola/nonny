@@ -60,6 +60,7 @@ str_to_uint(const std::string& s, std::size_t* pos = 0, int base = 10);
 /*
  * Wrappers for <cctype> functions to handle signed chars gracefully
  */
+inline bool is_alpha(char c);
 inline bool is_digit(char c);
 inline bool is_space(char c);
 inline char to_lower(char c);
@@ -101,6 +102,11 @@ void split(const std::string& s, Out dest, const std::string& delims)
 
     pos = next_pos;
   }
+}
+
+inline bool is_alpha(char c)
+{
+  return c >= 0 && std::isalpha(static_cast<unsigned char>(c));
 }
 
 inline bool is_digit(char c)

@@ -31,119 +31,217 @@
 #include "nonny/utility.hpp"
 #include "puzzle/puzzle.hpp"
 
-// Write a puzzle's row rules or column rules to a stream
-std::ostream&
-write_clues(std::ostream& os,
-            const std::vector<std::vector<PuzzleClue>>& clues)
-{
-  for (const auto& seq : clues) {
-    bool first = true;
-    for (const auto& clue : seq) {
-      if (!first)
-        os << ", ";
-      os << clue.value;
-      first = false;
-    }
-    os << "\n";
-  }
-}
-
-std::ostream& write_non(std::ostream& os, const Puzzle& puzzle)
-{
-  if (!puzzle.m_info.title.empty())
-    os << "title \"" << puzzle.m_info.title << "\"\n";
-  if (!puzzle.m_info.author.empty())
-    os << "author \"" << puzzle.m_info.author << "\"\n";
-  if (!puzzle.m_info.copyright.empty())
-    os << "copyright \"" << puzzle.m_info.copyright << "\"\n";
-
-  os << "width " << puzzle.m_grid.width() << "\n"
-     << "height " << puzzle.m_grid.height() << "\n";
-
-  os << "rows\n";
-  write_clues(os, puzzle.m_row_clues) << "\n";
-  os << "columns\n";
-  write_clues(os, puzzle.m_col_clues);
-  return os;
-}
+enum class ClueType { row, col };
 
 /*
- * Interprets a line representing a set of clue numbers and their
- * associated colors. The line should contain a comma-separated list
- * of clue numbers with optional color specifiers (a color name
- * followed by an optional colon). The palette parameter should
- * contain all the colors that have been read from the file so far.
- *
- * An typical line of clues might look like
- * 
- *   blue: 3, 1, 2  red: 4  blue: 1, 1  black: 3
- *
- * A color specifier affects all remaining clues up until the next
- * specifier or until the end of the line. The default color at the
- * start of each line is "default" which is usually an alias for
- * black.
+ * Structure holding the information needed to build a puzzle.
  */
-std::vector<PuzzleClue>
-parse_clue_line(const std::string& line, const ColorPalette& palette)
-{
-  std::vector<PuzzleClue> result;
-  std::vector<std::string> clue_strs;
-  split(line, std::back_inserter(clue_strs), ",: \t\v\f");
+struct PuzzleBlueprint {
+  unsigned width = 0;
+  unsigned height = 0;
+  Puzzle::ClueContainer row_clues;
+  Puzzle::ClueContainer col_clues;
+  ColorPalette palette;
+  Puzzle::Properties properties;
+};
 
-  Color color = palette["default"];
-  PuzzleClue clue;
-  for (auto& s : clue_strs) {
-    if (!s.empty() && is_digit(s[0])) { //read clue number
-      std::size_t chars_read = 0;
-      clue.value = str_to_uint(s, chars_read);
-      clue.color = color;
-      result.push_back(clue);
-      
-      s.erase(0, chars_read); //in case there's a color trailing the number
-    }
-
-    if (!s.empty() && is_alpha(s[0])) { //read color
-      color = palette[s];
-    }
-  }
+namespace non_format {
+  std::ostream& write(std::ostream& os, const Puzzle& puzzle);
+  std::istream& read(std::istream& is, PuzzleBlueprint& blueprint);
 }
 
-std::istream& read_non(std::istream& is, Puzzle& puzzle)
+
+std::ostream& write_puzzle(std::ostream& os, const Puzzle& puzzle)
 {
-  enum class ReadType { property, row, col, solution, colorized_solution };
+  non_format::write(os, puzzle);
+}
 
-  //read into temporary and then do a move if no errors occurred
-  Puzzle result;
-  unsigned width = 0, height = 0;
-  ColorPalette palette;
-  ReadType type = ReadType::property;
-  std::string line;
+std::istream& read_puzzle(std::istream& is, Puzzle& puzzle)
+{
+  PuzzleBlueprint blueprint;
+  non_format::read(is, blueprint);
   
-  while (std::getline(is, line)) {
-    auto prop_arg_pair = parse_property(line);
-    const std::string& property = prop_arg_pair.first;
-    const std::string& argument = prop_arg_pair.second;
-
-    try {
-      if (property == "width")
-        width = str_to_uint(argument);
-      else if (property == "height")
-        height = str_to_uint(argument);
-      else if (property == "rows")
-        type = ReadType::row;
-      else if (property == "columns")
-        type = ReadType::col;
-      else if (property == "title")
-        result.m_info.title = argument;
-      else if (property == "author" || property == "by")
-        result.m_info.author = argument;
-      else if (property == "copyright")
-        result.m_info.copyright = argument;
-    } catch (const std::logic_error&) { } //ignore formatting errors
-  }
-
-  result.m_grid = PuzzleGrid(width, height);
-  
-  puzzle = std::move(result);
+  puzzle = Puzzle();
+  puzzle.m_grid = PuzzleGrid(blueprint.width, blueprint.height);
+  puzzle.m_row_clues = std::move(blueprint.row_clues);
+  puzzle.m_col_clues = std::move(blueprint.col_clues);
+  puzzle.m_properties = std::move(blueprint.properties);
   return is;
 }
+
+
+/* .non format */
+
+namespace non_format {
+
+  /* .non output */
+  std::ostream& write_clues(std::ostream& os, const Puzzle& puzzle,
+                            const Puzzle::ClueContainer& clues);
+
+  std::ostream&
+  write_clues(std::ostream& os, const Puzzle::ClueContainer& clues)
+  {
+    for (const auto& seq : clues) {
+      bool first = true;
+      for (const auto& clue : seq) {
+        if (!first)
+          os << ", ";
+        os << clue.value;
+        first = false;
+      }
+      os << "\n";
+    }
+  }
+
+  std::ostream& write(std::ostream& os, const Puzzle& puzzle)
+  {
+    //basic properties
+    const std::string* val;
+
+    if (val = puzzle.find_property("title"))
+      os << "title \"" << *val << "\"\n";
+    if (val = puzzle.find_property("by"))
+      os << "by \"" << *val << "\"\n";
+    if (val = puzzle.find_property("copyright"))
+      os << "copyright \"" << *val << "\"\n";
+    if (val = puzzle.find_property("catalogue"))
+      os << "catalogue \"" << *val << "\"\n";
+
+    os << "width " << puzzle.width() << "\n"
+       << "height " << puzzle.height() << "\n";
+
+    os << "rows\n";
+    write_clues(os, puzzle.row_clues()) << "\n";
+    os << "columns\n";
+    write_clues(os, puzzle.col_clues());
+    return os;
+  }
+
+
+  /* .non input */
+
+  std::istream&
+  read_clues(std::istream& is, PuzzleBlueprint& blueprint, ClueType type);
+
+  Puzzle::ClueSequence
+  parse_clue_line(const std::string& line, const ColorPalette& palette);
+
+  /*
+   * Read a series of lines containing clue numbers with color
+   * specifiers.
+   */
+  std::istream&
+  read_clues(std::istream& is, PuzzleBlueprint& blueprint, ClueType type)
+  {
+    Puzzle::ClueContainer* clues = nullptr;
+    unsigned count = 0;
+    if (type == ClueType::row) {
+      clues = &blueprint.row_clues;
+      count = blueprint.height;
+    } else if (type == ClueType::col) {
+      clues = &blueprint.col_clues;
+      count = blueprint.width;
+    }
+  
+    std::string line;
+    while (count > 0) {
+      if (!std::getline(is, line))
+        throw InvalidPuzzleFile("number of clue lines does not match "
+                                "puzzle dimensions");
+
+      auto clue_seq
+        = parse_clue_line(line, blueprint.palette);
+    
+      if (!clue_seq.empty()) {
+        if (clues) clues->push_back(std::move(clue_seq));
+        --count;
+      }
+    }
+  
+    return is;
+  }
+
+  /*
+   * Interprets a line representing a set of clue numbers and their
+   * associated colors in non format. The line should contain a
+   * comma-separated list of clue numbers with optional color specifiers
+   * (a color name followed by an optional colon). The palette parameter
+   * should contain all the colors that have been read from the file so
+   * far.
+   *
+   * An typical line of clues might look like
+   * 
+   *   blue: 3, 1, 2  red: 4  blue: 1, 1  black: 3
+   *
+   * A color specifier affects all remaining clues up until the next
+   * specifier or until the end of the line. The default color at the
+   * start of each line is "default" which is usually an alias for
+   * black.
+   */
+  Puzzle::ClueSequence
+  parse_clue_line(const std::string& line, const ColorPalette& palette)
+  {
+    Puzzle::ClueSequence result;
+    std::vector<std::string> clue_strs;
+    split(line, std::back_inserter(clue_strs), ",: \t\v\f");
+
+    Color color = palette["default"];
+    PuzzleClue clue;
+    for (auto& s : clue_strs) {
+      if (!s.empty() && is_digit(s[0])) { //read clue number
+        std::size_t chars_read = 0;
+        clue.value = str_to_uint(s, &chars_read);
+        clue.color = color;
+        result.push_back(clue);
+      
+        s.erase(0, chars_read); //in case there's a color trailing the number
+      }
+
+      if (!s.empty() && is_alpha(s[0])) { //read color
+        color = palette[s];
+      }
+    }
+
+    return result;
+  }
+
+  std::istream&
+  read(std::istream& is, PuzzleBlueprint& blueprint)
+  {
+    std::string line;
+    while (std::getline(is, line)) {
+      auto p = parse_property(line);
+      std::string& property = p.first;
+      std::string& argument = p.second;
+
+      //"rows" or "columns" with an argument is an alias for width/height
+      if (property == "rows" && !argument.empty())
+        property = "width";
+      else if (property == "columns" && !argument.empty())
+        property = "height";
+
+      //see if we're reading dimensions
+      unsigned* dimension = nullptr;
+      if (property == "width")
+        dimension = &blueprint.width;
+      else if (property == "height")
+        dimension = &blueprint.height;
+
+      if (dimension) {
+        try {
+          *dimension = str_to_uint(argument);
+        } catch (const std::logic_error& e) {
+          throw InvalidPuzzleFile("invalid puzzle " + property);
+        }
+      } else if (property == "rows" && argument.empty())
+        read_clues(is, blueprint, ClueType::row);
+      else if (property == "columns" && argument.empty())
+        read_clues(is, blueprint, ClueType::col);
+      else
+        blueprint.properties[property] = argument;
+    }
+  
+    return is;
+  }
+
+} //end namespace non_format

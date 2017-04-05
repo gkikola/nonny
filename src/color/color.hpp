@@ -55,7 +55,7 @@ private:
  */
 class BadColor : public std::logic_error {
 public:
-  BadColor() : logic_error("invalid color value") { }
+  BadColor() : std::logic_error("invalid color value") { }
 };
 
 // Read/write colors from/to a stream
