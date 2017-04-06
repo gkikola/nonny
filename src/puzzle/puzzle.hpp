@@ -52,6 +52,13 @@ public:
   unsigned width() const { return m_grid.width(); }
   unsigned height() const { return m_grid.height(); }
 
+  class PuzzleRow;
+  PuzzleRow operator[](unsigned row) const;
+
+  void mark_cell(unsigned row, unsigned col, const Color& color);
+  inline void clear_cell(unsigned row, unsigned col);
+  inline void cross_out_cell(unsigned row, unsigned col);
+  
   // Get color palette associated with this puzzle
   const ColorPalette& palette() const { return m_palette; }
 
@@ -70,9 +77,6 @@ public:
   Puzzle& operator=(const Puzzle&) & = default;
   Puzzle& operator=(Puzzle&&) & = default;
 
-  class PuzzleRow;
-  PuzzleRow operator[](unsigned row) const;
-  
 private:
   PuzzleGrid m_grid;
   ClueContainer m_row_clues;
@@ -97,7 +101,18 @@ private:
   unsigned m_row;
 };
 
+
 /* implementation */
+
+inline void Puzzle::clear_cell(unsigned row, unsigned col)
+{
+  m_grid.at(row, col).state = PuzzleCell::State::blank;
+}
+
+inline void Puzzle::cross_out_cell(unsigned row, unsigned col)
+{
+  m_grid.at(row, col).state = PuzzleCell::State::crossed_out;
+}
 
 inline const std::string* Puzzle::find_property(const std::string& p) const
 {
