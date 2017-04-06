@@ -24,6 +24,7 @@
 #include <cstddef>
 #include <iostream>
 #include <iterator>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -65,6 +66,7 @@ std::istream& read_puzzle(std::istream& is, Puzzle& puzzle)
   puzzle.m_grid = PuzzleGrid(blueprint.width, blueprint.height);
   puzzle.m_row_clues = std::move(blueprint.row_clues);
   puzzle.m_col_clues = std::move(blueprint.col_clues);
+  puzzle.m_palette = std::move(blueprint.palette);
   puzzle.m_properties = std::move(blueprint.properties);
   return is;
 }
@@ -76,16 +78,26 @@ namespace non_format {
 
   /* .non output */
   std::ostream& write_clues(std::ostream& os, const Puzzle& puzzle,
-                            const Puzzle::ClueContainer& clues);
+                            const Puzzle::ClueContainer& clues,
+                            const ColorPalette& palette);
+  std::ostream& write_colors(std::ostream& os, const ColorPalette& palette);
 
   std::ostream&
-  write_clues(std::ostream& os, const Puzzle::ClueContainer& clues)
+  write_clues(std::ostream& os, const Puzzle::ClueContainer& clues,
+              const ColorPalette& palette)
   {
     for (const auto& seq : clues) {
+      Color cur_color;
       bool first = true;
       for (const auto& clue : seq) {
         if (!first)
           os << ", ";
+
+        if (clue.color != cur_color) {
+          cur_color = clue.color;
+          os << palette.find(clue.color) << ": ";
+        }
+        
         os << clue.value;
         first = false;
       }
@@ -94,6 +106,21 @@ namespace non_format {
     return os;
   }
 
+  std::ostream& write_colors(std::ostream& os, const ColorPalette& palette)
+  {
+    for (const auto& color_entry : palette) {
+      if (color_entry.name != "background"
+          || color_entry.color != default_colors::white) {
+        os << "color " << color_entry.name << " "
+           << color_entry.color;
+        if (color_entry.symbol)
+          os << " " << color_entry.symbol;
+        os << "\n";
+      }
+    }
+    return os;
+  }
+  
   std::ostream& write(std::ostream& os, const Puzzle& puzzle)
   {
     //basic properties
@@ -107,14 +134,18 @@ namespace non_format {
       os << "copyright \"" << *val << "\"\n";
     if ( (val = puzzle.find_property("catalogue")) )
       os << "catalogue \"" << *val << "\"\n";
-
+    
     os << "width " << puzzle.width() << "\n"
        << "height " << puzzle.height() << "\n";
 
+    //only write colors if they're different from defaults
+    if (puzzle.palette() != ColorPalette())
+      write_colors(os << "\n", puzzle.palette());
+    
     os << "\nrows\n";
-    write_clues(os, puzzle.row_clues());
+    write_clues(os, puzzle.row_clues(), puzzle.palette());
     os << "\ncolumns\n";
-    write_clues(os, puzzle.col_clues());
+    write_clues(os, puzzle.col_clues(), puzzle.palette());
     return os;
   }
 
@@ -126,6 +157,8 @@ namespace non_format {
 
   Puzzle::ClueSequence
   parse_clue_line(const std::string& line, const ColorPalette& palette);
+
+  void parse_color(const std::string& args, ColorPalette& palette);
 
   /*
    * Read a series of lines containing clue numbers with color
@@ -186,7 +219,7 @@ namespace non_format {
     std::vector<std::string> clue_strs;
     split(line, std::back_inserter(clue_strs), ",: \t\v\f");
 
-    Color color = palette["default"];
+    Color color = palette["black"];
     PuzzleClue clue;
     for (auto& s : clue_strs) {
       if (!s.empty() && is_digit(s[0])) { //read clue number
@@ -206,6 +239,26 @@ namespace non_format {
     return result;
   }
 
+  /*
+   * Reads a color entry from a string and stores it in the provided
+   * palette. The format is
+   * 
+   *   color_name hex_value [symbol]
+   *
+   * where symbol is an optional character to be used in reading or
+   * generating puzzle solutions.
+   */
+  void parse_color(const std::string& args, ColorPalette& palette)
+  {
+    std::string name;
+    Color value;
+    char symbol;
+    std::istringstream ss(args);
+
+    ss >> name >> value >> symbol;
+    palette.add(value, name, symbol);
+  }
+  
   std::istream&
   read(std::istream& is, PuzzleBlueprint& blueprint)
   {
@@ -238,11 +291,13 @@ namespace non_format {
         read_clues(is, blueprint, ClueType::row);
       else if (property == "columns" && argument.empty())
         read_clues(is, blueprint, ClueType::col);
+      else if (property == "color")
+        parse_color(argument, blueprint.palette);
       else
         blueprint.properties[property] = argument;
     }
   
     return is;
   }
-
+  
 } //end namespace non_format

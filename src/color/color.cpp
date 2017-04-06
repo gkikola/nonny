@@ -68,3 +68,22 @@ std::istream& operator>>(std::istream& is, Color& color)
   read_component(is, color.m_b);
   return is;
 }
+
+bool operator<(const Color& l, const Color& r)
+{
+  auto lum1 = l.luminance();
+  auto lum2 = r.luminance();
+
+  if (lum1 == lum2) {
+    if (l.red() == r.red()) {
+      if (l.green() == r.green())
+        return l.blue() < r.blue();
+      else
+        return l.green() < r.green();
+    } else {
+      return l.red() < r.red();
+    }
+  } else {
+    return lum1 < lum2;
+  }
+}

@@ -38,9 +38,11 @@ public:
     : m_r(red), m_g(green), m_b(blue) { validate(); }
 
   // Gets color components
-  unsigned red_component() const { return m_r; }
-  unsigned green_component() const { return m_g; }
-  unsigned blue_component() const { return m_b; }
+  unsigned red() const { return m_r; }
+  unsigned green() const { return m_g; }
+  unsigned blue() const { return m_b; }
+
+  inline double luminance () const;
 
   Color& operator=(const Color&) & = default;
 private:
@@ -58,6 +60,16 @@ public:
   BadColor() : std::logic_error("invalid color value") { }
 };
 
+// Compare colors
+inline bool operator==(const Color& l, const Color& r);
+inline bool operator!=(const Color& l, const Color& r);
+
+// Compare by luminance
+bool operator<(const Color& l, const Color& r);
+inline bool operator>(const Color& l, const Color& r);
+inline bool operator<=(const Color& l, const Color& r);
+inline bool operator>=(const Color& l, const Color& r);
+
 // Read/write colors from/to a stream
 std::ostream& operator<<(std::ostream& os, const Color& color);
 std::istream& operator>>(std::istream& is, Color& color);
@@ -74,6 +86,11 @@ namespace default_colors {
 
 /* implementation */
 
+inline double Color::luminance() const
+{
+  return 0.2126 * m_r + 0.7152 * m_g + 0.0722 * m_b;
+}
+
 /*
  * Ensures that a valid color is being stored and throws a BadColor
  * exception if not.
@@ -82,6 +99,33 @@ inline void Color::validate() const
 {
   if (m_r > s_max || m_g > s_max || m_b > s_max)
     throw BadColor();
+}
+
+inline bool operator==(const Color& l, const Color& r)
+{
+  return l.red() == r.red()
+    && l.green() == r.green()
+    && l.blue() == r.blue();
+}
+
+inline bool operator!=(const Color& l, const Color& r)
+{
+  return !(l == r);
+}
+
+inline bool operator>(const Color& l, const Color& r)
+{
+  return !(l <= r);
+}
+
+inline bool operator<=(const Color& l, const Color& r)
+{
+  return l == r || l < r;
+}
+
+inline bool operator>=(const Color& l, const Color& r)
+{
+  return !(l < r);
 }
 
 #endif

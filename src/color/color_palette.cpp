@@ -20,21 +20,91 @@
 
 #include "color/color_palette.hpp"
 
+#include <algorithm>
+#include <sstream>
+
 ColorPalette::ColorPalette()
-  : m_colors({
-      {"default", default_colors::black},
-      {"background", default_colors::white}
-    }),
-    m_colors_by_sym({
-      {'X', default_colors::black},
-      {'.', default_colors::white}
-    })
+  : m_colors({{default_colors::black, "black", 'X'},
+        {default_colors::white, "background", '.'}})
 {
 }
 
-void ColorPalette::add(Color color, const std::string& name, char symbol)
+void ColorPalette::add(const Color& color, const std::string& name,
+                       char symbol)
 {
-  m_colors[name] = color;
-  if (symbol)
-    m_colors_by_sym[symbol] = color;
+  auto it = std::find_if(m_colors.begin(), m_colors.end(),
+                         [&color, &name](const Entry& e)
+                         { return e.color == color || e.name == name; });
+  if (it == m_colors.end()) {
+    m_colors.push_back({color, name, symbol});
+    std::inplace_merge(m_colors.begin(), m_colors.end() - 1, m_colors.end());
+  } else {
+    it->color = color;
+    it->name = name;
+    it->symbol = symbol;
+    std::sort(m_colors.begin(), m_colors.end());
+  }
+}
+
+void ColorPalette::remove(const std::string& name)
+{
+  m_colors.erase(at(name));
+}
+
+const Color& ColorPalette::operator[](const std::string& name) const
+{
+  return at(name)->color;
+}
+
+const Color& ColorPalette::operator[](char symbol) const
+{
+  auto it = std::find_if(m_colors.begin(), m_colors.end(),
+                         [=](const Entry& e) { return e.symbol == symbol; });
+  if (it == m_colors.end())
+    throw std::out_of_range("color symbol "
+                            + std::string(1, symbol) + " is not defined");
+  return it->color;
+}
+
+const std::string& ColorPalette::find(const Color& color) const
+{
+  auto it = std::find_if(m_colors.begin(), m_colors.end(),
+                         [&](const Entry& e) { return e.color == color; });
+  if (it == m_colors.end()) {
+    std::ostringstream ss;
+    ss << "color " << color << " not found";
+    throw std::out_of_range(ss.str());
+  }
+  return it->name;
+}
+
+ColorPalette::iterator ColorPalette::at(const std::string& name)
+{
+  auto it = std::find_if(m_colors.begin(), m_colors.end(),
+                         [&](const Entry& e) { return e.name == name; });
+  if (it == m_colors.end())
+    throw std::out_of_range(name + " is not defined");
+
+  return it;
+}
+
+ColorPalette::const_iterator ColorPalette::at(const std::string& name) const
+{
+  auto it = std::find_if(m_colors.cbegin(), m_colors.cend(),
+                         [&](const Entry& e) { return e.name == name; });
+  if (it == m_colors.cend())
+    throw std::out_of_range(name + " is not defined");
+
+  return it;
+}
+
+bool operator<(const ColorPalette::Entry& l, const ColorPalette::Entry& r)
+{
+  if (l.color == r.color) {
+    if (l.name == r.name)
+      return l.symbol < r.symbol;
+    else
+      return l.name < r.name;
+  } else
+    return l.color < r.color;
 }

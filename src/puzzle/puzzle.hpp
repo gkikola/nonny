@@ -55,6 +55,9 @@ public:
   // Return pointer to p's property value or nullptr if p is not found
   inline const std::string* find_property(const std::string& p) const;
 
+  // Get color palette associated with this puzzle
+  const ColorPalette& palette() const { return m_palette; }
+  
   // Throw exception if p is not found in property map
   const std::string&
   property(const std::string& p) const { return m_properties.at(p); }
