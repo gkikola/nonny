@@ -19,3 +19,27 @@
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
 #include "puzzle/puzzle.hpp"
+
+Puzzle::Puzzle(unsigned width, unsigned height)
+  : m_grid(width, height)
+{
+  PuzzleClue zero;
+  
+  for (unsigned y = 0; y < height; ++y) {
+    m_row_clues.push_back(ClueSequence(1, zero)); // add 0 clue for each row
+  }
+
+  for (unsigned x = 0; x < width; ++x) {
+    m_col_clues.push_back(ClueSequence(1, zero)); // add 0 clue for each column
+  }
+}
+
+Puzzle::PuzzleRow Puzzle::operator[](unsigned row) const
+{
+  return PuzzleRow(*this, row);
+}
+
+const PuzzleCell& Puzzle::PuzzleRow::operator[](unsigned col) const
+{
+  return m_parent.m_grid.at(m_row, col);
+}

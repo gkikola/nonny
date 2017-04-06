@@ -52,11 +52,11 @@ public:
   unsigned width() const { return m_grid.width(); }
   unsigned height() const { return m_grid.height(); }
 
-  // Return pointer to p's property value or nullptr if p is not found
-  inline const std::string* find_property(const std::string& p) const;
-
   // Get color palette associated with this puzzle
   const ColorPalette& palette() const { return m_palette; }
+
+  // Return pointer to p's property value or nullptr if p is not found
+  inline const std::string* find_property(const std::string& p) const;
   
   // Throw exception if p is not found in property map
   const std::string&
@@ -70,6 +70,9 @@ public:
   Puzzle& operator=(const Puzzle&) & = default;
   Puzzle& operator=(Puzzle&&) & = default;
 
+  class PuzzleRow;
+  PuzzleRow operator[](unsigned row) const;
+  
 private:
   PuzzleGrid m_grid;
   ClueContainer m_row_clues;
@@ -82,6 +85,17 @@ private:
 inline std::ostream& operator<<(std::ostream& os, const Puzzle& puzzle);
 inline std::istream& operator>>(std::istream& is, Puzzle& puzzle);
 
+// Represents a puzzle row, used to allow two-dimensional subscripting
+class Puzzle::PuzzleRow {
+public:
+  PuzzleRow(const Puzzle& parent, unsigned row)
+    : m_parent(parent), m_row(row) { }
+
+  const PuzzleCell& operator[](unsigned col) const;
+private:
+  const Puzzle& m_parent;
+  unsigned m_row;
+};
 
 /* implementation */
 
