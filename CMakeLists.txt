@@ -37,20 +37,6 @@ add_executable (
   src/puzzle/puzzle_clue.cpp
   src/puzzle/puzzle_grid.cpp
   src/puzzle/puzzle_io.cpp
-  src/application.cpp
-  src/button.cpp
-  src/collection_index.cpp
-  src/control_container.cpp
-  src/control.cpp
-  src/game.cpp
-  src/info_pane.cpp
-  src/input_handler.cpp
-  src/menu.cpp
-  src/preview.cpp
-  src/puzzle_collection.cpp
-  src/renderer.cpp
-  src/scrollbar.cpp
-  src/static_text.cpp
   )
 
 target_link_libraries (
