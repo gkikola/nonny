@@ -8,7 +8,6 @@
 
 #include "game.h"
 #include "menu.h"
-#include "oldpuzzle.h"
 
 #include "renderer.h"
 

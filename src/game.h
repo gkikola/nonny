@@ -6,11 +6,12 @@
 #include "collection_index.h"
 #include "info_pane.h"
 #include "menu.h"
-#include "oldpuzzle.h"
 #include "scrollbar.h"
 
 enum class GameState { main_menu, opts_menu, about, collection_selection,
     puzzle_selection, puzzle };
+
+enum class CellState { blank, marked, exedout };
 
 class Game {
  public:

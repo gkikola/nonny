@@ -46,7 +46,6 @@ add_executable (
   src/info_pane.cpp
   src/input_handler.cpp
   src/menu.cpp
-  src/oldpuzzle.cpp
   src/preview.cpp
   src/puzzle_collection.cpp
   src/renderer.cpp

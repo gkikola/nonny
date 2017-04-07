@@ -10,7 +10,6 @@
 #include "button.h"
 #include "menu.h"
 #include "preview.h"
-#include "oldpuzzle.h"
 #include "scrollbar.h"
 #include "static_text.h"
 

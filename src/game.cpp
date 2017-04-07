@@ -10,7 +10,6 @@
 #include "collection_index.h"
 #include "info_pane.h"
 #include "menu.h"
-#include "oldpuzzle.h"
 
 #include "game.h"
 

@@ -3,7 +3,8 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
-#include "oldpuzzle.h"
+
+#include "puzzle/puzzle.hpp"
 
 #include "puzzle_collection.h"
 
@@ -57,17 +58,22 @@ PuzzleCollection::const_iterator PuzzleCollection::end() const {
 }
 
 void PuzzleCollection::read_puzzle(const std::string& path) {
-  OldPuzzle puzzle(path);
-  PuzzleEntry *entry = new PuzzleEntry;
+  std::ifstream file(path);
+  if (file.is_open()) {
+    Puzzle puzzle;
+    file >> puzzle;
+  
+    PuzzleEntry *entry = new PuzzleEntry;
 
-  if (puzzle.title().length() > 0)
-    entry->title = puzzle.title();
-  else
-    entry->title = "Untitled";
+    if (puzzle.find_property("title"))
+      entry->title = *puzzle.find_property("title");
+    else
+      entry->title = "Untitled";
 
-  entry->width = puzzle.width();
-  entry->height = puzzle.height();
-  entry->path = path;
+    entry->width = puzzle.width();
+    entry->height = puzzle.height();
+    entry->path = path;
 
-  m_puzzles.push_back(entry);
+    m_puzzles.push_back(entry);
+  }
 }
