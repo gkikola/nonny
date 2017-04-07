@@ -25,6 +25,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include "color/color.hpp"
 #include "color/color_palette.hpp"
 #include "puzzle/puzzle_clue.hpp"
 #include "puzzle/puzzle_grid.hpp"
@@ -55,7 +56,7 @@ public:
   class PuzzleRow;
   PuzzleRow operator[](unsigned row) const;
 
-  void mark_cell(unsigned row, unsigned col, const Color& color);
+  void mark_cell(unsigned row, unsigned col, const Color& color = Color());
   inline void clear_cell(unsigned row, unsigned col);
   inline void cross_out_cell(unsigned row, unsigned col);
   

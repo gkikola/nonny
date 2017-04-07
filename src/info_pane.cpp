@@ -76,14 +76,16 @@ void InfoPane::setup_controls(int pane_width) {
   int y = default_spacing;
 
   std::string title = "";
-  if (m_game->is_puzzle_loaded())
-    title = m_game->puzzle().title();
+  if (m_game->is_puzzle_loaded()) {
+    const std::string *ptitle = m_game->puzzle().find_property("title");
+    if (ptitle) title = *ptitle;
+  }
   
   if (title.length() > 0) {  
     m_title->move(default_spacing, y);
     m_title->resize(pane_width - 2 * default_spacing, text_height_heading);
-    m_title->set_string(m_game->puzzle().title());
-    m_title->set_help_text(m_game->puzzle().title());
+    m_title->set_string(title);
+    m_title->set_help_text(title);
     m_title->set_type(StaticText::Type::heading);
   
     y += text_height_heading;
@@ -124,13 +126,15 @@ void InfoPane::setup_controls(int pane_width) {
   y += default_spacing;
 
   std::string author = "";
-  if (m_game->is_puzzle_loaded())
-    author = m_game->puzzle().author();
+  if (m_game->is_puzzle_loaded()) {
+    const std::string* pauthor = m_game->puzzle().find_property("author");
+    if (pauthor) author = *pauthor;
+  }
 
   if (author.length() > 0) {
     m_author->move(default_spacing, y);
     m_author->resize(pane_width - 2 * default_spacing, text_height_small);
-    m_author->set_string("Author: " + m_game->puzzle().author());
+    m_author->set_string("Author: " + author);
     m_author->set_help_text("Puzzle creator");
     m_author->set_type(StaticText::Type::small);
 

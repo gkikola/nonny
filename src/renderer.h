@@ -5,6 +5,8 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
+#include "puzzle/puzzle_clue.hpp"
+
 #include "button.h"
 #include "menu.h"
 #include "preview.h"
@@ -30,7 +32,7 @@ class Renderer {
   void SDL_error(const std::string& function);
 
   void reload_font(int font_size);
-  SDL_Texture* rule_entry_to_texture(const RuleEntry& e,
+  SDL_Texture* rule_entry_to_texture(const PuzzleClue& e,
                                      int* w = nullptr, int* h = nullptr);
 
   void draw_horiz_line(int x1, int x2, int y, int extra_thickness);

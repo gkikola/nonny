@@ -1,7 +1,11 @@
 #include <cmath>
+#include <fstream>
 #include <functional>
 #include <iostream>
 #include <string>
+
+#include "color/color.hpp"
+#include "puzzle/puzzle.hpp"
 
 #include "collection_index.h"
 #include "info_pane.h"
@@ -41,7 +45,7 @@ void select_puzzle(Game* game, const std::string& puzzle_path);
 
 Game::Game(const std::string& data_dir, const std::string& save_dir,
            char filesystem_separator)
-  : m_puzzle{nullptr}, m_puzzle_loaded{false},
+  : m_puzzle_loaded{false},
     m_collection_index{nullptr}, m_collection{nullptr},
     m_grid_x{0}, m_grid_y{0}, m_cell_size{32},
     m_target_grid_x{0}, m_target_grid_y{0},
@@ -83,7 +87,6 @@ Game::~Game() {
   if (m_info_pane) delete m_info_pane;
   if (m_vscroll) delete m_vscroll;
   if (m_hscroll) delete m_hscroll;
-  if (m_puzzle) delete m_puzzle;
 }
 
 void Game::set_state(GameState state) {
@@ -186,15 +189,17 @@ void Game::update(int elapsed_time) {
 }
 
 void Game::load_puzzle(const std::string& filename) {
-  if (m_puzzle) delete m_puzzle;
+  std::ifstream in(filename);
 
-  m_puzzle = new OldPuzzle(filename);
-  m_puzzle_loaded = true;
+  if (in.is_open()) {
+    in >> m_puzzle;
+    m_puzzle_loaded = true;
 
-  set_state(GameState::puzzle);
+    set_state(GameState::puzzle);
 
-  update_screen_size(m_screen_width, m_screen_height);
-  default_zoom();
+    update_screen_size(m_screen_width, m_screen_height);
+    default_zoom();
+  }
 }
 
 void Game::open_puzzle_collection(const std::string& path) {
@@ -334,11 +339,11 @@ void Game::get_play_area(int* x, int* y, int* width, int* height) const {
 }
 
 void Game::age_cells(int max_age) {
-  if (m_puzzle_loaded) {
+  /*  if (m_puzzle_loaded) {
     for (int x = 0; x < m_puzzle->width(); ++x)
       for (int y = 0; y < m_puzzle->height(); ++y)
         m_puzzle->age_cell(x, y, max_age);
-  }
+        }*/
 }
 
 void Game::screen_coords_to_cell_coords(int screen_x, int screen_y,
@@ -354,11 +359,11 @@ void Game::cell_coords_to_screen_coords(int x, int y,
 }
 
 int Game::cell_grid_width() {
-  return m_puzzle->width() * (m_cell_size + 1) + 1;
+  return m_puzzle.width() * (m_cell_size + 1) + 1;
 }
 
 int Game::cell_grid_height() {
-  return m_puzzle->height() * (m_cell_size + 1) + 1;
+  return m_puzzle.height() * (m_cell_size + 1) + 1;
 }
 
 void Game::setup_main_menu(bool full_reset) {
@@ -518,22 +523,22 @@ void Game::setup_puzzle_menu() {
 void Game::default_zoom() {
   //add rule numbers to grid size
   int max_row_rule_width = 0, max_col_rule_height = 0;
-  for (int i = 0; i < m_puzzle->width(); ++i) {
-    int col_rule_height = m_puzzle->get_col_rule(i).size();
+  for (int i = 0; i < m_puzzle.width(); ++i) {
+    int col_rule_height = m_puzzle.col_clues(i).size();
     
     if (col_rule_height > max_col_rule_height)
       max_col_rule_height = col_rule_height;
   }
 
-  for (int j = 0; j < m_puzzle->height(); ++j) {
-    int row_rule_width = m_puzzle->get_row_rule(j).size();
+  for (int j = 0; j < m_puzzle.height(); ++j) {
+    int row_rule_width = m_puzzle.row_clues(j).size();
 
     if (row_rule_width > max_row_rule_width)
       max_row_rule_width = row_rule_width;
   }
 
-  int width = m_puzzle->width() + max_row_rule_width;
-  int height = m_puzzle->height() + max_col_rule_height;
+  int width = m_puzzle.width() + max_row_rule_width;
+  int height = m_puzzle.height() + max_col_rule_height;
 
   int max_cell_width = ((m_screen_width - default_info_pane_width - width)
                         * default_screen_coverage / width);
@@ -576,7 +581,17 @@ void Game::clear_selection() {
 }
 
 void Game::set_cell(int x, int y, CellState state) {
-  m_puzzle->set_cell(x, y, state);
+  switch(state) {
+  case CellState::blank:
+    m_puzzle.clear_cell(x, y);
+    break;
+  case CellState::marked:
+    m_puzzle.mark_cell(x, y, Color(0, 0, 0));
+    break;
+  case CellState::exedout:
+    m_puzzle.cross_out_cell(x, y);
+    break;
+  }
 }
 
 void Game::zoom_in(int x, int y) {

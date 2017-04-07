@@ -36,7 +36,7 @@ Puzzle::Puzzle(unsigned width, unsigned height)
 
 void Puzzle::mark_cell(unsigned row, unsigned col, const Color& color)
 {
-  auto cell = m_grid.at(row, col);
+  auto& cell = m_grid.at(row, col);
   cell.state = PuzzleCell::State::filled;
   cell.color = color;
 }

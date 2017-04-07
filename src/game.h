@@ -1,6 +1,8 @@
 #ifndef NONNY_GAME_H
 #define NONNY_GAME_H
 
+#include "puzzle/puzzle.hpp"
+
 #include "collection_index.h"
 #include "info_pane.h"
 #include "menu.h"
@@ -76,7 +78,7 @@ class Game {
   Menu& puzzle_menu() { return *m_puzzle_menu; }
   Scrollbar& vscrollbar() { return *m_vscroll; }
   Scrollbar& hscrollbar() { return *m_hscroll; }
-  const OldPuzzle& puzzle() const { return *m_puzzle; }
+  const Puzzle& puzzle() const { return m_puzzle; }
  private:
   void setup_main_menu(bool full_reset);
   void setup_about_menu();
@@ -87,7 +89,8 @@ class Game {
   void move_puzzle_in_bounds();
   void update_scrollbars();
 
-  OldPuzzle* m_puzzle;
+  Puzzle m_puzzle;
+  
   bool m_puzzle_loaded;
 
   CollectionIndex* m_collection_index;

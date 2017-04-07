@@ -170,22 +170,23 @@ void InputHandler::mouse_move(int x, int y) {
         CellState state;
         bool change_cell = false;
         if (m_mouse_drag_type == DragType::marks
-            && m_game->puzzle().cell(cell_x, cell_y) == CellState::blank) {
+            && m_game->puzzle()[cell_x][cell_y].state
+            == PuzzleCell::State::blank) {
           change_cell = true;
           state = CellState::marked;
         } else if (m_mouse_drag_type == DragType::exes
-                   && m_game->puzzle().cell(cell_x, cell_y)
-                   == CellState::blank) {
+                   && m_game->puzzle()[cell_x][cell_y].state
+                   == PuzzleCell::State::blank) {
           change_cell = true;
           state = CellState::exedout;
         } else if (m_mouse_drag_type == DragType::blank_marks
-                   && m_game->puzzle().cell(cell_x, cell_y)
-                   == CellState::marked) {
+                   && m_game->puzzle()[cell_x][cell_y].state
+                   == PuzzleCell::State::filled) {
           change_cell = true;
           state = CellState::blank;
         } else if (m_mouse_drag_type == DragType::blank_exes
-                   && m_game->puzzle().cell(cell_x, cell_y)
-                   == CellState::exedout) {
+                   && m_game->puzzle()[cell_x][cell_y].state
+                   == PuzzleCell::State::crossed_out) {
           change_cell = true;
           state = CellState::blank;
         }
@@ -258,10 +259,12 @@ void InputHandler::mouse_press(Uint8 button, bool down) {
           m_prev_mouse_y = m_mouse_y;
 
           //if the cell is blank, mark it
-          if (m_game->puzzle().cell(x, y) == CellState::blank) {
+          if (m_game->puzzle()[x][y].state
+              == PuzzleCell::State::blank) {
             m_game->set_cell(x, y, CellState::marked);
             m_mouse_drag_type = DragType::marks;
-          } else if (m_game->puzzle().cell(x, y) == CellState::marked) {
+          } else if (m_game->puzzle()[x][y].state
+                     == PuzzleCell::State::filled) {
             m_game->set_cell(x, y, CellState::blank);
             m_mouse_drag_type = DragType::blank_marks;
           } else {
@@ -318,10 +321,12 @@ void InputHandler::mouse_press(Uint8 button, bool down) {
           m_mouse_lock_type = MouseLockType::no_lock;
 
           //if the cell is blank, ex it out
-          if (m_game->puzzle().cell(x, y) == CellState::blank) {
+          if (m_game->puzzle()[x][y].state
+              == PuzzleCell::State::blank) {
             m_game->set_cell(x, y, CellState::exedout);
             m_mouse_drag_type = DragType::exes;
-          } else if (m_game->puzzle().cell(x, y) == CellState::marked) {
+          } else if (m_game->puzzle()[x][y].state
+                     == PuzzleCell::State::filled) {
             m_game->set_cell(x, y, CellState::blank);
             m_mouse_drag_type = DragType::blank_marks;
           } else {
@@ -428,17 +433,18 @@ void InputHandler::key_press(SDL_Keycode key, bool down) {
 
             CellState state;
             bool change_state = false;
-            if (m_game->puzzle().cell(sel_x, sel_y) == CellState::blank) {
+            if (m_game->puzzle()[sel_x][sel_y].state
+                == PuzzleCell::State::blank) {
               m_kb_drag_type = DragType::marks;
               state = CellState::marked;
               change_state = true;
-            } else if (m_game->puzzle().cell(sel_x, sel_y)
-                       == CellState::marked) {
+            } else if (m_game->puzzle()[sel_x][sel_y].state
+                       == PuzzleCell::State::filled) {
               m_kb_drag_type = DragType::blank_marks;
               state = CellState::blank;
               change_state = true;
-            } else if (m_game->puzzle().cell(sel_x, sel_y)
-                       == CellState::exedout) {
+            } else if (m_game->puzzle()[sel_x][sel_y].state
+                       == PuzzleCell::State::crossed_out) {
               m_kb_drag_type = DragType::blank_exes;
               state = CellState::blank;
               change_state = true;
@@ -460,17 +466,18 @@ void InputHandler::key_press(SDL_Keycode key, bool down) {
 
             CellState state;
             bool change_state = false;
-            if (m_game->puzzle().cell(sel_x, sel_y) == CellState::blank) {
+            if (m_game->puzzle()[sel_x][sel_y].state
+                == PuzzleCell::State::blank) {
               m_kb_drag_type = DragType::exes;
               state = CellState::exedout;
               change_state = true;
-            } else if (m_game->puzzle().cell(sel_x, sel_y)
-                       == CellState::marked) {
+            } else if (m_game->puzzle()[sel_x][sel_y].state
+                       == PuzzleCell::State::filled) {
               m_kb_drag_type = DragType::blank_marks;
               state = CellState::blank;
               change_state = true;
-            } else if (m_game->puzzle().cell(sel_x, sel_y)
-                       == CellState::exedout) {
+            } else if (m_game->puzzle()[sel_x][sel_y].state
+                       == PuzzleCell::State::crossed_out) {
               m_kb_drag_type = DragType::blank_exes;
               state = CellState::blank;
               change_state = true;
@@ -497,25 +504,29 @@ void InputHandler::key_press(SDL_Keycode key, bool down) {
 
             switch (m_kb_drag_type) {
             case DragType::marks:
-              if (m_game->puzzle().cell(sel_x, sel_y) == CellState::blank) {
+              if (m_game->puzzle()[sel_x][sel_y].state
+                  == PuzzleCell::State::blank) {
                 state = CellState::marked;
                 change_state = true;
               }
               break;
             case DragType::exes:
-              if (m_game->puzzle().cell(sel_x, sel_y) == CellState::blank) {
+              if (m_game->puzzle()[sel_x][sel_y].state
+                  == PuzzleCell::State::blank) {
                 state = CellState::exedout;
                 change_state = true;
               }
               break;
             case DragType::blank_marks:
-              if (m_game->puzzle().cell(sel_x, sel_y) == CellState::marked) {
+              if (m_game->puzzle()[sel_x][sel_y].state
+                  == PuzzleCell::State::filled) {
                 state = CellState::blank;
                 change_state = true;
               }
               break;
             case DragType::blank_exes:
-              if (m_game->puzzle().cell(sel_x, sel_y) == CellState::exedout) {
+              if (m_game->puzzle()[sel_x][sel_y].state
+                  == PuzzleCell::State::crossed_out) {
                 state = CellState::blank;
                 change_state = true;
               }
