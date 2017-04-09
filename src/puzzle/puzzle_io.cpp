@@ -29,7 +29,7 @@
 #include <string>
 #include <utility>
 #include "color/color_palette.hpp"
-#include "nonny/utility.hpp"
+#include "main/utility.hpp"
 #include "puzzle/puzzle.hpp"
 
 enum class ClueType { row, col };

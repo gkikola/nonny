@@ -18,19 +18,4 @@
  */
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
-#include <iostream>
-#include <stdexcept>
-#include "nonny/game.hpp"
-
-int main(int argc, char* argv[])
-{
-  try {
-    Game game(argc, argv);
-  }
-  catch (const std::exception& e) {
-    std::cerr << e.what() << std::endl;
-    return 1;
-  }
-  
-  return 0;
-}
+#include "main/sdl/sdl_error.hpp"

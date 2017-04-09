@@ -18,17 +18,19 @@
  */
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
-#include "nonny/game.hpp"
+#include <iostream>
+#include <stdexcept>
+#include "main/game.hpp"
 
-#include "config.h"
-#include "video/video_system.hpp"
-#include "video/window.hpp"
-
-Game::Game(int argc, char* argv[])
+int main(int argc, char* argv[])
 {
-  m_video = VideoSystem::create();
-
-  WindowSettings ws;
-  ws.title = NONNY_TITLE;
-  m_window = m_video->new_window(ws);
+  try {
+    Game game(argc, argv);
+  }
+  catch (const std::exception& e) {
+    std::cerr << e.what() << std::endl;
+    return 1;
+  }
+  
+  return 0;
 }

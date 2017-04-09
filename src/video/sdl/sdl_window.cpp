@@ -20,7 +20,7 @@
 
 #include "video/sdl/sdl_window.hpp"
 
-#include "nonny/sdl/sdl_error.hpp"
+#include "main/sdl/sdl_error.hpp"
 
 SDLWindow::SDLWindow(const WindowSettings& ws)
 {
