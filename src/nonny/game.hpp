@@ -21,10 +21,16 @@
 #ifndef NONNY_GAME_HPP
 #define NONNY_GAME_HPP
 
+#include <memory>
+#include "video/video_system.hpp"
+#include "video/window.hpp"
+
 class Game {
 public:
   Game(int argc, char* argv[]);
 private:
+  std::unique_ptr<VideoSystem> m_video;
+  std::unique_ptr<Window> m_window;
 };
 
 #endif

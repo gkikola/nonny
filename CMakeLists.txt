@@ -31,6 +31,7 @@ add_executable (
   src/color/color.cpp
   src/color/color_palette.cpp
   src/nonny/sdl/sdl_error.cpp
+  src/nonny/game.cpp
   src/nonny/main.cpp
   src/nonny/utility.cpp
   src/puzzle/puzzle.cpp
