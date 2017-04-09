@@ -36,8 +36,8 @@ public:
   SDLVideoSystem(const SDLVideoSystem&) = delete;
   SDLVideoSystem& operator=(const SDLVideoSystem&) = delete;
 
-  std::unique_ptr<Window> new_window(const WindowSettings& ws) const;
-  std::unique_ptr<Renderer> new_renderer() const;
+  std::unique_ptr<Window> new_window(const WindowSettings& ws) const override;
+  std::unique_ptr<Renderer> new_renderer(Window& window) const override;
 private:
 };
 

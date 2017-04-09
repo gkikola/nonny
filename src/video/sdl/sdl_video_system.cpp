@@ -45,7 +45,8 @@ SDLVideoSystem::new_window(const WindowSettings& ws) const
   return std::make_unique<SDLWindow>(ws);
 }
 
-std::unique_ptr<Renderer> SDLVideoSystem::new_renderer() const
+std::unique_ptr<Renderer>
+SDLVideoSystem::new_renderer(Window& window) const
 {
   return std::make_unique<SDLRenderer>();
 }

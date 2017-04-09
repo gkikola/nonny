@@ -39,7 +39,7 @@ public:
   static std::unique_ptr<VideoSystem> create();
 
   virtual std::unique_ptr<Window> new_window(const WindowSettings&) const = 0;
-  virtual std::unique_ptr<Renderer> new_renderer() const = 0;
+  virtual std::unique_ptr<Renderer> new_renderer(Window&) const = 0;
 private:
 };
 
