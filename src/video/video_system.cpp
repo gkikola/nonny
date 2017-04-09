@@ -18,26 +18,20 @@
  */
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
-#include <iostream>
-#include <memory>
+#include "video/video_system.hpp"
+
 #include <stdexcept>
 #include "config.h"
-#include "video/video_system.hpp"
-#include "video/window.hpp"
 
-int main(int argc, char* argv[])
+#ifdef NONNY_VIDEO_SDL
+#include "sdl/sdl_video_system.hpp"
+#endif
+
+std::unique_ptr<VideoSystem> VideoSystem::create()
 {
-  try {
-    std::unique_ptr<VideoSystem> video = VideoSystem::create();
-
-    WindowSettings ws;
-    ws.title = NONNY_TITLE;
-    std::unique_ptr<Window> window = video->new_window(ws);
-  }
-  catch (const std::exception& e) {
-    std::cerr << e.what() << std::endl;
-    return 1;
-  }
-  
-  return 0;
+#ifdef NONNY_VIDEO_SDL
+  return std::make_unique<SDLVideoSystem>();
+#else
+  throw std::runtime_error("video system not implemented");
+#endif
 }

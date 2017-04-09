@@ -18,26 +18,35 @@
  */
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
-#include <iostream>
-#include <memory>
-#include <stdexcept>
-#include "config.h"
-#include "video/video_system.hpp"
-#include "video/window.hpp"
+#include "video/sdl/sdl_window.hpp"
 
-int main(int argc, char* argv[])
+#include "nonny/sdl/sdl_error.hpp"
+
+SDLWindow::SDLWindow(const WindowSettings& ws)
 {
-  try {
-    std::unique_ptr<VideoSystem> video = VideoSystem::create();
+  Uint32 flags = SDL_WINDOW_RESIZABLE;
+  switch (ws.state) {
+  default:
+  case WindowSettings::normal:
+    break;
+  case WindowSettings::maximized:
+    flags |= SDL_WINDOW_MAXIMIZED;
+    break;
+  case WindowSettings::full_screen:
+    flags |= SDL_WINDOW_FULLSCREEN;
+    break;
+  }
 
-    WindowSettings ws;
-    ws.title = NONNY_TITLE;
-    std::unique_ptr<Window> window = video->new_window(ws);
-  }
-  catch (const std::exception& e) {
-    std::cerr << e.what() << std::endl;
-    return 1;
-  }
-  
-  return 0;
+  m_window = SDL_CreateWindow(ws.title.c_str(),
+                              (ws.center ? SDL_WINDOWPOS_CENTERED : ws.x),
+                              (ws.center ? SDL_WINDOWPOS_CENTERED : ws.y),
+                              ws.width, ws.height,
+                              flags);
+  if (!m_window)
+    throw SDLError("SDL_CreateWindow");
+}
+
+SDLWindow::~SDLWindow()
+{
+  SDL_DestroyWindow(m_window);
 }

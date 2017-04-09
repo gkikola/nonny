@@ -18,26 +18,18 @@
  */
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
-#include <iostream>
-#include <memory>
-#include <stdexcept>
-#include "config.h"
-#include "video/video_system.hpp"
-#include "video/window.hpp"
+#ifndef NONNY_SDL_RENDERER_HPP
+#define NONNY_SDL_RENDERER_HPP
 
-int main(int argc, char* argv[])
-{
-  try {
-    std::unique_ptr<VideoSystem> video = VideoSystem::create();
+#include <SDL2/SDL.h>
+#include "video/renderer.hpp"
 
-    WindowSettings ws;
-    ws.title = NONNY_TITLE;
-    std::unique_ptr<Window> window = video->new_window(ws);
-  }
-  catch (const std::exception& e) {
-    std::cerr << e.what() << std::endl;
-    return 1;
-  }
-  
-  return 0;
-}
+class SDLRenderer : public Renderer {
+public:
+  SDLRenderer();
+  ~SDLRenderer();
+private:
+  SDL_Renderer* m_renderer;
+};
+
+#endif

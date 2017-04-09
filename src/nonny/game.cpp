@@ -18,26 +18,9 @@
  */
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
-#include <iostream>
-#include <memory>
-#include <stdexcept>
-#include "config.h"
-#include "video/video_system.hpp"
-#include "video/window.hpp"
+#include "nonny/game.hpp"
 
-int main(int argc, char* argv[])
+Game::Game(int argc, char* argv[])
 {
-  try {
-    std::unique_ptr<VideoSystem> video = VideoSystem::create();
 
-    WindowSettings ws;
-    ws.title = NONNY_TITLE;
-    std::unique_ptr<Window> window = video->new_window(ws);
-  }
-  catch (const std::exception& e) {
-    std::cerr << e.what() << std::endl;
-    return 1;
-  }
-  
-  return 0;
 }

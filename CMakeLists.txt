@@ -30,6 +30,7 @@ add_executable (
   nonny
   src/color/color.cpp
   src/color/color_palette.cpp
+  src/nonny/sdl/sdl_error.cpp
   src/nonny/main.cpp
   src/nonny/utility.cpp
   src/puzzle/puzzle.cpp
@@ -37,6 +38,12 @@ add_executable (
   src/puzzle/puzzle_clue.cpp
   src/puzzle/puzzle_grid.cpp
   src/puzzle/puzzle_io.cpp
+  src/video/sdl/sdl_renderer.cpp
+  src/video/sdl/sdl_video_system.cpp
+  src/video/sdl/sdl_window.cpp
+  src/video/renderer.cpp
+  src/video/video_system.cpp
+  src/video/window.cpp
   )
 
 target_link_libraries (

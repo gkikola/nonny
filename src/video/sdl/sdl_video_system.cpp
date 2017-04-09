@@ -18,26 +18,34 @@
  */
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
-#include <iostream>
+#include "video/sdl/sdl_video_system.hpp"
+
 #include <memory>
 #include <stdexcept>
-#include "config.h"
-#include "video/video_system.hpp"
-#include "video/window.hpp"
+#include <string>
+#include <SDL2/SDL.h>
+#include "nonny/sdl/sdl_error.hpp"
+#include "video/sdl/sdl_renderer.hpp"
+#include "video/sdl/sdl_window.hpp"
 
-int main(int argc, char* argv[])
+SDLVideoSystem::SDLVideoSystem()
 {
-  try {
-    std::unique_ptr<VideoSystem> video = VideoSystem::create();
+  if (SDL_Init(SDL_INIT_VIDEO) < 0)
+    throw SDLError("SDL_Init");
+}
 
-    WindowSettings ws;
-    ws.title = NONNY_TITLE;
-    std::unique_ptr<Window> window = video->new_window(ws);
-  }
-  catch (const std::exception& e) {
-    std::cerr << e.what() << std::endl;
-    return 1;
-  }
-  
-  return 0;
+SDLVideoSystem::~SDLVideoSystem()
+{
+  SDL_Quit();
+}
+
+std::unique_ptr<Window>
+SDLVideoSystem::new_window(const WindowSettings& ws) const
+{
+  return std::make_unique<SDLWindow>(ws);
+}
+
+std::unique_ptr<Renderer> SDLVideoSystem::new_renderer() const
+{
+  return std::make_unique<SDLRenderer>();
 }

@@ -31,7 +31,6 @@ class InvalidPuzzleFile : std::logic_error {
 public:
   explicit InvalidPuzzleFile(const std::string& what_arg)
     : std::logic_error(what_arg) { }
-private:
 };
 
 // Read or write puzzles from/to a stream

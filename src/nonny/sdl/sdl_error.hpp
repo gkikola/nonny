@@ -18,26 +18,17 @@
  */
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
-#include <iostream>
-#include <memory>
+#ifndef NONNY_SDL_ERROR_HPP
+#define NONNY_SDL_ERROR_HPP
+
 #include <stdexcept>
-#include "config.h"
-#include "video/video_system.hpp"
-#include "video/window.hpp"
+#include <string>
+#include <SDL2/SDL.h>
 
-int main(int argc, char* argv[])
-{
-  try {
-    std::unique_ptr<VideoSystem> video = VideoSystem::create();
+class SDLError : public std::runtime_error {
+public:
+  SDLError(const std::string& what_arg)
+    : std::runtime_error(what_arg + ": " + SDL_GetError()) { }
+};
 
-    WindowSettings ws;
-    ws.title = NONNY_TITLE;
-    std::unique_ptr<Window> window = video->new_window(ws);
-  }
-  catch (const std::exception& e) {
-    std::cerr << e.what() << std::endl;
-    return 1;
-  }
-  
-  return 0;
-}
+#endif
