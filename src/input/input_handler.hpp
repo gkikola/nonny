@@ -30,7 +30,7 @@ public:
 
   void process_key_event(Key key, bool down);
   void process_mouse_button_event(MouseButton button, bool down);
-  void process_mouse_wheel_event(MouseWheel dir);
+  void process_mouse_wheel_event(int vert, int horiz);
   void process_mouse_move_event(int x, int y);
 };
 

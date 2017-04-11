@@ -45,6 +45,20 @@ bool SDLEventHandler::process(InputHandler& input)
         input.process_mouse_button_event(button, down);
       }
       break;
+    case SDL_MOUSEMOTION:
+      input.process_mouse_move_event(event.motion.x, event.motion.y);
+      break;
+    case SDL_MOUSEWHEEL:
+      {
+        int vert = event.wheel.y;
+        int horiz = event.wheel.x;
+        if (event.wheel.direction == SDL_MOUSEWHEEL_FLIPPED) {
+          vert = -vert;
+          horiz = -horiz;
+        }
+        input.process_mouse_wheel_event(vert, horiz);
+      }
+      break;
     }
   }
   

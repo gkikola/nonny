@@ -48,10 +48,6 @@ enum class MouseButton {
   unknown, left, right, middle, back, forward
 };
 
-enum class MouseWheel {
-  up, down, left, right
-};
-
 std::string key_name(Key key);
 std::string mouse_button_name(MouseButton button);
 
