@@ -21,10 +21,17 @@
 #ifndef NONNY_INPUT_HANDLER_HPP
 #define NONNY_INPUT_HANDLER_HPP
 
+#include "input/key.hpp"
+
 class InputHandler {
 public:
   InputHandler() { }
   virtual ~InputHandler() { }
+
+  void process_key_event(Key key, bool down);
+  void process_mouse_button_event(MouseButton button, bool down);
+  void process_mouse_wheel_event(MouseWheel dir);
+  void process_mouse_move_event(int x, int y);
 };
 
 #endif

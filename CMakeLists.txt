@@ -33,6 +33,7 @@ add_executable (
   src/event/sdl/sdl_event_handler.cpp
   src/event/event_handler.cpp
   src/input/input_handler.cpp
+  src/input/key.cpp
   src/main/sdl/sdl_error.cpp
   src/main/game.cpp
   src/main/main.cpp

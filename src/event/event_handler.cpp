@@ -23,13 +23,13 @@
 #include <stdexcept>
 #include "config.h"
 
-#ifdef NONNY_VIDEO_SDL
+#ifdef NONNY_INPUT_SDL
 #include "event/sdl/sdl_event_handler.hpp"
 #endif
 
 std::unique_ptr<EventHandler> EventHandler::create()
 {
-  #ifdef NONNY_VIDEO_SDL
+  #ifdef NONNY_INPUT_SDL
     return std::make_unique<SDLEventHandler>();
   #else
     throw std::runtime_error("event handler not implemented");

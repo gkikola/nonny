@@ -23,6 +23,12 @@
 
 #include "event/event_handler.hpp"
 
+#include <SDL2/SDL.h>
+
+enum class Key;
+enum class MouseButton;
+enum class MouseWheel;
+
 class SDLEventHandler : public EventHandler {
 public:
   SDLEventHandler() { }
@@ -32,6 +38,9 @@ public:
   SDLEventHandler& operator=(const SDLEventHandler&) = delete;
 
   bool process(InputHandler& input) override;
+
+private:
+  static Key convert_keycode(SDL_Scancode key);
 };
 
 #endif

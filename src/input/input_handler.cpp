@@ -19,3 +19,21 @@
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
 #include "input/input_handler.hpp"
+
+#include <iostream>
+
+void InputHandler::process_key_event(Key key, bool down)
+{
+}
+
+void InputHandler::process_mouse_button_event(MouseButton button, bool down)
+{
+}
+
+void InputHandler::process_mouse_wheel_event(MouseWheel dir)
+{
+}
+
+void InputHandler::process_mouse_move_event(int x, int y)
+{
+}

@@ -27,5 +27,6 @@
 #define NONNY_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}"
 
 #define NONNY_VIDEO_SDL
+#define NONNY_INPUT_SDL
 
 #endif
