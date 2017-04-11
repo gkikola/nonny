@@ -24,10 +24,24 @@
 #include <SDL2/SDL.h>
 #include "video/renderer.hpp"
 
+class Window;
+
 class SDLRenderer : public Renderer {
 public:
-  SDLRenderer();
+  SDLRenderer(Window& window);
   ~SDLRenderer();
+
+  void present() { SDL_RenderPresent(m_renderer); }
+  
+  void set_draw_color(const Color& color);
+
+  void clear() { SDL_RenderClear(m_renderer); }
+  void draw_point(const Point& point);
+  void draw_line(const Point& point1, const Point& point2);
+  void draw_rect(const Rect& rect);
+  void draw_dotted_rect(const Rect& rect);
+  void fill_rect(const Rect& rect);
+
 private:
   SDL_Renderer* m_renderer;
 };

@@ -20,10 +20,53 @@
 
 #include "video/sdl/sdl_renderer.hpp"
 
-SDLRenderer::SDLRenderer()
+#include "main/sdl/sdl_error.hpp"
+#include "video/sdl/sdl_window.hpp"
+
+SDLRenderer::SDLRenderer(Window& window)
 {
+  SDLWindow& swin = dynamic_cast<SDLWindow&>(window);
+  m_renderer = SDL_CreateRenderer(swin.get_sdl_handle(), -1,
+                                  SDL_RENDERER_ACCELERATED
+                                  | SDL_RENDERER_PRESENTVSYNC);
+  if (!m_renderer)
+    throw SDLError("SDL_CreateRenderer");
 }
 
 SDLRenderer::~SDLRenderer()
 {
+  SDL_DestroyRenderer(m_renderer);
+}
+
+void SDLRenderer::set_draw_color(const Color& color)
+{
+  SDL_SetRenderDrawColor(m_renderer,
+                         color.red(), color.green(), color.blue(),
+                         255);
+}
+
+void SDLRenderer::draw_point(const Point& point)
+{
+  SDL_RenderDrawPoint(m_renderer, point.x, point.y);
+}
+
+void SDLRenderer::draw_line(const Point& point1, const Point& point2)
+{
+  SDL_RenderDrawLine(m_renderer, point1.x, point1.y, point2.x, point2.y);
+}
+
+void SDLRenderer::draw_rect(const Rect& rect)
+{
+  SDL_Rect srect = { rect.x, rect.y, rect.width, rect.height };
+  SDL_RenderDrawRect(m_renderer, &srect);
+}
+
+void SDLRenderer::draw_dotted_rect(const Rect& rect)
+{
+}
+
+void SDLRenderer::fill_rect(const Rect& rect)
+{
+  SDL_Rect srect = { rect.x, rect.y, rect.width, rect.height };
+  SDL_RenderFillRect(m_renderer, &srect);
 }

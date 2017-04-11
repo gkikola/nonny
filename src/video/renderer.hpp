@@ -21,10 +21,35 @@
 #ifndef NONNY_RENDERER_HPP
 #define NONNY_RENDERER_HPP
 
+#include "color/color.hpp"
+
+struct Point {
+  int x = 0;
+  int y = 0;
+};
+
+struct Rect {
+  int x;
+  int y;
+  int width;
+  int height;
+};
+
 class Renderer {
 public:
   Renderer() { }
   virtual ~Renderer() { }
+
+  virtual void present() = 0;
+  
+  virtual void clear() = 0;
+  virtual void draw_point(const Point& point) = 0;
+  virtual void draw_line(const Point& point1, const Point& point2) = 0;
+  virtual void draw_rect(const Rect& rect) = 0;
+  virtual void draw_dotted_rect(const Rect& rect) = 0;
+  virtual void fill_rect(const Rect& rect) = 0;
+
+  virtual void set_draw_color(const Color& color) = 0;
 };
 
 #endif

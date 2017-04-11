@@ -23,8 +23,6 @@
 #include "config.h"
 #include "event/event_handler.hpp"
 #include "input/input_handler.hpp"
-#include "video/video_system.hpp"
-#include "video/window.hpp"
 
 Game::Game(int argc, char* argv[])
 {
@@ -33,6 +31,7 @@ Game::Game(int argc, char* argv[])
   WindowSettings ws;
   ws.title = NONNY_TITLE;
   m_window = m_video->new_window(ws);
+  m_renderer = m_video->new_renderer(*m_window);
 }
 
 void Game::run()
@@ -40,5 +39,9 @@ void Game::run()
   InputHandler input;
   std::unique_ptr<EventHandler> event = EventHandler::create();
 
-  while (event->process(input)) { }
+  while (event->process(input)) {
+    m_renderer->set_draw_color(Color(255, 255, 255));
+    m_renderer->clear();
+    m_renderer->present();
+  }
 }

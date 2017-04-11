@@ -22,6 +22,7 @@
 #define NONNY_GAME_HPP
 
 #include <memory>
+#include "video/renderer.hpp"
 #include "video/video_system.hpp"
 #include "video/window.hpp"
 
@@ -33,6 +34,7 @@ public:
 private:
   std::unique_ptr<VideoSystem> m_video;
   std::unique_ptr<Window> m_window;
+  std::unique_ptr<Renderer> m_renderer;
 };
 
 #endif

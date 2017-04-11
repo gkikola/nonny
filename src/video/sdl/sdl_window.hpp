@@ -28,6 +28,8 @@ class SDLWindow : public Window {
 public:
   SDLWindow(const WindowSettings& ws);
   ~SDLWindow();
+
+  SDL_Window* get_sdl_handle() { return m_window; }
 private:
   SDL_Window* m_window;
 };
