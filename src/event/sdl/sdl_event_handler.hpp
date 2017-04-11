@@ -41,6 +41,7 @@ public:
 
 private:
   static Key convert_keycode(SDL_Scancode key);
+  static MouseButton convert_mouse_button(Uint8 button);
 };
 
 #endif

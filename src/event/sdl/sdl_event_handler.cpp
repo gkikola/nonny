@@ -36,7 +36,14 @@ bool SDLEventHandler::process(InputHandler& input)
         bool down = (event.type == SDL_KEYDOWN);
         input.process_key_event(key, down);
       }
+      break;
     case SDL_MOUSEBUTTONDOWN:
+    case SDL_MOUSEBUTTONUP:
+      {
+        MouseButton button = convert_mouse_button(event.button.button);
+        bool down = (event.type == SDL_MOUSEBUTTONDOWN);
+        input.process_mouse_button_event(button, down);
+      }
       break;
     }
   }
@@ -257,5 +264,23 @@ Key SDLEventHandler::convert_keycode(SDL_Scancode key)
     return Key::up;
   default:
     return Key::unknown;
+  }
+}
+
+MouseButton SDLEventHandler::convert_mouse_button(Uint8 button)
+{
+  switch (button) {
+  case SDL_BUTTON_LEFT:
+    return MouseButton::left;
+  case SDL_BUTTON_MIDDLE:
+    return MouseButton::middle;
+  case SDL_BUTTON_RIGHT:
+    return MouseButton::right;
+  case SDL_BUTTON_X1:
+    return MouseButton::back;
+  case SDL_BUTTON_X2:
+    return MouseButton::forward;
+  default:
+    return MouseButton::unknown;
   }
 }

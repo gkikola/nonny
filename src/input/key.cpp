@@ -235,3 +235,21 @@ std::string key_name(Key key)
     return "Unknown";
   }
 }
+
+std::string mouse_button_name(MouseButton button)
+{
+  switch (button) {
+  case MouseButton::left:
+    return "Left Click";
+  case MouseButton::right:
+    return "Right Click";
+  case MouseButton::middle:
+    return "Middle Click";
+  case MouseButton::back:
+    return "Back";
+  case MouseButton::forward:
+    return "Forward";
+  default:
+    return "Unknown";
+  }
+}

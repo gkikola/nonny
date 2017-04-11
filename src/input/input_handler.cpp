@@ -28,6 +28,7 @@ void InputHandler::process_key_event(Key key, bool down)
 
 void InputHandler::process_mouse_button_event(MouseButton button, bool down)
 {
+  if (down) std::cout << mouse_button_name(button) << std::endl;
 }
 
 void InputHandler::process_mouse_wheel_event(MouseWheel dir)
