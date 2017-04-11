@@ -21,6 +21,8 @@
 #include "main/game.hpp"
 
 #include "config.h"
+#include "event/event_handler.hpp"
+#include "input/input_handler.hpp"
 #include "video/video_system.hpp"
 #include "video/window.hpp"
 
@@ -31,4 +33,12 @@ Game::Game(int argc, char* argv[])
   WindowSettings ws;
   ws.title = NONNY_TITLE;
   m_window = m_video->new_window(ws);
+}
+
+void Game::run()
+{
+  InputHandler input;
+  std::unique_ptr<EventHandler> event = EventHandler::create();
+
+  while (event->process(input)) { }
 }

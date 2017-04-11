@@ -18,21 +18,20 @@
  */
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
-#ifndef NONNY_GAME_HPP
-#define NONNY_GAME_HPP
+#ifndef NONNY_SDL_EVENT_HANDLER_HPP
+#define NONNY_SDL_EVENT_HANDLER_HPP
 
-#include <memory>
-#include "video/video_system.hpp"
-#include "video/window.hpp"
+#include "event/event_handler.hpp"
 
-class Game {
+class SDLEventHandler : public EventHandler {
 public:
-  Game(int argc, char* argv[]);
+  SDLEventHandler() { }
+  ~SDLEventHandler() { }
 
-  void run();
-private:
-  std::unique_ptr<VideoSystem> m_video;
-  std::unique_ptr<Window> m_window;
+  SDLEventHandler(const SDLEventHandler&) = delete;
+  SDLEventHandler& operator=(const SDLEventHandler&) = delete;
+
+  bool process(InputHandler& input) override;
 };
 
 #endif

@@ -18,21 +18,20 @@
  */
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
-#ifndef NONNY_GAME_HPP
-#define NONNY_GAME_HPP
+#include "event/event_handler.hpp"
 
-#include <memory>
-#include "video/video_system.hpp"
-#include "video/window.hpp"
+#include <stdexcept>
+#include "config.h"
 
-class Game {
-public:
-  Game(int argc, char* argv[]);
-
-  void run();
-private:
-  std::unique_ptr<VideoSystem> m_video;
-  std::unique_ptr<Window> m_window;
-};
-
+#ifdef NONNY_VIDEO_SDL
+#include "event/sdl/sdl_event_handler.hpp"
 #endif
+
+std::unique_ptr<EventHandler> EventHandler::create()
+{
+  #ifdef NONNY_VIDEO_SDL
+    return std::make_unique<SDLEventHandler>();
+  #else
+    throw std::runtime_error("event handler not implemented");
+  #endif
+}

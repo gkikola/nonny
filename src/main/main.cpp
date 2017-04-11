@@ -26,6 +26,7 @@ int main(int argc, char* argv[])
 {
   try {
     Game game(argc, argv);
+    game.run();
   }
   catch (const std::exception& e) {
     std::cerr << e.what() << std::endl;

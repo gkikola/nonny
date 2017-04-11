@@ -18,21 +18,21 @@
  */
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
-#ifndef NONNY_GAME_HPP
-#define NONNY_GAME_HPP
+#ifndef NONNY_EVENT_HANDLER_HPP
+#define NONNY_EVENT_HANDLER_HPP
 
 #include <memory>
-#include "video/video_system.hpp"
-#include "video/window.hpp"
 
-class Game {
+class InputHandler;
+
+class EventHandler {
 public:
-  Game(int argc, char* argv[]);
+  EventHandler() { }
+  virtual ~EventHandler() { }
 
-  void run();
-private:
-  std::unique_ptr<VideoSystem> m_video;
-  std::unique_ptr<Window> m_window;
+  static std::unique_ptr<EventHandler> create();
+  
+  virtual bool process(InputHandler&) = 0;
 };
 
 #endif

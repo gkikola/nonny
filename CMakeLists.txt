@@ -30,6 +30,9 @@ add_executable (
   nonny
   src/color/color.cpp
   src/color/color_palette.cpp
+  src/event/sdl/sdl_event_handler.cpp
+  src/event/event_handler.cpp
+  src/input/input_handler.cpp
   src/main/sdl/sdl_error.cpp
   src/main/game.cpp
   src/main/main.cpp

@@ -24,7 +24,7 @@
 #include "config.h"
 
 #ifdef NONNY_VIDEO_SDL
-#include "sdl/sdl_video_system.hpp"
+#include "video/sdl/sdl_video_system.hpp"
 #endif
 
 std::unique_ptr<VideoSystem> VideoSystem::create()
