@@ -26,6 +26,20 @@
 #include <string>
 #include <utility>
 
+// Represents a point in the window
+struct Point {
+  int x = 0;
+  int y = 0;
+};
+
+// Represents a rectangle within the window
+struct Rect {
+  int x = 0;
+  int y = 0;
+  int width = 0;
+  int height = 0;
+};
+
 // Converts an escape sequence code to its corresponding character
 char escape(char c);
 
@@ -81,6 +95,12 @@ inline char to_lower(char c);
  */
 std::pair<std::string, std::string>
 parse_property(const std::string& line);
+
+
+/*
+ * Determines the intersection of two rectangles
+ */
+Rect intersection(const Rect& r1, const Rect& r2);
 
 
 /* implementation */

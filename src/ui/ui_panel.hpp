@@ -18,29 +18,41 @@
  */
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
-#ifndef NONNY_RENDERER_HPP
-#define NONNY_RENDERER_HPP
+#ifndef NONNY_UI_PANEL_HPP
+#define NONNY_UI_PANEL_HPP
 
-#include "color/color.hpp"
+#include <memory>
+#include <vector>
 #include "main/utility.hpp"
 
-class Renderer {
+class InputHandler;
+class Renderer;
+
+class UIPanel {
 public:
-  Renderer() { }
-  virtual ~Renderer() { }
+  UIPanel() { }
+  UIPanel(const Rect& boundary) : m_boundary(boundary) { }
+  virtual ~UIPanel() { }
 
-  virtual void present() = 0;
+  virtual void scroll(int x, int y);
   
-  virtual void clear() = 0;
-  virtual void draw_point(const Point& point) = 0;
-  virtual void draw_line(const Point& point1, const Point& point2) = 0;
-  virtual void draw_rect(const Rect& rect) = 0;
-  virtual void draw_dotted_rect(const Rect& rect) = 0;
-  virtual void fill_rect(const Rect& rect) = 0;
+  virtual void update(unsigned ticks, InputHandler& input,
+                      const Rect& visible);
+  virtual void draw(Renderer& renderer, const Rect& visible) const;
 
-  virtual void set_draw_color(const Color& color) = 0;
-  virtual void set_viewport() = 0;
-  virtual void set_viewport(const Rect& rect) = 0;
+  inline void add_child(std::shared_ptr<UIPanel> child);
+
+protected:
+  Rect m_boundary;
+  std::vector<std::shared_ptr<UIPanel>> m_children;
 };
+
+
+/* implementation */
+
+inline void UIPanel::add_child(std::shared_ptr<UIPanel> child)
+{
+  m_children.push_back(child);
+}
 
 #endif

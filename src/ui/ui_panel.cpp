@@ -18,29 +18,32 @@
  */
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
-#ifndef NONNY_RENDERER_HPP
-#define NONNY_RENDERER_HPP
+#include "ui/ui_panel.hpp"
 
-#include "color/color.hpp"
+#include "input/input_handler.hpp"
 #include "main/utility.hpp"
+#include "video/renderer.hpp"
 
-class Renderer {
-public:
-  Renderer() { }
-  virtual ~Renderer() { }
+void UIPanel::scroll(int x, int y)
+{
+  m_boundary.x += x;
+  m_boundary.y += y;
 
-  virtual void present() = 0;
-  
-  virtual void clear() = 0;
-  virtual void draw_point(const Point& point) = 0;
-  virtual void draw_line(const Point& point1, const Point& point2) = 0;
-  virtual void draw_rect(const Rect& rect) = 0;
-  virtual void draw_dotted_rect(const Rect& rect) = 0;
-  virtual void fill_rect(const Rect& rect) = 0;
+  for (auto pchild : m_children)
+    pchild->scroll(x, y);
+}
 
-  virtual void set_draw_color(const Color& color) = 0;
-  virtual void set_viewport() = 0;
-  virtual void set_viewport(const Rect& rect) = 0;
-};
+void UIPanel::update(unsigned ticks, InputHandler& input,
+                     const Rect& visible)
+{
+  Rect new_visible = intersection(visible, m_boundary);
+  for (auto pchild : m_children)
+    pchild->update(ticks, input, new_visible);
+}
 
-#endif
+void UIPanel::draw(Renderer& renderer, const Rect& visible) const
+{
+  Rect new_visible = intersection(visible, m_boundary);
+  for (auto pchild : m_children)
+    pchild->draw(renderer, new_visible);
+}
