@@ -50,6 +50,8 @@ public:
   virtual void fill_rect(const Rect& rect) = 0;
 
   virtual void set_draw_color(const Color& color) = 0;
+  virtual void set_viewport() = 0;
+  virtual void set_viewport(const Rect& rect) = 0;
 };
 
 #endif

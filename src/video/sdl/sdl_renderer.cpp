@@ -38,13 +38,6 @@ SDLRenderer::~SDLRenderer()
   SDL_DestroyRenderer(m_renderer);
 }
 
-void SDLRenderer::set_draw_color(const Color& color)
-{
-  SDL_SetRenderDrawColor(m_renderer,
-                         color.red(), color.green(), color.blue(),
-                         255);
-}
-
 void SDLRenderer::draw_point(const Point& point)
 {
   SDL_RenderDrawPoint(m_renderer, point.x, point.y);
@@ -69,4 +62,22 @@ void SDLRenderer::fill_rect(const Rect& rect)
 {
   SDL_Rect srect = { rect.x, rect.y, rect.width, rect.height };
   SDL_RenderFillRect(m_renderer, &srect);
+}
+
+void SDLRenderer::set_draw_color(const Color& color)
+{
+  SDL_SetRenderDrawColor(m_renderer,
+                         color.red(), color.green(), color.blue(),
+                         255);
+}
+
+void SDLRenderer::set_viewport()
+{
+  SDL_RenderSetViewport(m_renderer, NULL);
+}
+
+void SDLRenderer::set_viewport(const Rect& rect)
+{
+  SDL_Rect srect = { rect.x, rect.y, rect.width, rect.height };
+  SDL_RenderSetViewport(m_renderer, &srect);
 }

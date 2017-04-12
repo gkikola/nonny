@@ -42,6 +42,9 @@ public:
   void draw_dotted_rect(const Rect& rect);
   void fill_rect(const Rect& rect);
 
+  void set_viewport();
+  void set_viewport(const Rect& rect);
+
 private:
   SDL_Renderer* m_renderer;
 };
