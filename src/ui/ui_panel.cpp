@@ -33,17 +33,21 @@ void UIPanel::scroll(int x, int y)
     pchild->scroll(x, y);
 }
 
-void UIPanel::update(unsigned ticks, InputHandler& input,
-                     const Rect& visible)
+void UIPanel::set_visible(const Rect& visible)
 {
-  Rect new_visible = intersection(visible, m_boundary);
+  m_visible = intersection(visible, m_boundary);
   for (auto pchild : m_children)
-    pchild->update(ticks, input, new_visible);
+    pchild->set_visible(m_visible);
 }
 
-void UIPanel::draw(Renderer& renderer, const Rect& visible) const
+void UIPanel::update(unsigned ticks, InputHandler& input)
 {
-  Rect new_visible = intersection(visible, m_boundary);
   for (auto pchild : m_children)
-    pchild->draw(renderer, new_visible);
+    pchild->update(ticks, input);
+}
+
+void UIPanel::draw(Renderer& renderer) const
+{
+  for (auto pchild : m_children)
+    pchild->draw(renderer);
 }

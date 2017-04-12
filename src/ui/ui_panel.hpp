@@ -35,15 +35,16 @@ public:
   virtual ~UIPanel() { }
 
   virtual void scroll(int x, int y);
+  virtual void set_visible(const Rect& visible);
   
-  virtual void update(unsigned ticks, InputHandler& input,
-                      const Rect& visible);
-  virtual void draw(Renderer& renderer, const Rect& visible) const;
+  virtual void update(unsigned ticks, InputHandler& input);
+  virtual void draw(Renderer& renderer) const;
 
   inline void add_child(std::shared_ptr<UIPanel> child);
 
 protected:
   Rect m_boundary;
+  Rect m_visible;
   std::vector<std::shared_ptr<UIPanel>> m_children;
 };
 
