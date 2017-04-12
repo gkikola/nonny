@@ -39,7 +39,7 @@ Game::Game(int argc, char* argv[])
 
   //For now, start the game with a puzzle open
   auto view = std::make_shared<PuzzleView>(PuzzleView(*m_view_mgr,
-                                           "puzzles/easy/temp.non"));
+                                           "temp.non"));
   m_view_mgr->push(view);
 }
 

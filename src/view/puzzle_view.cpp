@@ -20,12 +20,20 @@
 
 #include "view/puzzle_view.hpp"
 
+#include <fstream>
 #include "input/input_handler.hpp"
 #include "video/renderer.hpp"
 
 PuzzleView::PuzzleView(ViewManager& view_mgr, std::string filename)
   : View(view_mgr)
 {
+  std::ifstream file(filename);
+  if (!file.is_open()) {
+    throw std::runtime_error("PuzzleView::PuzzleView: "
+                             "could not open puzzle file " + filename);
+  }
+
+  file >> m_puzzle;
 }
 
 void PuzzleView::update(unsigned ticks, InputHandler& input)

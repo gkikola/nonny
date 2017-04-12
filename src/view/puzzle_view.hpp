@@ -32,7 +32,7 @@ public:
   void update(unsigned ticks, InputHandler& input);
   void draw(Renderer& renderer);
 private:
-  Puzzle puzzle;
+  Puzzle m_puzzle;
 };
 
 #endif
