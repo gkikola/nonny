@@ -21,8 +21,10 @@
 #include "main/game.hpp"
 
 #include "config.h"
+#include "color/color.hpp"
 #include "event/event_handler.hpp"
 #include "input/input_handler.hpp"
+#include "view/puzzle_view.hpp"
 
 Game::Game(int argc, char* argv[])
 {
@@ -32,6 +34,13 @@ Game::Game(int argc, char* argv[])
   ws.title = NONNY_TITLE;
   m_window = m_video->new_window(ws);
   m_renderer = m_video->new_renderer(*m_window);
+
+  m_view_mgr = std::make_unique<ViewManager>();
+
+  //For now, start the game with a puzzle open
+  auto view = std::make_shared<PuzzleView>(PuzzleView(*m_view_mgr,
+                                           "puzzles/easy/temp.non"));
+  m_view_mgr->push(view);
 }
 
 void Game::run()
@@ -39,9 +48,17 @@ void Game::run()
   InputHandler input;
   std::unique_ptr<EventHandler> event = EventHandler::create();
 
-  while (event->process(input)) {
-    m_renderer->set_draw_color(Color(255, 255, 255));
+  bool exit = false;
+  while (!exit) {
+    event->process(input, *m_view_mgr);
+    exit = m_view_mgr->empty();
+
+    m_renderer->set_draw_color(default_colors::white);
     m_renderer->clear();
+
+    m_view_mgr->update(0, input);
+    m_view_mgr->draw(*m_renderer);
+    
     m_renderer->present();
   }
 }

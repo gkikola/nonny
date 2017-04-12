@@ -18,26 +18,34 @@
  */
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
-#ifndef NONNY_GAME_HPP
-#define NONNY_GAME_HPP
-
-#include <memory>
-#include "video/renderer.hpp"
-#include "video/video_system.hpp"
-#include "video/window.hpp"
 #include "view/view_manager.hpp"
 
-class Game {
-public:
-  Game(int argc, char* argv[]);
+#include <stdexcept>
+#include <SDL2/SDL.h>
+#include "input/input_handler.hpp"
+#include "video/renderer.hpp"
 
-  void run();
-private:
-  bool m_exit;
-  std::unique_ptr<VideoSystem> m_video;
-  std::unique_ptr<Window> m_window;
-  std::unique_ptr<Renderer> m_renderer;
-  std::unique_ptr<ViewManager> m_view_mgr;
-};
+void ViewManager::pop()
+{
+  if (m_views.empty())
+    throw std::out_of_range("ViewManager::pop: no game view found");
+  m_views.pop_back();
+}
 
-#endif
+void ViewManager::update(unsigned ticks, InputHandler& input)
+{
+  if (!m_views.empty())
+    m_views.back()->update(ticks, input);
+}
+
+void ViewManager::draw(Renderer& renderer)
+{
+  if (!m_views.empty())
+    m_views.back()->draw(renderer);
+}
+
+void ViewManager::quit_game()
+{
+  while (!m_views.empty())
+    m_views.pop_back();
+}

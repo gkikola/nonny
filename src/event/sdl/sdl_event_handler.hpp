@@ -28,6 +28,7 @@
 enum class Key;
 enum class MouseButton;
 enum class MouseWheel;
+class ViewManager;
 
 class SDLEventHandler : public EventHandler {
 public:
@@ -37,7 +38,7 @@ public:
   SDLEventHandler(const SDLEventHandler&) = delete;
   SDLEventHandler& operator=(const SDLEventHandler&) = delete;
 
-  bool process(InputHandler& input) override;
+  void process(InputHandler& input, ViewManager& view_mgr) override;
 
 private:
   static Key convert_keycode(SDL_Scancode key);

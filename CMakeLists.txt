@@ -49,6 +49,9 @@ add_executable (
   src/video/renderer.cpp
   src/video/video_system.cpp
   src/video/window.cpp
+  src/view/view.cpp
+  src/view/view_manager.cpp
+  src/view/puzzle_view.cpp
   )
 
 target_link_libraries (

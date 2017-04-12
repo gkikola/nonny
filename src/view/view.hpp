@@ -18,26 +18,22 @@
  */
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
-#ifndef NONNY_GAME_HPP
-#define NONNY_GAME_HPP
+#ifndef NONNY_VIEW_HPP
+#define NONNY_VIEW_HPP
 
-#include <memory>
-#include "video/renderer.hpp"
-#include "video/video_system.hpp"
-#include "video/window.hpp"
-#include "view/view_manager.hpp"
+class InputHandler;
+class Renderer;
+class ViewManager;
 
-class Game {
+class View {
 public:
-  Game(int argc, char* argv[]);
-
-  void run();
-private:
-  bool m_exit;
-  std::unique_ptr<VideoSystem> m_video;
-  std::unique_ptr<Window> m_window;
-  std::unique_ptr<Renderer> m_renderer;
-  std::unique_ptr<ViewManager> m_view_mgr;
+  explicit View(ViewManager& view_mgr) : m_view_mgr(view_mgr) { }
+  virtual ~View() { }
+  
+  virtual void update(unsigned ticks, InputHandler& input) = 0;
+  virtual void draw(Renderer& renderer) = 0;
+protected:
+  ViewManager& m_view_mgr;
 };
 
 #endif

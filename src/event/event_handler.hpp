@@ -24,6 +24,7 @@
 #include <memory>
 
 class InputHandler;
+class ViewManager;
 
 class EventHandler {
 public:
@@ -32,7 +33,7 @@ public:
 
   static std::unique_ptr<EventHandler> create();
   
-  virtual bool process(InputHandler&) = 0;
+  virtual void process(InputHandler&, ViewManager&) = 0;
 };
 
 #endif

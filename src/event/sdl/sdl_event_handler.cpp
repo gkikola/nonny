@@ -21,14 +21,16 @@
 #include "event/sdl/sdl_event_handler.hpp"
 
 #include "input/input_handler.hpp"
+#include "view/view_manager.hpp"
 
-bool SDLEventHandler::process(InputHandler& input)
+void SDLEventHandler::process(InputHandler& input, ViewManager& view_mgr)
 {
   SDL_Event event;
   while (SDL_PollEvent(&event)) {
     switch (event.type) {
     case SDL_QUIT:
-      return false;
+      view_mgr.quit_game();
+      break;
     case SDL_KEYDOWN:
     case SDL_KEYUP:
       {
@@ -61,8 +63,6 @@ bool SDLEventHandler::process(InputHandler& input)
       break;
     }
   }
-  
-  return true;
 }
 
 Key SDLEventHandler::convert_keycode(SDL_Scancode key)
