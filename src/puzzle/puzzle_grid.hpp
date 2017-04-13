@@ -38,7 +38,7 @@ public:
     : m_grid(width * height), m_width(width) { }
 
   unsigned width() const { return m_width; }
-  unsigned height() const { return m_grid.size() / m_width; }
+  inline unsigned height() const;
 
   PuzzleCell& at(unsigned x, unsigned y);
   const PuzzleCell& at(unsigned x, unsigned y) const;
@@ -49,5 +49,16 @@ private:
   std::vector<PuzzleCell> m_grid;
   unsigned m_width;
 };
+
+
+/* implementation */
+
+inline unsigned PuzzleGrid::height() const
+{
+  if (m_width)
+    return m_grid.size() / m_width;
+  else
+    return 0;
+}
 
 #endif
