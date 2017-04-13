@@ -39,7 +39,9 @@ public:
   void update(unsigned ticks, InputHandler& input) override;
   void draw(Renderer& renderer) const override;
 private:
-  Puzzle* m_puzzle;
+  void draw_grid(Renderer& renderer) const;
+  Puzzle* m_puzzle = nullptr;
+  unsigned m_cell_size = 32;
 };
 
 #endif
