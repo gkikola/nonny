@@ -32,7 +32,12 @@ class UIPanel {
 public:
   UIPanel() { }
   explicit UIPanel(const Rect& boundary) : m_boundary(boundary) { }
+  UIPanel(const UIPanel&) = default;
+  UIPanel(UIPanel&&) = default;
   virtual ~UIPanel() { }
+
+  UIPanel& operator=(const UIPanel&) & = default;
+  UIPanel& operator=(UIPanel&&) & = default;
 
   virtual void scroll(int x, int y);
   virtual void set_visible(const Rect& visible);
