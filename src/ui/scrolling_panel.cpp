@@ -24,7 +24,11 @@ constexpr unsigned scrollbar_width = 16;
 
 void ScrollingPanel::attach_panel(std::shared_ptr<UIPanel> child)
 {
+  if (!m_children.empty())
+    m_children.clear();
+
   m_main_panel = child;
+  m_children.push_back(child);
   m_scroll_pos = Point{ 0, 0 };
   set_child_visibility();
 }
