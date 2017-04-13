@@ -19,3 +19,38 @@
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
 #include "ui/scrolling_panel.hpp"
+
+constexpr unsigned scrollbar_width = 16;
+
+void ScrollingPanel::attach_panel(std::shared_ptr<UIPanel> child)
+{
+  m_main_panel = child;
+  m_scroll_pos = Point{ 0, 0 };
+  set_child_visibility();
+}
+
+void ScrollingPanel::resize(unsigned width, unsigned height)
+{
+  UIPanel::resize(width, height);
+  set_child_visibility();
+}
+
+void ScrollingPanel::set_child_visibility()
+{
+  const Rect& child_bound = m_main_panel->boundary();
+  const Rect& child_vis = m_main_panel->visible();
+
+  //do we need scrollbars?
+  m_hscroll = m_vscroll = false;
+  if (child_bound.width > m_boundary.width)
+    m_hscroll = true;
+  if (child_bound.height > m_boundary.height)
+    m_vscroll = true;
+
+  //set visible region to whole panel minus scrollbar area
+  Rect new_visible = m_boundary;
+  if (m_hscroll) new_visible.height -= scrollbar_width;
+  if (m_vscroll) new_visible.width -= scrollbar_width;
+  new_visible = intersection(child_vis, new_visible);
+  m_main_panel->set_visible(new_visible);
+}

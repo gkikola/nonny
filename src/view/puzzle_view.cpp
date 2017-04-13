@@ -26,8 +26,19 @@
 #include "ui/scrollbar.hpp"
 #include "video/renderer.hpp"
 
-PuzzleView::PuzzleView(ViewManager& view_mgr, std::string filename)
-  : View(view_mgr)
+PuzzleView::PuzzleView(const std::string& filename)
+{
+  load(filename);
+}
+
+PuzzleView::PuzzleView(const std::string& filename,
+                       unsigned width, unsigned height)
+  : View(width, height)
+{
+  load(filename);
+}
+
+void PuzzleView::load(const std::string& filename)
 {
   std::ifstream file(filename);
   if (!file.is_open()) {

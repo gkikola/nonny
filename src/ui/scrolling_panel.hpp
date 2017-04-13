@@ -28,11 +28,20 @@ class ScrollingPanel : public UIPanel {
 public:
   ScrollingPanel() { }
   explicit ScrollingPanel(const Rect& boundary) : UIPanel(boundary) { }
+  ScrollingPanel(const Rect& boundary, std::shared_ptr<UIPanel> child)
+    : UIPanel(boundary) { attach_panel(child); }
+
+  void attach_panel(std::shared_ptr<UIPanel> child);
+
+  void resize(unsigned width, unsigned height) override;
 
 private:
+  void set_child_visibility();
+
+  Point m_scroll_pos;
   std::shared_ptr<UIPanel> m_main_panel;
-  std::shared_ptr<UIPanel> m_vscroll;
-  std::shared_ptr<UIPanel> m_hscroll;
+  bool m_vscroll = false;
+  bool m_hscroll = false;
 };
 
 #endif

@@ -61,6 +61,9 @@ inline void ViewManager::resize(unsigned width, unsigned height)
 {
   m_width = width;
   m_height = height;
+
+  for (auto view : m_views)
+    view->resize(width, height);
 }
 
 #endif

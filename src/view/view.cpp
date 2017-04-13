@@ -19,3 +19,9 @@
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
 #include "view/view.hpp"
+
+void View::resize(unsigned width, unsigned height)
+{
+  m_width = width;
+  m_height = height;
+}

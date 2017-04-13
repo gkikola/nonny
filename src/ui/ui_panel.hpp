@@ -46,6 +46,9 @@ public:
   virtual void draw(Renderer& renderer) const;
   virtual void resize(unsigned width, unsigned height);
 
+  const Rect& boundary() const { return m_boundary; }
+  const Rect& visible() const { return m_visible; }
+
 protected:
   Rect m_boundary;
   Rect m_visible;

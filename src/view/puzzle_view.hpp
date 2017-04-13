@@ -28,11 +28,13 @@
 
 class PuzzleView : public View {
 public:
-  PuzzleView(ViewManager& view_mgr, std::string filename);
+  explicit PuzzleView(const std::string& filename);
+  PuzzleView(const std::string& filename, unsigned width, unsigned height);
 
-  void update(unsigned ticks, InputHandler& input);
-  void draw(Renderer& renderer);
+  void update(unsigned ticks, InputHandler& input) override;
+  void draw(Renderer& renderer) override;
 private:
+  void load(const std::string& filename);
   void setup_panels();
   
   Puzzle m_puzzle;

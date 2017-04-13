@@ -38,8 +38,7 @@ Game::Game(int argc, char* argv[])
   m_view_mgr = std::make_unique<ViewManager>();
 
   //For now, start the game with a puzzle open
-  auto view = std::make_shared<PuzzleView>(PuzzleView(*m_view_mgr,
-                                           "temp.non"));
+  auto view = std::make_shared<PuzzleView>(PuzzleView("temp.non"));
   m_view_mgr->push(view);
 }
 
