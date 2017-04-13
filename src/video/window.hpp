@@ -40,6 +40,9 @@ public:
 
   Window(const Window&) = delete;
   Window& operator=(const Window&) = delete;
+
+  virtual unsigned width() const = 0;
+  virtual unsigned height() const = 0;
 };
 
 #endif

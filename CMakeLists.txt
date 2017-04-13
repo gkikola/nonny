@@ -44,6 +44,7 @@ add_executable (
   src/puzzle/puzzle_grid.cpp
   src/puzzle/puzzle_io.cpp
   src/ui/panel_collection.cpp
+  src/ui/puzzle_panel.cpp
   src/ui/scrolling_panel.cpp
   src/ui/ui_panel.cpp
   src/video/sdl/sdl_renderer.cpp

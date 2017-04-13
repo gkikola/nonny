@@ -18,48 +18,26 @@
  */
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
-#include "ui/ui_panel.hpp"
+#include "ui/puzzle_panel.hpp"
 
+#include "color/color.hpp"
 #include "input/input_handler.hpp"
-#include "main/utility.hpp"
 #include "video/renderer.hpp"
 
-void UIPanel::scroll(int x, int y)
+PuzzlePanel::PuzzlePanel(const Rect& boundary, Puzzle& puzzle)
+  : UIPanel(boundary), m_puzzle(&puzzle)
 {
-  m_boundary.x += x;
-  m_boundary.y += y;
-
-  for (auto child : m_children)
-    child->scroll(x, y);
 }
 
-void UIPanel::set_visible(const Rect& visible)
+void PuzzlePanel::update(unsigned ticks, InputHandler& input)
 {
-  m_visible = intersection(visible, m_boundary);
-  for (auto child : m_children)
-    child->set_visible(m_visible);
 }
 
-void UIPanel::update(unsigned ticks, InputHandler& input)
+void PuzzlePanel::draw(Renderer& renderer) const
 {
-  for (auto child : m_children)
-    child->update(ticks, input);
-}
+  renderer.set_viewport(m_visible);
 
-void UIPanel::draw(Renderer& renderer) const
-{
-  for (auto child : m_children)
-    child->draw(renderer);
-}
-
-void UIPanel::move(int x, int y)
-{
-  m_boundary.x = x;
-  m_boundary.y = y;
-}
-
-void UIPanel::resize(unsigned width, unsigned height)
-{
-  m_boundary.width = width;
-  m_boundary.height = height;
+  renderer.set_draw_color(default_colors::black);
+  
+  renderer.set_viewport();
 }

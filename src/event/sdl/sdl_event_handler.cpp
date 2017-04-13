@@ -31,6 +31,13 @@ void SDLEventHandler::process(InputHandler& input, ViewManager& view_mgr)
     case SDL_QUIT:
       view_mgr.quit_game();
       break;
+    case SDL_WINDOWEVENT:
+      switch (event.window.event) {
+      case SDL_WINDOWEVENT_RESIZED:
+        view_mgr.resize(event.window.data1, event.window.data2);
+        break;
+      }
+      break;
     case SDL_KEYDOWN:
     case SDL_KEYUP:
       {

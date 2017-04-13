@@ -44,6 +44,7 @@ public:
   
   virtual void update(unsigned ticks, InputHandler& input);
   virtual void draw(Renderer& renderer) const;
+  virtual void move(int x, int y);
   virtual void resize(unsigned width, unsigned height);
 
   const Rect& boundary() const { return m_boundary; }

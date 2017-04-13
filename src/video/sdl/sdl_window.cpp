@@ -50,3 +50,19 @@ SDLWindow::~SDLWindow()
 {
   SDL_DestroyWindow(m_window);
 }
+
+unsigned SDLWindow::width() const
+{
+  int w;
+  SDL_GetWindowSize(m_window, &w, NULL);
+
+  return static_cast<unsigned>(w);
+}
+
+unsigned SDLWindow::height() const
+{
+  int h;
+  SDL_GetWindowSize(m_window, NULL, &h);
+
+  return static_cast<unsigned>(h);
+}

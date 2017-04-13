@@ -18,28 +18,28 @@
  */
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
-#ifndef NONNY_PUZZLE_VIEW_HPP
-#define NONNY_PUZZLE_VIEW_HPP
+#ifndef NONNY_PUZZLE_PANEL_HPP
+#define NONNY_PUZZLE_PANEL_HPP
 
-#include <string>
-#include "puzzle/puzzle.hpp"
-#include "ui/puzzle_panel.hpp"
-#include "view/view.hpp"
+#include "ui/ui_panel.hpp"
 
-class PuzzleView : public View {
+class InputHandler;
+class Puzzle;
+class Renderer;
+
+class PuzzlePanel : public UIPanel {
 public:
-  explicit PuzzleView(const std::string& filename);
-  PuzzleView(const std::string& filename, unsigned width, unsigned height);
+  PuzzlePanel() { }
+  explicit PuzzlePanel(Puzzle& puzzle) : m_puzzle(&puzzle) { }
+  explicit PuzzlePanel(const Rect& boundary) : UIPanel(boundary) { }
+  PuzzlePanel(const Rect& boundary, Puzzle& puzzle);
 
-  void update(unsigned ticks, InputHandler& input) override;
-  void draw(Renderer& renderer) override;
-  void resize(unsigned width, unsigned height) override;
-private:
-  void load(const std::string& filename);
-  void setup_panels();
+  void attach_puzzle(Puzzle& puzzle) { m_puzzle = &puzzle; }
   
-  Puzzle m_puzzle;
-  PuzzlePanel m_panel;
+  void update(unsigned ticks, InputHandler& input) override;
+  void draw(Renderer& renderer) const override;
+private:
+  Puzzle* m_puzzle;
 };
 
 #endif

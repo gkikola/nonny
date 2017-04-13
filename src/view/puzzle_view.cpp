@@ -53,6 +53,10 @@ void PuzzleView::load(const std::string& filename)
 
 void PuzzleView::setup_panels()
 {
+  m_panel.move(0, 0);
+  m_panel.resize(m_width, m_height);
+  m_panel.set_visible(Rect{0, 0,
+        static_cast<int>(m_width), static_cast<int>(m_height)});
 }
 
 void PuzzleView::update(unsigned ticks, InputHandler& input)
@@ -63,4 +67,10 @@ void PuzzleView::update(unsigned ticks, InputHandler& input)
 void PuzzleView::draw(Renderer& renderer)
 {
   m_panel.draw(renderer);
+}
+
+void PuzzleView::resize(unsigned width, unsigned height)
+{
+  View::resize(width, height);
+  setup_panels();
 }

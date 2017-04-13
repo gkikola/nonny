@@ -29,6 +29,9 @@ public:
   SDLWindow(const WindowSettings& ws);
   ~SDLWindow();
 
+  unsigned width() const override;
+  unsigned height() const override;
+  
   SDL_Window* get_sdl_handle() { return m_window; }
 private:
   SDL_Window* m_window;
