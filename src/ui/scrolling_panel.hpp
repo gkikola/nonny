@@ -18,42 +18,21 @@
  */
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
+#ifndef NONNY_SCROLLING_PANEL_HPP
+#define NONNY_SCROLLING_PANEL_HPP
+
+#include <memory>
 #include "ui/ui_panel.hpp"
 
-#include "input/input_handler.hpp"
-#include "main/utility.hpp"
-#include "video/renderer.hpp"
+class ScrollingPanel : public UIPanel {
+public:
+  ScrollingPanel() { }
+  explicit ScrollingPanel(const Rect& boundary) : UIPanel(boundary) { }
 
-void UIPanel::scroll(int x, int y)
-{
-  m_boundary.x += x;
-  m_boundary.y += y;
+private:
+  std::shared_ptr<UIPanel> m_main_panel;
+  std::shared_ptr<UIPanel> m_vscroll;
+  std::shared_ptr<UIPanel> m_hscroll;
+};
 
-  for (auto child : m_children)
-    child->scroll(x, y);
-}
-
-void UIPanel::set_visible(const Rect& visible)
-{
-  m_visible = intersection(visible, m_boundary);
-  for (auto child : m_children)
-    child->set_visible(m_visible);
-}
-
-void UIPanel::update(unsigned ticks, InputHandler& input)
-{
-  for (auto child : m_children)
-    child->update(ticks, input);
-}
-
-void UIPanel::draw(Renderer& renderer) const
-{
-  for (auto child : m_children)
-    child->draw(renderer);
-}
-
-void UIPanel::resize(unsigned width, unsigned height)
-{
-  m_boundary.width = width;
-  m_boundary.height = height;
-}
+#endif

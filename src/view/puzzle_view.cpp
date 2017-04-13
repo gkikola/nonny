@@ -21,7 +21,9 @@
 #include "view/puzzle_view.hpp"
 
 #include <fstream>
+#include <memory>
 #include "input/input_handler.hpp"
+#include "ui/scrollbar.hpp"
 #include "video/renderer.hpp"
 
 PuzzleView::PuzzleView(ViewManager& view_mgr, std::string filename)
@@ -34,12 +36,20 @@ PuzzleView::PuzzleView(ViewManager& view_mgr, std::string filename)
   }
 
   file >> m_puzzle;
+
+  setup_panels();
+}
+
+void PuzzleView::setup_panels()
+{
 }
 
 void PuzzleView::update(unsigned ticks, InputHandler& input)
 {
+  m_panel.update(ticks, input);
 }
 
 void PuzzleView::draw(Renderer& renderer)
 {
+  m_panel.draw(renderer);
 }

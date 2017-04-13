@@ -102,6 +102,11 @@ parse_property(const std::string& line);
  */
 Rect intersection(const Rect& r1, const Rect& r2);
 
+/*
+ * Tests whether a point is inside a rectangle
+ */
+inline bool point_in_rect(const Point& p, const Rect& r);
+
 
 /* implementation */
 
@@ -145,6 +150,12 @@ inline char to_lower(char c)
     return std::tolower(static_cast<unsigned char>(c));
   else
     return c;
+}
+
+inline bool point_in_rect(const Point& p, const Rect& r)
+{
+  return p.x >= r.x && p.x <= r.x + r.width
+    && p.y >= r.y && p.y <= r.y + r.height;
 }
 
 #endif

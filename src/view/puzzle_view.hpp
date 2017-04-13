@@ -23,6 +23,7 @@
 
 #include <string>
 #include "puzzle/puzzle.hpp"
+#include "ui/ui_panel.hpp"
 #include "view/view.hpp"
 
 class PuzzleView : public View {
@@ -32,7 +33,10 @@ public:
   void update(unsigned ticks, InputHandler& input);
   void draw(Renderer& renderer);
 private:
+  void setup_panels();
+  
   Puzzle m_puzzle;
+  UIPanel m_panel;
 };
 
 #endif

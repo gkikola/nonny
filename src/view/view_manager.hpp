@@ -32,6 +32,8 @@ class Renderer;
 class ViewManager {
 public:
   ViewManager() { }
+  ViewManager(unsigned width, unsigned height)
+    : m_width(width), m_height(height) { }
 
   void push(std::shared_ptr<View> view) { m_views.push_back(view); }
   void pop();
@@ -41,9 +43,24 @@ public:
   void update(unsigned ticks, InputHandler& input);
   void draw(Renderer& renderer);
 
+  inline void resize(unsigned width, unsigned height);
+  unsigned width() const { return m_width; }
+  unsigned height() const { return m_height; }
+  
   void quit_game();
 private:
   std::vector<std::shared_ptr<View>> m_views;
+  unsigned m_width = 0;
+  unsigned m_height = 0;
 };
+
+
+/* implementation */
+
+inline void ViewManager::resize(unsigned width, unsigned height)
+{
+  m_width = width;
+  m_height = height;
+}
 
 #endif

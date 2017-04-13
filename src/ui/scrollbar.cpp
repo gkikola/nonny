@@ -18,42 +18,12 @@
  */
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
-#include "ui/ui_panel.hpp"
+#include "ui/scrollbar.hpp"
 
-#include "input/input_handler.hpp"
-#include "main/utility.hpp"
-#include "video/renderer.hpp"
-
-void UIPanel::scroll(int x, int y)
+void Scrollbar::update(unsigned ticks, InputHandler& input)
 {
-  m_boundary.x += x;
-  m_boundary.y += y;
-
-  for (auto child : m_children)
-    child->scroll(x, y);
 }
 
-void UIPanel::set_visible(const Rect& visible)
+void Scrollbar::draw(Renderer& renderer) const
 {
-  m_visible = intersection(visible, m_boundary);
-  for (auto child : m_children)
-    child->set_visible(m_visible);
-}
-
-void UIPanel::update(unsigned ticks, InputHandler& input)
-{
-  for (auto child : m_children)
-    child->update(ticks, input);
-}
-
-void UIPanel::draw(Renderer& renderer) const
-{
-  for (auto child : m_children)
-    child->draw(renderer);
-}
-
-void UIPanel::resize(unsigned width, unsigned height)
-{
-  m_boundary.width = width;
-  m_boundary.height = height;
 }

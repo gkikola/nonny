@@ -31,7 +31,7 @@ class Renderer;
 class UIPanel {
 public:
   UIPanel() { }
-  UIPanel(const Rect& boundary) : m_boundary(boundary) { }
+  explicit UIPanel(const Rect& boundary) : m_boundary(boundary) { }
   virtual ~UIPanel() { }
 
   virtual void scroll(int x, int y);
@@ -39,21 +39,12 @@ public:
   
   virtual void update(unsigned ticks, InputHandler& input);
   virtual void draw(Renderer& renderer) const;
-
-  inline void add_child(std::shared_ptr<UIPanel> child);
+  virtual void resize(unsigned width, unsigned height);
 
 protected:
   Rect m_boundary;
   Rect m_visible;
   std::vector<std::shared_ptr<UIPanel>> m_children;
 };
-
-
-/* implementation */
-
-inline void UIPanel::add_child(std::shared_ptr<UIPanel> child)
-{
-  m_children.push_back(child);
-}
 
 #endif

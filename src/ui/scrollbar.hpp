@@ -18,42 +18,24 @@
  */
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
+#ifndef NONNY_SCROLLBAR_HPP
+#define NONNY_SCROLLBAR_HPP
+
+#include "main/utility.hpp"
 #include "ui/ui_panel.hpp"
 
-#include "input/input_handler.hpp"
-#include "main/utility.hpp"
-#include "video/renderer.hpp"
+class Scrollbar : public UIPanel {
+public:
+  explicit Scrollbar(bool vertical = true) : m_vertical(vertical) { }
+  Scrollbar(const Rect& boundary, bool vertical = true)
+    : UIPanel(boundary), m_vertical(vertical) { }
+  
+  void update(unsigned ticks, InputHandler& input);
+  void draw(Renderer& renderer) const;
+private:
+  std::shared_ptr<UIPanel> m_scrollee;
+  Point m_scroll_pos;
+  bool m_vertical;
+};
 
-void UIPanel::scroll(int x, int y)
-{
-  m_boundary.x += x;
-  m_boundary.y += y;
-
-  for (auto child : m_children)
-    child->scroll(x, y);
-}
-
-void UIPanel::set_visible(const Rect& visible)
-{
-  m_visible = intersection(visible, m_boundary);
-  for (auto child : m_children)
-    child->set_visible(m_visible);
-}
-
-void UIPanel::update(unsigned ticks, InputHandler& input)
-{
-  for (auto child : m_children)
-    child->update(ticks, input);
-}
-
-void UIPanel::draw(Renderer& renderer) const
-{
-  for (auto child : m_children)
-    child->draw(renderer);
-}
-
-void UIPanel::resize(unsigned width, unsigned height)
-{
-  m_boundary.width = width;
-  m_boundary.height = height;
-}
+#endif
