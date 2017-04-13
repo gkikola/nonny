@@ -24,6 +24,7 @@
 #include <string>
 #include "puzzle/puzzle.hpp"
 #include "ui/puzzle_panel.hpp"
+#include "ui/scrolling_panel.hpp"
 #include "view/view.hpp"
 
 class PuzzleView : public View {
@@ -39,7 +40,7 @@ private:
   void setup_panels();
   
   Puzzle m_puzzle;
-  PuzzlePanel m_panel;
+  ScrollingPanel m_panel;
 };
 
 #endif

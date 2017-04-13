@@ -20,6 +20,9 @@
 
 #include "ui/scrolling_panel.hpp"
 
+#include "input/input_handler.hpp"
+#include "video/renderer.hpp"
+
 constexpr unsigned scrollbar_width = 16;
 
 void ScrollingPanel::attach_panel(std::shared_ptr<UIPanel> child)
@@ -31,6 +34,37 @@ void ScrollingPanel::attach_panel(std::shared_ptr<UIPanel> child)
   m_children.push_back(child);
   m_scroll_pos = Point{ 0, 0 };
   set_child_visibility();
+}
+
+void ScrollingPanel::draw(Renderer& renderer) const
+{
+  m_main_panel->draw(renderer);
+
+  if (m_hscroll)
+    draw_scrollbar(renderer, false);
+  if (m_vscroll)
+    draw_scrollbar(renderer, true);
+}
+
+void ScrollingPanel::draw_scrollbar(Renderer& renderer, bool vertical) const
+{
+  Rect area;
+  renderer.set_draw_color(Color(196, 196, 196));
+  
+  if (vertical) {
+    area.x = m_boundary.x + m_boundary.width - scrollbar_width;
+    area.y = m_boundary.y;
+    area.width = scrollbar_width;
+    area.height = m_boundary.height;
+    if (m_hscroll) area.height -= scrollbar_width;
+  } else {
+    area.x = m_boundary.x;
+    area.y = m_boundary.y + m_boundary.height - scrollbar_width;
+    area.width = m_boundary.width;
+    if (m_vscroll) area.width -= scrollbar_width;
+    area.height = scrollbar_width;
+  }
+  renderer.fill_rect(area);
 }
 
 void ScrollingPanel::resize(unsigned width, unsigned height)

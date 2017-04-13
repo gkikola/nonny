@@ -53,7 +53,11 @@ void PuzzleView::load(const std::string& filename)
 
 void PuzzleView::setup_panels()
 {
-  m_panel.attach_puzzle(m_puzzle);
+  Rect region = { 0, 0,
+                  static_cast<int>(m_width) * 2,
+                  static_cast<int>(m_height) * 2 };
+  auto ppanel = std::make_shared<PuzzlePanel>(region, m_puzzle);
+  m_panel.attach_panel(ppanel);
   m_panel.move(0, 0);
   m_panel.resize(m_width, m_height);
   m_panel.set_visible(Rect{0, 0,

@@ -33,10 +33,12 @@ public:
 
   void attach_panel(std::shared_ptr<UIPanel> child);
 
+  void draw(Renderer& renderer) const override;
   void resize(unsigned width, unsigned height) override;
 
 private:
   void set_child_visibility();
+  void draw_scrollbar(Renderer& renderer, bool vertical = true) const;
 
   Point m_scroll_pos;
   std::shared_ptr<UIPanel> m_main_panel;
