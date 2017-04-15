@@ -30,7 +30,8 @@ void ScrollingPanel::attach_panel(std::shared_ptr<UIPanel> child)
   m_main_panel = child;
 }
 
-void ScrollingPanel::update(unsigned ticks, InputHandler& input)
+void ScrollingPanel::update(unsigned ticks, InputHandler& input,
+                            const Rect& active_region)
 {
 }
 

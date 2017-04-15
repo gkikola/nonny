@@ -40,7 +40,10 @@ public:
   UIPanel& operator=(const UIPanel&) & = default;
   UIPanel& operator=(UIPanel&&) & = default;
 
-  virtual void update(unsigned ticks, InputHandler& input) = 0;
+  virtual void update(unsigned ticks, InputHandler& input) {
+    update(ticks, input, m_boundary); }
+  virtual void update(unsigned ticks, InputHandler& input,
+                      const Rect& active_region) = 0;
   virtual void draw(Renderer& renderer) { draw(renderer, m_boundary); }
   virtual void draw(Renderer& renderer, const Rect& region) const = 0;
   

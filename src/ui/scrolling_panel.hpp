@@ -34,8 +34,10 @@ public:
 
   void attach_panel(UIPanelPtr child);
 
-  using UIPanel::draw; //make all draw overloads visible
-  void update(unsigned ticks, InputHandler& input) override;
+  using UIPanel::update; //make all update and draw overloads visible
+  using UIPanel::draw;
+  void update(unsigned ticks, InputHandler& input,
+              const Rect& active_region) override;
   void draw(Renderer& renderer, const Rect& region) const override;
   void resize(unsigned width, unsigned height) override;
 

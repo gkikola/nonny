@@ -36,8 +36,10 @@ public:
 
   void attach_puzzle(Puzzle& puzzle) { m_puzzle = &puzzle; }
 
-  using UIPanel::draw; //make all draw overloads visible
-  void update(unsigned ticks, InputHandler& input) override;
+  using UIPanel::update; //make all update and draw overloads visible
+  using UIPanel::draw;
+  void update(unsigned ticks, InputHandler& input,
+              const Rect& active_region) override;
   void draw(Renderer& renderer, const Rect& region) const override;
 private:
   void draw_grid(Renderer& renderer) const;

@@ -31,7 +31,8 @@ PuzzlePanel::PuzzlePanel(const Rect& boundary, Puzzle& puzzle)
 {
 }
 
-void PuzzlePanel::update(unsigned ticks, InputHandler& input)
+void PuzzlePanel::update(unsigned ticks, InputHandler& input,
+                         const Rect& active_region)
 {
 }
 
