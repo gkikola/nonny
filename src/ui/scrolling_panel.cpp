@@ -36,34 +36,10 @@ void ScrollingPanel::update(unsigned ticks, InputHandler& input)
 
 void ScrollingPanel::draw(Renderer& renderer) const
 {
-  m_main_panel->draw(renderer);
-
-  //  if (m_hscroll.visible)
-  draw_scrollbar(renderer, false);
-  //  if (m_vscroll.visible)
-  draw_scrollbar(renderer, true);
 }
 
 void ScrollingPanel::draw_scrollbar(Renderer& renderer, bool vertical) const
 {
-  renderer.set_draw_color(Color(196, 196, 196));
-
-  int x, y;
-  unsigned width, height;
-  if (vertical) {
-    x = m_boundary.x() + m_boundary.width() - scrollbar_width;
-    y = m_boundary.y();
-    width = scrollbar_width;
-    height = m_boundary.height();
-    //    if (m_hscroll.visible) area.height -= scrollbar_width;
-  } else {
-    x = m_boundary.x();
-    y = m_boundary.y() + m_boundary.height() - scrollbar_width;
-    width = m_boundary.width();
-    //    if (m_vscroll.visible) area.width -= scrollbar_width;
-    height = scrollbar_width;
-  }
-  renderer.fill_rect(Rect(x, y, width, height));
 }
 
 void ScrollingPanel::resize(unsigned width, unsigned height)

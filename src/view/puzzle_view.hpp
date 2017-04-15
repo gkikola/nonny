@@ -40,7 +40,7 @@ private:
   void setup_panels();
   
   Puzzle m_puzzle;
-  ScrollingPanel m_panel;
+  ScrollingPanel m_main_panel;
 };
 
 #endif
