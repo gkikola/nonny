@@ -31,7 +31,8 @@ class Renderer;
 class UIPanel {
 public:
   UIPanel() { }
-  explicit UIPanel(const Rect& boundary) : m_boundary(boundary) { }
+  explicit UIPanel(const Rect& boundary)
+    : m_boundary(boundary), m_visible(boundary) { }
   UIPanel(const UIPanel&) = default;
   UIPanel(UIPanel&&) = default;
   virtual ~UIPanel() { }
