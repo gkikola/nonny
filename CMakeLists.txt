@@ -34,10 +34,8 @@ add_executable (
   src/event/event_handler.cpp
   src/input/input_handler.cpp
   src/input/key.cpp
-  src/main/sdl/sdl_error.cpp
   src/main/game.cpp
   src/main/main.cpp
-  src/main/utility.cpp
   src/puzzle/puzzle.cpp
   src/puzzle/puzzle_cell.cpp
   src/puzzle/puzzle_clue.cpp
@@ -47,6 +45,8 @@ add_executable (
   src/ui/puzzle_panel.cpp
   src/ui/scrolling_panel.cpp
   src/ui/ui_panel.cpp
+  src/utility/sdl/sdl_error.cpp
+  src/utility/utility.cpp
   src/video/sdl/sdl_renderer.cpp
   src/video/sdl/sdl_video_system.cpp
   src/video/sdl/sdl_window.cpp

@@ -18,7 +18,7 @@
  */
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
-#include "main/utility.hpp"
+#include "utility/utility.hpp"
 
 #include <algorithm>
 #include <sstream>

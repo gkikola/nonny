@@ -24,7 +24,7 @@
 #include <stdexcept>
 #include <string>
 #include <SDL2/SDL.h>
-#include "main/sdl/sdl_error.hpp"
+#include "utility/sdl/sdl_error.hpp"
 #include "video/sdl/sdl_renderer.hpp"
 #include "video/sdl/sdl_window.hpp"
 

@@ -29,8 +29,8 @@
 #include <string>
 #include <utility>
 #include "color/color_palette.hpp"
-#include "main/utility.hpp"
 #include "puzzle/puzzle.hpp"
+#include "utility/utility.hpp"
 
 enum class ClueType { row, col };
 

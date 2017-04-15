@@ -21,7 +21,7 @@
 #include "ui/ui_panel.hpp"
 
 #include "input/input_handler.hpp"
-#include "main/utility.hpp"
+#include "utility/utility.hpp"
 #include "video/renderer.hpp"
 
 void UIPanel::scroll(int x, int y)

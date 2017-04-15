@@ -23,7 +23,7 @@
 
 #include <memory>
 #include <vector>
-#include "main/utility.hpp"
+#include "utility/utility.hpp"
 
 class InputHandler;
 class Renderer;

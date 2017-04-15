@@ -20,7 +20,7 @@
 
 #include "video/sdl/sdl_renderer.hpp"
 
-#include "main/sdl/sdl_error.hpp"
+#include "utility/sdl/sdl_error.hpp"
 #include "video/sdl/sdl_window.hpp"
 
 SDLRenderer::SDLRenderer(Window& window)

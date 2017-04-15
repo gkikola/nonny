@@ -23,7 +23,7 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
-#include "main/utility.hpp"
+#include "utility/utility.hpp"
 
 namespace default_colors {
   extern const Color black(0, 0, 0);

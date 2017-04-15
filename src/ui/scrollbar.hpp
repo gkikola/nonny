@@ -21,8 +21,8 @@
 #ifndef NONNY_SCROLLBAR_HPP
 #define NONNY_SCROLLBAR_HPP
 
-#include "main/utility.hpp"
 #include "ui/ui_panel.hpp"
+#include "utility/utility.hpp"
 
 class Scrollbar : public UIPanel {
 public:

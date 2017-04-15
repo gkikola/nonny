@@ -22,8 +22,8 @@
 
 #include "color/color.hpp"
 #include "input/input_handler.hpp"
-#include "main/utility.hpp"
 #include "puzzle/puzzle.hpp"
+#include "utility/utility.hpp"
 #include "video/renderer.hpp"
 
 PuzzlePanel::PuzzlePanel(const Rect& boundary, Puzzle& puzzle)

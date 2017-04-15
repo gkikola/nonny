@@ -18,4 +18,4 @@
  */
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
-#include "main/sdl/sdl_error.hpp"
+#include "utility/sdl/sdl_error.hpp"

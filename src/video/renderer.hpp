@@ -22,7 +22,7 @@
 #define NONNY_RENDERER_HPP
 
 #include "color/color.hpp"
-#include "main/utility.hpp"
+#include "utility/utility.hpp"
 
 class Renderer {
 public:
