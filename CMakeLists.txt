@@ -50,6 +50,7 @@ add_executable (
   src/video/sdl/sdl_renderer.cpp
   src/video/sdl/sdl_video_system.cpp
   src/video/sdl/sdl_window.cpp
+  src/video/point.cpp
   src/video/rect.cpp
   src/video/renderer.cpp
   src/video/video_system.cpp

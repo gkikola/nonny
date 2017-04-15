@@ -48,12 +48,13 @@ SDLRenderer::~SDLRenderer()
 
 void SDLRenderer::draw_point(const Point& point)
 {
-  SDL_RenderDrawPoint(m_renderer, point.x, point.y);
+  SDL_RenderDrawPoint(m_renderer, point.x(), point.y());
 }
 
 void SDLRenderer::draw_line(const Point& point1, const Point& point2)
 {
-  SDL_RenderDrawLine(m_renderer, point1.x, point1.y, point2.x, point2.y);
+  SDL_RenderDrawLine(m_renderer, point1.x(), point1.y(),
+                     point2.x(), point2.y());
 }
 
 void SDLRenderer::draw_rect(const Rect& rect)

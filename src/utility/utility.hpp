@@ -26,12 +26,6 @@
 #include <string>
 #include <utility>
 
-// Represents a point in the window
-struct Point {
-  int x = 0;
-  int y = 0;
-};
-
 // Converts an escape sequence code to its corresponding character
 char escape(char c);
 
