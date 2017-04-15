@@ -32,7 +32,7 @@ class UIPanel {
 public:
   UIPanel() { }
   explicit UIPanel(const Rect& boundary)
-    : m_boundary(boundary), m_visible(boundary) { }
+    : m_boundary(boundary) { }
   UIPanel(const UIPanel&) = default;
   UIPanel(UIPanel&&) = default;
   virtual ~UIPanel() { }
@@ -41,19 +41,17 @@ public:
   UIPanel& operator=(UIPanel&&) & = default;
 
   virtual void update(unsigned ticks, InputHandler& input) = 0;
-  virtual void draw(Renderer& renderer) const = 0;
+  virtual void draw(Renderer& renderer) { draw(renderer, m_boundary); }
+  virtual void draw(Renderer& renderer, const Rect& region) const = 0;
   
   virtual void move(int x, int y) { m_boundary.move(x, y); }
   virtual void scroll(int x, int y);
   virtual void resize(unsigned width, unsigned height);
-  virtual void set_visible_region(const Rect& visible);
   
   Rect boundary() const { return m_boundary; }
-  Rect visible_region() const { return m_visible; }
 
 protected:
   Rect m_boundary;
-  Rect m_visible;
 };
 
 typedef std::shared_ptr<UIPanel> UIPanelPtr;

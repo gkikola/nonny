@@ -34,11 +34,7 @@ void ScrollingPanel::update(unsigned ticks, InputHandler& input)
 {
 }
 
-void ScrollingPanel::draw(Renderer& renderer) const
-{
-}
-
-void ScrollingPanel::draw_scrollbar(Renderer& renderer, bool vertical) const
+void ScrollingPanel::draw(Renderer& renderer, const Rect& region) const
 {
 }
 

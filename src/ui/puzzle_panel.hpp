@@ -35,9 +35,10 @@ public:
   PuzzlePanel(const Rect& boundary, Puzzle& puzzle);
 
   void attach_puzzle(Puzzle& puzzle) { m_puzzle = &puzzle; }
-  
+
+  using UIPanel::draw; //make all draw overloads visible
   void update(unsigned ticks, InputHandler& input) override;
-  void draw(Renderer& renderer) const override;
+  void draw(Renderer& renderer, const Rect& region) const override;
 private:
   void draw_grid(Renderer& renderer) const;
   Puzzle* m_puzzle = nullptr;

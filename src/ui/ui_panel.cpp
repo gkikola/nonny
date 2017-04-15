@@ -28,11 +28,6 @@ void UIPanel::scroll(int x, int y)
   m_boundary.move(m_boundary.x() + x, m_boundary.y() + y);
 }
 
-void UIPanel::set_visible_region(const Rect& visible)
-{
-  m_visible = intersection(visible, m_boundary);
-}
-
 void UIPanel::resize(unsigned width, unsigned height)
 {
   m_boundary.resize(width, height);

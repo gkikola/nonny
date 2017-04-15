@@ -35,11 +35,10 @@ void PuzzlePanel::update(unsigned ticks, InputHandler& input)
 {
 }
 
-void PuzzlePanel::draw(Renderer& renderer) const
+void PuzzlePanel::draw(Renderer& renderer, const Rect& region) const
 {
   if (m_puzzle) {
-    renderer.set_viewport(m_visible);
-
+    renderer.set_viewport(region);
     renderer.set_draw_color(default_colors::black);
     draw_grid(renderer);
   

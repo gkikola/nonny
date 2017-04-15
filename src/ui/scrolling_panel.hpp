@@ -34,13 +34,12 @@ public:
 
   void attach_panel(UIPanelPtr child);
 
+  using UIPanel::draw; //make all draw overloads visible
   void update(unsigned ticks, InputHandler& input) override;
-  void draw(Renderer& renderer) const override;
+  void draw(Renderer& renderer, const Rect& region) const override;
   void resize(unsigned width, unsigned height) override;
 
 private:
-  void draw_scrollbar(Renderer& renderer, bool vertical = true) const;
-
   UIPanelPtr m_main_panel = nullptr;
   UIPanelPtr m_hscroll = nullptr;
   UIPanelPtr m_vscroll = nullptr;

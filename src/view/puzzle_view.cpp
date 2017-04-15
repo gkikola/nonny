@@ -58,17 +58,16 @@ void PuzzleView::setup_panels()
 
   Rect win_region(0, 0, m_width, m_height);
   m_main_panel = ScrollingPanel(win_region, ppanel);
-  m_main_panel.set_visible_region(Rect(0, 0, m_width, m_height));
 }
 
 void PuzzleView::update(unsigned ticks, InputHandler& input)
 {
-  m_panel.update(ticks, input);
+  m_main_panel.update(ticks, input);
 }
 
 void PuzzleView::draw(Renderer& renderer)
 {
-  m_panel.draw(renderer);
+  m_main_panel.draw(renderer);
 }
 
 void PuzzleView::resize(unsigned width, unsigned height)
