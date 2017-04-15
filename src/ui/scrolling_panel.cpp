@@ -46,23 +46,24 @@ void ScrollingPanel::draw(Renderer& renderer) const
 
 void ScrollingPanel::draw_scrollbar(Renderer& renderer, bool vertical) const
 {
-  Rect area;
   renderer.set_draw_color(Color(196, 196, 196));
-  
+
+  int x, y;
+  unsigned width, height;
   if (vertical) {
-    area.x = m_boundary.x + m_boundary.width - scrollbar_width;
-    area.y = m_boundary.y;
-    area.width = scrollbar_width;
-    area.height = m_boundary.height;
+    x = m_boundary.x() + m_boundary.width() - scrollbar_width;
+    y = m_boundary.y();
+    width = scrollbar_width;
+    height = m_boundary.height();
     //    if (m_hscroll.visible) area.height -= scrollbar_width;
   } else {
-    area.x = m_boundary.x;
-    area.y = m_boundary.y + m_boundary.height - scrollbar_width;
-    area.width = m_boundary.width;
+    x = m_boundary.x();
+    y = m_boundary.y() + m_boundary.height() - scrollbar_width;
+    width = m_boundary.width();
     //    if (m_vscroll.visible) area.width -= scrollbar_width;
-    area.height = scrollbar_width;
+    height = scrollbar_width;
   }
-  renderer.fill_rect(area);
+  renderer.fill_rect(Rect(x, y, width, height));
 }
 
 void ScrollingPanel::resize(unsigned width, unsigned height)

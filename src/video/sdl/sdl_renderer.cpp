@@ -21,7 +21,15 @@
 #include "video/sdl/sdl_renderer.hpp"
 
 #include "utility/sdl/sdl_error.hpp"
+#include "utility/utility.hpp"
 #include "video/sdl/sdl_window.hpp"
+#include "video/rect.hpp"
+
+SDL_Rect rect_to_sdl_rect(const Rect& r)
+{
+  return SDL_Rect { r.x(), r.y(),
+      static_cast<int>(r.width()), static_cast<int>(r.height()) };
+}
 
 SDLRenderer::SDLRenderer(Window& window)
 {
@@ -50,7 +58,7 @@ void SDLRenderer::draw_line(const Point& point1, const Point& point2)
 
 void SDLRenderer::draw_rect(const Rect& rect)
 {
-  SDL_Rect srect = { rect.x, rect.y, rect.width, rect.height };
+  SDL_Rect srect = rect_to_sdl_rect(rect);
   SDL_RenderDrawRect(m_renderer, &srect);
 }
 
@@ -60,7 +68,7 @@ void SDLRenderer::draw_dotted_rect(const Rect& rect)
 
 void SDLRenderer::fill_rect(const Rect& rect)
 {
-  SDL_Rect srect = { rect.x, rect.y, rect.width, rect.height };
+  SDL_Rect srect = rect_to_sdl_rect(rect);
   SDL_RenderFillRect(m_renderer, &srect);
 }
 
@@ -78,6 +86,6 @@ void SDLRenderer::set_viewport()
 
 void SDLRenderer::set_viewport(const Rect& rect)
 {
-  SDL_Rect srect = { rect.x, rect.y, rect.width, rect.height };
+  SDL_Rect srect = rect_to_sdl_rect(rect);
   SDL_RenderSetViewport(m_renderer, &srect);
 }

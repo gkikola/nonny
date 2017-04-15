@@ -109,19 +109,3 @@ unsigned str_to_uint(const std::string& s, std::size_t* pos, int base)
     throw std::out_of_range("str_to_uint");
   return result;
 }
-
-Rect intersection(const Rect& r1, const Rect& r2)
-{
-  Rect result;
-  result.x = std::max(r1.x, r2.x);
-  result.y = std::max(r1.y, r2.y);
-  result.width = std::min(r1.x + r1.width, r2.x + r2.width) - result.x;
-  result.height = std::min(r1.y + r1.height, r2.y + r2.height) - result.y;
-
-  if (result.width < 0)
-    result.width = 0;
-  if (result.height < 0)
-    result.height = 0;
-  
-  return result;
-}

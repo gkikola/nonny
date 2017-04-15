@@ -18,22 +18,23 @@
  */
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
-#include "ui/ui_panel.hpp"
+#include "video/rect.hpp"
 
-#include "input/input_handler.hpp"
-#include "video/renderer.hpp"
+#include <algorithm>
 
-void UIPanel::scroll(int x, int y)
+Rect intersection(const Rect& r1, const Rect& r2)
 {
-  m_boundary.move(m_boundary.x() + x, m_boundary.y() + y);
-}
+  int x = std::max(r1.x(), r2.x());
+  int y = std::max(r1.y(), r2.y());
+  int width = std::min(r1.x() + r1.width(),
+                       r2.x() + r2.width()) - x;
+  int height = std::min(r1.y() + r1.height(),
+                        r2.y() + r2.height()) - y;
 
-void UIPanel::set_visible_region(const Rect& visible)
-{
-  m_visible = intersection(visible, m_boundary);
-}
+  if (width < 0 || height < 0)
+    width = height = 0;
 
-void UIPanel::resize(unsigned width, unsigned height)
-{
-  m_boundary.resize(width, height);
+  return Rect(x, y,
+              static_cast<unsigned>(width),
+              static_cast<unsigned>(height));
 }

@@ -32,14 +32,6 @@ struct Point {
   int y = 0;
 };
 
-// Represents a rectangle within the window
-struct Rect {
-  int x = 0;
-  int y = 0;
-  int width = 0;
-  int height = 0;
-};
-
 // Converts an escape sequence code to its corresponding character
 char escape(char c);
 
@@ -97,17 +89,6 @@ std::pair<std::string, std::string>
 parse_property(const std::string& line);
 
 
-/*
- * Determines the intersection of two rectangles
- */
-Rect intersection(const Rect& r1, const Rect& r2);
-
-/*
- * Tests whether a point is inside a rectangle
- */
-inline bool point_in_rect(const Point& p, const Rect& r);
-
-
 /* implementation */
 
 template <typename Out>
@@ -150,12 +131,6 @@ inline char to_lower(char c)
     return std::tolower(static_cast<unsigned char>(c));
   else
     return c;
-}
-
-inline bool point_in_rect(const Point& p, const Rect& r)
-{
-  return p.x >= r.x && p.x <= r.x + r.width
-    && p.y >= r.y && p.y <= r.y + r.height;
 }
 
 #endif

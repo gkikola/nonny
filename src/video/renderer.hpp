@@ -22,7 +22,9 @@
 #define NONNY_RENDERER_HPP
 
 #include "color/color.hpp"
-#include "utility/utility.hpp"
+
+class Point;
+class Rect;
 
 class Renderer {
 public:
