@@ -39,21 +39,34 @@ public:
   UIPanel& operator=(const UIPanel&) & = default;
   UIPanel& operator=(UIPanel&&) & = default;
 
-  virtual void scroll(int x, int y);
-  virtual void set_visible(const Rect& visible);
+  virtual void update(unsigned ticks, InputHandler& input) = 0;
+  virtual void draw(Renderer& renderer) const = 0;
   
-  virtual void update(unsigned ticks, InputHandler& input);
-  virtual void draw(Renderer& renderer) const;
   virtual void move(int x, int y);
+  virtual void scroll(int x, int y);
   virtual void resize(unsigned width, unsigned height);
-
+  virtual void set_visible_region(const Rect& visible);
+  
   const Rect& boundary() const { return m_boundary; }
-  const Rect& visible() const { return m_visible; }
+  const Rect& visible_region() const { return m_visible; }
 
 protected:
   Rect m_boundary;
   Rect m_visible;
-  std::vector<std::shared_ptr<UIPanel>> m_children;
 };
+
+typedef std::shared_ptr<UIPanel> UIPanelPtr;
+
+template <typename PanelType, typename... Args>
+UIPanelPtr make_ui_panel(Args& ... args);
+
+
+/* implementation */
+
+template <typename PanelType, typename... Args>
+UIPanelPtr make_ui_panel(Args& ... args)
+{
+  return std::make_shared<PanelType>(args...);
+}
 
 #endif

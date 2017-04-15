@@ -22,28 +22,28 @@
 #define NONNY_SCROLLING_PANEL_HPP
 
 #include <memory>
+#include "ui/scrollbar.hpp"
 #include "ui/ui_panel.hpp"
 
 class ScrollingPanel : public UIPanel {
 public:
   ScrollingPanel() { }
   explicit ScrollingPanel(const Rect& boundary) : UIPanel(boundary) { }
-  ScrollingPanel(const Rect& boundary, std::shared_ptr<UIPanel> child)
+  ScrollingPanel(const Rect& boundary, UIPanelPtr child)
     : UIPanel(boundary) { attach_panel(child); }
 
-  void attach_panel(std::shared_ptr<UIPanel> child);
+  void attach_panel(UIPanelPtr child);
 
+  void update(unsigned ticks, InputHandler& input) override;
   void draw(Renderer& renderer) const override;
   void resize(unsigned width, unsigned height) override;
 
 private:
-  void set_child_visibility();
   void draw_scrollbar(Renderer& renderer, bool vertical = true) const;
 
-  Point m_scroll_pos;
-  std::shared_ptr<UIPanel> m_main_panel;
-  bool m_vscroll = false;
-  bool m_hscroll = false;
+  UIPanelPtr m_main_panel = nullptr;
+  UIPanelPtr m_hscroll = nullptr;
+  UIPanelPtr m_vscroll = nullptr;
 };
 
 #endif

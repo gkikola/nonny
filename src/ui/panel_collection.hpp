@@ -21,6 +21,7 @@
 #ifndef NONNY_PANEL_COLLECTION_HPP
 #define NONNY_PANEL_COLLECTION_HPP
 
+#include <vector>
 #include "ui/ui_panel.hpp"
 
 class PanelCollection : public UIPanel {
@@ -43,6 +44,9 @@ public:
   const_iterator begin() const { return m_children.begin(); }
   iterator end() { return m_children.end(); }
   const_iterator end() const { return m_children.end(); }
+
+private:
+  std::vector<UIPanelPtr> m_children;
 };
 
 #endif

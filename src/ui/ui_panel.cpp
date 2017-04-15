@@ -28,28 +28,11 @@ void UIPanel::scroll(int x, int y)
 {
   m_boundary.x += x;
   m_boundary.y += y;
-
-  for (auto child : m_children)
-    child->scroll(x, y);
 }
 
-void UIPanel::set_visible(const Rect& visible)
+void UIPanel::set_visible_region(const Rect& visible)
 {
   m_visible = intersection(visible, m_boundary);
-  for (auto child : m_children)
-    child->set_visible(m_visible);
-}
-
-void UIPanel::update(unsigned ticks, InputHandler& input)
-{
-  for (auto child : m_children)
-    child->update(ticks, input);
-}
-
-void UIPanel::draw(Renderer& renderer) const
-{
-  for (auto child : m_children)
-    child->draw(renderer);
 }
 
 void UIPanel::move(int x, int y)

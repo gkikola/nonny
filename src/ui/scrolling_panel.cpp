@@ -27,23 +27,21 @@ constexpr unsigned scrollbar_width = 16;
 
 void ScrollingPanel::attach_panel(std::shared_ptr<UIPanel> child)
 {
-  if (!m_children.empty())
-    m_children.clear();
-
   m_main_panel = child;
-  m_children.push_back(child);
-  m_scroll_pos = Point{ 0, 0 };
-  set_child_visibility();
+}
+
+void ScrollingPanel::update(unsigned ticks, InputHandler& input)
+{
 }
 
 void ScrollingPanel::draw(Renderer& renderer) const
 {
   m_main_panel->draw(renderer);
 
-  if (m_hscroll)
-    draw_scrollbar(renderer, false);
-  if (m_vscroll)
-    draw_scrollbar(renderer, true);
+  //  if (m_hscroll.visible)
+  draw_scrollbar(renderer, false);
+  //  if (m_vscroll.visible)
+  draw_scrollbar(renderer, true);
 }
 
 void ScrollingPanel::draw_scrollbar(Renderer& renderer, bool vertical) const
@@ -56,12 +54,12 @@ void ScrollingPanel::draw_scrollbar(Renderer& renderer, bool vertical) const
     area.y = m_boundary.y;
     area.width = scrollbar_width;
     area.height = m_boundary.height;
-    if (m_hscroll) area.height -= scrollbar_width;
+    //    if (m_hscroll.visible) area.height -= scrollbar_width;
   } else {
     area.x = m_boundary.x;
     area.y = m_boundary.y + m_boundary.height - scrollbar_width;
     area.width = m_boundary.width;
-    if (m_vscroll) area.width -= scrollbar_width;
+    //    if (m_vscroll.visible) area.width -= scrollbar_width;
     area.height = scrollbar_width;
   }
   renderer.fill_rect(area);
@@ -70,25 +68,4 @@ void ScrollingPanel::draw_scrollbar(Renderer& renderer, bool vertical) const
 void ScrollingPanel::resize(unsigned width, unsigned height)
 {
   UIPanel::resize(width, height);
-  set_child_visibility();
-}
-
-void ScrollingPanel::set_child_visibility()
-{
-  const Rect& child_bound = m_main_panel->boundary();
-  const Rect& child_vis = m_main_panel->visible();
-
-  //do we need scrollbars?
-  m_hscroll = m_vscroll = false;
-  if (child_bound.width > m_boundary.width)
-    m_hscroll = true;
-  if (child_bound.height > m_boundary.height)
-    m_vscroll = true;
-
-  //set visible region to whole panel minus scrollbar area
-  Rect new_visible = m_boundary;
-  if (m_hscroll) new_visible.height -= scrollbar_width;
-  if (m_vscroll) new_visible.width -= scrollbar_width;
-  new_visible = intersection(child_vis, new_visible);
-  m_main_panel->set_visible(new_visible);
 }

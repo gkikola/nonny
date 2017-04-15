@@ -26,14 +26,15 @@
 
 class Scrollbar : public UIPanel {
 public:
-  explicit Scrollbar(bool vertical = true) : m_vertical(vertical) { }
-  Scrollbar(const Rect& boundary, bool vertical = true)
-    : UIPanel(boundary), m_vertical(vertical) { }
+  explicit Scrollbar(UIPanelPtr target, bool vertical = true)
+    : m_scroll_target(target), m_vertical(vertical) { }
+  Scrollbar(const Rect& boundary, UIPanelPtr target, bool vertical = true)
+    : UIPanel(boundary), m_scroll_target(target), m_vertical(vertical) { }
   
   void update(unsigned ticks, InputHandler& input);
   void draw(Renderer& renderer) const;
 private:
-  std::shared_ptr<UIPanel> m_scrollee;
+  UIPanelPtr m_scroll_target;
   Point m_scroll_pos;
   bool m_vertical;
 };
