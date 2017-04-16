@@ -25,6 +25,12 @@
 #include "video/rect.hpp"
 #include "video/renderer.hpp"
 
+constexpr unsigned padding = 4;
+const Color background(196, 196, 196);
+const Color thumb(128, 128, 128);
+const Color thumb_hover(88, 88, 88);
+const Color thumb_drag(42, 118, 198);
+
 void Scrollbar::update(unsigned ticks, InputHandler& input,
                        const Rect& active_region)
 {
@@ -32,6 +38,31 @@ void Scrollbar::update(unsigned ticks, InputHandler& input,
 
 void Scrollbar::draw(Renderer& renderer, const Rect& region) const
 {
-  renderer.set_draw_color(Color(196, 196, 196));
+  renderer.set_draw_color(background);
   renderer.fill_rect(intersection(m_boundary, region));
+
+  Rect thumb_pos = m_boundary;
+  if (m_vertical) {
+    unsigned target_ht = m_scroll_target->boundary().height();
+    thumb_pos.move(m_boundary.x(),
+                   m_boundary.y() + m_boundary.height()
+                   * m_scroll_pos.y() / target_ht);
+    thumb_pos.resize(m_boundary.width(),
+                     m_boundary.height() * m_boundary.height() / target_ht);
+  } else {
+    unsigned target_wd = m_scroll_target->boundary().width();
+    thumb_pos.move(m_boundary.x() + m_boundary.width()
+                   * m_scroll_pos.y() / target_wd,
+                   m_boundary.y());
+    thumb_pos.resize(m_boundary.width() * m_boundary.width() / target_wd,
+                     m_boundary.height());
+  }
+
+  if (thumb_pos.width() > 2 * padding && thumb_pos.height() > 2 * padding) {
+    thumb_pos.move(thumb_pos.x() + padding, thumb_pos.y() + padding);
+    thumb_pos.resize(thumb_pos.width() - 2 * padding,
+                     thumb_pos.height() - 2 * padding);
+    renderer.set_draw_color(thumb);
+    renderer.fill_rect(intersection(thumb_pos, region));
+  }
 }
