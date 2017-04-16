@@ -22,6 +22,7 @@
 
 #include <fstream>
 #include <memory>
+#include <utility>
 #include "input/input_handler.hpp"
 #include "ui/scrollbar.hpp"
 #include "video/renderer.hpp"
@@ -36,6 +37,36 @@ PuzzleView::PuzzleView(const std::string& filename,
   : View(width, height)
 {
   load(filename);
+}
+
+PuzzleView::PuzzleView(const PuzzleView& pv)
+  : m_puzzle(pv.m_puzzle)
+{
+  setup_panels();
+}
+
+PuzzleView::PuzzleView(PuzzleView&& pv)
+  : m_puzzle(std::move(pv.m_puzzle))
+{
+  setup_panels();
+}
+
+PuzzleView& PuzzleView::operator=(const PuzzleView& pv) &
+{
+  if (this != &pv) {
+    m_puzzle = pv.m_puzzle;
+    setup_panels();
+  }
+  return *this;
+}
+
+PuzzleView& PuzzleView::operator=(PuzzleView&& pv) &
+{
+  if (this != &pv) {
+    m_puzzle = std::move(pv.m_puzzle);
+    setup_panels();
+  }
+  return *this;
 }
 
 void PuzzleView::load(const std::string& filename)
@@ -73,5 +104,5 @@ void PuzzleView::draw(Renderer& renderer)
 void PuzzleView::resize(unsigned width, unsigned height)
 {
   View::resize(width, height);
-  setup_panels();
+  m_main_panel.resize(width, height);
 }

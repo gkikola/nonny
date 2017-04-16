@@ -43,6 +43,7 @@ add_executable (
   src/puzzle/puzzle_io.cpp
   src/ui/panel_collection.cpp
   src/ui/puzzle_panel.cpp
+  src/ui/scrollbar.cpp
   src/ui/scrolling_panel.cpp
   src/ui/ui_panel.cpp
   src/utility/sdl/sdl_error.cpp

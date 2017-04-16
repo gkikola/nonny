@@ -21,30 +21,17 @@
 #include "ui/scrollbar.hpp"
 
 #include "color/color.hpp"
+#include "input/input_handler.hpp"
 #include "video/rect.hpp"
+#include "video/renderer.hpp"
 
-void Scrollbar::update(unsigned ticks, InputHandler& input)
+void Scrollbar::update(unsigned ticks, InputHandler& input,
+                       const Rect& active_region)
 {
 }
 
-void Scrollbar::draw(Renderer& renderer) const
+void Scrollbar::draw(Renderer& renderer, const Rect& region) const
 {
   renderer.set_draw_color(Color(196, 196, 196));
-
-  int x, y;
-  unsigned width, height;
-  if (vertical) {
-    x = m_boundary.x() + m_boundary.width() - scrollbar_width;
-    y = m_boundary.y();
-    width = scrollbar_width;
-    height = m_boundary.height();
-    //    if (m_hscroll.visible) area.height -= scrollbar_width;
-  } else {
-    x = m_boundary.x();
-    y = m_boundary.y() + m_boundary.height() - scrollbar_width;
-    width = m_boundary.width();
-    //    if (m_vscroll.visible) area.width -= scrollbar_width;
-    height = scrollbar_width;
-  }
-  renderer.fill_rect(Rect(x, y, width, height));
+  renderer.fill_rect(intersection(m_boundary, region));
 }

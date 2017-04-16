@@ -26,11 +26,16 @@
 #include "ui/puzzle_panel.hpp"
 #include "ui/scrolling_panel.hpp"
 #include "view/view.hpp"
-
+#include <iostream>
 class PuzzleView : public View {
 public:
   explicit PuzzleView(const std::string& filename);
   PuzzleView(const std::string& filename, unsigned width, unsigned height);
+
+  PuzzleView(const PuzzleView& pv);
+  PuzzleView(PuzzleView&&);
+  PuzzleView& operator=(const PuzzleView& pv) &;
+  PuzzleView& operator=(PuzzleView&& pv) &;
 
   void update(unsigned ticks, InputHandler& input) override;
   void draw(Renderer& renderer) override;

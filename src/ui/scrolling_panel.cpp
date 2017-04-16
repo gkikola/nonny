@@ -28,15 +28,26 @@ constexpr unsigned scrollbar_width = 16;
 void ScrollingPanel::attach_panel(std::shared_ptr<UIPanel> child)
 {
   m_main_panel = child;
+  m_hscroll = Scrollbar(child, false);
+  m_vscroll = Scrollbar(child, true);
 }
 
 void ScrollingPanel::update(unsigned ticks, InputHandler& input,
                             const Rect& active_region)
 {
+  if (m_main_panel)
+    m_main_panel->update(ticks, input, active_region);
+  m_hscroll.update(ticks, input, active_region);
+  m_vscroll.update(ticks, input, active_region);
 }
 
 void ScrollingPanel::draw(Renderer& renderer, const Rect& region) const
 {
+  if (m_main_panel)
+    m_main_panel->draw(renderer, region);
+  
+  m_hscroll.draw(renderer, region);
+  m_vscroll.draw(renderer, region);
 }
 
 void ScrollingPanel::resize(unsigned width, unsigned height)

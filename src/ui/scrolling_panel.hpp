@@ -43,8 +43,8 @@ public:
 
 private:
   UIPanelPtr m_main_panel = nullptr;
-  UIPanelPtr m_hscroll = nullptr;
-  UIPanelPtr m_vscroll = nullptr;
+  Scrollbar m_hscroll;
+  Scrollbar m_vscroll;
 };
 
 #endif

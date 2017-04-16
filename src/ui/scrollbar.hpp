@@ -26,15 +26,19 @@
 
 class Scrollbar : public UIPanel {
 public:
+  Scrollbar() { }
   explicit Scrollbar(UIPanelPtr target, bool vertical = true)
     : m_scroll_target(target), m_vertical(vertical) { }
   Scrollbar(const Rect& boundary, UIPanelPtr target, bool vertical = true)
     : UIPanel(boundary), m_scroll_target(target), m_vertical(vertical) { }
-  
-  void update(unsigned ticks, InputHandler& input);
-  void draw(Renderer& renderer) const;
+
+  using UIPanel::update; //make all update and draw overloads visible
+  using UIPanel::draw;
+  void update(unsigned ticks, InputHandler& input,
+              const Rect& active_region) override;
+  void draw(Renderer& renderer, const Rect& region) const override;
 private:
-  UIPanelPtr m_scroll_target;
+  UIPanelPtr m_scroll_target = nullptr;
   Point m_scroll_pos;
   bool m_vertical;
 };
