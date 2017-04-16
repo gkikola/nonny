@@ -21,23 +21,41 @@
 #ifndef NONNY_INPUT_HANDLER_HPP
 #define NONNY_INPUT_HANDLER_HPP
 
+#include <vector>
 #include "input/key.hpp"
+#include "video/point.hpp"
 
 class InputHandler {
 public:
-  InputHandler() { }
+  InputHandler();
   virtual ~InputHandler() { }
 
+  void update(unsigned ticks);
+  
   void process_key_event(Keyboard::Key key, bool down);
   void process_mouse_button_event(Mouse::Button button, bool down);
   void process_mouse_wheel_event(int vert, int horiz);
   void process_mouse_move_event(int x, int y);
 
+  bool was_key_pressed(Keyboard::Key key);
+  bool was_key_released(Keyboard::Key key);
+  bool is_key_down(Keyboard::Key key);
+
+  bool was_mouse_button_pressed(Mouse::Button button);
+  bool was_mouse_button_released(Mouse::Button button);
+  bool is_mouse_button_down(Mouse::Button button);
+
 private:
-  int m_mouse_x = 0;
-  int m_mouse_y = 0;
-  int m_mouse_rel_x = 0;
-  int m_mouse_rel_y = 0;
+  Point m_mouse;
+  Point m_prev_mouse;
+  
+  std::vector<bool> m_keys;
+  std::vector<bool> m_prev_keys;
+  bool m_need_key_update = false;
+
+  std::vector<bool> m_buttons;
+  std::vector<bool> m_prev_buttons;
+  bool m_need_button_update = false;
 };
 
 #endif

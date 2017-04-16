@@ -50,6 +50,8 @@ void Game::run()
 
   bool exit = false;
   while (!exit) {
+    input.update(0);
+
     event->process(input, *m_view_mgr);
     exit = m_view_mgr->empty();
 

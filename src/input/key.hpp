@@ -46,7 +46,7 @@ namespace Keyboard {
     kp_left, kp_right, kp_up, kp_down, kp_ins, kp_del
   };
 
-  constexpr unsigned num_keys = kp_del;
+  constexpr unsigned num_keys = kp_del + 1;
 
   std::string key_name(Key key);
 }
@@ -57,7 +57,7 @@ namespace Mouse {
     unknown, left, right, middle, back, forward
   };
 
-  constexpr unsigned num_buttons = forward;
+  constexpr unsigned num_buttons = forward + 1;
 
   std::string button_name(Button button);
 }

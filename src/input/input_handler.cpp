@@ -20,12 +20,43 @@
 
 #include "input/input_handler.hpp"
 
+InputHandler::InputHandler()
+  : m_mouse(0, 0),
+    m_prev_mouse(0, 0),
+    m_keys(Keyboard::num_keys, false),
+    m_prev_keys(Keyboard::num_keys, false),
+    m_buttons(Mouse::num_buttons, false),
+    m_prev_buttons(Mouse::num_buttons, false)
+{
+}
+
+void InputHandler::update(unsigned ticks)
+{
+  if (m_need_key_update) {
+    m_need_key_update = false;
+    m_prev_keys.clear();
+    m_prev_keys.insert(m_prev_keys.end(), Keyboard::num_keys, false);
+    m_keys.swap(m_prev_keys);
+  }
+
+  if (m_need_button_update) {
+    m_need_button_update = false;
+    m_prev_buttons.clear();
+    m_prev_buttons.insert(m_prev_buttons.end(), Mouse::num_buttons, false);
+    m_buttons.swap(m_prev_buttons);
+  }
+}
+
 void InputHandler::process_key_event(Keyboard::Key key, bool down)
 {
+  m_keys[key] = down;
+  m_need_key_update = true;
 }
 
 void InputHandler::process_mouse_button_event(Mouse::Button button, bool down)
 {
+  m_buttons[button] = down;
+  m_need_button_update = true;
 }
 
 void InputHandler::process_mouse_wheel_event(int vert, int horiz)
@@ -34,8 +65,36 @@ void InputHandler::process_mouse_wheel_event(int vert, int horiz)
 
 void InputHandler::process_mouse_move_event(int x, int y)
 {
-  m_mouse_rel_x = x - m_mouse_x;
-  m_mouse_rel_y = y - m_mouse_y;
-  m_mouse_x = x;
-  m_mouse_y = y;
+  m_prev_mouse = m_mouse;
+  m_mouse = Point(x, y);
+}
+
+bool InputHandler::was_key_pressed(Keyboard::Key key)
+{
+  return !m_prev_keys[key] && m_keys[key];
+}
+
+bool InputHandler::was_key_released(Keyboard::Key key)
+{
+  return m_prev_keys[key] && !m_keys[key];
+}
+
+bool InputHandler::is_key_down(Keyboard::Key key)
+{
+  return m_keys[key];
+}
+
+bool InputHandler::was_mouse_button_pressed(Mouse::Button button)
+{
+  return !m_prev_buttons[button] && m_buttons[button];
+}
+
+bool InputHandler::was_mouse_button_released(Mouse::Button button)
+{
+  return m_prev_buttons[button] && !m_buttons[button];
+}
+
+bool InputHandler::is_mouse_button_down(Mouse::Button button)
+{
+  return m_buttons[button];
 }
