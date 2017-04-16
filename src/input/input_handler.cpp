@@ -20,13 +20,11 @@
 
 #include "input/input_handler.hpp"
 
-#include <iostream>
-
-void InputHandler::process_key_event(Key key, bool down)
+void InputHandler::process_key_event(Keyboard::Key key, bool down)
 {
 }
 
-void InputHandler::process_mouse_button_event(MouseButton button, bool down)
+void InputHandler::process_mouse_button_event(Mouse::Button button, bool down)
 {
 }
 
@@ -36,4 +34,8 @@ void InputHandler::process_mouse_wheel_event(int vert, int horiz)
 
 void InputHandler::process_mouse_move_event(int x, int y)
 {
+  m_mouse_rel_x = x - m_mouse_x;
+  m_mouse_rel_y = y - m_mouse_y;
+  m_mouse_x = x;
+  m_mouse_y = y;
 }

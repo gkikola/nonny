@@ -28,10 +28,16 @@ public:
   InputHandler() { }
   virtual ~InputHandler() { }
 
-  void process_key_event(Key key, bool down);
-  void process_mouse_button_event(MouseButton button, bool down);
+  void process_key_event(Keyboard::Key key, bool down);
+  void process_mouse_button_event(Mouse::Button button, bool down);
   void process_mouse_wheel_event(int vert, int horiz);
   void process_mouse_move_event(int x, int y);
+
+private:
+  int m_mouse_x = 0;
+  int m_mouse_y = 0;
+  int m_mouse_rel_x = 0;
+  int m_mouse_rel_y = 0;
 };
 
 #endif

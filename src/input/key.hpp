@@ -23,32 +23,43 @@
 
 #include <string>
 
-enum class Key {
-  unknown, escape,
-  f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12,
-  digit_0, digit_1, digit_2, digit_3, digit_4, digit_5, digit_6,
-  digit_7, digit_8, digit_9, minus, equals, back_quote,
-  letter_a, letter_b, letter_c, letter_d, letter_e, letter_f, letter_g,
-  letter_h, letter_i, letter_j, letter_k, letter_l, letter_m, letter_n,
-  letter_o, letter_p, letter_q, letter_r, letter_s, letter_t, letter_u,
-  letter_v, letter_w, letter_x, letter_y, letter_z, space,
-  lbracket, rbracket, slash, back_slash, period, comma,
-  semicolon, quote,
-  print_screen, scroll_lock, pause,
-  enter, backspace, tab, caps_lock,
-  lshift, rshift, lctrl, rctrl, lalt, ralt, lsuper, rsuper, menu,
-  ins, del, home, end, page_up, page_down,
-  left, right, up, down,
-  num_lock, kp_divide, kp_times, kp_minus, kp_plus, kp_enter,
-  kp_home, kp_end, kp_page_up, kp_page_down, kp_5,
-  kp_left, kp_right, kp_up, kp_down, kp_ins, kp_del
-};
+namespace Keyboard {
 
-enum class MouseButton {
-  unknown, left, right, middle, back, forward
-};
+  enum Key {
+    unknown, escape,
+    f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12,
+    digit_0, digit_1, digit_2, digit_3, digit_4, digit_5, digit_6,
+    digit_7, digit_8, digit_9, minus, equals, back_quote,
+    letter_a, letter_b, letter_c, letter_d, letter_e, letter_f, letter_g,
+    letter_h, letter_i, letter_j, letter_k, letter_l, letter_m, letter_n,
+    letter_o, letter_p, letter_q, letter_r, letter_s, letter_t, letter_u,
+    letter_v, letter_w, letter_x, letter_y, letter_z, space,
+    lbracket, rbracket, slash, back_slash, period, comma,
+    semicolon, quote,
+    print_screen, scroll_lock, pause,
+    enter, backspace, tab, caps_lock,
+    lshift, rshift, lctrl, rctrl, lalt, ralt, lsuper, rsuper, menu,
+    ins, del, home, end, page_up, page_down,
+    left, right, up, down,
+    num_lock, kp_divide, kp_times, kp_minus, kp_plus, kp_enter,
+    kp_home, kp_end, kp_page_up, kp_page_down, kp_5,
+    kp_left, kp_right, kp_up, kp_down, kp_ins, kp_del
+  };
 
-std::string key_name(Key key);
-std::string mouse_button_name(MouseButton button);
+  constexpr unsigned num_keys = kp_del;
+
+  std::string key_name(Key key);
+}
+
+namespace Mouse {
+  
+  enum Button {
+    unknown, left, right, middle, back, forward
+  };
+
+  constexpr unsigned num_buttons = forward;
+
+  std::string button_name(Button button);
+}
 
 #endif

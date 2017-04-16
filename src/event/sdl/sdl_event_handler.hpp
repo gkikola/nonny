@@ -22,12 +22,10 @@
 #define NONNY_SDL_EVENT_HANDLER_HPP
 
 #include "event/event_handler.hpp"
+#include "input/key.hpp"
 
 #include <SDL2/SDL.h>
 
-enum class Key;
-enum class MouseButton;
-enum class MouseWheel;
 class ViewManager;
 
 class SDLEventHandler : public EventHandler {
@@ -41,8 +39,8 @@ public:
   void process(InputHandler& input, ViewManager& view_mgr) override;
 
 private:
-  static Key convert_keycode(SDL_Scancode key);
-  static MouseButton convert_mouse_button(Uint8 button);
+  static Keyboard::Key convert_keycode(SDL_Scancode key);
+  static Mouse::Button convert_mouse_button(Uint8 button);
 };
 
 #endif
