@@ -59,9 +59,9 @@ void ScrollingPanel::resize(unsigned width, unsigned height)
   bool need_horz = false;
   bool need_vert = false;
   if (m_main_panel) {
-    if (m_main_panel->boundary().width() > width)
+    if (m_main_panel->boundary().width() > width - scrollbar_width)
       need_horz = true;
-    if (m_main_panel->boundary().height() > height)
+    if (m_main_panel->boundary().height() > height - scrollbar_width)
       need_vert = true;
   }
 

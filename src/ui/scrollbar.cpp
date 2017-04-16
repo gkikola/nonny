@@ -51,7 +51,7 @@ void Scrollbar::draw(Renderer& renderer, const Rect& region) const
   } else {
     unsigned target_wd = m_scroll_target->boundary().width();
     thumb_pos.x() = m_boundary.x() + m_boundary.width()
-      * m_scroll_pos.y() / target_wd;
+      * m_scroll_pos.x() / target_wd;
     thumb_pos.width() = m_boundary.width() * m_boundary.width() / target_wd;
   }
 
