@@ -37,13 +37,17 @@ public:
   void process_mouse_wheel_event(int vert, int horiz);
   void process_mouse_move_event(int x, int y);
 
-  bool was_key_pressed(Keyboard::Key key);
-  bool was_key_released(Keyboard::Key key);
-  bool is_key_down(Keyboard::Key key);
+  bool was_key_pressed(Keyboard::Key key) const;
+  bool was_key_released(Keyboard::Key key) const;
+  bool is_key_down(Keyboard::Key key) const;
 
-  bool was_mouse_button_pressed(Mouse::Button button);
-  bool was_mouse_button_released(Mouse::Button button);
-  bool is_mouse_button_down(Mouse::Button button);
+  bool was_mouse_button_pressed(Mouse::Button button) const;
+  bool was_mouse_button_released(Mouse::Button button) const;
+  bool is_mouse_button_down(Mouse::Button button) const;
+
+  Point mouse_position() const { return m_mouse; }
+  int rel_mouse_x() const { return m_mouse.x() - m_prev_mouse.x(); }
+  int rel_mouse_y() const { return m_mouse.y() - m_prev_mouse.y(); }
 
 private:
   Point m_mouse;

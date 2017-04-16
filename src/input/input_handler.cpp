@@ -69,32 +69,32 @@ void InputHandler::process_mouse_move_event(int x, int y)
   m_mouse = Point(x, y);
 }
 
-bool InputHandler::was_key_pressed(Keyboard::Key key)
+bool InputHandler::was_key_pressed(Keyboard::Key key) const
 {
   return !m_prev_keys[key] && m_keys[key];
 }
 
-bool InputHandler::was_key_released(Keyboard::Key key)
+bool InputHandler::was_key_released(Keyboard::Key key) const
 {
   return m_prev_keys[key] && !m_keys[key];
 }
 
-bool InputHandler::is_key_down(Keyboard::Key key)
+bool InputHandler::is_key_down(Keyboard::Key key) const
 {
   return m_keys[key];
 }
 
-bool InputHandler::was_mouse_button_pressed(Mouse::Button button)
+bool InputHandler::was_mouse_button_pressed(Mouse::Button button) const
 {
   return !m_prev_buttons[button] && m_buttons[button];
 }
 
-bool InputHandler::was_mouse_button_released(Mouse::Button button)
+bool InputHandler::was_mouse_button_released(Mouse::Button button) const
 {
   return m_prev_buttons[button] && !m_buttons[button];
 }
 
-bool InputHandler::is_mouse_button_down(Mouse::Button button)
+bool InputHandler::is_mouse_button_down(Mouse::Button button) const
 {
   return m_buttons[button];
 }
