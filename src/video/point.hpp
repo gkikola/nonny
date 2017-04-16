@@ -32,7 +32,9 @@ public:
   Point& operator=(const Point&) & = default;
   Point& operator=(Point&&) & = default;
 
+  int& x() { return m_x; }
   int x() const { return m_x; }
+  int& y() { return m_y; }
   int y() const { return m_y; }
 private:
   int m_x = 0;

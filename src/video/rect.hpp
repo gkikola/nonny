@@ -38,10 +38,14 @@ public:
   Rect& operator=(Rect&&) & = default;
 
   explicit operator bool() const { return m_width != 0 && m_height != 0; }
-  
+
+  int& x() { return m_x; }
   int x() const { return m_x; }
+  int& y() { return m_y; }
   int y() const { return m_y; }
+  unsigned& width() { return m_width; }
   unsigned width() const { return m_width; }
+  unsigned& height() { return m_height; }
   unsigned height() const { return m_height; }
 
   void move(int x, int y) { m_x = x; m_y = y; }

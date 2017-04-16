@@ -44,18 +44,15 @@ void Scrollbar::draw(Renderer& renderer, const Rect& region) const
   Rect thumb_pos = m_boundary;
   if (m_vertical) {
     unsigned target_ht = m_scroll_target->boundary().height();
-    thumb_pos.move(m_boundary.x(),
-                   m_boundary.y() + m_boundary.height()
-                   * m_scroll_pos.y() / target_ht);
-    thumb_pos.resize(m_boundary.width(),
-                     m_boundary.height() * m_boundary.height() / target_ht);
+    thumb_pos.y() = m_boundary.y() + m_boundary.height()
+      * m_scroll_pos.y() / target_ht;
+    thumb_pos.height() = m_boundary.height()
+      * m_boundary.height() / target_ht;
   } else {
     unsigned target_wd = m_scroll_target->boundary().width();
-    thumb_pos.move(m_boundary.x() + m_boundary.width()
-                   * m_scroll_pos.y() / target_wd,
-                   m_boundary.y());
-    thumb_pos.resize(m_boundary.width() * m_boundary.width() / target_wd,
-                     m_boundary.height());
+    thumb_pos.x() = m_boundary.x() + m_boundary.width()
+      * m_scroll_pos.y() / target_wd;
+    thumb_pos.width() = m_boundary.width() * m_boundary.width() / target_wd;
   }
 
   if (thumb_pos.width() > 2 * padding && thumb_pos.height() > 2 * padding) {
