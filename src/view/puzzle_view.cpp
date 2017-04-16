@@ -84,7 +84,7 @@ void PuzzleView::load(const std::string& filename)
 
 void PuzzleView::setup_panels()
 {
-  Rect puz_region(0, 0, m_width * 2, m_height * 2);
+  Rect puz_region(0, 0, 1600, 1200);
   auto ppanel = make_ui_panel<PuzzlePanel>(puz_region, m_puzzle);
 
   Rect win_region(0, 0, m_width, m_height);

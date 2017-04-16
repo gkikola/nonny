@@ -44,6 +44,15 @@ void ViewManager::draw(Renderer& renderer)
     m_views.back()->draw(renderer);
 }
 
+void ViewManager::resize(unsigned width, unsigned height)
+{
+  m_width = width;
+  m_height = height;
+
+  for (auto view : m_views)
+    view->resize(width, height);
+}
+
 void ViewManager::quit_game()
 {
   while (!m_views.empty())

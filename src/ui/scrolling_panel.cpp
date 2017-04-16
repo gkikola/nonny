@@ -30,6 +30,7 @@ void ScrollingPanel::attach_panel(std::shared_ptr<UIPanel> child)
   m_main_panel = child;
   m_hscroll = Scrollbar(child, false);
   m_vscroll = Scrollbar(child, true);
+  resize(m_boundary.width(), m_boundary.height());
 }
 
 void ScrollingPanel::update(unsigned ticks, InputHandler& input,
@@ -53,4 +54,28 @@ void ScrollingPanel::draw(Renderer& renderer, const Rect& region) const
 void ScrollingPanel::resize(unsigned width, unsigned height)
 {
   UIPanel::resize(width, height);
+
+  //figure out if we need scrollbars
+  bool need_horz = false;
+  bool need_vert = false;
+  if (m_main_panel) {
+    if (m_main_panel->boundary().width() > width)
+      need_horz = true;
+    if (m_main_panel->boundary().height() > height)
+      need_vert = true;
+  }
+
+  //move scrollbars into position
+  unsigned adjusted_width = m_boundary.width();
+  unsigned adjusted_height = m_boundary.height();
+  if (need_horz)
+    adjusted_height -= scrollbar_width;
+  if (need_vert)
+    adjusted_width -= scrollbar_width;
+  m_hscroll.move(m_boundary.x(),
+                 m_boundary.y() + m_boundary.height() - scrollbar_width);
+  m_hscroll.resize(adjusted_width, scrollbar_width);
+  m_vscroll.move(m_boundary.x() + m_boundary.width() - scrollbar_width,
+                 m_boundary.y());
+  m_vscroll.resize(scrollbar_width, adjusted_height);
 }

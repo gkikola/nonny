@@ -43,7 +43,7 @@ public:
   void update(unsigned ticks, InputHandler& input);
   void draw(Renderer& renderer);
 
-  inline void resize(unsigned width, unsigned height);
+  void resize(unsigned width, unsigned height);
   unsigned width() const { return m_width; }
   unsigned height() const { return m_height; }
   
@@ -53,17 +53,5 @@ private:
   unsigned m_width = 0;
   unsigned m_height = 0;
 };
-
-
-/* implementation */
-
-inline void ViewManager::resize(unsigned width, unsigned height)
-{
-  m_width = width;
-  m_height = height;
-
-  for (auto view : m_views)
-    view->resize(width, height);
-}
 
 #endif
