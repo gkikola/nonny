@@ -80,6 +80,17 @@ void SDLRenderer::set_draw_color(const Color& color)
                          255);
 }
 
+void SDLRenderer::set_clip_rect()
+{
+  SDL_RenderSetClipRect(m_renderer, NULL);
+}
+
+void SDLRenderer::set_clip_rect(const Rect& rect)
+{
+  SDL_Rect srect = rect_to_sdl_rect(rect);
+  SDL_RenderSetClipRect(m_renderer, &srect);
+}
+
 void SDLRenderer::set_viewport()
 {
   SDL_RenderSetViewport(m_renderer, NULL);

@@ -31,19 +31,21 @@ public:
   SDLRenderer(Window& window);
   ~SDLRenderer();
 
-  void present() { SDL_RenderPresent(m_renderer); }
+  void present() override { SDL_RenderPresent(m_renderer); }
   
-  void set_draw_color(const Color& color);
+  void set_draw_color(const Color& color) override;
 
-  void clear() { SDL_RenderClear(m_renderer); }
-  void draw_point(const Point& point);
-  void draw_line(const Point& point1, const Point& point2);
-  void draw_rect(const Rect& rect);
-  void draw_dotted_rect(const Rect& rect);
-  void fill_rect(const Rect& rect);
+  void clear() override { SDL_RenderClear(m_renderer); }
+  void draw_point(const Point& point) override;
+  void draw_line(const Point& point1, const Point& point2) override;
+  void draw_rect(const Rect& rect) override;
+  void draw_dotted_rect(const Rect& rect) override;
+  void fill_rect(const Rect& rect) override;
 
-  void set_viewport();
-  void set_viewport(const Rect& rect);
+  void set_clip_rect() override;
+  void set_clip_rect(const Rect& rect) override;
+  void set_viewport() override;
+  void set_viewport(const Rect& rect) override;
 
 private:
   SDL_Renderer* m_renderer;
