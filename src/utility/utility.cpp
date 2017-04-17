@@ -23,6 +23,38 @@
 #include <algorithm>
 #include <sstream>
 #include <stdexcept>
+#include "config.h"
+
+#ifdef NONNY_INPUT_SDL
+#include "sdl/sdl_paths.hpp"
+#endif
+
+std::string base_path()
+{
+#ifdef NONNY_INPUT_SDL
+  return sdl_base_path();
+#else
+  throw std::runtime_error("base path not retrievable");
+#endif
+}
+
+std::string save_path()
+{
+#ifdef NONNY_INPUT_SDL
+  return sdl_base_path();
+#else
+  throw std::runtime_error("save path not retrievable");
+#endif
+}
+
+char filesystem_separator()
+{
+#ifdef NONNY_INPUT_SDL
+  return sdl_filesystem_separator();
+#else
+  return '/';
+#endif
+}
 
 char escape(char c)
 {

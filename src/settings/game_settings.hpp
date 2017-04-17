@@ -18,14 +18,24 @@
  */
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
-#ifndef NONNY_CONFIG_H
-#define NONNY_CONFIG_H
+#ifndef NONNY_GAME_SETTINGS_HPP
+#define NONNY_GAME_SETTINGS_HPP
 
-#define NONNY_TITLE "Nonny"
-#define NONNY_VERSION "${NONNY_VERSION}"
-#define NONNY_DATADIR "${CMAKE_INSTALL_PREFIX}${NONNY_DATADIR_SUFFIX}"
+#include <string>
 
-#define NONNY_VIDEO_SDL
-#define NONNY_INPUT_SDL
+class GameSettings {
+public:
+  GameSettings();
+  
+  const std::string& data_dir() const { return m_data_dir; }
+  const std::string& save_dir() const { return m_save_dir; }
+  char filesystem_separator() const { return m_separator; }
+private:
+  void find_directories();
+  bool has_config(const std::string& path);
+  std::string m_data_dir;
+  std::string m_save_dir;
+  char m_separator = '/';
+};
 
 #endif

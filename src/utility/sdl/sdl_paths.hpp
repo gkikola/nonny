@@ -18,14 +18,13 @@
  */
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
-#ifndef NONNY_CONFIG_H
-#define NONNY_CONFIG_H
+#ifndef NONNY_SDL_PATHS_HPP
+#define NONNY_SDL_PATHS_HPP
 
-#define NONNY_TITLE "Nonny"
-#define NONNY_VERSION "${NONNY_VERSION}"
-#define NONNY_DATADIR "${CMAKE_INSTALL_PREFIX}${NONNY_DATADIR_SUFFIX}"
+#include <string>
 
-#define NONNY_VIDEO_SDL
-#define NONNY_INPUT_SDL
+std::string sdl_base_path();
+std::string sdl_save_path();
+char sdl_filesystem_separator();
 
 #endif

@@ -8,6 +8,12 @@ set (
   "${NONNY_VERSION_MAJOR}.${NONNY_VERSION_MINOR}"
   )
 
+if (WIN32)
+  set (NONNY_DATADIR_SUFFIX "/nonny/")
+else ()
+  set (NONNY_DATADIR_SUFFIX "/share/nonny/")
+endif ()
+
 configure_file (
   "${PROJECT_SOURCE_DIR}/config.h.in"
   "${PROJECT_BINARY_DIR}/config.h"
@@ -75,8 +81,13 @@ target_link_libraries (
   ${SDL2TTF_LIBRARIES}
   )
 
-install (TARGETS nonny DESTINATION bin)
-install (DIRECTORY data/ DESTINATION share/nonny)
+if (WIN32)
+  install (TARGETS nonny DESTINATION nonny)
+  install (DIRECTORY data/ DESTINATION nonny)
+else ()
+  install (TARGETS nonny DESTINATION bin)
+  install (DIRECTORY data/ DESTINATION share/nonny)
+endif ()
 
 if (CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
   set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic")

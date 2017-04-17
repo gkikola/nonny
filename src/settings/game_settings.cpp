@@ -18,14 +18,41 @@
  */
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
-#ifndef NONNY_CONFIG_H
-#define NONNY_CONFIG_H
+#include "settings/game_settings.hpp"
 
-#define NONNY_TITLE "Nonny"
-#define NONNY_VERSION "${NONNY_VERSION}"
-#define NONNY_DATADIR "${CMAKE_INSTALL_PREFIX}${NONNY_DATADIR_SUFFIX}"
+#include <fstream>
+#include "config.h"
+#include "utility/utility.hpp"
 
-#define NONNY_VIDEO_SDL
-#define NONNY_INPUT_SDL
+GameSettings::GameSettings()
+{
+  find_directories();
+}
 
-#endif
+void GameSettings::find_directories()
+{
+  m_separator = filesystem_separator();
+  m_save_dir = save_path();
+
+  std::string base = base_path();
+
+  //find data directory
+  //look in current directory first
+  m_data_dir = base;
+  if (has_config(m_data_dir))
+    return;
+
+  //could we be inside a build directory?
+  m_data_dir = base + "../data" + m_separator;
+  if (has_config(m_data_dir))
+    return;
+
+  //none of the above, use installed directory
+  m_data_dir = NONNY_DATADIR;
+}
+
+bool GameSettings::has_config(const std::string& path)
+{
+  std::ifstream file(path + "nonny.cfg");
+  return file.is_open();
+}

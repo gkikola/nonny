@@ -20,10 +20,12 @@
 
 #include "main/game.hpp"
 
+#include <iostream>
 #include "config.h"
 #include "color/color.hpp"
 #include "event/event_handler.hpp"
 #include "input/input_handler.hpp"
+#include "settings/game_settings.hpp"
 #include "view/puzzle_view.hpp"
 
 Game::Game(int argc, char* argv[])
@@ -45,6 +47,7 @@ Game::Game(int argc, char* argv[])
 
 void Game::run()
 {
+  GameSettings settings;
   std::unique_ptr<InputHandler> input = InputHandler::create();
   std::unique_ptr<EventHandler> event = EventHandler::create();
 

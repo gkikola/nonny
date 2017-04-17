@@ -18,14 +18,28 @@
  */
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
-#ifndef NONNY_CONFIG_H
-#define NONNY_CONFIG_H
+#include "utility/sdl/sdl_paths.hpp"
 
-#define NONNY_TITLE "Nonny"
-#define NONNY_VERSION "${NONNY_VERSION}"
-#define NONNY_DATADIR "${CMAKE_INSTALL_PREFIX}${NONNY_DATADIR_SUFFIX}"
+#include <SDL2/SDL.h>
 
-#define NONNY_VIDEO_SDL
-#define NONNY_INPUT_SDL
+std::string sdl_base_path()
+{
+  char* cstr = SDL_GetBasePath();
+  std::string result = cstr;
+  SDL_free(cstr);
+  return result;
+}
 
-#endif
+std::string sdl_save_path()
+{
+  char* cstr = SDL_GetPrefPath(".", "nonny");
+  std::string result = cstr;
+  SDL_free(cstr);
+  return result;
+}
+
+char sdl_filesystem_separator()
+{
+  std::string path = sdl_base_path(); //guaranteed to end with separator
+  return path[path.size() - 1];
+}
