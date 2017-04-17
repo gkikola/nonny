@@ -20,6 +20,13 @@
 
 #include "input/input_handler.hpp"
 
+#include <stdexcept>
+#include "config.h"
+
+#ifdef NONNY_INPUT_SDL
+#include "input/sdl/sdl_input_handler.hpp"
+#endif
+
 InputHandler::InputHandler()
   : m_mouse(0, 0),
     m_prev_mouse(0, 0),
@@ -28,6 +35,15 @@ InputHandler::InputHandler()
     m_buttons(Mouse::num_buttons, false),
     m_prev_buttons(Mouse::num_buttons, false)
 {
+}
+
+std::unique_ptr<InputHandler> InputHandler::create()
+{
+#ifdef NONNY_INPUT_SDL
+  return std::make_unique<SDLInputHandler>();
+#else
+  throw std::runtime_error("input handler not implemented");
+#endif
 }
 
 void InputHandler::update(unsigned ticks)

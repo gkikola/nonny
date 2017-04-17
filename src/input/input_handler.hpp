@@ -21,6 +21,7 @@
 #ifndef NONNY_INPUT_HANDLER_HPP
 #define NONNY_INPUT_HANDLER_HPP
 
+#include <memory>
 #include <vector>
 #include "input/key.hpp"
 #include "video/point.hpp"
@@ -30,24 +31,32 @@ public:
   InputHandler();
   virtual ~InputHandler() { }
 
-  void update(unsigned ticks);
+  InputHandler(const InputHandler&) = delete;
+  InputHandler& operator=(const InputHandler&) = delete;
+
+  static std::unique_ptr<InputHandler> create();
+
+  virtual void update(unsigned ticks);
+
+  virtual void capture_mouse() = 0;
+  virtual void release_mouse() = 0;
   
-  void process_key_event(Keyboard::Key key, bool down);
-  void process_mouse_button_event(Mouse::Button button, bool down);
-  void process_mouse_wheel_event(int vert, int horiz);
-  void process_mouse_move_event(int x, int y);
+  virtual void process_key_event(Keyboard::Key key, bool down);
+  virtual void process_mouse_button_event(Mouse::Button button, bool down);
+  virtual void process_mouse_wheel_event(int vert, int horiz);
+  virtual void process_mouse_move_event(int x, int y);
 
-  bool was_key_pressed(Keyboard::Key key) const;
-  bool was_key_released(Keyboard::Key key) const;
-  bool is_key_down(Keyboard::Key key) const;
+  virtual bool was_key_pressed(Keyboard::Key key) const;
+  virtual bool was_key_released(Keyboard::Key key) const;
+  virtual bool is_key_down(Keyboard::Key key) const;
 
-  bool was_mouse_button_pressed(Mouse::Button button) const;
-  bool was_mouse_button_released(Mouse::Button button) const;
-  bool is_mouse_button_down(Mouse::Button button) const;
+  virtual bool was_mouse_button_pressed(Mouse::Button button) const;
+  virtual bool was_mouse_button_released(Mouse::Button button) const;
+  virtual bool is_mouse_button_down(Mouse::Button button) const;
 
-  Point mouse_position() const { return m_mouse; }
-  int rel_mouse_x() const { return m_mouse.x() - m_prev_mouse.x(); }
-  int rel_mouse_y() const { return m_mouse.y() - m_prev_mouse.y(); }
+  virtual Point mouse_position() const { return m_mouse; }
+  virtual int rel_mouse_x() const { return m_mouse.x() - m_prev_mouse.x(); }
+  virtual int rel_mouse_y() const { return m_mouse.y() - m_prev_mouse.y(); }
 
 private:
   Point m_mouse;

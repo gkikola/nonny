@@ -45,20 +45,20 @@ Game::Game(int argc, char* argv[])
 
 void Game::run()
 {
-  InputHandler input;
+  std::unique_ptr<InputHandler> input = InputHandler::create();
   std::unique_ptr<EventHandler> event = EventHandler::create();
 
   bool exit = false;
   while (!exit) {
-    input.update(0);
+    input->update(0);
 
-    event->process(input, *m_view_mgr);
+    event->process(*input, *m_view_mgr);
     exit = m_view_mgr->empty();
 
     m_renderer->set_draw_color(default_colors::white);
     m_renderer->clear();
 
-    m_view_mgr->update(0, input);
+    m_view_mgr->update(0, *input);
     m_view_mgr->draw(*m_renderer);
     
     m_renderer->present();

@@ -32,6 +32,7 @@ add_executable (
   src/color/color_palette.cpp
   src/event/sdl/sdl_event_handler.cpp
   src/event/event_handler.cpp
+  src/input/sdl/sdl_input_handler.cpp
   src/input/input_handler.cpp
   src/input/key.cpp
   src/main/game.cpp
