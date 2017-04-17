@@ -60,8 +60,8 @@ void Scrollbar::update(unsigned ticks, InputHandler& input,
         } else if (m_boundary.contains_point(cursor)) {
           m_dragging = true;
           m_drag_pos = m_vertical
-            ? (m_thumb_pos.y() + m_thumb_pos.height() / 2)
-            : (m_thumb_pos.x() + m_thumb_pos.width() / 2);
+            ? (m_thumb_pos.height() / 2)
+            : (m_thumb_pos.width() / 2);
         }
 
         if (m_dragging)
