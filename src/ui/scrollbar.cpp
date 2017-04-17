@@ -62,6 +62,10 @@ void Scrollbar::update(unsigned ticks, InputHandler& input,
           m_drag_pos = m_vertical
             ? (m_thumb_pos.height() / 2)
             : (m_thumb_pos.width() / 2);
+          do_thumb_drag(input);
+          m_drag_pos = m_vertical
+            ? (cursor.y() - m_thumb_pos.y())
+            : (cursor.x() - m_thumb_pos.x());
         }
 
         if (m_dragging)
