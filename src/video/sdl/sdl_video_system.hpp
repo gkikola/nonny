@@ -38,7 +38,6 @@ public:
 
   std::unique_ptr<Window> new_window(const WindowSettings& ws) const override;
   std::unique_ptr<Renderer> new_renderer(Window& window) const override;
-private:
 };
 
 #endif
