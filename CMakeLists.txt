@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 2.8)
+cmake_minimum_required (VERSION 3.1)
 project (Nonny)
 
 set (NONNY_VERSION_MAJOR 0)
@@ -12,6 +12,10 @@ configure_file (
   "${PROJECT_SOURCE_DIR}/config.h.in"
   "${PROJECT_BINARY_DIR}/config.h"
   )
+
+set (CMAKE_CXX_STANDARD 14)
+set (CMAKE_CXX_STANDARD_REQUIRED ON)
+set (CMAKE_CXX_EXTENSIONS OFF)
 
 include (FindPkgConfig)
 pkg_search_module (SDL2 REQUIRED sdl2>=2.0.1)
@@ -42,12 +46,14 @@ add_executable (
   src/puzzle/puzzle_clue.cpp
   src/puzzle/puzzle_grid.cpp
   src/puzzle/puzzle_io.cpp
+  src/settings/game_settings.cpp
   src/ui/panel_collection.cpp
   src/ui/puzzle_panel.cpp
   src/ui/scrollbar.cpp
   src/ui/scrolling_panel.cpp
   src/ui/ui_panel.cpp
   src/utility/sdl/sdl_error.cpp
+  src/utility/sdl/sdl_paths.cpp
   src/utility/utility.cpp
   src/video/sdl/sdl_renderer.cpp
   src/video/sdl/sdl_video_system.cpp
