@@ -39,18 +39,31 @@ public:
   void draw(Renderer& renderer, const Rect& region) const override;
 
 private:
-  int thumb_position() const;
-  int thumb_length() const;
-  Rect thumb_bounds() const;
-  void do_thumb_drag(const InputHandler& input);
+  int scroll_position() const;
+  inline unsigned target_width() const;
+  inline unsigned target_height() const;
+  void update_thumb_position();
+  void do_thumb_drag(InputHandler& input);
   
   UIPanelPtr m_scroll_target = nullptr;
   bool m_vertical = true;
   
-  Point m_scroll_pos;
   bool m_dragging = false;
   int m_drag_pos = 0;
   Rect m_thumb_pos;
 };
+
+
+/* implementation */
+
+inline unsigned Scrollbar::target_width() const
+{
+  return m_scroll_target->boundary().width();
+}
+
+inline unsigned Scrollbar::target_height() const
+{
+  return m_scroll_target->boundary().height();
+}
 
 #endif

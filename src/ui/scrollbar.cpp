@@ -36,7 +36,7 @@ void Scrollbar::update(unsigned ticks, InputHandler& input,
                        const Rect& active_region)
 {
   Point cursor = input.mouse_position();
-  m_thumb_pos = thumb_bounds();
+  update_thumb_position();
 
   if (m_dragging) {
     do_thumb_drag(input);
@@ -88,66 +88,51 @@ void Scrollbar::draw(Renderer& renderer, const Rect& region) const
   }
 }
 
-int Scrollbar::thumb_position() const
+int Scrollbar::scroll_position() const
 {
+  if (m_vertical)
+    return m_boundary.y() - m_scroll_target->boundary().y();
+  else
+    return m_boundary.x() - m_scroll_target->boundary().x();
+}
+
+void Scrollbar::update_thumb_position()
+{
+  m_thumb_pos = m_boundary;
   if (m_vertical) {
-    unsigned target_ht = m_scroll_target->boundary().height();
-    return m_boundary.y() + m_boundary.height()
-      * m_scroll_pos.y() / target_ht;
+    m_thumb_pos.y()
+      = scroll_position() * m_boundary.height() / target_height();
+    m_thumb_pos.height()
+      = m_boundary.height() * m_boundary.height() / target_height();
   } else {
-    unsigned target_wd = m_scroll_target->boundary().width();
-    return m_boundary.x() + m_boundary.width()
-      * m_scroll_pos.x() / target_wd;
+    m_thumb_pos.x()
+      = scroll_position() * m_boundary.width() / target_width();
+    m_thumb_pos.width()
+      = m_boundary.width() * m_boundary.width() / target_width();
   }
 }
 
-int Scrollbar::thumb_length() const
-{
-  if (m_vertical) {
-    return m_boundary.height() * m_boundary.height()
-      / m_scroll_target->boundary().height();
-  } else {
-    return m_boundary.width() * m_boundary.width()
-      / m_scroll_target->boundary().width();
-  }
-}
-
-Rect Scrollbar::thumb_bounds() const
-{
-  Rect result = m_boundary;
-  if (m_vertical) {
-    result.y() = thumb_position();
-    result.height() = thumb_length();
-  } else {
-    result.x() = thumb_position();
-    result.width() = thumb_length();
-  }
-  return result;
-}
-
-void Scrollbar::do_thumb_drag(const InputHandler& input)
+void Scrollbar::do_thumb_drag(InputHandler& input)
 {
   if (m_vertical) {
     m_thumb_pos.y() = input.mouse_position().y() - m_drag_pos;
-    m_thumb_pos.y() = std::max(m_boundary.y(), m_thumb_pos.y());
-    m_thumb_pos.y() = std::min(m_boundary.y()
+    m_thumb_pos.y() = std::max(m_thumb_pos.y(), m_boundary.y());
+    m_thumb_pos.y() = std::min(m_thumb_pos.y(), m_boundary.y()
                                + static_cast<int>(m_boundary.height())
-                               - static_cast<int>(m_thumb_pos.height()),
-                               m_thumb_pos.y());
-    int prev_pos = m_scroll_pos.y();
-    m_scroll_pos.y() = (m_thumb_pos.y() - m_boundary.y())
-      * m_scroll_target->boundary().height() / m_boundary.height();
-    m_scroll_target->scroll(0, prev_pos - m_scroll_pos.y());
+                               - static_cast<int>(m_thumb_pos.height()));
+
+    m_scroll_target->move(m_scroll_target->boundary().x(),
+                          m_boundary.y() - target_height()
+                          * m_thumb_pos.y() / m_boundary.height());
   } else {
     m_thumb_pos.x() = input.mouse_position().x() - m_drag_pos;
-    m_thumb_pos.x() = std::max(m_boundary.x(), m_thumb_pos.x());
-    m_thumb_pos.x() = std::min(m_boundary.x()
+    m_thumb_pos.x() = std::max(m_thumb_pos.x(), m_boundary.x());
+    m_thumb_pos.x() = std::min(m_thumb_pos.x(), m_boundary.x()
                                + static_cast<int>(m_boundary.width())
-                               - static_cast<int>(m_thumb_pos.width()),
-                               m_thumb_pos.x());
-    int prev_pos = m_scroll_pos.x();
-    m_scroll_pos.x() = (m_thumb_pos.x() - m_boundary.x())
-      * m_scroll_target->boundary().width() / m_boundary.width();
-    m_scroll_target->scroll(prev_pos - m_scroll_pos.x(), 0);
+                               - static_cast<int>(m_thumb_pos.width()));
+
+    m_scroll_target->move(m_boundary.x() - target_width()
+                          * m_thumb_pos.x() / m_boundary.width(),
+                          m_scroll_target->boundary().y());
   }
 }
