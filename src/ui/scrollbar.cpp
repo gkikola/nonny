@@ -42,8 +42,10 @@ void Scrollbar::update(unsigned ticks, InputHandler& input,
     do_thumb_drag(input);
     
     if (input.was_mouse_button_released(Mouse::left)
-        || input.was_mouse_button_released(Mouse::right))
+        || input.was_mouse_button_released(Mouse::right)) {
       m_dragging = false;
+      input.release_mouse();
+    }
   } else {
     //check to see if the user is attempting to drag the scroll thumb
     if (active_region.contains_point(cursor)) {
@@ -61,6 +63,9 @@ void Scrollbar::update(unsigned ticks, InputHandler& input,
             ? (m_thumb_pos.y() + m_thumb_pos.height() / 2)
             : (m_thumb_pos.x() + m_thumb_pos.width() / 2);
         }
+
+        if (m_dragging)
+          input.capture_mouse();
       }
     }
   }
