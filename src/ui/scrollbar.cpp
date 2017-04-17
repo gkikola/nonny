@@ -31,7 +31,7 @@ const Color background(196, 196, 196);
 const Color thumb(128, 128, 128);
 const Color thumb_hover(88, 88, 88);
 const Color thumb_drag(42, 118, 198);
-#include <iostream>
+
 void Scrollbar::update(unsigned ticks, InputHandler& input,
                        const Rect& active_region)
 {
