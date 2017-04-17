@@ -51,15 +51,14 @@ void PuzzlePanel::draw_grid(Renderer& renderer) const
 {
   unsigned width = m_puzzle->width();
   unsigned height = m_puzzle->height();
-  Point grid_pos(0, 0);
   for (unsigned x = 0; x <= width; ++x) {
-    Point start(grid_pos.x() + x * (m_cell_size + 1), grid_pos.y());
-    Point end(start.x(), grid_pos.y() + height * (m_cell_size + 1));
+    Point start(m_boundary.x() + x * (m_cell_size + 1), m_boundary.y());
+    Point end(start.x(), m_boundary.y() + height * (m_cell_size + 1));
     renderer.draw_line(start, end);
   }
   for (unsigned y = 0; y <= height; ++y) {
-    Point start(grid_pos.x(), grid_pos.y() + y * (m_cell_size + 1));
-    Point end(grid_pos.x() + width * (m_cell_size + 1), start.y());
+    Point start(m_boundary.x(), m_boundary.y() + y * (m_cell_size + 1));
+    Point end(m_boundary.x() + width * (m_cell_size + 1), start.y());
     renderer.draw_line(start, end);
   }
 }

@@ -39,9 +39,18 @@ public:
   void draw(Renderer& renderer, const Rect& region) const override;
 
 private:
+  int thumb_position() const;
+  int thumb_length() const;
+  Rect thumb_bounds() const;
+  void do_thumb_drag(const InputHandler& input);
+  
   UIPanelPtr m_scroll_target = nullptr;
+  bool m_vertical = true;
+  
   Point m_scroll_pos;
-  bool m_vertical;
+  bool m_dragging = false;
+  int m_drag_pos = 0;
+  Rect m_thumb_pos;
 };
 
 #endif
