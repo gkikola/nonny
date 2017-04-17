@@ -55,11 +55,9 @@ private:
   
   std::vector<bool> m_keys;
   std::vector<bool> m_prev_keys;
-  bool m_need_key_update = false;
 
   std::vector<bool> m_buttons;
   std::vector<bool> m_prev_buttons;
-  bool m_need_button_update = false;
 };
 
 #endif

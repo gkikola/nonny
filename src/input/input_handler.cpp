@@ -32,31 +32,18 @@ InputHandler::InputHandler()
 
 void InputHandler::update(unsigned ticks)
 {
-  if (m_need_key_update) {
-    m_need_key_update = false;
-    m_prev_keys.clear();
-    m_prev_keys.insert(m_prev_keys.end(), Keyboard::num_keys, false);
-    m_keys.swap(m_prev_keys);
-  }
-
-  if (m_need_button_update) {
-    m_need_button_update = false;
-    m_prev_buttons.clear();
-    m_prev_buttons.insert(m_prev_buttons.end(), Mouse::num_buttons, false);
-    m_buttons.swap(m_prev_buttons);
-  }
+  m_prev_keys = m_keys;
+  m_prev_buttons = m_buttons;
 }
 
 void InputHandler::process_key_event(Keyboard::Key key, bool down)
 {
   m_keys[key] = down;
-  m_need_key_update = true;
 }
 
 void InputHandler::process_mouse_button_event(Mouse::Button button, bool down)
 {
   m_buttons[button] = down;
-  m_need_button_update = true;
 }
 
 void InputHandler::process_mouse_wheel_event(int vert, int horiz)
