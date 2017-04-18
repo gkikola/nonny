@@ -21,6 +21,8 @@
 #ifndef NONNY_FONT_HPP
 #define NONNY_FONT_HPP
 
+#include <string>
+
 class Font {
 public:
   Font() { }
@@ -29,6 +31,8 @@ public:
   Font(const Font&) = delete;
   Font& operator=(const Font&) = delete;
 
+  virtual void text_size(const std::string& text,
+                         unsigned* width, unsigned* height) const = 0;
   virtual void resize(unsigned pt_size) = 0;
 };
 

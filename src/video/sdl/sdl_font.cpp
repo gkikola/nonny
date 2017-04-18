@@ -32,6 +32,16 @@ SDLFont::~SDLFont()
     TTF_CloseFont(m_font);
 }
 
+void SDLFont::text_size(const std::string& text,
+                        unsigned* width, unsigned* height) const
+{
+  int wd, ht;
+  if (TTF_SizeUTF8(m_font, text.c_str(), &wd, &ht)) {
+    *width = wd;
+    *height = ht;
+  }
+}
+
 void SDLFont::resize(unsigned pt_size)
 {
   if (m_font)

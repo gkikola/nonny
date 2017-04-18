@@ -30,6 +30,8 @@ public:
   SDLFont(const std::string& filename, unsigned pt_size = 12);
   ~SDLFont();
 
+  void text_size(const std::string& text,
+                 unsigned* width, unsigned* height) const override;
   void resize(unsigned pt_size) override;
 
   TTF_Font* get_sdl_handle() const { return m_font; }
