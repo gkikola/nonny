@@ -47,6 +47,8 @@ public:
   void set_viewport() override;
   void set_viewport(const Rect& rect) override;
 
+  SDL_Renderer* get_sdl_handle() { return m_renderer; }
+
 private:
   SDL_Renderer* m_renderer;
 };

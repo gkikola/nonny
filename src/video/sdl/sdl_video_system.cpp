@@ -24,10 +24,12 @@
 #include <stdexcept>
 #include <string>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 #include "utility/sdl/sdl_error.hpp"
 #include "video/sdl/sdl_font.hpp"
 #include "video/sdl/sdl_renderer.hpp"
+#include "video/sdl/sdl_texture.hpp"
 #include "video/sdl/sdl_window.hpp"
 
 SDLVideoSystem::SDLVideoSystem()
@@ -35,7 +37,14 @@ SDLVideoSystem::SDLVideoSystem()
   if (SDL_Init(SDL_INIT_VIDEO) < 0)
     throw SDLError("SDL_Init");
 
+  int img_flags = IMG_INIT_PNG | IMG_INIT_TIF;
+  if ((IMG_Init(img_flags) & img_flags) != img_flags) {
+    SDL_Quit();
+    throw IMGError("IMG_Init");
+  }
+  
   if (TTF_Init() == -1) {
+    IMG_Quit();
     SDL_Quit();
     throw TTFError("TTF_Init");
   }
@@ -44,6 +53,7 @@ SDLVideoSystem::SDLVideoSystem()
 SDLVideoSystem::~SDLVideoSystem()
 {
   TTF_Quit();
+  IMG_Quit();
   SDL_Quit();
 }
 
@@ -63,4 +73,22 @@ std::unique_ptr<Font>
 SDLVideoSystem::new_font(const std::string& filename, unsigned pt_size) const
 {
   return std::make_unique<SDLFont>(filename, pt_size);
+}
+
+std::unique_ptr<Texture>
+SDLVideoSystem::load_image(Renderer& renderer,
+                           const std::string& filename) const
+{
+  SDLRenderer* sdl_renderer = dynamic_cast<SDLRenderer*>(&renderer);
+  if (!sdl_renderer)
+    throw std::runtime_error("SDLVideoSystem::load_image: "
+                             "given Renderer is not an SDLRenderer");
+
+  SDL_Surface* surface = IMG_Load(filename.c_str());
+  std::unique_ptr<Texture> result
+    = std::make_unique<SDLTexture>(sdl_renderer->get_sdl_handle(),
+                                   surface);
+  SDL_FreeSurface(surface);
+
+  return result;
 }

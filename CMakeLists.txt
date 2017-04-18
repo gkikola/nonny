@@ -63,12 +63,14 @@ add_executable (
   src/utility/utility.cpp
   src/video/sdl/sdl_font.cpp
   src/video/sdl/sdl_renderer.cpp
+  src/video/sdl/sdl_texture.cpp
   src/video/sdl/sdl_video_system.cpp
   src/video/sdl/sdl_window.cpp
   src/video/font.cpp
   src/video/point.cpp
   src/video/rect.cpp
   src/video/renderer.cpp
+  src/video/texture.cpp
   src/video/video_system.cpp
   src/video/window.cpp
   src/view/view.cpp

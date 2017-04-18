@@ -18,31 +18,24 @@
  */
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
-#ifndef NONNY_SDL_ERROR_HPP
-#define NONNY_SDL_ERROR_HPP
+#include "video/sdl/sdl_texture.hpp"
 
-#include <stdexcept>
-#include <string>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
+SDLTexture::SDLTexture(SDL_Renderer* renderer,
+                       unsigned width, unsigned height)
+{
+  m_texture = SDL_CreateTexture(renderer,
+                                SDL_PIXELFORMAT_RGBA8888,
+                                SDL_TEXTUREACCESS_TARGET,
+                                width, height);
+}
 
-class SDLError : public std::runtime_error {
-public:
-  SDLError(const std::string& what_arg)
-    : std::runtime_error(what_arg + ": " + SDL_GetError()) { }
-};
+SDLTexture::SDLTexture(SDL_Renderer* renderer, SDL_Surface* surface)
+{
+  m_texture = SDL_CreateTextureFromSurface(renderer, surface);
+}
 
-class IMGError : public std::runtime_error {
-public:
-  IMGError(const std::string& what_arg)
-    : std::runtime_error(what_arg + ": " + IMG_GetError()) { }
-};
-
-class TTFError : public std::runtime_error {
-public:
-  TTFError(const std::string& what_arg)
-    : std::runtime_error(what_arg + ": " + TTF_GetError()) { }
-};
-
-#endif
+SDLTexture::~SDLTexture()
+{
+  if (m_texture)
+    SDL_DestroyTexture(m_texture);
+}

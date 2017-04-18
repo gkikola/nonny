@@ -18,31 +18,24 @@
  */
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
-#ifndef NONNY_SDL_ERROR_HPP
-#define NONNY_SDL_ERROR_HPP
+#ifndef NONNY_SDL_TEXTURE_HPP
+#define NONNY_SDL_TEXTURE_HPP
 
-#include <stdexcept>
-#include <string>
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
+#include "video/texture.hpp"
 
-class SDLError : public std::runtime_error {
+class SDLTexture : public Texture {
 public:
-  SDLError(const std::string& what_arg)
-    : std::runtime_error(what_arg + ": " + SDL_GetError()) { }
-};
+  SDLTexture() { } //null texture
+  SDLTexture(SDL_Renderer* renderer, unsigned width, unsigned height);
+  SDLTexture(SDL_Renderer* renderer, SDL_Surface* surface);
 
-class IMGError : public std::runtime_error {
-public:
-  IMGError(const std::string& what_arg)
-    : std::runtime_error(what_arg + ": " + IMG_GetError()) { }
-};
-
-class TTFError : public std::runtime_error {
-public:
-  TTFError(const std::string& what_arg)
-    : std::runtime_error(what_arg + ": " + TTF_GetError()) { }
+  SDLTexture(const SDLTexture&) = delete;
+  SDLTexture& operator=(const SDLTexture&) = delete;
+  
+  ~SDLTexture();
+private:
+  SDL_Texture* m_texture = nullptr;
 };
 
 #endif

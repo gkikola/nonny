@@ -24,10 +24,11 @@
 #include <memory>
 #include <string>
 
+class Font;
+class Renderer;
+class Texture;
 class Window;
 struct WindowSettings;
-class Renderer;
-class Font;
 
 /* Manages video-related resources */
 class VideoSystem {
@@ -40,10 +41,15 @@ public:
   
   static std::unique_ptr<VideoSystem> create();
 
-  virtual std::unique_ptr<Window> new_window(const WindowSettings&) const = 0;
-  virtual std::unique_ptr<Renderer> new_renderer(Window&) const = 0;
+  virtual std::unique_ptr<Window>
+  new_window(const WindowSettings& ws) const = 0;
+  
+  virtual std::unique_ptr<Renderer> new_renderer(Window& window) const = 0;
   virtual std::unique_ptr<Font> new_font(const std::string& filename,
-                                         unsigned pt_size = 12) const = 0;
+                                         unsigned pt_size) const = 0;
+
+  virtual std::unique_ptr<Texture>
+  load_image(Renderer& renderer, const std::string& filename) const = 0;
 private:
 };
 
