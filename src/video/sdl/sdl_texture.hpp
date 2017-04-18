@@ -32,10 +32,16 @@ public:
 
   SDLTexture(const SDLTexture&) = delete;
   SDLTexture& operator=(const SDLTexture&) = delete;
+
+  unsigned width() const override { return m_width; }
+  unsigned height() const override { return m_height; }
+  
+  SDL_Texture* get_sdl_handle() const { return m_texture; }
   
   ~SDLTexture();
 private:
   SDL_Texture* m_texture = nullptr;
+  unsigned m_width = 0, m_height = 0;
 };
 
 #endif

@@ -27,11 +27,20 @@ SDLTexture::SDLTexture(SDL_Renderer* renderer,
                                 SDL_PIXELFORMAT_RGBA8888,
                                 SDL_TEXTUREACCESS_TARGET,
                                 width, height);
+  m_width = width;
+  m_height = height;
 }
 
 SDLTexture::SDLTexture(SDL_Renderer* renderer, SDL_Surface* surface)
 {
   m_texture = SDL_CreateTextureFromSurface(renderer, surface);
+
+  Uint32 fmt;
+  int access, wd, ht;
+  if (SDL_QueryTexture(m_texture, &fmt, &access, &wd, &ht) == 0) {
+    m_width = wd;
+    m_height = ht;
+  }
 }
 
 SDLTexture::~SDLTexture()

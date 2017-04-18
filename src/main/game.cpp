@@ -26,6 +26,7 @@
 #include "event/event_handler.hpp"
 #include "input/input_handler.hpp"
 #include "settings/game_settings.hpp"
+#include "video/font.hpp"
 #include "view/puzzle_view.hpp"
 
 Game::Game(int argc, char* argv[])

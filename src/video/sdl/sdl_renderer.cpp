@@ -22,7 +22,10 @@
 
 #include "utility/sdl/sdl_error.hpp"
 #include "utility/utility.hpp"
+#include "video/sdl/sdl_font.hpp"
+#include "video/sdl/sdl_texture.hpp"
 #include "video/sdl/sdl_window.hpp"
+#include "video/point.hpp"
 #include "video/rect.hpp"
 
 SDL_Rect rect_to_sdl_rect(const Rect& r)
@@ -32,6 +35,7 @@ SDL_Rect rect_to_sdl_rect(const Rect& r)
 }
 
 SDLRenderer::SDLRenderer(Window& window)
+  : m_draw_color{0, 0, 0, 255}
 {
   SDLWindow& swin = dynamic_cast<SDLWindow&>(window);
   m_renderer = SDL_CreateRenderer(swin.get_sdl_handle(), -1,
@@ -65,6 +69,7 @@ void SDLRenderer::draw_rect(const Rect& rect)
 
 void SDLRenderer::draw_dotted_rect(const Rect& rect)
 {
+  throw std::runtime_error("SDLRenderer::draw_dotted_rect: not implemented");
 }
 
 void SDLRenderer::fill_rect(const Rect& rect)
@@ -75,9 +80,47 @@ void SDLRenderer::fill_rect(const Rect& rect)
 
 void SDLRenderer::set_draw_color(const Color& color)
 {
+  m_draw_color.r = color.red();
+  m_draw_color.g = color.green();
+  m_draw_color.b = color.blue();
+  
   SDL_SetRenderDrawColor(m_renderer,
                          color.red(), color.green(), color.blue(),
                          255);
+}
+
+Rect SDLRenderer::draw_text(const Point& point, const Font& font,
+                            const std::string& text)
+{
+  const SDLFont* sdl_font = dynamic_cast<const SDLFont*>(&font);
+  if (!sdl_font)
+    throw std::runtime_error("SDLRenderer::draw_text: "
+                             "given Font is not an SDLFont");
+  SDL_Surface* surface
+    = TTF_RenderUTF8_Blended(sdl_font->get_sdl_handle(),
+                             text.c_str(),
+                             m_draw_color);
+  SDLTexture texture(m_renderer, surface);
+  SDL_FreeSurface(surface);
+
+  Rect dest_rect(point.x(), point.y(), texture.width(), texture.height());
+  copy_texture(texture, Rect(), dest_rect);
+  return dest_rect;
+}
+
+void SDLRenderer::copy_texture(const Texture& src,
+                               const Rect& src_rect, const Rect& dest_rect)
+{
+  const SDLTexture* texture = dynamic_cast<const SDLTexture*>(&src);
+  if (!texture)
+    throw std::runtime_error("SDLRenderer::copy: "
+                             "given Texture is not an SDLTexture");
+
+  SDL_Rect sr = rect_to_sdl_rect(src_rect);
+  SDL_Rect dr = rect_to_sdl_rect(dest_rect);
+  SDL_Rect* p_sr = src_rect ? &sr : NULL;
+  SDL_Rect* p_dr = dest_rect ? &dr : NULL;
+  SDL_RenderCopy(m_renderer, texture->get_sdl_handle(), p_sr, p_dr);
 }
 
 void SDLRenderer::set_clip_rect()

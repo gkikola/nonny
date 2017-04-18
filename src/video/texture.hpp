@@ -25,6 +25,9 @@ class Texture {
 public:
   Texture() { }
   virtual ~Texture() { }
+
+  virtual unsigned width() const = 0;
+  virtual unsigned height() const = 0;
 };
 
 #endif

@@ -32,6 +32,8 @@ public:
 
   void resize(unsigned pt_size) override;
 
+  TTF_Font* get_sdl_handle() const { return m_font; }
+
 private:
   TTF_Font* m_font = nullptr;
   std::string m_filename;

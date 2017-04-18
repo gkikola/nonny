@@ -21,9 +21,13 @@
 #ifndef NONNY_SDL_RENDERER_HPP
 #define NONNY_SDL_RENDERER_HPP
 
+#include <string>
 #include <SDL2/SDL.h>
 #include "video/renderer.hpp"
 
+class Font;
+class Point;
+class Rect;
 class Window;
 
 class SDLRenderer : public Renderer {
@@ -41,6 +45,11 @@ public:
   void draw_rect(const Rect& rect) override;
   void draw_dotted_rect(const Rect& rect) override;
   void fill_rect(const Rect& rect) override;
+  Rect draw_text(const Point& point, const Font& font,
+                 const std::string& text) override;
+
+  void copy_texture(const Texture& src,
+                    const Rect& src_rect, const Rect& dest_rect) override;
 
   void set_clip_rect() override;
   void set_clip_rect(const Rect& rect) override;
@@ -51,6 +60,7 @@ public:
 
 private:
   SDL_Renderer* m_renderer;
+  SDL_Color m_draw_color;
 };
 
 #endif
