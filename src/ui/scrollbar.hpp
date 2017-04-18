@@ -38,6 +38,8 @@ public:
               const Rect& active_region) override;
   void draw(Renderer& renderer, const Rect& region) const override;
 
+  void resize(unsigned width, unsigned height) override;
+
 private:
   int scroll_position() const;
   inline unsigned target_width() const;
