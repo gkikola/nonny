@@ -24,7 +24,9 @@
 #include <stdexcept>
 #include <string>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 #include "utility/sdl/sdl_error.hpp"
+#include "video/sdl/sdl_font.hpp"
 #include "video/sdl/sdl_renderer.hpp"
 #include "video/sdl/sdl_window.hpp"
 
@@ -32,10 +34,16 @@ SDLVideoSystem::SDLVideoSystem()
 {
   if (SDL_Init(SDL_INIT_VIDEO) < 0)
     throw SDLError("SDL_Init");
+
+  if (TTF_Init() == -1) {
+    SDL_Quit();
+    throw TTFError("TTF_Init");
+  }
 }
 
 SDLVideoSystem::~SDLVideoSystem()
 {
+  TTF_Quit();
   SDL_Quit();
 }
 
@@ -49,4 +57,10 @@ std::unique_ptr<Renderer>
 SDLVideoSystem::new_renderer(Window& window) const
 {
   return std::make_unique<SDLRenderer>(window);
+}
+
+std::unique_ptr<Font>
+SDLVideoSystem::new_font(const std::string& filename, unsigned pt_size) const
+{
+  return std::make_unique<SDLFont>(filename, pt_size);
 }

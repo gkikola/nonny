@@ -22,10 +22,12 @@
 #define NONNY_VIDEO_SYSTEM_HPP
 
 #include <memory>
+#include <string>
 
 class Window;
 struct WindowSettings;
 class Renderer;
+class Font;
 
 /* Manages video-related resources */
 class VideoSystem {
@@ -40,6 +42,8 @@ public:
 
   virtual std::unique_ptr<Window> new_window(const WindowSettings&) const = 0;
   virtual std::unique_ptr<Renderer> new_renderer(Window&) const = 0;
+  virtual std::unique_ptr<Font> new_font(const std::string& filename,
+                                         unsigned pt_size = 12) const = 0;
 private:
 };
 

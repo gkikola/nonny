@@ -18,24 +18,24 @@
  */
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
-#ifndef NONNY_SDL_ERROR_HPP
-#define NONNY_SDL_ERROR_HPP
+#include "video/sdl/sdl_font.hpp"
 
-#include <stdexcept>
-#include <string>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
+SDLFont::SDLFont(const std::string& filename, unsigned pt_size)
+  : m_filename(filename), m_pt_size(pt_size)
+{
+  resize(pt_size);
+}
 
-class SDLError : public std::runtime_error {
-public:
-  SDLError(const std::string& what_arg)
-    : std::runtime_error(what_arg + ": " + SDL_GetError()) { }
-};
+SDLFont::~SDLFont()
+{
+  if (m_font)
+    TTF_CloseFont(m_font);
+}
 
-class TTFError : public std::runtime_error {
-public:
-  TTFError(const std::string& what_arg)
-    : std::runtime_error(what_arg + ": " + TTF_GetError()) { }
-};
-
-#endif
+void SDLFont::resize(unsigned pt_size)
+{
+  if (m_font)
+    TTF_CloseFont(m_font);
+  m_pt_size = pt_size;
+  m_font = TTF_OpenFont(m_filename.c_str(), m_pt_size);
+}

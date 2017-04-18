@@ -18,24 +18,4 @@
  */
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
-#ifndef NONNY_SDL_ERROR_HPP
-#define NONNY_SDL_ERROR_HPP
-
-#include <stdexcept>
-#include <string>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
-
-class SDLError : public std::runtime_error {
-public:
-  SDLError(const std::string& what_arg)
-    : std::runtime_error(what_arg + ": " + SDL_GetError()) { }
-};
-
-class TTFError : public std::runtime_error {
-public:
-  TTFError(const std::string& what_arg)
-    : std::runtime_error(what_arg + ": " + TTF_GetError()) { }
-};
-
-#endif
+#include "video/font.hpp"

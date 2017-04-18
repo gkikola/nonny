@@ -22,11 +22,13 @@
 #define NONNY_SDL_VIDEO_SYSTEM_HPP
 
 #include <memory>
+#include <string>
 #include "video/video_system.hpp"
 
 class Window;
 struct WindowSettings;
 class Renderer;
+class Font;
 
 class SDLVideoSystem : public VideoSystem {
 public:
@@ -38,6 +40,8 @@ public:
 
   std::unique_ptr<Window> new_window(const WindowSettings& ws) const override;
   std::unique_ptr<Renderer> new_renderer(Window& window) const override;
+  std::unique_ptr<Font> new_font(const std::string& filename,
+                                 unsigned pt_size = 12) const override;
 };
 
 #endif

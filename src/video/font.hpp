@@ -18,24 +18,18 @@
  */
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
-#ifndef NONNY_SDL_ERROR_HPP
-#define NONNY_SDL_ERROR_HPP
+#ifndef NONNY_FONT_HPP
+#define NONNY_FONT_HPP
 
-#include <stdexcept>
-#include <string>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
-
-class SDLError : public std::runtime_error {
+class Font {
 public:
-  SDLError(const std::string& what_arg)
-    : std::runtime_error(what_arg + ": " + SDL_GetError()) { }
-};
+  Font() { }
+  virtual ~Font() { }
 
-class TTFError : public std::runtime_error {
-public:
-  TTFError(const std::string& what_arg)
-    : std::runtime_error(what_arg + ": " + TTF_GetError()) { }
+  Font(const Font&) = delete;
+  Font& operator=(const Font&) = delete;
+
+  virtual void resize(unsigned pt_size) = 0;
 };
 
 #endif

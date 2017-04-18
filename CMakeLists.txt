@@ -61,9 +61,11 @@ add_executable (
   src/utility/sdl/sdl_error.cpp
   src/utility/sdl/sdl_paths.cpp
   src/utility/utility.cpp
+  src/video/sdl/sdl_font.cpp
   src/video/sdl/sdl_renderer.cpp
   src/video/sdl/sdl_video_system.cpp
   src/video/sdl/sdl_window.cpp
+  src/video/font.cpp
   src/video/point.cpp
   src/video/rect.cpp
   src/video/renderer.cpp
