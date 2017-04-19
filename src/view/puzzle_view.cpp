@@ -22,31 +22,33 @@
 
 #include <fstream>
 #include <memory>
+#include <stdexcept>
 #include <utility>
 #include "input/input_handler.hpp"
 #include "ui/scrollbar.hpp"
 #include "video/renderer.hpp"
 
-PuzzleView::PuzzleView(const std::string& filename)
+PuzzleView::PuzzleView(ViewManager& vm, const std::string& filename)
+  : View(vm)
 {
   load(filename);
 }
 
-PuzzleView::PuzzleView(const std::string& filename,
+PuzzleView::PuzzleView(ViewManager& vm, const std::string& filename,
                        unsigned width, unsigned height)
-  : View(width, height)
+  : View(vm, width, height)
 {
   load(filename);
 }
 
 PuzzleView::PuzzleView(const PuzzleView& pv)
-  : m_puzzle(pv.m_puzzle)
+  : View(pv.m_mgr), m_puzzle(pv.m_puzzle)
 {
   setup_panels();
 }
 
 PuzzleView::PuzzleView(PuzzleView&& pv)
-  : m_puzzle(std::move(pv.m_puzzle))
+  : View(pv.m_mgr), m_puzzle(std::move(pv.m_puzzle))
 {
   setup_panels();
 }
@@ -54,6 +56,11 @@ PuzzleView::PuzzleView(PuzzleView&& pv)
 PuzzleView& PuzzleView::operator=(const PuzzleView& pv) &
 {
   if (this != &pv) {
+    if (&pv.m_mgr != &m_mgr)
+      throw std::runtime_error("PuzzleView::operator=: "
+                               "cannot assign a PuzzleView from a "
+                               "different view manager");
+
     m_puzzle = pv.m_puzzle;
     setup_panels();
   }
@@ -63,6 +70,11 @@ PuzzleView& PuzzleView::operator=(const PuzzleView& pv) &
 PuzzleView& PuzzleView::operator=(PuzzleView&& pv) &
 {
   if (this != &pv) {
+    if (&pv.m_mgr != &m_mgr)
+      throw std::runtime_error("PuzzleView::operator=: "
+                               "cannot assign a PuzzleView from a "
+                               "different view manager");
+
     m_puzzle = std::move(pv.m_puzzle);
     setup_panels();
   }

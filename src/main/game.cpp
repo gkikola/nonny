@@ -38,10 +38,10 @@ Game::Game(int argc, char* argv[])
   m_window = m_video->new_window(ws);
   m_renderer = m_video->new_renderer(*m_window);
 
-  m_view_mgr = std::make_unique<ViewManager>();
+  m_view_mgr = std::make_unique<ViewManager>(*m_video);
 
   //For now, start the game with a puzzle open
-  auto view = std::make_shared<PuzzleView>("temp.non");
+  auto view = std::make_shared<PuzzleView>(*m_view_mgr, "temp.non");
   m_view_mgr->push(view);
   m_view_mgr->resize(m_window->width(), m_window->height());
 }

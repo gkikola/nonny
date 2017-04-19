@@ -26,11 +26,12 @@
 #include "ui/puzzle_panel.hpp"
 #include "ui/scrolling_panel.hpp"
 #include "view/view.hpp"
-#include <iostream>
+
 class PuzzleView : public View {
 public:
-  explicit PuzzleView(const std::string& filename);
-  PuzzleView(const std::string& filename, unsigned width, unsigned height);
+  PuzzleView(ViewManager& vm, const std::string& filename);
+  PuzzleView(ViewManager& vm, const std::string& filename,
+             unsigned width, unsigned height);
 
   PuzzleView(const PuzzleView& pv);
   PuzzleView(PuzzleView&&);
