@@ -25,7 +25,7 @@
 
 constexpr unsigned scrollbar_width = 16;
 
-void ScrollingPanel::attach_panel(std::shared_ptr<UIPanel> child)
+void ScrollingPanel::attach_panel(UIPanelPtr child)
 {
   m_main_panel = child;
   m_hscroll = Scrollbar(child, false);
@@ -36,19 +36,30 @@ void ScrollingPanel::attach_panel(std::shared_ptr<UIPanel> child)
 void ScrollingPanel::update(unsigned ticks, InputHandler& input,
                             const Rect& active_region)
 {
+  Rect main_region = m_boundary;
+  if (m_hscroll_active) {
+    m_hscroll.update(ticks, input, active_region);
+    main_region.height() -= scrollbar_width;
+  }
+  if (m_vscroll_active) {
+    m_vscroll.update(ticks, input, active_region);
+    main_region.width() -= scrollbar_width;
+  }
+
   if (m_main_panel)
-    m_main_panel->update(ticks, input, active_region);
-  m_hscroll.update(ticks, input, active_region);
-  m_vscroll.update(ticks, input, active_region);
+    m_main_panel->update(ticks, input,
+                         intersection(main_region, active_region));
 }
 
 void ScrollingPanel::draw(Renderer& renderer, const Rect& region) const
 {
   if (m_main_panel)
     m_main_panel->draw(renderer, region);
-  
-  m_hscroll.draw(renderer, region);
-  m_vscroll.draw(renderer, region);
+
+  if (m_hscroll_active)
+    m_hscroll.draw(renderer, region);
+  if (m_vscroll_active)
+    m_vscroll.draw(renderer, region);
 }
 
 void ScrollingPanel::resize(unsigned width, unsigned height)
@@ -56,21 +67,21 @@ void ScrollingPanel::resize(unsigned width, unsigned height)
   UIPanel::resize(width, height);
 
   //figure out if we need scrollbars
-  bool need_horz = false;
-  bool need_vert = false;
+  m_hscroll_active = false;
+  m_vscroll_active = false;
   if (m_main_panel) {
     if (m_main_panel->boundary().width() > width - scrollbar_width)
-      need_horz = true;
+      m_hscroll_active = true;
     if (m_main_panel->boundary().height() > height - scrollbar_width)
-      need_vert = true;
+      m_vscroll_active = true;
   }
 
   //move scrollbars into position
   unsigned adjusted_width = m_boundary.width();
   unsigned adjusted_height = m_boundary.height();
-  if (need_horz)
+  if (m_hscroll_active)
     adjusted_height -= scrollbar_width;
-  if (need_vert)
+  if (m_vscroll_active)
     adjusted_width -= scrollbar_width;
   m_hscroll.move(m_boundary.x(),
                  m_boundary.y() + m_boundary.height() - scrollbar_width);

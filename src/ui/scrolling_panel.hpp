@@ -45,6 +45,8 @@ private:
   UIPanelPtr m_main_panel = nullptr;
   Scrollbar m_hscroll;
   Scrollbar m_vscroll;
+  bool m_hscroll_active = false;
+  bool m_vscroll_active = false;
 };
 
 #endif
