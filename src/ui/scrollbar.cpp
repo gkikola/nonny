@@ -37,6 +37,7 @@ void Scrollbar::update(unsigned ticks, InputHandler& input,
 {
   Point cursor = input.mouse_position();
   update_thumb_position();
+  m_mouse_hover = false;
 
   if (m_dragging) {
     do_thumb_drag(input);
@@ -49,10 +50,13 @@ void Scrollbar::update(unsigned ticks, InputHandler& input,
   } else {
     //check to see if the user is attempting to drag the scroll thumb
     if (active_region.contains_point(cursor)) {
+
+      if (m_thumb_pos.contains_point(cursor))
+        m_mouse_hover = true;
       
       if (input.was_mouse_button_pressed(Mouse::left)
           || input.was_mouse_button_pressed(Mouse::right)) {
-        if (m_thumb_pos.contains_point(cursor)) {
+        if (m_mouse_hover) {
           m_dragging = true;
           m_drag_pos = m_vertical
             ? (cursor.y() - m_thumb_pos.y())
@@ -83,11 +87,18 @@ void Scrollbar::draw(Renderer& renderer, const Rect& region) const
   //add spacing around thumb
   Rect thumb_pos = m_thumb_pos;
   if (thumb_pos.width() > 2 * padding && thumb_pos.height() > 2 * padding) {
+    //set thumb color
+    if (m_dragging)
+      renderer.set_draw_color(thumb_drag);
+    else if (m_mouse_hover)
+      renderer.set_draw_color(thumb_hover);
+    else
+      renderer.set_draw_color(thumb);
+
     thumb_pos.x() += padding;
     thumb_pos.y() += padding;
     thumb_pos.width() -= 2 * padding;
     thumb_pos.height() -= 2 * padding;
-    renderer.set_draw_color(thumb);
     renderer.fill_rect(intersection(thumb_pos, region));
   }
 }

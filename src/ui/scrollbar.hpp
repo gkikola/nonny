@@ -53,6 +53,7 @@ private:
   bool m_dragging = false;
   int m_drag_pos = 0;
   Rect m_thumb_pos;
+  bool m_mouse_hover = false;
 };
 
 
