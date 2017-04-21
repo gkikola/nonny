@@ -23,16 +23,17 @@
 
 #include "ui/ui_panel.hpp"
 
+class Font;
 class InputHandler;
 class Puzzle;
 class Renderer;
+class Texture;
 
 class PuzzlePanel : public UIPanel {
 public:
-  PuzzlePanel() { }
-  explicit PuzzlePanel(Puzzle& puzzle) : m_puzzle(&puzzle) { }
-  explicit PuzzlePanel(const Rect& boundary) : UIPanel(boundary) { }
-  PuzzlePanel(const Rect& boundary, Puzzle& puzzle);
+  PuzzlePanel(Font& rule_font, const Texture& cell_texture)
+    : m_rule_font(rule_font), m_cell_texture(cell_texture) { }
+  PuzzlePanel(Font& rule_font, const Texture& cell_texture, Puzzle& puzzle);
 
   void attach_puzzle(Puzzle& puzzle) { m_puzzle = &puzzle; }
 
@@ -42,7 +43,11 @@ public:
               const Rect& active_region) override;
   void draw(Renderer& renderer, const Rect& region) const override;
 private:
-  void draw_grid(Renderer& renderer) const;
+  void draw_grid_lines(Renderer& renderer) const;
+
+  Font& m_rule_font;
+  const Texture& m_cell_texture;
+  
   Puzzle* m_puzzle = nullptr;
   unsigned m_cell_size = 32;
 };

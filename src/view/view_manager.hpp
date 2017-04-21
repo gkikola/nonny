@@ -27,14 +27,16 @@
 #include "view/view.hpp"
 #include "video/video_system.hpp"
 
+class GameSettings;
 class InputHandler;
 class Renderer;
 
 class ViewManager {
 public:
-  explicit ViewManager(VideoSystem& vs) : m_video(vs) { }
-  ViewManager(VideoSystem& vs, unsigned width, unsigned height)
-    : m_video(vs), m_width(width), m_height(height) { }
+  ViewManager(VideoSystem& vs, Renderer& renderer, GameSettings& settings)
+    : m_video(vs), m_renderer(renderer), m_settings(settings) { }
+  ViewManager(VideoSystem& vs, Renderer& renderer, GameSettings& settings,
+              unsigned width, unsigned height);
 
   void push(std::shared_ptr<View> view) { m_views.push_back(view); }
   void pop();
@@ -50,11 +52,19 @@ public:
 
   VideoSystem& video_system() { return m_video; }
   const VideoSystem& video_system() const { return m_video; }
+
+  Renderer& renderer() { return m_renderer; }
+  const Renderer& renderer() const { return m_renderer; }
+  
+  GameSettings& game_settings() { return m_settings; }
+  const GameSettings& game_settings() const { return m_settings; }
   
   void quit_game();
 private:
   std::vector<std::shared_ptr<View>> m_views;
   VideoSystem& m_video;
+  Renderer& m_renderer;
+  GameSettings& m_settings;
   unsigned m_width = 0;
   unsigned m_height = 0;
 };

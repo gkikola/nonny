@@ -38,7 +38,9 @@ Game::Game(int argc, char* argv[])
   m_window = m_video->new_window(ws);
   m_renderer = m_video->new_renderer(*m_window);
 
-  m_view_mgr = std::make_unique<ViewManager>(*m_video);
+  m_view_mgr = std::make_unique<ViewManager>(*m_video,
+                                             *m_renderer,
+                                             m_settings);
 
   //For now, start the game with a puzzle open
   auto view = std::make_shared<PuzzleView>(*m_view_mgr, "temp.non");
@@ -48,7 +50,6 @@ Game::Game(int argc, char* argv[])
 
 void Game::run()
 {
-  GameSettings settings;
   std::unique_ptr<InputHandler> input = InputHandler::create();
   std::unique_ptr<EventHandler> event = EventHandler::create();
 

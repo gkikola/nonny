@@ -25,6 +25,8 @@
 #include "puzzle/puzzle.hpp"
 #include "ui/puzzle_panel.hpp"
 #include "ui/scrolling_panel.hpp"
+#include "video/font.hpp"
+#include "video/texture.hpp"
 #include "view/view.hpp"
 
 class PuzzleView : public View {
@@ -47,6 +49,9 @@ private:
   
   Puzzle m_puzzle;
   ScrollingPanel m_main_panel;
+
+  std::unique_ptr<Font> m_rule_font;
+  std::unique_ptr<Texture> m_cell_texture;
 };
 
 #endif

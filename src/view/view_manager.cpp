@@ -25,6 +25,17 @@
 #include "input/input_handler.hpp"
 #include "video/renderer.hpp"
 
+ViewManager::ViewManager(VideoSystem& vs, Renderer& renderer,
+                         GameSettings& settings,
+                         unsigned width, unsigned height)
+  : m_video(vs),
+    m_renderer(renderer),
+    m_settings(settings),
+    m_width(width),
+    m_height(height)
+{
+}
+
 void ViewManager::pop()
 {
   if (m_views.empty())

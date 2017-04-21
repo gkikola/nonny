@@ -26,8 +26,9 @@
 #include "utility/utility.hpp"
 #include "video/renderer.hpp"
 
-PuzzlePanel::PuzzlePanel(const Rect& boundary, Puzzle& puzzle)
-  : UIPanel(boundary), m_puzzle(&puzzle)
+PuzzlePanel::PuzzlePanel(Font& rule_font, const Texture& cell_texture,
+                         Puzzle& puzzle)
+  : m_rule_font(rule_font), m_cell_texture(cell_texture), m_puzzle(&puzzle)
 {
 }
 
@@ -41,13 +42,13 @@ void PuzzlePanel::draw(Renderer& renderer, const Rect& region) const
   if (m_puzzle) {
     renderer.set_viewport(region);
     renderer.set_draw_color(default_colors::black);
-    draw_grid(renderer);
+    draw_grid_lines(renderer);
   
     renderer.set_viewport();
   }
 }
 
-void PuzzlePanel::draw_grid(Renderer& renderer) const
+void PuzzlePanel::draw_grid_lines(Renderer& renderer) const
 {
   unsigned width = m_puzzle->width();
   unsigned height = m_puzzle->height();

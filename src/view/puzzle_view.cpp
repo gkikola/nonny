@@ -25,8 +25,13 @@
 #include <stdexcept>
 #include <utility>
 #include "input/input_handler.hpp"
+#include "settings/game_settings.hpp"
 #include "ui/scrollbar.hpp"
+#include "video/font.hpp"
 #include "video/renderer.hpp"
+#include "video/texture.hpp"
+#include "video/video_system.hpp"
+#include "view/view_manager.hpp"
 
 PuzzleView::PuzzleView(ViewManager& vm, const std::string& filename)
   : View(vm)
@@ -96,8 +101,17 @@ void PuzzleView::load(const std::string& filename)
 
 void PuzzleView::setup_panels()
 {
-  Rect puz_region(0, 0, 1600, 1200);
-  auto ppanel = make_ui_panel<PuzzlePanel>(puz_region, m_puzzle);
+  std::string data_dir = m_mgr.game_settings().data_dir();
+  char sep = m_mgr.game_settings().filesystem_separator();
+
+  std::string font_file = data_dir + "fonts" + sep + "FreeSans.ttf";
+  std::string texture_file = data_dir + "images" + sep + "cell.png";
+  m_rule_font = m_mgr.video_system().new_font(font_file, 12);
+  m_cell_texture = m_mgr.video_system().load_image(m_mgr.renderer(),
+                                                   texture_file);
+  
+  auto ppanel = make_ui_panel<PuzzlePanel>(*m_rule_font, *m_cell_texture,
+                                           m_puzzle);
 
   Rect win_region(0, 0, m_width, m_height);
   m_main_panel = ScrollingPanel(win_region, ppanel);
