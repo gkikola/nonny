@@ -20,6 +20,7 @@
 
 #include "video/sdl/sdl_renderer.hpp"
 
+#include <vector>
 #include "utility/sdl/sdl_error.hpp"
 #include "utility/utility.hpp"
 #include "video/sdl/sdl_font.hpp"
@@ -61,15 +62,24 @@ void SDLRenderer::draw_line(const Point& point1, const Point& point2)
                      point2.x(), point2.y());
 }
 
+void SDLRenderer::draw_dotted_line(const Point& start,
+                                   int length, bool vertical)
+{
+  std::vector<SDL_Point> points;
+  for (int n = 0; n <= length; n += 3) {
+    if (vertical)
+      points.push_back(SDL_Point { start.x(), start.y() + n });
+    else
+      points.push_back(SDL_Point { start.x() + n, start.y() });
+  }
+
+  SDL_RenderDrawPoints(m_renderer, points.data(), points.size());
+}
+
 void SDLRenderer::draw_rect(const Rect& rect)
 {
   SDL_Rect srect = rect_to_sdl_rect(rect);
   SDL_RenderDrawRect(m_renderer, &srect);
-}
-
-void SDLRenderer::draw_dotted_rect(const Rect& rect)
-{
-  throw std::runtime_error("SDLRenderer::draw_dotted_rect: not implemented");
 }
 
 void SDLRenderer::fill_rect(const Rect& rect)

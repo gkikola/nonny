@@ -38,10 +38,19 @@ public:
   
   virtual void clear() = 0;
   virtual void draw_point(const Point& point) = 0;
+  
   virtual void draw_line(const Point& point1, const Point& point2) = 0;
+  virtual void draw_thick_line(const Point& start,
+                               int length, int thickness,
+                               bool vertical = true);
+  virtual void draw_dotted_line(const Point& start,
+                                int length, bool vertical = true) = 0;
+  
   virtual void draw_rect(const Rect& rect) = 0;
-  virtual void draw_dotted_rect(const Rect& rect) = 0;
+  virtual void draw_thick_rect(const Rect& rect, int thickness);
+  virtual void draw_dotted_rect(const Rect& rect);
   virtual void fill_rect(const Rect& rect) = 0;
+
   virtual Rect draw_text(const Point& point, const Font& font,
                          const std::string& text) = 0;
 

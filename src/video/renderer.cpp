@@ -19,3 +19,39 @@
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
 #include "video/renderer.hpp"
+
+#include "video/rect.hpp"
+
+void Renderer::draw_thick_line(const Point& start,
+                                 int length, int thickness, bool vertical)
+{
+  Rect region;
+  if (vertical)
+    region = Rect(start.x() - thickness / 2, start.y(), thickness, length);
+  else
+    region = Rect(start.x(), start.y() - thickness / 2, length, thickness);
+
+  fill_rect(region);
+}
+
+void Renderer::draw_thick_rect(const Rect& rect, int thickness)
+{
+  draw_thick_line(Point(rect.x(), rect.y()),
+                  rect.width() + 1, thickness,  false);
+  draw_thick_line(Point(rect.x(), rect.y()),
+                  rect.height() + 1, thickness, true);
+  draw_thick_line(Point(rect.x(), rect.y() + rect.height()),
+                  rect.width() + 1, thickness, false);
+  draw_thick_line(Point(rect.x() + rect.width(), rect.y()),
+                  rect.height() + 1, thickness, true);
+}
+
+void Renderer::draw_dotted_rect(const Rect& rect)
+{
+  draw_dotted_line(Point(rect.x(), rect.y()), rect.width(), false);
+  draw_dotted_line(Point(rect.x(), rect.y()), rect.height(), true);
+  draw_dotted_line(Point(rect.x(), rect.y() + rect.height()),
+                   rect.width(), false);
+  draw_dotted_line(Point(rect.x() + rect.width(), rect.y()),
+                   rect.height(), true);
+}

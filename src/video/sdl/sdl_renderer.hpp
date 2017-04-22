@@ -41,10 +41,14 @@ public:
 
   void clear() override { SDL_RenderClear(m_renderer); }
   void draw_point(const Point& point) override;
+
   void draw_line(const Point& point1, const Point& point2) override;
+  void draw_dotted_line(const Point& start,
+                        int length, bool vertical = true) override;
+  
   void draw_rect(const Rect& rect) override;
-  void draw_dotted_rect(const Rect& rect) override;
   void fill_rect(const Rect& rect) override;
+
   Rect draw_text(const Point& point, const Font& font,
                  const std::string& text) override;
 
