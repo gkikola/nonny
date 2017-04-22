@@ -89,4 +89,18 @@ void ScrollingPanel::resize(unsigned width, unsigned height)
   m_vscroll.move(m_boundary.x() + m_boundary.width() - scrollbar_width,
                  m_boundary.y());
   m_vscroll.resize(scrollbar_width, adjusted_height);
+
+  //center panel if it's smaller than the scrolling panel
+  if (!m_hscroll_active)
+    m_main_panel->move(m_boundary.x() + m_boundary.width() / 2
+                       - m_main_panel->boundary().width() / 2,
+                       m_main_panel->boundary().y());
+  else if(m_main_panel->boundary().x() > m_boundary.x())
+    m_main_panel->move(m_boundary.x(), m_main_panel->boundary().y());
+  if (!m_vscroll_active)
+    m_main_panel->move(m_main_panel->boundary().x(),
+                       m_boundary.y() + m_boundary.height() / 2
+                       - m_main_panel->boundary().height() / 2);
+  else if(m_main_panel->boundary().y() > m_boundary.y())
+    m_main_panel->move(m_main_panel->boundary().x(), m_boundary.y());
 }

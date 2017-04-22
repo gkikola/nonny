@@ -123,10 +123,16 @@ void Scrollbar::resize(unsigned width, unsigned height)
 
 int Scrollbar::scroll_position() const
 {
+  int result;
   if (m_vertical)
-    return m_boundary.y() - m_scroll_target->boundary().y();
+    result = m_boundary.y() - m_scroll_target->boundary().y();
   else
-    return m_boundary.x() - m_scroll_target->boundary().x();
+    result = m_boundary.x() - m_scroll_target->boundary().x();
+
+  if (result < 0)
+    result = 0;
+
+  return result;
 }
 
 void Scrollbar::update_thumb_position()
