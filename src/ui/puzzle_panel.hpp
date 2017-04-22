@@ -22,6 +22,7 @@
 #define NONNY_PUZZLE_PANEL_HPP
 
 #include "ui/ui_panel.hpp"
+#include "video/point.hpp"
 
 class Font;
 class InputHandler;
@@ -31,9 +32,9 @@ class Texture;
 
 class PuzzlePanel : public UIPanel {
 public:
-  PuzzlePanel(Font& rule_font, const Texture& cell_texture)
-    : m_rule_font(rule_font), m_cell_texture(cell_texture) { }
-  PuzzlePanel(Font& rule_font, const Texture& cell_texture, Puzzle& puzzle);
+  PuzzlePanel(Font& clue_font, const Texture& cell_texture)
+    : m_clue_font(clue_font), m_cell_texture(cell_texture) { }
+  PuzzlePanel(Font& clue_font, const Texture& cell_texture, Puzzle& puzzle);
 
   void attach_puzzle(Puzzle& puzzle) { m_puzzle = &puzzle; }
 
@@ -42,14 +43,22 @@ public:
   void update(unsigned ticks, InputHandler& input,
               const Rect& active_region) override;
   void draw(Renderer& renderer, const Rect& region) const override;
-private:
-  void draw_grid_lines(Renderer& renderer) const;
 
-  Font& m_rule_font;
+  void move(int x, int y);
+private:
+  void calc_grid_pos();
+  unsigned row_clue_width(unsigned row) const;
+  unsigned col_clue_height(unsigned col) const;
+  int clue_spacing() const { return m_cell_size / 3; }
+  void draw_grid_lines(Renderer& renderer) const;
+  void draw_clues(Renderer& renderer) const;
+
+  Font& m_clue_font;
   const Texture& m_cell_texture;
   
   Puzzle* m_puzzle = nullptr;
   unsigned m_cell_size = 32;
+  Point m_grid_pos;  
 };
 
 #endif
