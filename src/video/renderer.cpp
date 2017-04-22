@@ -27,9 +27,9 @@ void Renderer::draw_thick_line(const Point& start,
 {
   Rect region;
   if (vertical)
-    region = Rect(start.x() - thickness / 2, start.y(), thickness, length);
+    region = Rect(start.x() - thickness / 2, start.y(), thickness, length + 1);
   else
-    region = Rect(start.x(), start.y() - thickness / 2, length, thickness);
+    region = Rect(start.x(), start.y() - thickness / 2, length + 1, thickness);
 
   fill_rect(region);
 }
@@ -37,13 +37,13 @@ void Renderer::draw_thick_line(const Point& start,
 void Renderer::draw_thick_rect(const Rect& rect, int thickness)
 {
   draw_thick_line(Point(rect.x(), rect.y()),
-                  rect.width() + 1, thickness,  false);
+                  rect.width(), thickness,  false);
   draw_thick_line(Point(rect.x(), rect.y()),
-                  rect.height() + 1, thickness, true);
+                  rect.height(), thickness, true);
   draw_thick_line(Point(rect.x(), rect.y() + rect.height()),
-                  rect.width() + 1, thickness, false);
+                  rect.width(), thickness, false);
   draw_thick_line(Point(rect.x() + rect.width(), rect.y()),
-                  rect.height() + 1, thickness, true);
+                  rect.height(), thickness, true);
 }
 
 void Renderer::draw_dotted_rect(const Rect& rect)

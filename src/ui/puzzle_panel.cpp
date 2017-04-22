@@ -49,9 +49,9 @@ void PuzzlePanel::draw(Renderer& renderer, const Rect& region) const
 {
   if (m_puzzle) {
     renderer.set_viewport(region);
+    shade_cells(renderer);
     draw_grid_lines(renderer);
     draw_clues(renderer);
-    shade_cells(renderer);
   
     renderer.set_viewport();
   }
@@ -113,12 +113,20 @@ void PuzzlePanel::draw_grid_lines(Renderer& renderer) const
   for (unsigned x = 0; x <= width; ++x) {
     Point start(m_grid_pos.x() + x * (m_cell_size + 1), m_grid_pos.y());
     Point end(start.x(), m_grid_pos.y() + height * (m_cell_size + 1));
-    renderer.draw_line(start, end);
+
+    if (x % 5 == 0)
+      renderer.draw_thick_line(start, end.y() - start.y(), 3, true);
+    else
+      renderer.draw_line(start, end);
   }
   for (unsigned y = 0; y <= height; ++y) {
     Point start(m_grid_pos.x(), m_grid_pos.y() + y * (m_cell_size + 1));
     Point end(m_grid_pos.x() + width * (m_cell_size + 1), start.y());
-    renderer.draw_line(start, end);
+
+    if (y % 5 == 0)
+      renderer.draw_thick_line(start, end.x() - start.x(), 3, false);
+    else
+      renderer.draw_line(start, end);
   }
 }
 
