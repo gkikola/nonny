@@ -28,6 +28,11 @@
 #include "video/font.hpp"
 #include "video/renderer.hpp"
 
+const Color cell_border_color(128, 128, 128);
+const Color blank_cell_color(255, 255, 255);
+const Color shaded_cell_color(230, 230, 255);
+const Color lightly_shaded_cell_color(240, 240, 255);
+
 PuzzlePanel::PuzzlePanel(Font& clue_font, const Texture& cell_texture,
                          Puzzle& puzzle)
   : m_clue_font(clue_font), m_cell_texture(cell_texture), m_puzzle(&puzzle)
@@ -44,9 +49,9 @@ void PuzzlePanel::draw(Renderer& renderer, const Rect& region) const
 {
   if (m_puzzle) {
     renderer.set_viewport(region);
-    renderer.set_draw_color(default_colors::black);
     draw_grid_lines(renderer);
     draw_clues(renderer);
+    shade_cells(renderer);
   
     renderer.set_viewport();
   }
@@ -102,6 +107,7 @@ unsigned PuzzlePanel::col_clue_height(unsigned col) const
 
 void PuzzlePanel::draw_grid_lines(Renderer& renderer) const
 {
+  renderer.set_draw_color(cell_border_color);
   unsigned width = m_puzzle->width();
   unsigned height = m_puzzle->height();
   for (unsigned x = 0; x <= width; ++x) {
@@ -144,6 +150,25 @@ void PuzzlePanel::draw_clues(Renderer& renderer) const
       Point pos(x, y + (m_cell_size + 1) / 2 - ht / 2);
       renderer.draw_text(pos, m_clue_font, value);
       x += wd + clue_spacing();
+    }
+  }
+}
+
+void PuzzlePanel::shade_cells(Renderer& renderer) const
+{
+  for (unsigned y = 0; y < m_puzzle->height(); ++y) {
+    for (unsigned x = 0; x < m_puzzle->width(); ++x) {
+      Rect dest(m_grid_pos.x() + x * (m_cell_size + 1) + 1,
+                m_grid_pos.y() + y * (m_cell_size + 1) + 1,
+                m_cell_size, m_cell_size);
+
+      if (x % 2 != y % 2)
+        renderer.set_draw_color(lightly_shaded_cell_color);
+      else if (x % 2 == 0)
+        renderer.set_draw_color(shaded_cell_color);
+      else
+        renderer.set_draw_color(blank_cell_color);
+      renderer.fill_rect(dest);
     }
   }
 }
