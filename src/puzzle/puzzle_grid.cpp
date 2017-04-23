@@ -32,7 +32,8 @@ const PuzzleCell& PuzzleGrid::at(unsigned x, unsigned y) const
   decltype(m_grid.size()) pos = y * m_width + x;
   
   if (pos > m_grid.size())
-    throw std::out_of_range("attempted to access invalid puzzle cell");
+    throw std::out_of_range("PuzzleGrid::at: attempted to access "
+                            "invalid puzzle cell");
 
   return m_grid[pos];
 }

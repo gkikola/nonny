@@ -32,6 +32,7 @@ std::unique_ptr<EventHandler> EventHandler::create()
   #ifdef NONNY_INPUT_SDL
     return std::make_unique<SDLEventHandler>();
   #else
-    throw std::runtime_error("event handler not implemented");
+    throw std::runtime_error("EventHandler::create: "
+                             "event handler not implemented");
   #endif
 }

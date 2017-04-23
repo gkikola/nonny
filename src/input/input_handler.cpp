@@ -42,7 +42,8 @@ std::unique_ptr<InputHandler> InputHandler::create()
 #ifdef NONNY_INPUT_SDL
   return std::make_unique<SDLInputHandler>();
 #else
-  throw std::runtime_error("input handler not implemented");
+  throw std::runtime_error("InputHandler::create: "
+                           "input handler not implemented");
 #endif
 }
 

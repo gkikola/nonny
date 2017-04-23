@@ -32,6 +32,7 @@ std::unique_ptr<VideoSystem> VideoSystem::create()
 #ifdef NONNY_VIDEO_SDL
   return std::make_unique<SDLVideoSystem>();
 #else
-  throw std::runtime_error("video system not implemented");
+  throw std::runtime_error("VideoSystem::create: "
+                           "video system not implemented");
 #endif
 }

@@ -61,7 +61,7 @@ const Color& ColorPalette::operator[](char symbol) const
   auto it = std::find_if(m_colors.begin(), m_colors.end(),
                          [=](const Entry& e) { return e.symbol == symbol; });
   if (it == m_colors.end())
-    throw std::out_of_range("color symbol "
+    throw std::out_of_range("ColorPalette::operator[]: color symbol "
                             + std::string(1, symbol) + " is not defined");
   return it->color;
 }
@@ -72,7 +72,7 @@ const std::string& ColorPalette::find(const Color& color) const
                          [&](const Entry& e) { return e.color == color; });
   if (it == m_colors.end()) {
     std::ostringstream ss;
-    ss << "color " << color << " not found";
+    ss << "ColorPalette::find: color " << color << " not found";
     throw std::out_of_range(ss.str());
   }
   return it->name;
@@ -83,7 +83,7 @@ ColorPalette::iterator ColorPalette::at(const std::string& name)
   auto it = std::find_if(m_colors.begin(), m_colors.end(),
                          [&](const Entry& e) { return e.name == name; });
   if (it == m_colors.end())
-    throw std::out_of_range(name + " is not defined");
+    throw std::out_of_range("ColorPalette::at: " + name + " is not defined");
 
   return it;
 }
@@ -93,7 +93,7 @@ ColorPalette::const_iterator ColorPalette::at(const std::string& name) const
   auto it = std::find_if(m_colors.cbegin(), m_colors.cend(),
                          [&](const Entry& e) { return e.name == name; });
   if (it == m_colors.cend())
-    throw std::out_of_range(name + " is not defined");
+    throw std::out_of_range("ColorPalette::at: " + name + " is not defined");
 
   return it;
 }

@@ -34,7 +34,7 @@ std::string base_path()
 #ifdef NONNY_INPUT_SDL
   return sdl_base_path();
 #else
-  throw std::runtime_error("base path not retrievable");
+  throw std::runtime_error("::base_path: base path not retrievable");
 #endif
 }
 
@@ -43,7 +43,7 @@ std::string save_path()
 #ifdef NONNY_INPUT_SDL
   return sdl_base_path();
 #else
-  throw std::runtime_error("save path not retrievable");
+  throw std::runtime_error("::save_path: save path not retrievable");
 #endif
 }
 
@@ -138,6 +138,6 @@ unsigned str_to_uint(const std::string& s, std::size_t* pos, int base)
   unsigned long lresult = std::stoul(s, pos, base);
   unsigned result = static_cast<unsigned>(lresult);
   if (result != lresult)
-    throw std::out_of_range("str_to_uint");
+    throw std::out_of_range("::str_to_uint: out of range");
   return result;
 }

@@ -180,8 +180,9 @@ namespace non_format {
     std::string line;
     while (count > 0) {
       if (!std::getline(is, line))
-        throw InvalidPuzzleFile("number of clue lines does not match "
-                                "puzzle dimensions");
+        throw InvalidPuzzleFile("non_format::read_clues: "
+                                "number of clue lines "
+                                "does not match puzzle dimensions");
 
       auto clue_seq
         = parse_clue_line(line, blueprint.palette);
@@ -285,7 +286,8 @@ namespace non_format {
         try {
           *dimension = str_to_uint(argument);
         } catch (const std::logic_error& e) {
-          throw InvalidPuzzleFile("invalid puzzle " + property);
+          throw InvalidPuzzleFile("non_format::read: invalid puzzle "
+                                  + property);
         }
       } else if (property == "rows" && argument.empty())
         read_clues(is, blueprint, ClueType::row);
