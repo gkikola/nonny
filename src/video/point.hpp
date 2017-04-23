@@ -41,4 +41,7 @@ private:
   int m_y = 0;
 };
 
+// Returns the distance in pixels between two points
+double distance(const Point& p1, const Point& p2);
+
 #endif

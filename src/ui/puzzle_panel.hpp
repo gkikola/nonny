@@ -59,6 +59,7 @@ private:
 
   void update_cells(unsigned ticks);
   void set_cell(unsigned x, unsigned y, PuzzleCell::State state);
+  void drag_over_cell(unsigned x, unsigned y);
 
   void next_color();
   inline bool is_point_in_grid(const Point& p) const;
@@ -95,10 +96,24 @@ inline bool PuzzlePanel::is_point_in_grid(const Point& p) const
 inline void PuzzlePanel::cell_at_point(const Point& p,
                                        unsigned* x, unsigned* y) const
 {
-  if (x)
-    *x = (p.x() - m_grid_pos.x() - 1) / (m_cell_size + 1);
-  if (y)
-    *y = (p.y() - m_grid_pos.y() - 1) / (m_cell_size + 1);
+  if (x) {
+    if (p.x() < m_grid_pos.x() + 1)
+      *x = 0;
+    else
+      *x = (p.x() - m_grid_pos.x() - 1) / (m_cell_size + 1);
+
+    if (*x >= m_puzzle->width())
+      *x = m_puzzle->width() - 1;
+  }
+  if (y) {
+    if (p.y() < m_grid_pos.y() + 1)
+      *y = 0;
+    else
+      *y = (p.y() - m_grid_pos.y() - 1) / (m_cell_size + 1);
+
+    if (*y >= m_puzzle->height())
+      *y = m_puzzle->height() - 1;
+  }
 }
 
 #endif

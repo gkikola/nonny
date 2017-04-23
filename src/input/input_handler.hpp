@@ -55,6 +55,7 @@ public:
   virtual bool is_mouse_button_down(Mouse::Button button) const;
 
   virtual Point mouse_position() const { return m_mouse; }
+  virtual Point prev_mouse_position() const { return m_prev_mouse; }
   virtual int rel_mouse_x() const { return m_mouse.x() - m_prev_mouse.x(); }
   virtual int rel_mouse_y() const { return m_mouse.y() - m_prev_mouse.y(); }
 

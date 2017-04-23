@@ -51,6 +51,7 @@ void InputHandler::update(unsigned ticks)
 {
   m_prev_keys = m_keys;
   m_prev_buttons = m_buttons;
+  m_prev_mouse = m_mouse;
 }
 
 void InputHandler::process_key_event(Keyboard::Key key, bool down)
@@ -69,7 +70,6 @@ void InputHandler::process_mouse_wheel_event(int vert, int horiz)
 
 void InputHandler::process_mouse_move_event(int x, int y)
 {
-  m_prev_mouse = m_mouse;
   m_mouse = Point(x, y);
 }
 

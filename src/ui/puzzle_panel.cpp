@@ -66,10 +66,11 @@ void PuzzlePanel::update(unsigned ticks, InputHandler& input,
     //figure out which cell is under the mouse cursor
     Point cursor = input.mouse_position();
     unsigned x = 0, y = 0;
+    cell_at_point(cursor, &x, &y);
+
     PuzzleCell::State cur_state;
     bool cursor_over_grid = is_point_in_grid(cursor);
     if (cursor_over_grid) {
-      cell_at_point(cursor, &x, &y);
       cur_state = (*m_puzzle)[x][y].state;
     }
 
@@ -98,30 +99,23 @@ void PuzzlePanel::update(unsigned ticks, InputHandler& input,
     }
         
     if (m_dragging) {
-      if (cursor_over_grid) {
-        PuzzleCell::State new_state;
-        bool set = false;
-        switch (m_drag_type) {
-        default:
-        case DragType::fill:
-          new_state = PuzzleCell::State::filled;
-          set = (cur_state == PuzzleCell::State::blank);
-          break;
-        case DragType::cross:
-          new_state = PuzzleCell::State::crossed_out;
-          set = (cur_state == PuzzleCell::State::blank);
-          break;
-        case DragType::blanking_fill:
-          new_state = PuzzleCell::State::blank;
-          set = (cur_state == PuzzleCell::State::filled);
-          break;
-        case DragType::blanking_cross:
-          new_state = PuzzleCell::State::blank;
-          set = (cur_state == PuzzleCell::State::crossed_out);
-          break;
-        }
-        if (set)
-          set_cell(x, y, new_state);
+      if (cursor_over_grid)
+        drag_over_cell(x, y);
+
+      //mark the cells that fall between mouse positions
+      Point old_cursor = input.prev_mouse_position();
+      unsigned old_x, old_y;
+      cell_at_point(old_cursor, &old_x, &old_y);
+      while (old_x != x || old_y != y) {
+        drag_over_cell(old_x, old_y);
+        if (old_x < x)
+          ++old_x;
+        else if (old_x > x)
+          --old_x;
+        if (old_y < y)
+          ++old_y;
+        else if (old_y > y)
+          --old_y;
       }
     }
   }
@@ -341,6 +335,34 @@ void PuzzlePanel::set_cell(unsigned x, unsigned y, PuzzleCell::State state)
     m_puzzle->cross_out_cell(x, y);
     break;
   };
+}
+
+void PuzzlePanel::drag_over_cell(unsigned x, unsigned y)
+{
+  PuzzleCell::State cur_state = (*m_puzzle)[x][y].state;
+  PuzzleCell::State new_state;
+  bool set = false;
+  switch (m_drag_type) {
+  default:
+  case DragType::fill:
+    new_state = PuzzleCell::State::filled;
+    set = (cur_state == PuzzleCell::State::blank);
+    break;
+  case DragType::cross:
+    new_state = PuzzleCell::State::crossed_out;
+    set = (cur_state == PuzzleCell::State::blank);
+    break;
+  case DragType::blanking_fill:
+    new_state = PuzzleCell::State::blank;
+    set = (cur_state == PuzzleCell::State::filled);
+    break;
+  case DragType::blanking_cross:
+    new_state = PuzzleCell::State::blank;
+    set = (cur_state == PuzzleCell::State::crossed_out);
+    break;
+  }
+  if (set)
+    set_cell(x, y, new_state);
 }
 
 void PuzzlePanel::next_color()
