@@ -20,6 +20,7 @@
 
 #include "main/game.hpp"
 
+#include <cstddef>
 #include <iostream>
 #include "config.h"
 #include "color/color.hpp"
@@ -54,8 +55,15 @@ void Game::run()
   std::unique_ptr<EventHandler> event = EventHandler::create();
 
   bool exit = false;
+  std::size_t prev_ticks = event->get_ticks();
+  std::size_t ticks = prev_ticks;
+  std::size_t elapsed = 0;
   while (!exit) {
-    input->update(0);
+    ticks = event->get_ticks();
+    elapsed = ticks - prev_ticks;
+    prev_ticks = ticks;
+    
+    input->update(elapsed);
 
     event->process(*input, *m_view_mgr);
     exit = m_view_mgr->empty();
@@ -63,7 +71,7 @@ void Game::run()
     m_renderer->set_draw_color(default_colors::white);
     m_renderer->clear();
 
-    m_view_mgr->update(0, *input);
+    m_view_mgr->update(elapsed, *input);
     m_view_mgr->draw(*m_renderer);
     
     m_renderer->present();

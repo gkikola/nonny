@@ -21,6 +21,7 @@
 #ifndef NONNY_EVENT_HANDLER_HPP
 #define NONNY_EVENT_HANDLER_HPP
 
+#include <cstddef>
 #include <memory>
 
 class InputHandler;
@@ -32,7 +33,8 @@ public:
   virtual ~EventHandler() { }
 
   static std::unique_ptr<EventHandler> create();
-  
+
+  virtual std::size_t get_ticks() const = 0;
   virtual void process(InputHandler&, ViewManager&) = 0;
 };
 

@@ -36,6 +36,8 @@ public:
   SDLEventHandler(const SDLEventHandler&) = delete;
   SDLEventHandler& operator=(const SDLEventHandler&) = delete;
 
+  std::size_t get_ticks() const { return SDL_GetTicks(); }
+  
   void process(InputHandler& input, ViewManager& view_mgr) override;
 
 private:
