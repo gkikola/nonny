@@ -43,13 +43,34 @@ PuzzlePanel::PuzzlePanel(Font& clue_font, const Texture& cell_texture,
 void PuzzlePanel::update(unsigned ticks, InputHandler& input,
                          const Rect& active_region)
 {
+  if (m_puzzle) {
+    Point cursor = input.mouse_position();
+    int mouse_cell_x = -1, mouse_cell_y = -1;
+    if (cursor.x() >= m_grid_pos.x() && cursor.y() >= m_grid_pos.y()) {
+      mouse_cell_x = (cursor.x() - m_grid_pos.x()) / (m_cell_size + 1);
+      mouse_cell_y = (cursor.y() - m_grid_pos.y()) / (m_cell_size + 1);
+
+      if (mouse_cell_x >= m_puzzle->width()
+          || mouse_cell_y >= m_puzzle->height())
+        mouse_cell_x = mouse_cell_y = -1;
+    }
+
+    if (mouse_cell_x >= 0 && mouse_cell_y >= 0
+        && input.was_mouse_button_pressed(Mouse::Button::left)) {
+      if ((*m_puzzle)[mouse_cell_x][mouse_cell_y].state
+          == PuzzleCell::State::blank)
+        m_puzzle->mark_cell(mouse_cell_x, mouse_cell_y);
+      else
+        m_puzzle->clear_cell(mouse_cell_x, mouse_cell_y);
+    }
+  }
 }
 
 void PuzzlePanel::draw(Renderer& renderer, const Rect& region) const
 {
   if (m_puzzle) {
     renderer.set_viewport(region);
-    shade_cells(renderer);
+    draw_cells(renderer);
     draw_grid_lines(renderer);
     draw_clues(renderer);
   
@@ -162,7 +183,7 @@ void PuzzlePanel::draw_clues(Renderer& renderer) const
   }
 }
 
-void PuzzlePanel::shade_cells(Renderer& renderer) const
+void PuzzlePanel::draw_cells(Renderer& renderer) const
 {
   for (unsigned y = 0; y < m_puzzle->height(); ++y) {
     for (unsigned x = 0; x < m_puzzle->width(); ++x) {
@@ -177,6 +198,13 @@ void PuzzlePanel::shade_cells(Renderer& renderer) const
       else
         renderer.set_draw_color(blank_cell_color);
       renderer.fill_rect(dest);
+
+      PuzzleCell cell = (*m_puzzle)[x][y];
+      if (cell.state == PuzzleCell::State::filled) {
+        renderer.set_draw_color(cell.color);
+        renderer.fill_rect(dest);
+      }
+      
     }
   }
 }

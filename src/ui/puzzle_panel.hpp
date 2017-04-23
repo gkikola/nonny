@@ -52,7 +52,7 @@ private:
   int clue_spacing() const { return m_cell_size / 3; }
   void draw_grid_lines(Renderer& renderer) const;
   void draw_clues(Renderer& renderer) const;
-  void shade_cells(Renderer& renderer) const;
+  void draw_cells(Renderer& renderer) const;
 
   Font& m_clue_font;
   const Texture& m_cell_texture;
