@@ -105,7 +105,7 @@ void PuzzleView::setup_panels()
   char sep = m_mgr.game_settings().filesystem_separator();
 
   std::string font_file = data_dir + "fonts" + sep + "FreeSans.ttf";
-  std::string texture_file = data_dir + "images" + sep + "cell.png";
+  std::string texture_file = data_dir + "images" + sep + "cross.png";
   m_rule_font = m_mgr.video_system().new_font(font_file, 12);
   m_cell_texture = m_mgr.video_system().load_image(m_mgr.renderer(),
                                                    texture_file);

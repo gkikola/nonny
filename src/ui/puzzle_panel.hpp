@@ -21,6 +21,8 @@
 #ifndef NONNY_PUZZLE_PANEL_HPP
 #define NONNY_PUZZLE_PANEL_HPP
 
+#include <vector>
+#include "puzzle/puzzle_cell.hpp"
 #include "ui/ui_panel.hpp"
 #include "video/point.hpp"
 
@@ -36,7 +38,7 @@ public:
     : m_clue_font(clue_font), m_cell_texture(cell_texture) { }
   PuzzlePanel(Font& clue_font, const Texture& cell_texture, Puzzle& puzzle);
 
-  void attach_puzzle(Puzzle& puzzle) { m_puzzle = &puzzle; }
+  void attach_puzzle(Puzzle& puzzle);
 
   using UIPanel::update; //make all update and draw overloads visible
   using UIPanel::draw;
@@ -54,12 +56,17 @@ private:
   void draw_clues(Renderer& renderer) const;
   void draw_cells(Renderer& renderer) const;
 
+  void update_cells(unsigned ticks);
+  void set_cell(unsigned x, unsigned y, PuzzleCell::State state);
+
   Font& m_clue_font;
   const Texture& m_cell_texture;
   
   Puzzle* m_puzzle = nullptr;
+  std::vector<unsigned> m_cell_time;
+  std::vector<PuzzleCell::State> m_prev_cell_state;
   unsigned m_cell_size = 32;
-  Point m_grid_pos;  
+  Point m_grid_pos;
 };
 
 #endif

@@ -57,7 +57,7 @@ void Game::run()
   bool exit = false;
   std::size_t prev_ticks = event->get_ticks();
   std::size_t ticks = prev_ticks;
-  std::size_t elapsed = 0;
+  unsigned elapsed = 0;
   while (!exit) {
     ticks = event->get_ticks();
     elapsed = ticks - prev_ticks;
