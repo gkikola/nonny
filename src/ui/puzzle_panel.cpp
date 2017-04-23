@@ -89,14 +89,14 @@ void PuzzlePanel::update(unsigned ticks, InputHandler& input,
         m_dragging = true;
         input.capture_mouse();
       }
-
-      if (input.was_mouse_button_released(Mouse::Button::left)
-          || input.was_mouse_button_released(Mouse::Button::right)) {
-        m_dragging = false;
-        input.release_mouse();
-      }
     }
-    
+
+    if (input.was_mouse_button_released(Mouse::Button::left)
+        || input.was_mouse_button_released(Mouse::Button::right)) {
+      m_dragging = false;
+      input.release_mouse();
+    }
+        
     if (m_dragging) {
       if (cursor_over_grid) {
         PuzzleCell::State new_state;

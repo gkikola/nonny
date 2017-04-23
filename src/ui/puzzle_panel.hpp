@@ -87,7 +87,7 @@ inline bool PuzzlePanel::is_point_in_grid(const Point& p) const
   const int cell_size = static_cast<int>(m_cell_size);
   const int width = static_cast<int>(m_puzzle->width());
   const int height = static_cast<int>(m_puzzle->height());
-  return p.x() >= m_grid_pos.x() && p.y() >= m_grid_pos.y()
+  return p.x() > m_grid_pos.x() && p.y() > m_grid_pos.y()
     && p.x() <= m_grid_pos.x() + width * (cell_size + 1)
     && p.y() <= m_grid_pos.y() + height * (cell_size + 1);
 }
