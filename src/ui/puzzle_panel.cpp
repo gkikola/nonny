@@ -74,6 +74,12 @@ void PuzzlePanel::update(unsigned ticks, InputHandler& input,
       cur_state = (*m_puzzle)[x][y].state;
     }
 
+    if (input.rel_mouse_x() != 0 || input.rel_mouse_y() != 0) {
+      m_selected = cursor_over_grid;
+      m_selection_x = x;
+      m_selection_y = y;
+    }
+
     //check mouse buttons for drags
     if (cursor_over_grid) {
       bool left_pressed
@@ -128,6 +134,7 @@ void PuzzlePanel::draw(Renderer& renderer, const Rect& region) const
     draw_cells(renderer);
     draw_grid_lines(renderer);
     draw_clues(renderer);
+    draw_selection(renderer);
   
     renderer.set_viewport();
   }
@@ -295,6 +302,24 @@ void PuzzlePanel::draw_cells(Renderer& renderer) const
         }
       }
     }
+  }
+}
+
+void PuzzlePanel::draw_selection(Renderer& renderer) const
+{
+  if (m_selected) {
+    Rect row, col;
+    row.x() = m_boundary.x();
+    row.y() = m_grid_pos.y() + m_selection_y * (m_cell_size + 1);
+    row.width() = m_boundary.width() - 1;
+    row.height() = m_cell_size + 1;
+    col.x() = m_grid_pos.x() + m_selection_x * (m_cell_size + 1);
+    col.y() = m_boundary.y();
+    col.width() = m_cell_size + 1;
+    col.height() = m_boundary.height() - 1;
+    renderer.set_draw_color(default_colors::red);
+    renderer.draw_thick_rect(row, 3);
+    renderer.draw_thick_rect(col, 3);
   }
 }
 

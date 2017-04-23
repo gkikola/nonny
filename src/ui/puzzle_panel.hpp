@@ -56,6 +56,7 @@ private:
   void draw_grid_lines(Renderer& renderer) const;
   void draw_clues(Renderer& renderer) const;
   void draw_cells(Renderer& renderer) const;
+  void draw_selection(Renderer& renderer) const;
 
   void update_cells(unsigned ticks);
   void set_cell(unsigned x, unsigned y, PuzzleCell::State state);
@@ -78,6 +79,10 @@ private:
   Point m_grid_pos;
   DragType m_drag_type = DragType::fill;
   bool m_dragging = false;
+
+  bool m_selected = false;
+  unsigned m_selection_x = 0;
+  unsigned m_selection_y = 0;
 };
 
 
