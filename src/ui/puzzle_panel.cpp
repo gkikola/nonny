@@ -59,7 +59,8 @@ void PuzzlePanel::update(unsigned ticks, InputHandler& input,
     update_cells(ticks);
 
     //cycle color palette on Ctrl
-    if (input.was_key_pressed(Keyboard::Key::lctrl))
+    if (input.was_key_pressed(Keyboard::Key::lctrl)
+        || input.was_key_pressed(Keyboard::Key::rctrl))
       next_color();
     
     Point cursor = input.mouse_position();
