@@ -105,8 +105,7 @@ void PuzzlePanel::update(unsigned ticks, InputHandler& input,
     }
         
     if (m_dragging) {
-      if (cursor_over_grid)
-        drag_over_cell(x, y);
+      drag_over_cell(x, y);
 
       //mark the cells that fall between mouse positions
       Point old_cursor = input.prev_mouse_position();
