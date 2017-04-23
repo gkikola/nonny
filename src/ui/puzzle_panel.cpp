@@ -62,31 +62,66 @@ void PuzzlePanel::update(unsigned ticks, InputHandler& input,
     if (input.was_key_pressed(Keyboard::Key::lctrl)
         || input.was_key_pressed(Keyboard::Key::rctrl))
       next_color();
-    
-    Point cursor = input.mouse_position();
-    int mouse_cell_x = -1, mouse_cell_y = -1;
-    if (cursor.x() >= m_grid_pos.x() && cursor.y() >= m_grid_pos.y()) {
-      mouse_cell_x = (cursor.x() - m_grid_pos.x() - 1) / (m_cell_size + 1);
-      mouse_cell_y = (cursor.y() - m_grid_pos.y() - 1) / (m_cell_size + 1);
 
-      if (mouse_cell_x >= static_cast<int>(m_puzzle->width())
-          || mouse_cell_y >= static_cast<int>(m_puzzle->height()))
-        mouse_cell_x = mouse_cell_y = -1;
+    //figure out which cell is under the mouse cursor
+    Point cursor = input.mouse_position();
+    unsigned x = 0, y = 0;
+    PuzzleCell::State cur_state;
+    bool cursor_over_grid = is_point_in_grid(cursor);
+    if (cursor_over_grid) {
+      cell_at_point(cursor, &x, &y);
+      cur_state = (*m_puzzle)[x][y].state;
     }
 
-    if (mouse_cell_x >= 0 && mouse_cell_y >= 0) {
-      if (input.was_mouse_button_pressed(Mouse::Button::left)) {
-        if ((*m_puzzle)[mouse_cell_x][mouse_cell_y].state
-            == PuzzleCell::State::blank)
-          set_cell(mouse_cell_x, mouse_cell_y, PuzzleCell::State::filled);
-        else
-          set_cell(mouse_cell_x, mouse_cell_y, PuzzleCell::State::blank);
-      } else if (input.was_mouse_button_pressed(Mouse::Button::right)) {
-        if ((*m_puzzle)[mouse_cell_x][mouse_cell_y].state
-            != PuzzleCell::State::blank)
-          set_cell(mouse_cell_x, mouse_cell_y, PuzzleCell::State::blank);
-        else
-          set_cell(mouse_cell_x, mouse_cell_y, PuzzleCell::State::crossed_out);
+    //check mouse buttons for drags
+    if (cursor_over_grid) {
+      bool left_pressed
+        = input.was_mouse_button_pressed(Mouse::Button::left);
+      bool right_pressed
+        = input.was_mouse_button_pressed(Mouse::Button::right);
+      if (left_pressed || right_pressed) {
+        if (cur_state == PuzzleCell::State::filled)
+          m_drag_type = DragType::blanking_fill;
+        else if (cur_state == PuzzleCell::State::blank)
+          m_drag_type = left_pressed ? DragType::fill : DragType::cross;
+        else if (cur_state == PuzzleCell::State::crossed_out)
+          m_drag_type = DragType::blanking_cross;
+        m_dragging = true;
+        input.capture_mouse();
+      }
+
+      if (input.was_mouse_button_released(Mouse::Button::left)
+          || input.was_mouse_button_released(Mouse::Button::right)) {
+        m_dragging = false;
+        input.release_mouse();
+      }
+    }
+    
+    if (m_dragging) {
+      if (cursor_over_grid) {
+        PuzzleCell::State new_state;
+        bool set = false;
+        switch (m_drag_type) {
+        default:
+        case DragType::fill:
+          new_state = PuzzleCell::State::filled;
+          set = (cur_state == PuzzleCell::State::blank);
+          break;
+        case DragType::cross:
+          new_state = PuzzleCell::State::crossed_out;
+          set = (cur_state == PuzzleCell::State::blank);
+          break;
+        case DragType::blanking_fill:
+          new_state = PuzzleCell::State::blank;
+          set = (cur_state == PuzzleCell::State::filled);
+          break;
+        case DragType::blanking_cross:
+          new_state = PuzzleCell::State::blank;
+          set = (cur_state == PuzzleCell::State::crossed_out);
+          break;
+        }
+        if (set)
+          set_cell(x, y, new_state);
       }
     }
   }

@@ -23,13 +23,13 @@
 
 #include <vector>
 #include "color/color_palette.hpp"
+#include "puzzle/puzzle.hpp"
 #include "puzzle/puzzle_cell.hpp"
 #include "ui/ui_panel.hpp"
 #include "video/point.hpp"
 
 class Font;
 class InputHandler;
-class Puzzle;
 class Renderer;
 class Texture;
 
@@ -61,9 +61,13 @@ private:
   void set_cell(unsigned x, unsigned y, PuzzleCell::State state);
 
   void next_color();
+  inline bool is_point_in_grid(const Point& p) const;
+  inline void cell_at_point(const Point& p, unsigned* x, unsigned* y) const;
 
   Font& m_clue_font;
   const Texture& m_cell_texture;
+
+  enum class DragType { fill, cross, blanking_fill, blanking_cross };
   
   Puzzle* m_puzzle = nullptr;
   ColorPalette::const_iterator m_color;
@@ -71,6 +75,30 @@ private:
   std::vector<PuzzleCell::State> m_prev_cell_state;
   unsigned m_cell_size = 32;
   Point m_grid_pos;
+  DragType m_drag_type = DragType::fill;
+  bool m_dragging = false;
 };
+
+
+/* implementation */
+
+inline bool PuzzlePanel::is_point_in_grid(const Point& p) const
+{
+  const int cell_size = static_cast<int>(m_cell_size);
+  const int width = static_cast<int>(m_puzzle->width());
+  const int height = static_cast<int>(m_puzzle->height());
+  return p.x() >= m_grid_pos.x() && p.y() >= m_grid_pos.y()
+    && p.x() <= m_grid_pos.x() + width * (cell_size + 1)
+    && p.y() <= m_grid_pos.y() + height * (cell_size + 1);
+}
+
+inline void PuzzlePanel::cell_at_point(const Point& p,
+                                       unsigned* x, unsigned* y) const
+{
+  if (x)
+    *x = (p.x() - m_grid_pos.x() - 1) / (m_cell_size + 1);
+  if (y)
+    *y = (p.y() - m_grid_pos.y() - 1) / (m_cell_size + 1);
+}
 
 #endif
