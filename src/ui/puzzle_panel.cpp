@@ -46,6 +46,7 @@ PuzzlePanel::PuzzlePanel(Font& clue_font, const Texture& cell_texture,
 void PuzzlePanel::attach_puzzle(Puzzle& puzzle)
 {
   m_puzzle = &puzzle;
+  m_color = puzzle.palette().begin();
   unsigned size = puzzle.width() * puzzle.height();
   m_cell_time.resize(size, 0);
   m_prev_cell_state.resize(size, PuzzleCell::State::blank);
@@ -56,12 +57,16 @@ void PuzzlePanel::update(unsigned ticks, InputHandler& input,
 {
   if (m_puzzle) {
     update_cells(ticks);
+
+    //cycle color palette on Ctrl
+    if (input.was_key_pressed(Keyboard::Key::lctrl))
+      next_color();
     
     Point cursor = input.mouse_position();
     int mouse_cell_x = -1, mouse_cell_y = -1;
     if (cursor.x() >= m_grid_pos.x() && cursor.y() >= m_grid_pos.y()) {
-      mouse_cell_x = (cursor.x() - m_grid_pos.x()) / (m_cell_size + 1);
-      mouse_cell_y = (cursor.y() - m_grid_pos.y()) / (m_cell_size + 1);
+      mouse_cell_x = (cursor.x() - m_grid_pos.x() - 1) / (m_cell_size + 1);
+      mouse_cell_y = (cursor.y() - m_grid_pos.y() - 1) / (m_cell_size + 1);
 
       if (mouse_cell_x >= static_cast<int>(m_puzzle->width())
           || mouse_cell_y >= static_cast<int>(m_puzzle->height()))
@@ -287,7 +292,10 @@ void PuzzlePanel::set_cell(unsigned x, unsigned y, PuzzleCell::State state)
   m_cell_time[index] = 0;
   switch (state) {
   case PuzzleCell::State::filled:
-    m_puzzle->mark_cell(x, y);
+    if (m_color != m_puzzle->palette().end())
+      m_puzzle->mark_cell(x, y, m_color->color);
+    else
+      m_puzzle->mark_cell(x, y);
     break;
   default:
   case PuzzleCell::State::blank:
@@ -297,4 +305,18 @@ void PuzzlePanel::set_cell(unsigned x, unsigned y, PuzzleCell::State state)
     m_puzzle->cross_out_cell(x, y);
     break;
   };
+}
+
+void PuzzlePanel::next_color()
+{
+  m_color++;
+  if (m_color == m_puzzle->palette().end())
+    m_color = m_puzzle->palette().begin();
+
+  if (m_color != m_puzzle->palette().end()
+      && m_color->name == "background") {
+    m_color++;
+    if (m_color == m_puzzle->palette().end())
+      m_color = m_puzzle->palette().begin();
+  }
 }

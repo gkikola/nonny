@@ -22,6 +22,7 @@
 #define NONNY_PUZZLE_PANEL_HPP
 
 #include <vector>
+#include "color/color_palette.hpp"
 #include "puzzle/puzzle_cell.hpp"
 #include "ui/ui_panel.hpp"
 #include "video/point.hpp"
@@ -59,10 +60,13 @@ private:
   void update_cells(unsigned ticks);
   void set_cell(unsigned x, unsigned y, PuzzleCell::State state);
 
+  void next_color();
+
   Font& m_clue_font;
   const Texture& m_cell_texture;
   
   Puzzle* m_puzzle = nullptr;
+  ColorPalette::const_iterator m_color;
   std::vector<unsigned> m_cell_time;
   std::vector<PuzzleCell::State> m_prev_cell_state;
   unsigned m_cell_size = 32;
