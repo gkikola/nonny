@@ -322,7 +322,7 @@ void PuzzlePanel::draw_selection(Renderer& renderer) const
     col.y() = m_boundary.y();
     col.width() = m_cell_size + 1;
     col.height() = m_boundary.height() - 1;
-    renderer.set_draw_color(default_colors::red);
+    renderer.set_draw_color(default_colors::blue);
     renderer.draw_thick_rect(row, 3);
     renderer.draw_thick_rect(col, 3);
   }
