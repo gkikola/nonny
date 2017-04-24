@@ -42,12 +42,19 @@ public:
   void update(unsigned ticks, InputHandler& input,
               const Rect& active_region) override;
   void draw(Renderer& renderer, const Rect& region) const override;
+
 private:
+  void retrieve_puzzle_info();
+  void calculate_bounds();
+
   Font& m_title_font;
   Font& m_info_font;
   Font& m_button_font;
 
   Puzzle* m_puzzle = nullptr;
+  std::string m_puzzle_title;
+  std::string m_puzzle_author;
+  std::string m_puzzle_size;
 
   bool m_sliding = false;
 };

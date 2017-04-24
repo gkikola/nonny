@@ -42,8 +42,12 @@ public:
   void resize(unsigned width, unsigned height) override;
 
   UIPanel& main_panel() { return *m_main_panel; }
+  void center_main_panel() { center_panel_vert(); center_panel_horiz(); }
 
 private:
+  void center_panel_vert();
+  void center_panel_horiz();
+  
   UIPanelPtr m_main_panel = nullptr;
   Scrollbar m_hscroll;
   Scrollbar m_vscroll;

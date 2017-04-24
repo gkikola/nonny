@@ -31,6 +31,8 @@ void ScrollingPanel::attach_panel(UIPanelPtr child)
   m_hscroll = Scrollbar(child, false);
   m_vscroll = Scrollbar(child, true);
   resize(m_boundary.width(), m_boundary.height());
+  center_panel_horiz();
+  center_panel_vert();
 }
 
 void ScrollingPanel::update(unsigned ticks, InputHandler& input,
@@ -92,15 +94,28 @@ void ScrollingPanel::resize(unsigned width, unsigned height)
 
   //center panel if it's smaller than the scrolling panel
   if (!m_hscroll_active)
-    m_main_panel->move(m_boundary.x() + m_boundary.width() / 2
-                       - m_main_panel->boundary().width() / 2,
-                       m_main_panel->boundary().y());
+    center_panel_horiz();
   else if(m_main_panel->boundary().x() > m_boundary.x())
     m_main_panel->move(m_boundary.x(), m_main_panel->boundary().y());
   if (!m_vscroll_active)
-    m_main_panel->move(m_main_panel->boundary().x(),
-                       m_boundary.y() + m_boundary.height() / 2
-                       - m_main_panel->boundary().height() / 2);
+    center_panel_vert();
   else if(m_main_panel->boundary().y() > m_boundary.y())
     m_main_panel->move(m_main_panel->boundary().x(), m_boundary.y());
+}
+
+void ScrollingPanel::center_panel_vert()
+{
+  m_main_panel->move(m_main_panel->boundary().x(),
+                     m_boundary.y()
+                     + static_cast<int>(m_boundary.height() / 2)
+                     - static_cast<int>(m_main_panel->boundary().height()
+                                        / 2));
+}
+
+void ScrollingPanel::center_panel_horiz()
+{
+  m_main_panel->move(m_boundary.x()
+                     + static_cast<int>(m_boundary.width() / 2)
+                     - static_cast<int>(m_main_panel->boundary().width() / 2),
+                     m_main_panel->boundary().y());
 }

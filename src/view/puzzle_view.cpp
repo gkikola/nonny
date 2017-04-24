@@ -151,6 +151,7 @@ void PuzzleView::update(unsigned ticks, InputHandler& input)
       panel->stop_slide();
     }
     m_info_pane.resize(cur_info_width, m_height);
+    m_info_pane.center_main_panel();
     resize(m_width, m_height);
   }
 }
