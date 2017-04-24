@@ -139,13 +139,13 @@ void Scrollbar::update_thumb_position()
 {
   m_thumb_pos = m_boundary;
   if (m_vertical) {
-    m_thumb_pos.y()
-      = scroll_position() * m_boundary.height() / target_height();
+    m_thumb_pos.y() = m_boundary.y()
+      + scroll_position() * m_boundary.height() / target_height();
     m_thumb_pos.height()
       = m_boundary.height() * m_boundary.height() / target_height();
   } else {
-    m_thumb_pos.x()
-      = scroll_position() * m_boundary.width() / target_width();
+    m_thumb_pos.x() = m_boundary.x()
+      + scroll_position() * m_boundary.width() / target_width();
     m_thumb_pos.width()
       = m_boundary.width() * m_boundary.width() / target_width();
   }
@@ -162,7 +162,8 @@ void Scrollbar::do_thumb_drag(InputHandler& input)
 
     m_scroll_target->move(m_scroll_target->boundary().x(),
                           m_boundary.y() - target_height()
-                          * m_thumb_pos.y() / m_boundary.height());
+                          * (m_thumb_pos.y() - m_boundary.y())
+                          / m_boundary.height());
   } else {
     m_thumb_pos.x() = input.mouse_position().x() - m_drag_pos;
     m_thumb_pos.x() = std::max(m_thumb_pos.x(), m_boundary.x());
@@ -171,7 +172,8 @@ void Scrollbar::do_thumb_drag(InputHandler& input)
                                - static_cast<int>(m_thumb_pos.width()));
 
     m_scroll_target->move(m_boundary.x() - target_width()
-                          * m_thumb_pos.x() / m_boundary.width(),
+                          * (m_thumb_pos.x() - m_boundary.x())
+                          / m_boundary.width(),
                           m_scroll_target->boundary().y());
   }
 }
