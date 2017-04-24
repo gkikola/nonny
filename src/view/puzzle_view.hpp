@@ -23,7 +23,6 @@
 
 #include <string>
 #include "puzzle/puzzle.hpp"
-#include "ui/puzzle_panel.hpp"
 #include "ui/scrolling_panel.hpp"
 #include "video/font.hpp"
 #include "video/texture.hpp"
@@ -49,9 +48,14 @@ private:
   
   Puzzle m_puzzle;
   ScrollingPanel m_main_panel;
+  ScrollingPanel m_info_pane;
 
   std::unique_ptr<Font> m_rule_font;
   std::unique_ptr<Texture> m_cell_texture;
+
+  std::unique_ptr<Font> m_title_font;
+  std::unique_ptr<Font> m_info_font;
+  std::unique_ptr<Font> m_button_font;
 };
 
 #endif

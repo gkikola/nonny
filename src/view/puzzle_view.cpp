@@ -24,14 +24,21 @@
 #include <memory>
 #include <stdexcept>
 #include <utility>
+#include "color/color.hpp"
 #include "input/input_handler.hpp"
 #include "settings/game_settings.hpp"
+#include "ui/puzzle_info_panel.hpp"
+#include "ui/puzzle_panel.hpp"
 #include "ui/scrollbar.hpp"
 #include "video/font.hpp"
 #include "video/renderer.hpp"
 #include "video/texture.hpp"
 #include "video/video_system.hpp"
 #include "view/view_manager.hpp"
+
+constexpr unsigned info_pane_width = 256;
+constexpr unsigned info_pane_slide_speed = 1000;
+const Color info_pane_background_color(123, 175, 212);
 
 PuzzleView::PuzzleView(ViewManager& vm, const std::string& filename)
   : View(vm)
@@ -101,11 +108,11 @@ void PuzzleView::load(const std::string& filename)
 
 void PuzzleView::setup_panels()
 {
-  std::string data_dir = m_mgr.game_settings().data_dir();
-  char sep = m_mgr.game_settings().filesystem_separator();
+  const GameSettings& settings = m_mgr.game_settings();
 
-  std::string font_file = data_dir + "fonts" + sep + "FreeSans.ttf";
-  std::string texture_file = data_dir + "images" + sep + "cross.png";
+  std::string font_file = settings.font_dir() + "FreeSans.ttf";
+  std::string bold_font_file = settings.font_dir() + "FreeSansBold.ttf";
+  std::string texture_file = settings.image_dir() + "cross.png";
   m_rule_font = m_mgr.video_system().new_font(font_file, 12);
   m_cell_texture = m_mgr.video_system().load_image(m_mgr.renderer(),
                                                    texture_file);
@@ -115,20 +122,59 @@ void PuzzleView::setup_panels()
 
   Rect win_region(0, 0, m_width, m_height);
   m_main_panel = ScrollingPanel(win_region, ppanel);
+
+  m_title_font = m_mgr.video_system().new_font(bold_font_file, 32);
+  m_info_font = m_mgr.video_system().new_font(font_file, 18);
+  m_button_font = m_mgr.video_system().new_font(font_file, 24);
+
+  auto ipanel = make_ui_panel<PuzzleInfoPanel>(*m_title_font,
+                                               *m_info_font,
+                                               *m_button_font,
+                                               m_puzzle);
+  dynamic_cast<PuzzleInfoPanel*>(ipanel.get())->start_slide();
+  Rect info_region(0, 0, 0, m_height);
+  m_info_pane = ScrollingPanel(info_region, ipanel);
 }
 
 void PuzzleView::update(unsigned ticks, InputHandler& input)
 {
   m_main_panel.update(ticks, input);
+  m_info_pane.update(ticks, input);
+
+  unsigned cur_info_width = m_info_pane.boundary().width();
+  if (cur_info_width < info_pane_width) {
+    cur_info_width += info_pane_slide_speed * ticks / 1000;
+    if (cur_info_width >= info_pane_width) {
+      cur_info_width = info_pane_width;
+      PuzzleInfoPanel* panel
+        = dynamic_cast<PuzzleInfoPanel*>(&m_info_pane.main_panel());
+      panel->stop_slide();
+    }
+    m_info_pane.resize(cur_info_width, m_height);
+    resize(m_width, m_height);
+  }
 }
 
 void PuzzleView::draw(Renderer& renderer)
 {
   m_main_panel.draw(renderer);
+  
+  renderer.set_draw_color(info_pane_background_color);
+  renderer.fill_rect(m_info_pane.boundary());
+  m_info_pane.draw(renderer);
 }
 
 void PuzzleView::resize(unsigned width, unsigned height)
 {
   View::resize(width, height);
-  m_main_panel.resize(width, height);
+
+  unsigned info_width = m_info_pane.boundary().width();
+  m_info_pane.resize(info_width, height);
+  if (width >= info_width) {
+    m_main_panel.move(info_width, 0);
+    m_main_panel.resize(width - info_width, height);
+  } else {
+    m_main_panel.move(width, 0);
+    m_main_panel.resize(0, height);
+  }
 }

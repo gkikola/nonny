@@ -18,37 +18,38 @@
  */
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
-#ifndef NONNY_SCROLLING_PANEL_HPP
-#define NONNY_SCROLLING_PANEL_HPP
+#ifndef NONNY_PUZZLE_INFO_PANEL_HPP
+#define NONNY_PUZZLE_INFO_PANEL_HPP
 
-#include <memory>
-#include "ui/scrollbar.hpp"
 #include "ui/ui_panel.hpp"
 
-class ScrollingPanel : public UIPanel {
-public:
-  ScrollingPanel() { }
-  explicit ScrollingPanel(const Rect& boundary) : UIPanel(boundary) { }
-  ScrollingPanel(const Rect& boundary, UIPanelPtr child)
-    : UIPanel(boundary) { attach_panel(child); }
+class Font;
+class Puzzle;
 
-  void attach_panel(UIPanelPtr child);
+class PuzzleInfoPanel : public UIPanel {
+public:
+  PuzzleInfoPanel(Font& title_font, Font& info_font, Font& button_font);
+  PuzzleInfoPanel(Font& title_font, Font& info_font, Font& button_font,
+                  Puzzle& puzzle);
+  void attach_puzzle(Puzzle& puzzle);
+
+  //start/stop sliding animation
+  void start_slide() { m_sliding = true; }
+  void stop_slide() { m_sliding = false; }
 
   using UIPanel::update; //make all update and draw overloads visible
   using UIPanel::draw;
   void update(unsigned ticks, InputHandler& input,
               const Rect& active_region) override;
   void draw(Renderer& renderer, const Rect& region) const override;
-  void resize(unsigned width, unsigned height) override;
-
-  UIPanel& main_panel() { return *m_main_panel; }
-
 private:
-  UIPanelPtr m_main_panel = nullptr;
-  Scrollbar m_hscroll;
-  Scrollbar m_vscroll;
-  bool m_hscroll_active = false;
-  bool m_vscroll_active = false;
+  Font& m_title_font;
+  Font& m_info_font;
+  Font& m_button_font;
+
+  Puzzle* m_puzzle = nullptr;
+
+  bool m_sliding = false;
 };
 
 #endif

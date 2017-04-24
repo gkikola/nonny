@@ -30,6 +30,10 @@ public:
   const std::string& data_dir() const { return m_data_dir; }
   const std::string& save_dir() const { return m_save_dir; }
   char filesystem_separator() const { return m_separator; }
+
+  inline std::string font_dir() const;
+  inline std::string image_dir() const;
+  inline std::string puzzle_dir() const;
 private:
   void find_directories();
   bool has_config(const std::string& path);
@@ -37,5 +41,22 @@ private:
   std::string m_save_dir;
   char m_separator = '/';
 };
+
+
+/* implementation */
+inline std::string GameSettings::font_dir() const
+{
+  return data_dir() + "fonts" + filesystem_separator();
+}
+
+inline std::string GameSettings::image_dir() const
+{
+  return data_dir() + "images" + filesystem_separator();
+}
+
+inline std::string GameSettings::puzzle_dir() const
+{
+  return data_dir() + "puzzles" + filesystem_separator();
+}
 
 #endif

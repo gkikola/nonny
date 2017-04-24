@@ -54,6 +54,7 @@ add_executable (
   src/puzzle/puzzle_io.cpp
   src/settings/game_settings.cpp
   src/ui/panel_collection.cpp
+  src/ui/puzzle_info_panel.cpp
   src/ui/puzzle_panel.cpp
   src/ui/scrollbar.cpp
   src/ui/scrolling_panel.cpp

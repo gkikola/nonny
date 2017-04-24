@@ -73,13 +73,13 @@ void PuzzlePanel::update(unsigned ticks, InputHandler& input,
 void PuzzlePanel::draw(Renderer& renderer, const Rect& region) const
 {
   if (m_puzzle) {
-    renderer.set_viewport(region);
+    renderer.set_clip_rect(region);
     draw_cells(renderer);
     draw_grid_lines(renderer);
     draw_clues(renderer);
     draw_selection(renderer);
   
-    renderer.set_viewport();
+    renderer.set_clip_rect();
   }
 }
 
