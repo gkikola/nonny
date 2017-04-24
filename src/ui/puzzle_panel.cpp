@@ -65,7 +65,7 @@ void PuzzlePanel::update(unsigned ticks, InputHandler& input,
         || input.was_key_pressed(Keyboard::Key::rctrl))
       next_color();
 
-    handle_mouse_selection(ticks, input);
+    handle_mouse_selection(ticks, input, active_region);
     handle_kb_selection(ticks, input);
   }
 }
@@ -333,7 +333,8 @@ void PuzzlePanel::drag_over_cell(unsigned x, unsigned y)
     set_cell(x, y, new_state);
 }
 
-void PuzzlePanel::handle_mouse_selection(unsigned ticks, InputHandler& input)
+void PuzzlePanel::handle_mouse_selection(unsigned ticks, InputHandler& input,
+                                         const Rect& region)
 {
   //figure out which cell is under the mouse cursor
   Point cursor = input.mouse_position();
@@ -341,7 +342,8 @@ void PuzzlePanel::handle_mouse_selection(unsigned ticks, InputHandler& input)
   cell_at_point(cursor, &x, &y);
 
   PuzzleCell::State cur_state;
-  bool cursor_over_grid = is_point_in_grid(cursor);
+  bool cursor_over_grid
+    = is_point_in_grid(cursor) && region.contains_point(cursor);
   if (cursor_over_grid) {
     cur_state = (*m_puzzle)[x][y].state;
   }

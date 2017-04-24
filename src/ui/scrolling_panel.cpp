@@ -70,10 +70,10 @@ void ScrollingPanel::resize(unsigned width, unsigned height)
   m_hscroll_active = false;
   m_vscroll_active = false;
   if (m_main_panel) {
-    if (m_main_panel->boundary().width() > width - scrollbar_width)
-      m_hscroll_active = true;
-    if (m_main_panel->boundary().height() > height - scrollbar_width)
+    if (m_main_panel->boundary().height() > height)
       m_vscroll_active = true;
+    if (m_main_panel->boundary().width() > width)
+      m_hscroll_active = true;
   }
 
   //move scrollbars into position
