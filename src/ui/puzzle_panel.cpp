@@ -65,69 +65,7 @@ void PuzzlePanel::update(unsigned ticks, InputHandler& input,
         || input.was_key_pressed(Keyboard::Key::rctrl))
       next_color();
 
-    //figure out which cell is under the mouse cursor
-    Point cursor = input.mouse_position();
-    unsigned x = 0, y = 0;
-    cell_at_point(cursor, &x, &y);
-
-    PuzzleCell::State cur_state;
-    bool cursor_over_grid = is_point_in_grid(cursor);
-    if (cursor_over_grid) {
-      cur_state = (*m_puzzle)[x][y].state;
-    }
-
-    if (input.rel_mouse_x() != 0 || input.rel_mouse_y() != 0) {
-      m_selected = cursor_over_grid;
-      if (m_selected) {
-        m_selection_x = x;
-        m_selection_y = y;
-      }
-    }
-
-    //check mouse buttons for drags
-    if (cursor_over_grid) {
-      bool left_pressed
-        = input.was_mouse_button_pressed(Mouse::Button::left);
-      bool right_pressed
-        = input.was_mouse_button_pressed(Mouse::Button::right);
-      if (left_pressed || right_pressed) {
-        if (cur_state == PuzzleCell::State::filled)
-          m_mouse_drag_type = DragType::blanking_fill;
-        else if (cur_state == PuzzleCell::State::blank)
-          m_mouse_drag_type = left_pressed ? DragType::fill : DragType::cross;
-        else if (cur_state == PuzzleCell::State::crossed_out)
-          m_mouse_drag_type = DragType::blanking_cross;
-        m_mouse_dragging = true;
-        input.capture_mouse();
-      }
-    }
-
-    if (input.was_mouse_button_released(Mouse::Button::left)
-        || input.was_mouse_button_released(Mouse::Button::right)) {
-      m_mouse_dragging = false;
-      input.release_mouse();
-    }
-        
-    if (m_mouse_dragging) {
-      drag_over_cell(x, y);
-
-      //mark the cells that fall between mouse positions
-      Point old_cursor = input.prev_mouse_position();
-      unsigned old_x, old_y;
-      cell_at_point(old_cursor, &old_x, &old_y);
-      while (old_x != x || old_y != y) {
-        drag_over_cell(old_x, old_y);
-        if (old_x < x)
-          ++old_x;
-        else if (old_x > x)
-          --old_x;
-        if (old_y < y)
-          ++old_y;
-        else if (old_y > y)
-          --old_y;
-      }
-    }
-
+    handle_mouse_selection(ticks, input);
     handle_kb_selection(ticks, input);
   }
 }
@@ -393,6 +331,72 @@ void PuzzlePanel::drag_over_cell(unsigned x, unsigned y)
   }
   if (set)
     set_cell(x, y, new_state);
+}
+
+void PuzzlePanel::handle_mouse_selection(unsigned ticks, InputHandler& input)
+{
+  //figure out which cell is under the mouse cursor
+  Point cursor = input.mouse_position();
+  unsigned x = 0, y = 0;
+  cell_at_point(cursor, &x, &y);
+
+  PuzzleCell::State cur_state;
+  bool cursor_over_grid = is_point_in_grid(cursor);
+  if (cursor_over_grid) {
+    cur_state = (*m_puzzle)[x][y].state;
+  }
+
+  if (input.rel_mouse_x() != 0 || input.rel_mouse_y() != 0) {
+    m_selected = cursor_over_grid;
+    if (m_selected) {
+      m_selection_x = x;
+      m_selection_y = y;
+    }
+  }
+
+  //check mouse buttons for drags
+  if (cursor_over_grid) {
+    bool left_pressed
+      = input.was_mouse_button_pressed(Mouse::Button::left);
+    bool right_pressed
+      = input.was_mouse_button_pressed(Mouse::Button::right);
+    if (left_pressed || right_pressed) {
+      if (cur_state == PuzzleCell::State::filled)
+        m_mouse_drag_type = DragType::blanking_fill;
+      else if (cur_state == PuzzleCell::State::blank)
+        m_mouse_drag_type = left_pressed ? DragType::fill : DragType::cross;
+      else if (cur_state == PuzzleCell::State::crossed_out)
+        m_mouse_drag_type = DragType::blanking_cross;
+      m_mouse_dragging = true;
+      input.capture_mouse();
+    }
+  }
+
+  if (input.was_mouse_button_released(Mouse::Button::left)
+      || input.was_mouse_button_released(Mouse::Button::right)) {
+    m_mouse_dragging = false;
+    input.release_mouse();
+  }
+        
+  if (m_mouse_dragging) {
+    drag_over_cell(x, y);
+
+    //mark the cells that fall between mouse positions
+    Point old_cursor = input.prev_mouse_position();
+    unsigned old_x, old_y;
+    cell_at_point(old_cursor, &old_x, &old_y);
+    while (old_x != x || old_y != y) {
+      drag_over_cell(old_x, old_y);
+      if (old_x < x)
+        ++old_x;
+      else if (old_x > x)
+        --old_x;
+      if (old_y < y)
+        ++old_y;
+      else if (old_y > y)
+        --old_y;
+    }
+  }
 }
 
 void PuzzlePanel::handle_kb_selection(unsigned ticks, InputHandler& input)

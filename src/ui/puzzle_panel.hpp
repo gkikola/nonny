@@ -61,6 +61,7 @@ private:
   void update_cells(unsigned ticks);
   void set_cell(unsigned x, unsigned y, PuzzleCell::State state);
   void drag_over_cell(unsigned x, unsigned y);
+  void handle_mouse_selection(unsigned ticks, InputHandler& input);
   void handle_kb_selection(unsigned ticks, InputHandler& input);
 
   enum class Direction { up, down, left, right };
