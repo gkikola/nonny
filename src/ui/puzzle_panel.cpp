@@ -401,6 +401,51 @@ void PuzzlePanel::handle_mouse_selection(unsigned ticks, InputHandler& input)
 
 void PuzzlePanel::handle_kb_selection(unsigned ticks, InputHandler& input)
 {
+  bool fill_pressed = input.was_key_pressed(Keyboard::Key::space)
+    || input.was_key_pressed(Keyboard::Key::enter)
+    || input.was_key_pressed(Keyboard::Key::kp_enter);
+  bool cross_pressed = input.was_key_pressed(Keyboard::Key::lalt)
+    || input.was_key_pressed(Keyboard::Key::ralt)
+    || input.was_key_pressed(Keyboard::Key::backspace)
+    || input.was_key_pressed(Keyboard::Key::del);
+  if (m_selected && (fill_pressed || cross_pressed)) {
+    m_kb_dragging = true;
+    PuzzleCell::State cur_state
+      = (*m_puzzle)[m_selection_x][m_selection_y].state;
+    PuzzleCell::State new_state;
+    switch (cur_state) {
+    case PuzzleCell::State::filled:
+      m_kb_drag_type = DragType::blanking_fill;
+      new_state = PuzzleCell::State::blank;
+      break;
+    default:
+    case PuzzleCell::State::blank:
+      if (fill_pressed) {
+        m_kb_drag_type = DragType::fill;
+        new_state = PuzzleCell::State::filled;
+      } else {
+        m_kb_drag_type = DragType::cross;
+        new_state = PuzzleCell::State::crossed_out;
+      }
+      break;
+    case PuzzleCell::State::crossed_out:
+      m_kb_drag_type = DragType::blanking_cross;
+      new_state = PuzzleCell::State::blank;
+      break;
+    };
+
+    set_cell(m_selection_x, m_selection_y, new_state);
+  }
+
+  if (input.was_key_released(Keyboard::Key::space)
+      || input.was_key_released(Keyboard::Key::enter)
+      || input.was_key_released(Keyboard::Key::kp_enter)
+      || input.was_key_released(Keyboard::Key::lalt)
+      || input.was_key_released(Keyboard::Key::ralt)
+      || input.was_key_released(Keyboard::Key::backspace)
+      || input.was_key_released(Keyboard::Key::del))
+    m_kb_dragging = false;
+  
   if (m_kb_dir_held) {
     if (m_ticks_until_sel_change >= ticks)
       m_ticks_until_sel_change -= ticks;
@@ -423,7 +468,6 @@ void PuzzlePanel::handle_kb_selection(unsigned ticks, InputHandler& input)
       || input.was_key_released(Keyboard::Key::kp_up)
       || input.was_key_released(Keyboard::Key::down)
       || input.was_key_released(Keyboard::Key::kp_down)) {
-    m_kb_dragging = false;
     m_kb_dir_held = false;
   }
   
@@ -484,6 +528,42 @@ void PuzzlePanel::move_selection(Direction dir)
         m_selection_y = 0;
       break;
     }
+
+    if (m_kb_dragging) {
+      auto cur_state = (*m_puzzle)[m_selection_x][m_selection_y].state;
+      decltype(cur_state) new_state;
+      bool set_state = false;
+      switch (m_kb_drag_type) {
+      default:
+      case DragType::fill:
+        if (cur_state == PuzzleCell::State::blank) {
+          new_state = PuzzleCell::State::filled;
+          set_state = true;
+        }
+        break;
+      case DragType::cross:
+        if (cur_state == PuzzleCell::State::blank) {
+          new_state = PuzzleCell::State::crossed_out;
+          set_state = true;
+        }
+        break;
+      case DragType::blanking_fill:
+        if (cur_state == PuzzleCell::State::filled) {
+          new_state = PuzzleCell::State::blank;
+          set_state = true;
+        }
+        break;
+      case DragType::blanking_cross:
+        if (cur_state == PuzzleCell::State::crossed_out) {
+          new_state = PuzzleCell::State::blank;
+          set_state = true;
+        }
+        break;
+      }
+
+      if (set_state)
+        set_cell(m_selection_x, m_selection_y, new_state);
+    } //end if kb_dragging
   }
 }
 
