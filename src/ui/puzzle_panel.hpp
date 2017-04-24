@@ -75,22 +75,34 @@ private:
   const Texture& m_cell_texture;
 
   enum class DragType { fill, cross, blanking_fill, blanking_cross };
-  
+
+  //Puzzle information
   Puzzle* m_puzzle = nullptr;
   ColorPalette::const_iterator m_color;
   std::vector<unsigned> m_cell_time;
   std::vector<PuzzleCell::State> m_prev_cell_state;
   unsigned m_cell_size = 32;
   Point m_grid_pos;
+
+  //Dragging states
   DragType m_mouse_drag_type = DragType::fill;
   DragType m_kb_drag_type = DragType::fill;
   bool m_mouse_dragging = false;
   bool m_kb_dragging = false;
 
+  //Mouse lock state
+  bool m_mouse_locked = false;
+  enum class MouseLockType { to_row, to_col } m_mouse_lock_type;
+  unsigned m_mouse_lock_pos = 0;
+  unsigned m_drag_start_x = 0;
+  unsigned m_drag_start_y = 0;
+
+  //Arrow key states
   Direction m_kb_dir;
   bool m_kb_dir_held = false;
   unsigned m_ticks_until_sel_change = 0;
 
+  //Cell selection
   bool m_selected = false;
   unsigned m_selection_x = 0;
   unsigned m_selection_y = 0;

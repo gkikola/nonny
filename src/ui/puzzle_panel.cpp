@@ -353,6 +353,13 @@ void PuzzlePanel::handle_mouse_selection(unsigned ticks, InputHandler& input,
     if (m_selected) {
       m_selection_x = x;
       m_selection_y = y;
+
+      if (m_mouse_locked) {
+        if (m_mouse_lock_type == MouseLockType::to_row)
+          m_selection_y = m_mouse_lock_pos;
+        else
+          m_selection_x = m_mouse_lock_pos;
+      }
     }
   }
 
@@ -371,22 +378,49 @@ void PuzzlePanel::handle_mouse_selection(unsigned ticks, InputHandler& input,
         m_mouse_drag_type = DragType::blanking_cross;
       m_mouse_dragging = true;
       input.capture_mouse();
+
+      //keep track of current cell in order to lock mouse later on
+      m_drag_start_x = x;
+      m_drag_start_y = y;
     }
   }
 
   if (input.was_mouse_button_released(Mouse::Button::left)
       || input.was_mouse_button_released(Mouse::Button::right)) {
     m_mouse_dragging = false;
+    m_mouse_locked = false;
     input.release_mouse();
   }
         
   if (m_mouse_dragging) {
-    drag_over_cell(x, y);
-
-    //mark the cells that fall between mouse positions
     Point old_cursor = input.prev_mouse_position();
     unsigned old_x, old_y;
     cell_at_point(old_cursor, &old_x, &old_y);
+
+    if (m_mouse_locked) {
+      if (m_mouse_lock_type == MouseLockType::to_row) {
+        y = m_mouse_lock_pos;
+        old_y = m_mouse_lock_pos;
+      }
+      else {
+        x = m_mouse_lock_pos;
+        old_x = m_mouse_lock_pos;
+      }
+    } else {
+      if (x == m_drag_start_x && y != m_drag_start_y) {
+        m_mouse_lock_type = MouseLockType::to_col;
+        m_mouse_lock_pos = x;
+        m_mouse_locked = true;
+      } else if (x != m_drag_start_x && y == m_drag_start_y) {
+        m_mouse_lock_type = MouseLockType::to_row;
+        m_mouse_lock_pos = y;
+        m_mouse_locked = true;
+      }
+    }
+    
+    //mark current cell and any cells that the mouse passed over
+    drag_over_cell(x, y);
+    
     while (old_x != x || old_y != y) {
       drag_over_cell(old_x, old_y);
       if (old_x < x)
