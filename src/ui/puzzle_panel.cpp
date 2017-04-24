@@ -34,6 +34,8 @@ const Color shaded_cell_color(230, 230, 255);
 const Color lightly_shaded_cell_color(240, 240, 255);
 
 constexpr unsigned cell_animation_duration = 100;
+constexpr unsigned initial_input_delay = 500;
+constexpr unsigned regular_input_delay = 100;
 
 PuzzlePanel::PuzzlePanel(Font& clue_font, const Texture& cell_texture,
                          Puzzle& puzzle)
@@ -76,8 +78,10 @@ void PuzzlePanel::update(unsigned ticks, InputHandler& input,
 
     if (input.rel_mouse_x() != 0 || input.rel_mouse_y() != 0) {
       m_selected = cursor_over_grid;
-      m_selection_x = x;
-      m_selection_y = y;
+      if (m_selected) {
+        m_selection_x = x;
+        m_selection_y = y;
+      }
     }
 
     //check mouse buttons for drags
@@ -88,23 +92,23 @@ void PuzzlePanel::update(unsigned ticks, InputHandler& input,
         = input.was_mouse_button_pressed(Mouse::Button::right);
       if (left_pressed || right_pressed) {
         if (cur_state == PuzzleCell::State::filled)
-          m_drag_type = DragType::blanking_fill;
+          m_mouse_drag_type = DragType::blanking_fill;
         else if (cur_state == PuzzleCell::State::blank)
-          m_drag_type = left_pressed ? DragType::fill : DragType::cross;
+          m_mouse_drag_type = left_pressed ? DragType::fill : DragType::cross;
         else if (cur_state == PuzzleCell::State::crossed_out)
-          m_drag_type = DragType::blanking_cross;
-        m_dragging = true;
+          m_mouse_drag_type = DragType::blanking_cross;
+        m_mouse_dragging = true;
         input.capture_mouse();
       }
     }
 
     if (input.was_mouse_button_released(Mouse::Button::left)
         || input.was_mouse_button_released(Mouse::Button::right)) {
-      m_dragging = false;
+      m_mouse_dragging = false;
       input.release_mouse();
     }
         
-    if (m_dragging) {
+    if (m_mouse_dragging) {
       drag_over_cell(x, y);
 
       //mark the cells that fall between mouse positions
@@ -123,6 +127,8 @@ void PuzzlePanel::update(unsigned ticks, InputHandler& input,
           --old_y;
       }
     }
+
+    handle_kb_selection(ticks, input);
   }
 }
 
@@ -366,7 +372,7 @@ void PuzzlePanel::drag_over_cell(unsigned x, unsigned y)
   PuzzleCell::State cur_state = (*m_puzzle)[x][y].state;
   PuzzleCell::State new_state;
   bool set = false;
-  switch (m_drag_type) {
+  switch (m_mouse_drag_type) {
   default:
   case DragType::fill:
     new_state = PuzzleCell::State::filled;
@@ -387,6 +393,94 @@ void PuzzlePanel::drag_over_cell(unsigned x, unsigned y)
   }
   if (set)
     set_cell(x, y, new_state);
+}
+
+void PuzzlePanel::handle_kb_selection(unsigned ticks, InputHandler& input)
+{
+  if (m_kb_dir_held) {
+    if (m_ticks_until_sel_change >= ticks)
+      m_ticks_until_sel_change -= ticks;
+    else {
+      move_selection(m_kb_dir);
+      unsigned ticks_left = ticks - m_ticks_until_sel_change;
+      while (ticks_left >= regular_input_delay) {
+        ticks_left -= regular_input_delay;
+        move_selection(m_kb_dir);
+      }
+      m_ticks_until_sel_change = regular_input_delay - ticks_left;
+    }
+  }
+
+  if (input.was_key_released(Keyboard::Key::left)
+      || input.was_key_released(Keyboard::Key::kp_left)
+      || input.was_key_released(Keyboard::Key::right)
+      || input.was_key_released(Keyboard::Key::kp_right)
+      || input.was_key_released(Keyboard::Key::up)
+      || input.was_key_released(Keyboard::Key::kp_up)
+      || input.was_key_released(Keyboard::Key::down)
+      || input.was_key_released(Keyboard::Key::kp_down)) {
+    m_kb_dragging = false;
+    m_kb_dir_held = false;
+  }
+  
+  bool do_move = false;
+  if (input.was_key_pressed(Keyboard::Key::left)
+      || input.was_key_pressed(Keyboard::Key::kp_left)) {
+    m_kb_dir = Direction::left;
+    do_move = true;
+  } else if (input.was_key_pressed(Keyboard::Key::right)
+             || input.was_key_pressed(Keyboard::Key::kp_right)) {
+    m_kb_dir = Direction::right;
+    do_move = true;
+  } else if (input.was_key_pressed(Keyboard::Key::up)
+             || input.was_key_pressed(Keyboard::Key::kp_up)) {
+    m_kb_dir = Direction::up;
+    do_move = true;
+  } else if (input.was_key_pressed(Keyboard::Key::down)
+             || input.was_key_pressed(Keyboard::Key::kp_down)) {
+    m_kb_dir = Direction::down;
+    do_move = true;
+  }
+  
+  if (do_move) {
+    m_kb_dir_held = true;
+    m_ticks_until_sel_change = initial_input_delay;
+    move_selection(m_kb_dir);
+  }
+}
+
+void PuzzlePanel::move_selection(Direction dir)
+{
+  if (!m_selected)
+    m_selected = true;
+  else {
+    switch (dir) {
+    case Direction::left:
+      if (m_selection_x > 0)
+        --m_selection_x;
+      else if (!m_kb_dragging)
+        m_selection_x = m_puzzle->width() - 1;
+      break;
+    case Direction::right:
+      if (m_selection_x < m_puzzle->width() - 1)
+        ++m_selection_x;
+      else if (!m_kb_dragging)
+        m_selection_x = 0;
+      break;
+    case Direction::up:
+      if (m_selection_y > 0)
+        --m_selection_y;
+      else if (!m_kb_dragging)
+        m_selection_y = m_puzzle->height() - 1;
+      break;
+    case Direction::down:
+      if (m_selection_y < m_puzzle->height() - 1)
+        ++m_selection_y;
+      else if (!m_kb_dragging)
+        m_selection_y = 0;
+      break;
+    }
+  }
 }
 
 void PuzzlePanel::next_color()

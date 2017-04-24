@@ -61,7 +61,10 @@ private:
   void update_cells(unsigned ticks);
   void set_cell(unsigned x, unsigned y, PuzzleCell::State state);
   void drag_over_cell(unsigned x, unsigned y);
+  void handle_kb_selection(unsigned ticks, InputHandler& input);
 
+  enum class Direction { up, down, left, right };
+  void move_selection(Direction dir);
   void next_color();
   inline bool is_point_in_grid(const Point& p) const;
   inline void cell_at_point(const Point& p, unsigned* x, unsigned* y) const;
@@ -77,8 +80,14 @@ private:
   std::vector<PuzzleCell::State> m_prev_cell_state;
   unsigned m_cell_size = 32;
   Point m_grid_pos;
-  DragType m_drag_type = DragType::fill;
-  bool m_dragging = false;
+  DragType m_mouse_drag_type = DragType::fill;
+  DragType m_kb_drag_type = DragType::fill;
+  bool m_mouse_dragging = false;
+  bool m_kb_dragging = false;
+
+  Direction m_kb_dir;
+  bool m_kb_dir_held = false;
+  unsigned m_ticks_until_sel_change = 0;
 
   bool m_selected = false;
   unsigned m_selection_x = 0;
