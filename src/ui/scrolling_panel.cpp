@@ -20,10 +20,12 @@
 
 #include "ui/scrolling_panel.hpp"
 
+#include "color/color.hpp"
 #include "input/input_handler.hpp"
 #include "video/renderer.hpp"
 
 constexpr unsigned scrollbar_width = 16;
+const Color scrollbar_background_color(196, 196, 196);
 
 void ScrollingPanel::attach_panel(UIPanelPtr child)
 {
@@ -62,6 +64,19 @@ void ScrollingPanel::draw(Renderer& renderer, const Rect& region) const
     m_hscroll.draw(renderer, region);
   if (m_vscroll_active)
     m_vscroll.draw(renderer, region);
+
+  //fill in the little square in the corner that separates the scrollbars
+  if (m_hscroll_active && m_vscroll_active) {
+    Rect rect(m_boundary.x() + m_boundary.width()
+              - m_vscroll.boundary().width(),
+              m_boundary.y() + m_boundary.height()
+              - m_hscroll.boundary().height(),
+              m_vscroll.boundary().width(),
+              m_hscroll.boundary().height());
+    rect = intersection(rect, region);
+    renderer.set_draw_color(scrollbar_background_color);
+    renderer.fill_rect(rect);
+  }
 }
 
 void ScrollingPanel::resize(unsigned width, unsigned height)
