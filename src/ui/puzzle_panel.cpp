@@ -36,6 +36,7 @@ const Color lightly_shaded_cell_color(240, 240, 255);
 constexpr unsigned cell_animation_duration = 100;
 constexpr unsigned initial_input_delay = 600;
 constexpr unsigned regular_input_delay = 75;
+constexpr unsigned mouse_lock_duration = 250;
 
 PuzzlePanel::PuzzlePanel(Font& clue_font, const Texture& cell_texture,
                          Puzzle& puzzle)
@@ -349,6 +350,13 @@ void PuzzlePanel::handle_mouse_selection(unsigned ticks, InputHandler& input,
     cur_state = (*m_puzzle)[x][y].state;
   }
 
+  //release mouse lock if enough time has passed
+  if (m_mouse_locked) {
+    m_mouse_lock_time += ticks;
+    if (m_mouse_lock_time >= mouse_lock_duration)
+      m_mouse_locked = false;
+  }
+  
   if (input.rel_mouse_x() != 0 || input.rel_mouse_y() != 0) {
     m_selected = cursor_over_grid;
     if (m_selected) {
@@ -412,10 +420,12 @@ void PuzzlePanel::handle_mouse_selection(unsigned ticks, InputHandler& input,
         m_mouse_lock_type = MouseLockType::to_col;
         m_mouse_lock_pos = x;
         m_mouse_locked = true;
+        m_mouse_lock_time = 0;
       } else if (x != m_drag_start_x && y == m_drag_start_y) {
         m_mouse_lock_type = MouseLockType::to_row;
         m_mouse_lock_pos = y;
         m_mouse_locked = true;
+        m_mouse_lock_time = 0;
       }
     }
     

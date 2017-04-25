@@ -94,6 +94,7 @@ private:
   bool m_mouse_locked = false;
   enum class MouseLockType { to_row, to_col } m_mouse_lock_type;
   unsigned m_mouse_lock_pos = 0;
+  unsigned m_mouse_lock_time = 0;
   unsigned m_drag_start_x = 0;
   unsigned m_drag_start_y = 0;
 
