@@ -27,7 +27,7 @@
 #include "video/renderer.hpp"
 
 constexpr unsigned spacing = 8;
-constexpr unsigned preview_size = 196;
+constexpr unsigned preview_width = 196;
 
 PuzzleInfoPanel::PuzzleInfoPanel(Font& title_font, Font& info_font,
                                  Font& button_font)
@@ -138,8 +138,10 @@ void PuzzleInfoPanel::calculate_bounds()
   height += text_ht + spacing;
 
   unsigned preview_pos = m_boundary.y() + height;
-  width = std::max(width, preview_size + 2 * spacing);
-  height += preview_size + spacing;
+  unsigned preview_height = preview_width
+    * m_puzzle->height() / m_puzzle->width();
+  width = std::max(width, preview_width + 2 * spacing);
+  height += preview_height + spacing;
 
   if (!m_puzzle_author.empty()) {
     m_info_font.text_size(m_puzzle_author, &text_wd, &text_ht);
@@ -147,8 +149,8 @@ void PuzzleInfoPanel::calculate_bounds()
     height += text_ht + spacing;
   }
 
-  m_preview.move(m_boundary.x() + width / 2 - preview_size / 2, preview_pos);
-  m_preview.resize(preview_size, preview_size);
+  m_preview.move(m_boundary.x() + width / 2 - preview_width / 2, preview_pos);
+  m_preview.resize(preview_width, preview_height);
 
   resize(width, height);
 }

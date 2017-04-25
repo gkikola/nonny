@@ -59,7 +59,7 @@ void PuzzlePreview::draw(Renderer& renderer, const Rect& region) const
           renderer.set_draw_color(cell.color);
 
           Rect r(m_boundary.x() + offset_x + x * horiz_pixel_size,
-                 m_boundary.y() + offset_y + y * horiz_pixel_size,
+                 m_boundary.y() + offset_y + y * vert_pixel_size,
                  horiz_pixel_size, vert_pixel_size);
           renderer.fill_rect(r);
         }
