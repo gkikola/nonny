@@ -250,15 +250,16 @@ void PuzzlePanel::draw_cells(Renderer& renderer) const
 
 void PuzzlePanel::draw_selection(Renderer& renderer) const
 {
+  const int offset = 2;
   if (m_selected) {
     Rect row, col;
     row.x() = m_boundary.x();
-    row.y() = m_grid_pos.y() + m_selection_y * (m_cell_size + 1);
+    row.y() = m_grid_pos.y() + m_selection_y * (m_cell_size + 1) - offset;
     row.width() = m_boundary.width() - 1;
-    row.height() = m_cell_size + 1;
-    col.x() = m_grid_pos.x() + m_selection_x * (m_cell_size + 1);
+    row.height() = m_cell_size + 1 + 2 * offset;
+    col.x() = m_grid_pos.x() + m_selection_x * (m_cell_size + 1) - offset;
     col.y() = m_boundary.y();
-    col.width() = m_cell_size + 1;
+    col.width() = m_cell_size + 1 + 2 * offset;
     col.height() = m_boundary.height() - 1;
     renderer.set_draw_color(m_color->color);
     renderer.draw_thick_rect(row, 3);
