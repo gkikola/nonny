@@ -111,12 +111,12 @@ void Scrollbar::resize(unsigned width, unsigned height)
       && target_height() > m_boundary.height()
       && scroll_position() + m_boundary.height() > target_height())
     m_scroll_target->move(m_scroll_target->boundary().x(),
-                          m_boundary.height()
+                          m_boundary.y() + m_boundary.height()
                           - m_scroll_target->boundary().height());
   else if (!m_vertical
            && target_width() > m_boundary.width()
            && scroll_position() + m_boundary.width() > target_width())
-    m_scroll_target->move(m_boundary.width()
+    m_scroll_target->move(m_boundary.x() + m_boundary.width()
                           - m_scroll_target->boundary().width(),
                           m_scroll_target->boundary().y());
 }
