@@ -27,6 +27,7 @@
 #include "video/renderer.hpp"
 
 constexpr unsigned spacing = 8;
+constexpr unsigned preview_size = 196;
 
 PuzzleInfoPanel::PuzzleInfoPanel(Font& title_font, Font& info_font,
                                  Font& button_font)
@@ -48,6 +49,7 @@ PuzzleInfoPanel::PuzzleInfoPanel(Font& title_font, Font& info_font,
 void PuzzleInfoPanel::attach_puzzle(Puzzle& puzzle)
 {
   m_puzzle = &puzzle;
+  m_preview.attach_puzzle(puzzle);
   retrieve_puzzle_info();
   calculate_bounds();
 }
@@ -55,6 +57,7 @@ void PuzzleInfoPanel::attach_puzzle(Puzzle& puzzle)
 void PuzzleInfoPanel::update(unsigned ticks, InputHandler& input,
                              const Rect& active_region)
 {
+  m_preview.update(ticks, input, active_region);
 }
 
 void PuzzleInfoPanel::draw(Renderer& renderer, const Rect& region) const
@@ -63,7 +66,7 @@ void PuzzleInfoPanel::draw(Renderer& renderer, const Rect& region) const
     renderer.set_clip_rect(region);
     renderer.set_draw_color(default_colors::black);
 
-    Point pos(m_boundary.x(), m_boundary.y());
+    Point pos(m_boundary.x(), m_boundary.y() + spacing);
 
     //draw title
     unsigned text_width, text_height;
@@ -79,6 +82,9 @@ void PuzzleInfoPanel::draw(Renderer& renderer, const Rect& region) const
     renderer.draw_text(text_pos, m_button_font, m_puzzle_size);
     pos.y() += text_height + spacing;
 
+    //leave room for preview
+    pos.y() += m_preview.boundary().height() + spacing;
+
     //draw author
     if (!m_puzzle_author.empty()) {
       m_info_font.text_size(m_puzzle_author, &text_width, &text_height);
@@ -88,8 +94,18 @@ void PuzzleInfoPanel::draw(Renderer& renderer, const Rect& region) const
       pos.y() += text_height + spacing;
     }
 
+    //draw preview
+    m_preview.draw(renderer, region);
+    
     renderer.set_clip_rect();
   }
+}
+
+void PuzzleInfoPanel::move(int x, int y)
+{
+  int old_x = m_boundary.x(), old_y = m_boundary.y();
+  UIPanel::move(x, y);
+  m_preview.scroll(x - old_x, y - old_y);
 }
 
 void PuzzleInfoPanel::retrieve_puzzle_info()
@@ -110,21 +126,29 @@ void PuzzleInfoPanel::retrieve_puzzle_info()
 
 void PuzzleInfoPanel::calculate_bounds()
 {
-  unsigned width = 2 * spacing, height = 2 * spacing;
+  unsigned width = 0, height = spacing;
 
   unsigned text_wd, text_ht;
   m_title_font.text_size(m_puzzle_title, &text_wd, &text_ht);
   width = std::max(width, text_wd + 2 * spacing);
   height += text_ht + spacing;
+
   m_button_font.text_size(m_puzzle_size, &text_wd, &text_ht);
   width = std::max(width, text_wd + 2 * spacing);
   height += text_ht + spacing;
+
+  unsigned preview_pos = m_boundary.y() + height;
+  width = std::max(width, preview_size + 2 * spacing);
+  height += preview_size + spacing;
 
   if (!m_puzzle_author.empty()) {
     m_info_font.text_size(m_puzzle_author, &text_wd, &text_ht);
     width = std::max(width, text_wd + 2 * spacing);
     height += text_ht + spacing;
   }
+
+  m_preview.move(m_boundary.x() + width / 2 - preview_size / 2, preview_pos);
+  m_preview.resize(preview_size, preview_size);
 
   resize(width, height);
 }

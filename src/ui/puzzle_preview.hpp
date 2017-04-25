@@ -18,25 +18,19 @@
  */
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
-#ifndef NONNY_PUZZLE_INFO_PANEL_HPP
-#define NONNY_PUZZLE_INFO_PANEL_HPP
+#ifndef NONNY_PUZZLE_PREVIEW_HPP
+#define NONNY_PUZZLE_PREVIEW_HPP
 
-#include "ui/puzzle_preview.hpp"
 #include "ui/ui_panel.hpp"
 
-class Font;
 class Puzzle;
 
-class PuzzleInfoPanel : public UIPanel {
+class PuzzlePreview : public UIPanel {
 public:
-  PuzzleInfoPanel(Font& title_font, Font& info_font, Font& button_font);
-  PuzzleInfoPanel(Font& title_font, Font& info_font, Font& button_font,
-                  Puzzle& puzzle);
-  void attach_puzzle(Puzzle& puzzle);
+  PuzzlePreview() { }
+  PuzzlePreview(Puzzle& puzzle) { attach_puzzle(puzzle); }
 
-  //start/stop sliding animation
-  void start_slide() { m_sliding = true; }
-  void stop_slide() { m_sliding = false; }
+  void attach_puzzle(Puzzle& puzzle) { m_puzzle = &puzzle; }
 
   using UIPanel::update; //make all update and draw overloads visible
   using UIPanel::draw;
@@ -44,24 +38,8 @@ public:
               const Rect& active_region) override;
   void draw(Renderer& renderer, const Rect& region) const override;
 
-  void move(int x, int y) override;
-
 private:
-  void retrieve_puzzle_info();
-  void calculate_bounds();
-
-  Font& m_title_font;
-  Font& m_info_font;
-  Font& m_button_font;
-
-  Puzzle* m_puzzle = nullptr;
-  std::string m_puzzle_title;
-  std::string m_puzzle_author;
-  std::string m_puzzle_size;
-
-  PuzzlePreview m_preview;
-
-  bool m_sliding = false;
+  Puzzle* m_puzzle;
 };
 
 #endif

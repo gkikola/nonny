@@ -56,6 +56,7 @@ add_executable (
   src/ui/panel_collection.cpp
   src/ui/puzzle_info_panel.cpp
   src/ui/puzzle_panel.cpp
+  src/ui/puzzle_preview.cpp
   src/ui/scrollbar.cpp
   src/ui/scrolling_panel.cpp
   src/ui/ui_panel.cpp
