@@ -61,8 +61,18 @@ void Button::update(unsigned ticks, InputHandler& input,
 
 void Button::draw(Renderer& renderer, const Rect& region) const
 {
-  //background
   renderer.set_clip_rect(region);
+
+  draw_background(renderer);
+  if (has_focus())
+    draw_sel_rect(renderer);
+  draw_label(renderer);
+  
+  renderer.set_clip_rect();
+}
+
+void Button::draw_background(Renderer& renderer) const
+{
   renderer.set_draw_color(button_background_color);
   renderer.fill_rect(m_boundary);
   
@@ -70,17 +80,20 @@ void Button::draw(Renderer& renderer, const Rect& region) const
     renderer.set_draw_color(button_selection_color);
     renderer.draw_rect(m_boundary);
   }
+}
 
-  //selection rectangle
-  if (has_focus()) {
-    Rect selection(m_boundary.x() + spacing,
-                   m_boundary.y() + spacing,
-                   m_boundary.width() - 2 * spacing,
-                   m_boundary.height() - 2 * spacing);
-    renderer.draw_dotted_rect(selection);
-  }
+void Button::draw_sel_rect(Renderer& renderer) const
+{
+  Rect selection(m_boundary.x() + spacing,
+                 m_boundary.y() + spacing,
+                 m_boundary.width() - 2 * spacing,
+                 m_boundary.height() - 2 * spacing);
+  renderer.set_draw_color(button_selection_color);
+  renderer.draw_dotted_rect(selection);  
+}
 
-  //label
+void Button::draw_label(Renderer& renderer) const
+{
   Color color;
   if (m_depressed)
     color = button_label_depressed_color;
@@ -93,12 +106,10 @@ void Button::draw(Renderer& renderer, const Rect& region) const
   renderer.set_draw_color(color);
   Point location(m_boundary.x() + 2 * spacing, m_boundary.y() + 2 * spacing);
   if (m_depressed) {
-    location.x() += 1;
-    location.y() += 1;
+    ++location.x();
+    ++location.y();
   }
   renderer.draw_text(location, m_font, m_label);
-  
-  renderer.set_clip_rect();
 }
 
 void Button::calc_size()

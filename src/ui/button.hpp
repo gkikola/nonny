@@ -33,6 +33,7 @@ public:
     : m_font(font) { calc_size(); }
   Button(const Font& font, const std::string& label)
     : m_font(font), m_label(label) { calc_size(); }
+  virtual ~Button() { }
 
   Button(const Button&) = default;
   Button(Button&&) = default;
@@ -46,6 +47,12 @@ public:
   void update(unsigned ticks, InputHandler& input,
               const Rect& active_region) override;
   void draw(Renderer& renderer, const Rect& region) const override;
+
+protected:
+  void draw_background(Renderer& renderer) const;
+  void draw_sel_rect(Renderer& renderer) const;
+  void draw_label(Renderer& renderer) const;
+  
 private:
   void calc_size();
   
