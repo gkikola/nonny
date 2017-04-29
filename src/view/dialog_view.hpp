@@ -18,45 +18,20 @@
  */
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
-#ifndef NONNY_PUZZLE_VIEW_HPP
-#define NONNY_PUZZLE_VIEW_HPP
+#ifndef NONNY_DIALOG_VIEW_HPP
+#define NONNY_DIALOG_VIEW_HPP
 
-#include <string>
-#include "puzzle/puzzle.hpp"
-#include "ui/scrolling_panel.hpp"
-#include "video/font.hpp"
-#include "video/texture.hpp"
 #include "view/view.hpp"
 
-class PuzzleView : public View {
+class DialogView : public View {
 public:
-  PuzzleView(ViewManager& vm, const std::string& filename);
-  PuzzleView(ViewManager& vm, const std::string& filename,
-             unsigned width, unsigned height);
-
-  PuzzleView(const PuzzleView& pv);
-  PuzzleView(PuzzleView&&);
-  PuzzleView& operator=(const PuzzleView& pv) &;
-  PuzzleView& operator=(PuzzleView&& pv) &;
+  explicit DialogView(ViewManager& vm) : View(vm) { }
+  DialogView(ViewManager& vm, unsigned width, unsigned height)
+    : View(vm, width, height) { }
 
   void update(unsigned ticks, InputHandler& input) override;
   void draw(Renderer& renderer) override;
   void resize(unsigned width, unsigned height) override;
-
-private:
-  void load(const std::string& filename);
-  void setup_panels();
-  
-  Puzzle m_puzzle;
-  ScrollingPanel m_main_panel;
-  ScrollingPanel m_info_pane;
-
-  std::unique_ptr<Font> m_rule_font;
-  std::unique_ptr<Texture> m_cell_texture;
-
-  std::unique_ptr<Font> m_title_font;
-  std::unique_ptr<Font> m_info_font;
-  std::unique_ptr<Font> m_button_font;
 };
 
 #endif

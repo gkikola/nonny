@@ -53,6 +53,8 @@ add_executable (
   src/puzzle/puzzle_grid.cpp
   src/puzzle/puzzle_io.cpp
   src/settings/game_settings.cpp
+  src/ui/button.cpp
+  src/ui/control.cpp
   src/ui/panel_collection.cpp
   src/ui/puzzle_info_panel.cpp
   src/ui/puzzle_panel.cpp
@@ -75,9 +77,10 @@ add_executable (
   src/video/texture.cpp
   src/video/video_system.cpp
   src/video/window.cpp
+  src/view/dialog_view.cpp
+  src/view/puzzle_view.cpp
   src/view/view.cpp
   src/view/view_manager.cpp
-  src/view/puzzle_view.cpp
   )
 
 target_link_libraries (

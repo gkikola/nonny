@@ -21,6 +21,7 @@
 #include "ui/puzzle_info_panel.hpp"
 
 #include <algorithm>
+#include <iostream>
 #include <string>
 #include "puzzle/puzzle.hpp"
 #include "video/font.hpp"
@@ -126,31 +127,36 @@ void PuzzleInfoPanel::retrieve_puzzle_info()
 
 void PuzzleInfoPanel::calculate_bounds()
 {
-  unsigned width = 0, height = spacing;
+  if (m_puzzle) {
+    unsigned width = 0, height = spacing;
 
-  unsigned text_wd, text_ht;
-  m_title_font.text_size(m_puzzle_title, &text_wd, &text_ht);
-  width = std::max(width, text_wd + 2 * spacing);
-  height += text_ht + spacing;
-
-  m_button_font.text_size(m_puzzle_size, &text_wd, &text_ht);
-  width = std::max(width, text_wd + 2 * spacing);
-  height += text_ht + spacing;
-
-  unsigned preview_pos = m_boundary.y() + height;
-  unsigned preview_height = preview_width
-    * m_puzzle->height() / m_puzzle->width();
-  width = std::max(width, preview_width + 2 * spacing);
-  height += preview_height + spacing;
-
-  if (!m_puzzle_author.empty()) {
-    m_info_font.text_size(m_puzzle_author, &text_wd, &text_ht);
+    unsigned text_wd, text_ht;
+    m_title_font.text_size(m_puzzle_title, &text_wd, &text_ht);
     width = std::max(width, text_wd + 2 * spacing);
     height += text_ht + spacing;
+
+    m_button_font.text_size(m_puzzle_size, &text_wd, &text_ht);
+    width = std::max(width, text_wd + 2 * spacing);
+    height += text_ht + spacing;
+
+    unsigned preview_pos = m_boundary.y() + height;
+    unsigned preview_height = preview_width
+      * m_puzzle->height() / m_puzzle->width();
+    width = std::max(width, preview_width + 2 * spacing);
+    height += preview_height + spacing;
+
+    if (!m_puzzle_author.empty()) {
+      m_info_font.text_size(m_puzzle_author, &text_wd, &text_ht);
+      width = std::max(width, text_wd + 2 * spacing);
+      height += text_ht + spacing;
+    }
+
+    //unsigned button_pos = m_boundary.y() + height;
+
+    m_preview.move(m_boundary.x() + width / 2 - preview_width / 2,
+                   preview_pos);
+    m_preview.resize(preview_width, preview_height);
+
+    resize(width, height);
   }
-
-  m_preview.move(m_boundary.x() + width / 2 - preview_width / 2, preview_pos);
-  m_preview.resize(preview_width, preview_height);
-
-  resize(width, height);
 }
