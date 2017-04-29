@@ -21,7 +21,6 @@
 #include "ui/puzzle_info_panel.hpp"
 
 #include <algorithm>
-#include <iostream>
 #include <string>
 #include "puzzle/puzzle.hpp"
 #include "video/font.hpp"

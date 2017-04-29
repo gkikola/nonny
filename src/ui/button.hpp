@@ -29,10 +29,11 @@ class Font;
 
 class Button : public Control {
 public:
+  Button() = default;
   explicit Button(const Font& font)
-    : m_font(font) { calc_size(); }
+    : m_font(&font) { calc_size(); }
   Button(const Font& font, const std::string& label)
-    : m_font(font), m_label(label) { calc_size(); }
+    : m_font(&font), m_label(label) { calc_size(); }
   virtual ~Button() { }
 
   Button(const Button&) = default;
@@ -52,16 +53,16 @@ protected:
   void draw_background(Renderer& renderer) const;
   void draw_sel_rect(Renderer& renderer) const;
   void draw_label(Renderer& renderer) const;
-  
-private:
-  void calc_size();
-  
-  std::function<void()> m_operation;
-  const Font& m_font;
-  std::string m_label;
-  
+
   bool m_depressed = false;
   bool m_mouse_hover = false;
+
+private:
+  void calc_size();
+
+  std::function<void()> m_operation;
+  const Font* m_font = nullptr;
+  std::string m_label;
 };
 
 #endif

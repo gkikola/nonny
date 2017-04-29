@@ -94,28 +94,31 @@ void Button::draw_sel_rect(Renderer& renderer) const
 
 void Button::draw_label(Renderer& renderer) const
 {
-  Color color;
-  if (m_depressed)
-    color = button_label_depressed_color;
-  else if (m_mouse_hover)
-    color = button_label_hover_color;
-  else if (has_focus())
-    color = button_label_focus_color;
-  else
-    color = button_label_color;
-  renderer.set_draw_color(color);
-  Point location(m_boundary.x() + 2 * spacing, m_boundary.y() + 2 * spacing);
-  if (m_depressed) {
-    ++location.x();
-    ++location.y();
+  if (m_font) {
+    Color color;
+    if (m_depressed)
+      color = button_label_depressed_color;
+    else if (m_mouse_hover)
+      color = button_label_hover_color;
+    else if (has_focus())
+      color = button_label_focus_color;
+    else
+      color = button_label_color;
+    renderer.set_draw_color(color);
+    Point location(m_boundary.x() + 2 * spacing, m_boundary.y() + 2 * spacing);
+    if (m_depressed) {
+      ++location.x();
+      ++location.y();
+    }
+    renderer.draw_text(location, *m_font, m_label);
   }
-  renderer.draw_text(location, m_font, m_label);
 }
 
 void Button::calc_size()
 {
-  unsigned width, height;
-  m_font.text_size(m_label, &width, &height);
+  unsigned width = 0, height = 0;
+  if (m_font)
+    m_font->text_size(m_label, &width, &height);
 
   resize(width + 4 * spacing, height + 4 * spacing);
 }
