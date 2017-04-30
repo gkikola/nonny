@@ -36,6 +36,7 @@ public:
 
   virtual void give_focus() { m_focused = true; }
   virtual void remove_focus() { m_focused = false; }
+  virtual bool can_focus() const { return true; }
   virtual bool has_focus() const { return m_focused; }
 
 private:

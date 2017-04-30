@@ -35,48 +35,50 @@ const Color thumb_drag(42, 118, 198);
 void Scrollbar::update(unsigned ticks, InputHandler& input,
                        const Rect& active_region)
 {
-  Point cursor = input.mouse_position();
-  update_thumb_position();
-  m_mouse_hover = false;
+  if (m_scroll_target) {
+    Point cursor = input.mouse_position();
+    update_thumb_position();
+    m_mouse_hover = false;
 
-  if (m_dragging) {
-    do_thumb_drag(input);
+    if (m_dragging) {
+      do_thumb_drag(input);
     
-    if (input.was_mouse_button_released(Mouse::left)
-        || input.was_mouse_button_released(Mouse::right)) {
-      m_dragging = false;
-      input.release_mouse();
-    }
-  } else {
-    //check to see if the user is attempting to drag the scroll thumb
-    if (active_region.contains_point(cursor)) {
+      if (input.was_mouse_button_released(Mouse::left)
+          || input.was_mouse_button_released(Mouse::right)) {
+        m_dragging = false;
+        input.release_mouse();
+      }
+    } else {
+      //check to see if the user is attempting to drag the scroll thumb
+      if (active_region.contains_point(cursor)) {
 
-      if (m_thumb_pos.contains_point(cursor))
-        m_mouse_hover = true;
+        if (m_thumb_pos.contains_point(cursor))
+          m_mouse_hover = true;
       
-      if (input.was_mouse_button_pressed(Mouse::left)
-          || input.was_mouse_button_pressed(Mouse::right)) {
-        if (m_mouse_hover) {
-          m_dragging = true;
-          m_drag_pos = m_vertical
-            ? (cursor.y() - m_thumb_pos.y())
-            : (cursor.x() - m_thumb_pos.x());
-        } else if (m_boundary.contains_point(cursor)) {
-          m_dragging = true;
-          m_drag_pos = m_vertical
-            ? (m_thumb_pos.height() / 2)
-            : (m_thumb_pos.width() / 2);
-          do_thumb_drag(input);
-          m_drag_pos = m_vertical
-            ? (cursor.y() - m_thumb_pos.y())
-            : (cursor.x() - m_thumb_pos.x());
-        }
+        if (input.was_mouse_button_pressed(Mouse::left)
+            || input.was_mouse_button_pressed(Mouse::right)) {
+          if (m_mouse_hover) {
+            m_dragging = true;
+            m_drag_pos = m_vertical
+              ? (cursor.y() - m_thumb_pos.y())
+              : (cursor.x() - m_thumb_pos.x());
+          } else if (m_boundary.contains_point(cursor)) {
+            m_dragging = true;
+            m_drag_pos = m_vertical
+              ? (m_thumb_pos.height() / 2)
+              : (m_thumb_pos.width() / 2);
+            do_thumb_drag(input);
+            m_drag_pos = m_vertical
+              ? (cursor.y() - m_thumb_pos.y())
+              : (cursor.x() - m_thumb_pos.x());
+          }
 
-        if (m_dragging)
-          input.capture_mouse();
+          if (m_dragging)
+            input.capture_mouse();
+        }
       }
     }
-  }
+  } //end if m_scroll_target
 }
 
 void Scrollbar::draw(Renderer& renderer, const Rect& region) const
@@ -84,22 +86,24 @@ void Scrollbar::draw(Renderer& renderer, const Rect& region) const
   renderer.set_draw_color(background);
   renderer.fill_rect(intersection(m_boundary, region));
 
-  //add spacing around thumb
-  Rect thumb_pos = m_thumb_pos;
-  if (thumb_pos.width() > 2 * padding && thumb_pos.height() > 2 * padding) {
-    //set thumb color
-    if (m_dragging)
-      renderer.set_draw_color(thumb_drag);
-    else if (m_mouse_hover)
-      renderer.set_draw_color(thumb_hover);
-    else
-      renderer.set_draw_color(thumb);
+  if (m_scroll_target) {
+    //add spacing around thumb
+    Rect thumb_pos = m_thumb_pos;
+    if (thumb_pos.width() > 2 * padding && thumb_pos.height() > 2 * padding) {
+      //set thumb color
+      if (m_dragging)
+        renderer.set_draw_color(thumb_drag);
+      else if (m_mouse_hover)
+        renderer.set_draw_color(thumb_hover);
+      else
+        renderer.set_draw_color(thumb);
 
-    thumb_pos.x() += padding;
-    thumb_pos.y() += padding;
-    thumb_pos.width() -= 2 * padding;
-    thumb_pos.height() -= 2 * padding;
-    renderer.fill_rect(intersection(thumb_pos, region));
+      thumb_pos.x() += padding;
+      thumb_pos.y() += padding;
+      thumb_pos.width() -= 2 * padding;
+      thumb_pos.height() -= 2 * padding;
+      renderer.fill_rect(intersection(thumb_pos, region));
+    }
   }
 }
 
@@ -107,18 +111,20 @@ void Scrollbar::resize(unsigned width, unsigned height)
 {
   UIPanel::resize(width, height);
 
-  if (m_vertical
-      && target_height() > m_boundary.height()
-      && scroll_position() + m_boundary.height() > target_height())
-    m_scroll_target->move(m_scroll_target->boundary().x(),
-                          m_boundary.y() + m_boundary.height()
-                          - m_scroll_target->boundary().height());
-  else if (!m_vertical
-           && target_width() > m_boundary.width()
-           && scroll_position() + m_boundary.width() > target_width())
-    m_scroll_target->move(m_boundary.x() + m_boundary.width()
-                          - m_scroll_target->boundary().width(),
-                          m_scroll_target->boundary().y());
+  if (m_scroll_target) {
+    if (m_vertical
+        && target_height() > m_boundary.height()
+        && scroll_position() + m_boundary.height() > target_height())
+      m_scroll_target->move(m_scroll_target->boundary().x(),
+                            m_boundary.y() + m_boundary.height()
+                            - m_scroll_target->boundary().height());
+    else if (!m_vertical
+             && target_width() > m_boundary.width()
+             && scroll_position() + m_boundary.width() > target_width())
+      m_scroll_target->move(m_boundary.x() + m_boundary.width()
+                            - m_scroll_target->boundary().width(),
+                            m_scroll_target->boundary().y());
+  }
 }
 
 int Scrollbar::scroll_position() const

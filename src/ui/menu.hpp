@@ -18,39 +18,19 @@
  */
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
-#ifndef NONNY_DIALOG_HPP
-#define NONNY_DIALOG_HPP
+#ifndef NONNY_MENU_HPP
+#define NONNY_MENU_HPP
 
-#include <vector>
-#include "ui/control.hpp"
-#include "ui/ui_panel.hpp"
+#include "ui/dialog.hpp"
 
-class Dialog : public UIPanel {
+class Menu : public Dialog {
 public:
-  Dialog() : m_focused(m_controls.end()) { }
-  virtual ~Dialog() { }
+  Menu() = default;
 
-  void add_control(ControlPtr control);
-  virtual void position_controls() = 0;
+  void position_controls() override;
   
-  void focus_prev();
-  void focus_next();
-  
-  using UIPanel::update; //make update and draw overloads visible
-  using UIPanel::draw;
-  void update(unsigned ticks, InputHandler& input,
-              const Rect& active_region) override;
-  void draw(Renderer& renderer, const Rect& region) const override;
-
-  void move(int x, int y) override;
-
 protected:
-  void give_focus();
-  void remove_focus();
-  
-  std::vector<ControlPtr> m_controls;
-  std::vector<ControlPtr>::iterator m_focused;
-  bool m_need_reposition = false;
+  void calc_size();
 };
 
 #endif

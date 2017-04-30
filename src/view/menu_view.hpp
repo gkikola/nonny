@@ -18,39 +18,33 @@
  */
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
-#ifndef NONNY_DIALOG_HPP
-#define NONNY_DIALOG_HPP
+#ifndef NONNY_MENU_VIEW_HPP
+#define NONNY_MENU_VIEW_HPP
 
-#include <vector>
-#include "ui/control.hpp"
-#include "ui/ui_panel.hpp"
+#include <memory>
+#include "ui/scrolling_panel.hpp"
+#include "video/font.hpp"
+#include "video/texture.hpp"
+#include "view/view.hpp"
 
-class Dialog : public UIPanel {
+class MenuView : public View {
 public:
-  Dialog() : m_focused(m_controls.end()) { }
-  virtual ~Dialog() { }
+  MenuView(ViewManager& vm) : View(vm) { load_resources(); main_menu(); }
+  MenuView(ViewManager& vm, unsigned width, unsigned height)
+    : View(vm, width, height) { load_resources(); main_menu(); }
 
-  void add_control(ControlPtr control);
-  virtual void position_controls() = 0;
-  
-  void focus_prev();
-  void focus_next();
-  
-  using UIPanel::update; //make update and draw overloads visible
-  using UIPanel::draw;
-  void update(unsigned ticks, InputHandler& input,
-              const Rect& active_region) override;
-  void draw(Renderer& renderer, const Rect& region) const override;
+  void update(unsigned ticks, InputHandler& input) override;
+  void draw(Renderer& renderer) override;
+  void resize(unsigned width, unsigned height) override;
 
-  void move(int x, int y) override;
-
-protected:
-  void give_focus();
-  void remove_focus();
+private:
+  void load_resources();
+  void main_menu();
   
-  std::vector<ControlPtr> m_controls;
-  std::vector<ControlPtr>::iterator m_focused;
-  bool m_need_reposition = false;
+  ScrollingPanel m_main_panel;
+
+  std::unique_ptr<Font> m_control_font;
+  std::unique_ptr<Texture> m_logo_texture;
 };
 
 #endif

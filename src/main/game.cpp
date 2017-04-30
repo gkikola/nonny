@@ -28,6 +28,7 @@
 #include "input/input_handler.hpp"
 #include "settings/game_settings.hpp"
 #include "video/font.hpp"
+#include "view/menu_view.hpp"
 #include "view/puzzle_view.hpp"
 
 Game::Game(int argc, char* argv[])
@@ -43,12 +44,16 @@ Game::Game(int argc, char* argv[])
                                              *m_renderer,
                                              m_settings);
 
-  //For now, start the game with a puzzle open
-  auto view = std::make_shared<PuzzleView>(*m_view_mgr,
-                                           m_settings.puzzle_dir()
-                                           + "easy/test.non");
+  auto view = std::make_shared<MenuView>(*m_view_mgr);
   m_view_mgr->push(view);
   m_view_mgr->resize(m_window->width(), m_window->height());
+  
+  /*//For now, start the game with a puzzle open
+  auto pview = std::make_shared<PuzzleView>(*m_view_mgr,
+                                            m_settings.puzzle_dir()
+                                            + "easy/test.non");
+  m_view_mgr->push(pview);
+  m_view_mgr->resize(m_window->width(), m_window->height());*/
 }
 
 void Game::run()

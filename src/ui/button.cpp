@@ -44,7 +44,7 @@ void Button::update(unsigned ticks, InputHandler& input,
     m_mouse_hover = false;
 
   if (input.was_mouse_button_released(Mouse::Button::left)) {
-    if (m_depressed && m_mouse_hover)
+    if (m_depressed && m_mouse_hover && m_operation)
       m_operation();
     m_depressed = false;
   }
@@ -105,7 +105,10 @@ void Button::draw_label(Renderer& renderer) const
     else
       color = button_label_color;
     renderer.set_draw_color(color);
-    Point location(m_boundary.x() + 2 * spacing, m_boundary.y() + 2 * spacing);
+    Point location(m_boundary.x()
+                   + m_boundary.width() / 2
+                   - m_label_width / 2,
+                   m_boundary.y() + 2 * spacing);
     if (m_depressed) {
       ++location.x();
       ++location.y();
@@ -117,8 +120,10 @@ void Button::draw_label(Renderer& renderer) const
 void Button::calc_size()
 {
   unsigned width = 0, height = 0;
-  if (m_font)
+  if (m_font) {
     m_font->text_size(m_label, &width, &height);
+    m_label_width = width;
+  }
 
   resize(width + 4 * spacing, height + 4 * spacing);
 }
