@@ -42,4 +42,18 @@ private:
   bool m_focused = false;
 };
 
+typedef std::shared_ptr<Control> ControlPtr;
+
+template <typename ControlType, typename... Args>
+ControlPtr make_control(Args& ... args);
+
+
+/* implementation */
+
+template <typename ControlType, typename... Args>
+ControlPtr make_control(Args& ... args)
+{
+  return std::make_shared<ControlType>(args...);
+}
+
 #endif

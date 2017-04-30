@@ -21,9 +21,19 @@
 #include "view/view_manager.hpp"
 
 #include <stdexcept>
+#include <string>
 #include <SDL2/SDL.h>
 #include "input/input_handler.hpp"
+#include "settings/game_settings.hpp"
 #include "video/renderer.hpp"
+
+ViewManager::ViewManager(VideoSystem& vs, Renderer& renderer,
+                         GameSettings& settings)
+  : m_video(vs),
+    m_renderer(renderer),
+    m_settings(settings)
+{
+}
 
 ViewManager::ViewManager(VideoSystem& vs, Renderer& renderer,
                          GameSettings& settings,

@@ -18,29 +18,18 @@
  */
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
-#ifndef NONNY_DIALOG_VIEW_HPP
-#define NONNY_DIALOG_VIEW_HPP
+#include "ui/message_box.hpp"
 
-#include <memory>
-#include "ui/dialog.hpp"
-#include "ui/scrolling_panel.hpp"
-#include "view/view.hpp"
+#include "video/font.hpp"
 
-class DialogView : public View {
-public:
-  explicit DialogView(ViewManager& vm) : View(vm) { }
-  DialogView(ViewManager& vm, unsigned width, unsigned height)
-    : View(vm, width, height), m_spanel(Rect(0, 0, width, height)) { }
+MessageBox::MessageBox(const Font& text_font, const Font& button_font,
+                       const std::string& text)
+  : m_text_font(&text_font),
+    m_button_font(&button_font),
+    m_text(text)
+{
+}
 
-  void attach_dialog(std::shared_ptr<Dialog> dialog);
-  
-  void update(unsigned ticks, InputHandler& input) override;
-  void draw(Renderer& renderer) override;
-  void resize(unsigned width, unsigned height) override;
-
-private:
-  ScrollingPanel m_spanel;
-  std::shared_ptr<Dialog> m_dialog;
-};
-
-#endif
+void MessageBox::position_controls()
+{
+}

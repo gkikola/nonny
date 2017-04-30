@@ -25,6 +25,7 @@
 #include <memory>
 #include <vector>
 #include "view/view.hpp"
+#include "video/font.hpp"
 #include "video/video_system.hpp"
 
 class GameSettings;
@@ -33,8 +34,7 @@ class Renderer;
 
 class ViewManager {
 public:
-  ViewManager(VideoSystem& vs, Renderer& renderer, GameSettings& settings)
-    : m_video(vs), m_renderer(renderer), m_settings(settings) { }
+  ViewManager(VideoSystem& vs, Renderer& renderer, GameSettings& settings);
   ViewManager(VideoSystem& vs, Renderer& renderer, GameSettings& settings,
               unsigned width, unsigned height);
 
@@ -58,7 +58,7 @@ public:
   
   GameSettings& game_settings() { return m_settings; }
   const GameSettings& game_settings() const { return m_settings; }
-  
+
   void quit_game();
 private:
   std::vector<std::shared_ptr<View>> m_views;

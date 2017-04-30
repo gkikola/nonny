@@ -18,29 +18,46 @@
  */
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
-#ifndef NONNY_DIALOG_VIEW_HPP
-#define NONNY_DIALOG_VIEW_HPP
-
-#include <memory>
 #include "ui/dialog.hpp"
-#include "ui/scrolling_panel.hpp"
-#include "view/view.hpp"
 
-class DialogView : public View {
-public:
-  explicit DialogView(ViewManager& vm) : View(vm) { }
-  DialogView(ViewManager& vm, unsigned width, unsigned height)
-    : View(vm, width, height), m_spanel(Rect(0, 0, width, height)) { }
+void Dialog::add_control(ControlPtr control)
+{
+  m_controls.push_back(control);
+  m_need_reposition = true;
+}
 
-  void attach_dialog(std::shared_ptr<Dialog> dialog);
+void Dialog::focus_prev()
+{
+  if (m_focused == m_controls.begin())
+    m_focused = m_controls.end();
+
+  if (m_focused != m_controls.begin())
+    --m_focused;
+}
+
+void Dialog::focus_next()
+{
+  if (m_focused == m_controls.end())
+    m_focused = m_controls.begin();
+
+  if (m_focused != m_controls.end())
+    ++m_focused;
+}
+
+void Dialog::update(unsigned ticks, InputHandler& input,
+                    const Rect& active_region)
+{
+  if (m_need_reposition) {
+    m_need_reposition = false;
+    position_controls();
+  }
   
-  void update(unsigned ticks, InputHandler& input) override;
-  void draw(Renderer& renderer) override;
-  void resize(unsigned width, unsigned height) override;
+  for (auto& c : m_controls)
+    c->update(ticks, input, active_region);
+}
 
-private:
-  ScrollingPanel m_spanel;
-  std::shared_ptr<Dialog> m_dialog;
-};
-
-#endif
+void Dialog::draw(Renderer& renderer, const Rect& region) const
+{
+  for (auto& c : m_controls)
+    c->draw(renderer, region);
+}

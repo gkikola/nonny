@@ -22,6 +22,10 @@
 
 #include "view/view_manager.hpp"
 
+void DialogView::attach_dialog(std::shared_ptr<Dialog> dialog)
+{
+}
+
 void DialogView::update(unsigned ticks, InputHandler& input)
 {
 }

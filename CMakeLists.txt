@@ -55,6 +55,8 @@ add_executable (
   src/settings/game_settings.cpp
   src/ui/button.cpp
   src/ui/control.cpp
+  src/ui/dialog.cpp
+  src/ui/message_box.cpp
   src/ui/puzzle_info_panel.cpp
   src/ui/puzzle_panel.cpp
   src/ui/puzzle_preview.cpp

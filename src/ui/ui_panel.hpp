@@ -44,7 +44,7 @@ public:
     update(ticks, input, m_boundary); }
   virtual void update(unsigned ticks, InputHandler& input,
                       const Rect& active_region) = 0;
-  virtual void draw(Renderer& renderer) { draw(renderer, m_boundary); }
+  virtual void draw(Renderer& renderer) const { draw(renderer, m_boundary); }
   virtual void draw(Renderer& renderer, const Rect& region) const = 0;
   
   virtual void move(int x, int y) { m_boundary.move(x, y); }

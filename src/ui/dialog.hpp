@@ -18,29 +18,35 @@
  */
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
-#ifndef NONNY_DIALOG_VIEW_HPP
-#define NONNY_DIALOG_VIEW_HPP
+#ifndef NONNY_DIALOG_HPP
+#define NONNY_DIALOG_HPP
 
-#include <memory>
-#include "ui/dialog.hpp"
-#include "ui/scrolling_panel.hpp"
-#include "view/view.hpp"
+#include <vector>
+#include "ui/control.hpp"
+#include "ui/ui_panel.hpp"
 
-class DialogView : public View {
+class Dialog : public UIPanel {
 public:
-  explicit DialogView(ViewManager& vm) : View(vm) { }
-  DialogView(ViewManager& vm, unsigned width, unsigned height)
-    : View(vm, width, height), m_spanel(Rect(0, 0, width, height)) { }
+  Dialog() : m_focused(m_controls.end()) { }
+  virtual ~Dialog() { }
 
-  void attach_dialog(std::shared_ptr<Dialog> dialog);
+  void add_control(ControlPtr control);
   
-  void update(unsigned ticks, InputHandler& input) override;
-  void draw(Renderer& renderer) override;
-  void resize(unsigned width, unsigned height) override;
+  void focus_prev();
+  void focus_next();
+  
+  using UIPanel::update; //make update and draw overloads visible
+  using UIPanel::draw;
+  void update(unsigned ticks, InputHandler& input,
+              const Rect& active_region) override;
+  void draw(Renderer& renderer, const Rect& region) const override;
 
-private:
-  ScrollingPanel m_spanel;
-  std::shared_ptr<Dialog> m_dialog;
+protected:
+  virtual void position_controls() = 0;
+  
+  std::vector<ControlPtr> m_controls;
+  std::vector<ControlPtr>::iterator m_focused;
+  bool m_need_reposition = false;
 };
 
 #endif
