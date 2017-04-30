@@ -26,12 +26,12 @@ constexpr unsigned spacing = 16;
 
 void Menu::position_controls()
 {
+  m_need_reposition = false;
   calc_size();
   int x = m_boundary.x();
   int y = m_boundary.y() + spacing;
 
   for (auto& c : m_controls) {
-    c->resize(m_boundary.width(), c->boundary().height());
     c->move(x + m_boundary.width() / 2 - c->boundary().width() / 2, y);
     y += c->boundary().height() + spacing;
   }

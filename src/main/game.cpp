@@ -21,7 +21,6 @@
 #include "main/game.hpp"
 
 #include <cstddef>
-#include <iostream>
 #include "config.h"
 #include "color/color.hpp"
 #include "event/event_handler.hpp"

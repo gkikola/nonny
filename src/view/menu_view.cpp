@@ -31,10 +31,27 @@
 #include "view/puzzle_view.hpp"
 #include "view/view_manager.hpp"
 
+constexpr unsigned menu_button_width = 128;
 const Color menu_background_color(123, 175, 212);
 
 void MenuView::update(unsigned ticks, InputHandler& input)
 {
+  if (m_action != MenuAction::no_action) {
+    switch (m_action) {
+    default:
+    case MenuAction::no_action:
+      break;
+    case MenuAction::load_main:
+      main_menu();
+      break;
+    case MenuAction::load_about:
+      about_menu();
+      break;
+    }
+
+    m_action = MenuAction::no_action;
+  }
+    
   m_main_panel.update(ticks, input);
 }
 
@@ -60,6 +77,7 @@ void MenuView::load_resources()
   m_title_font = m_mgr.video_system().new_font(file, 56);
 
   file = m_mgr.game_settings().font_dir() + "FreeSans.ttf";
+  m_about_font = m_mgr.video_system().new_font(file, 16);
   m_control_font = m_mgr.video_system().new_font(file, 24);
 }
 
@@ -84,16 +102,59 @@ void MenuView::main_menu()
                               mgr.push(pview);
                               mgr.refresh();
                             });
+  button->resize(menu_button_width, button->boundary().height());
   menu->add_control(button);
 
   button = std::make_shared<Button>(*m_control_font, "Create");
+  button->resize(menu_button_width, button->boundary().height());
   menu->add_control(button);
 
   button = std::make_shared<Button>(*m_control_font, "About");
+  button->register_callback([this]()
+                            {
+                              m_action = MenuAction::load_about;
+                            });
+  button->resize(menu_button_width, button->boundary().height());
   menu->add_control(button);
 
   menu->position_controls();
-
   m_main_panel.attach_panel(menu);
+  resize(m_width, m_height);
+}
+
+void MenuView::about_menu()
+{
+  auto about = std::make_shared<Menu>();
+
+  auto title = std::make_shared<StaticText>(*m_title_font, NONNY_TITLE);
+  about->add_control(title);
+
+  auto logo = std::make_shared<StaticImage>(*m_logo_texture);
+  about->add_control(logo);
+
+  auto text = std::make_shared<StaticText>(*m_about_font,
+                                           std::string(NONNY_TITLE)
+                                           + " v" + NONNY_VERSION);
+  about->add_control(text);
+
+  text = std::make_shared<StaticText>(*m_about_font,
+                                      "Copyright © 2017 Gregory Kikola");
+  about->add_control(text);
+
+  text = std::make_shared<StaticText>(*m_about_font,
+                                      "License GPLv3+: "
+                                      "GNU GPL version 3 or later");
+  about->add_control(text);
+
+  auto button = std::make_shared<Button>(*m_control_font, "Back");
+  button->register_callback([this]()
+                            {
+                              m_action = MenuAction::load_main;
+                            });
+  button->resize(menu_button_width, button->boundary().height());
+  about->add_control(button);
+
+  about->position_controls();
+  m_main_panel.attach_panel(about);
   resize(m_width, m_height);
 }

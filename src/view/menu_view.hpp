@@ -40,11 +40,16 @@ public:
 private:
   void load_resources();
   void main_menu();
+  void about_menu();
+
+  enum class MenuAction { no_action, load_main, load_about };
   
   ScrollingPanel m_main_panel;
+  MenuAction m_action = MenuAction::no_action;
 
   std::unique_ptr<Font> m_title_font;
   std::unique_ptr<Font> m_control_font;
+  std::unique_ptr<Font> m_about_font;
   std::unique_ptr<Texture> m_logo_texture;
 };
 
