@@ -45,6 +45,7 @@ public:
   void move(int x, int y) override;
 
 protected:
+  void find_focus();
   void give_focus();
   void remove_focus();
   

@@ -35,11 +35,10 @@ void Dialog::focus_prev()
 {
   if (m_focused != m_controls.end()
       && (*m_focused)->can_focus()
-      && !(*m_focused)->has_focus())
-    give_focus();
-  else {
+      && !(*m_focused)->has_focus()) {
     remove_focus();
-
+    give_focus();
+  } else {
     auto pred = [](ControlPtr& p) { return p->can_focus(); };
     auto result = std::make_reverse_iterator(m_focused);
     result = std::find_if(result, m_controls.rend(), pred);
@@ -50,6 +49,7 @@ void Dialog::focus_prev()
     if (m_focused != m_controls.begin())
       --m_focused;
 
+    remove_focus();
     give_focus();
   }
 }
@@ -58,10 +58,10 @@ void Dialog::focus_next()
 {
   if (m_focused != m_controls.end()
       && (*m_focused)->can_focus()
-      && !(*m_focused)->has_focus())
-    give_focus();
-  else {
+      && !(*m_focused)->has_focus()) {
     remove_focus();
+    give_focus();
+  } else {
     ++m_focused;
 
     auto pred = [](ControlPtr& p) { return p->can_focus(); };
@@ -70,6 +70,7 @@ void Dialog::focus_next()
       result = std::find_if(m_controls.begin(), m_controls.end(), pred);
     m_focused = result;
 
+    remove_focus();
     give_focus();
   }
 }
@@ -90,21 +91,21 @@ void Dialog::update(unsigned ticks, InputHandler& input,
     else
       focus_next();
   }
+
+  //controls should lose focus on mouse press outside
+  if (input.was_mouse_button_pressed(Mouse::Button::left)
+      || input.was_mouse_button_pressed(Mouse::Button::middle)
+      || input.was_mouse_button_pressed(Mouse::Button::right))
+    remove_focus();
   
   for (auto& c : m_controls)
     c->update(ticks, input, active_region);
 
-  //check for focus changes
-  if ((input.was_mouse_button_pressed(Mouse::Button::left)
-       || input.was_mouse_button_pressed(Mouse::Button::right)
-       || input.was_mouse_button_pressed(Mouse::Button::middle))
-      && m_focused != m_controls.end() && !(*m_focused)->has_focus()) {
-    auto old_focus = m_focused;
-    m_focused = std::find_if(m_controls.begin(), m_controls.end(),
-                             [](ControlPtr p) { return p->has_focus(); });
-    if (m_focused != old_focus)
-      (*old_focus)->remove_focus();
-  }
+  //see if the focused control has changed
+  if (input.was_mouse_button_pressed(Mouse::Button::left)
+      || input.was_mouse_button_pressed(Mouse::Button::middle)
+      || input.was_mouse_button_pressed(Mouse::Button::right))
+    find_focus();
 }
 
 void Dialog::draw(Renderer& renderer, const Rect& region) const
@@ -122,6 +123,12 @@ void Dialog::move(int x, int y)
     c->scroll(x - old_x, y - old_y);
 }
 
+void Dialog::find_focus()
+{
+  m_focused = std::find_if(m_controls.begin(), m_controls.end(),
+                           [](ControlPtr p) { return p->has_focus(); });
+}
+
 void Dialog::give_focus()
 {
   if (m_focused != m_controls.end() && (*m_focused)->can_focus())
@@ -130,6 +137,6 @@ void Dialog::give_focus()
 
 void Dialog::remove_focus()
 {
-  if (m_focused != m_controls.end())
-    (*m_focused)->remove_focus();
+  for (auto& c : m_controls)
+    c->remove_focus();
 }
