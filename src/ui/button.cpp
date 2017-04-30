@@ -74,7 +74,7 @@ void Button::update(unsigned ticks, InputHandler& input,
 
 void Button::draw(Renderer& renderer, const Rect& region) const
 {
-  renderer.set_clip_rect(region);
+  renderer.set_clip_rect(intersection(region, m_boundary));
 
   draw_background(renderer);
   if (has_focus())

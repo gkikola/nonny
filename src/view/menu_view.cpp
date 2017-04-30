@@ -20,10 +20,12 @@
 
 #include "view/menu_view.hpp"
 
+#include "config.h"
 #include "color/color.hpp"
 #include "settings/game_settings.hpp"
 #include "ui/button.hpp"
 #include "ui/menu.hpp"
+#include "ui/static_text.hpp"
 #include "video/renderer.hpp"
 #include "view/puzzle_view.hpp"
 #include "view/view_manager.hpp"
@@ -60,6 +62,10 @@ void MenuView::load_resources()
 void MenuView::main_menu()
 {
   auto menu = std::make_shared<Menu>();
+
+  auto title = std::make_shared<StaticText>(*m_control_font, NONNY_TITLE);
+  menu->add_control(title);
+  
   auto button = std::make_shared<Button>(*m_control_font, "Play");
   ViewManager& mgr = m_mgr;
   button->register_callback([&mgr]()
@@ -75,8 +81,12 @@ void MenuView::main_menu()
 
   button = std::make_shared<Button>(*m_control_font, "Create");
   menu->add_control(button);
+
+  button = std::make_shared<Button>(*m_control_font, "About");
+  menu->add_control(button);
+
   menu->position_controls();
-  
+
   m_main_panel.attach_panel(menu);
   resize(m_width, m_height);
 }
