@@ -93,6 +93,18 @@ void Dialog::update(unsigned ticks, InputHandler& input,
   
   for (auto& c : m_controls)
     c->update(ticks, input, active_region);
+
+  //check for focus changes
+  if ((input.was_mouse_button_pressed(Mouse::Button::left)
+       || input.was_mouse_button_pressed(Mouse::Button::right)
+       || input.was_mouse_button_pressed(Mouse::Button::middle))
+      && m_focused != m_controls.end() && !(*m_focused)->has_focus()) {
+    auto old_focus = m_focused;
+    m_focused = std::find_if(m_controls.begin(), m_controls.end(),
+                             [](ControlPtr p) { return p->has_focus(); });
+    if (m_focused != old_focus)
+      (*old_focus)->remove_focus();
+  }
 }
 
 void Dialog::draw(Renderer& renderer, const Rect& region) const
