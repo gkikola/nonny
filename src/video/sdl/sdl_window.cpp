@@ -44,6 +44,12 @@ SDLWindow::SDLWindow(const WindowSettings& ws)
                               flags);
   if (!m_window)
     throw SDLError("SDL_CreateWindow");
+
+  if (!ws.icon.empty()) {
+    SDL_Surface* icon = IMG_Load(ws.icon.c_str());
+    SDL_SetWindowIcon(m_window, icon);
+    SDL_FreeSurface(icon);
+  }
 }
 
 SDLWindow::~SDLWindow()

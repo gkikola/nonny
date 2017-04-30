@@ -31,6 +31,7 @@ struct WindowSettings {
   bool center = true;
   enum State { normal, maximized, full_screen } state = normal;
   std::string title;
+  std::string icon;
 };
 
 class Window {
