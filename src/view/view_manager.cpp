@@ -65,6 +65,11 @@ void ViewManager::draw(Renderer& renderer)
     m_views.back()->draw(renderer);
 }
 
+void ViewManager::refresh()
+{
+  resize(m_width, m_height);
+}
+
 void ViewManager::resize(unsigned width, unsigned height)
 {
   m_width = width;

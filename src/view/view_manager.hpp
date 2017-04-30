@@ -46,6 +46,7 @@ public:
   void update(unsigned ticks, InputHandler& input);
   void draw(Renderer& renderer);
 
+  void refresh();
   void resize(unsigned width, unsigned height);
   unsigned width() const { return m_width; }
   unsigned height() const { return m_height; }

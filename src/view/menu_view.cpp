@@ -25,6 +25,7 @@
 #include "ui/button.hpp"
 #include "ui/menu.hpp"
 #include "video/renderer.hpp"
+#include "view/puzzle_view.hpp"
 #include "view/view_manager.hpp"
 
 const Color menu_background_color(123, 175, 212);
@@ -60,6 +61,16 @@ void MenuView::main_menu()
 {
   auto menu = std::make_shared<Menu>();
   auto button = std::make_shared<Button>(*m_control_font, "Play");
+  ViewManager& mgr = m_mgr;
+  button->register_callback([&mgr]()
+                            {
+                              auto pview = std::make_shared<PuzzleView>
+                                (mgr,
+                                 mgr.game_settings().puzzle_dir()
+                                 + "easy/test.non");
+                              mgr.push(pview);
+                              mgr.refresh();
+                            });
   menu->add_control(button);
 
   button = std::make_shared<Button>(*m_control_font, "Create");
