@@ -63,6 +63,7 @@ add_executable (
   src/ui/puzzle_preview.cpp
   src/ui/scrollbar.cpp
   src/ui/scrolling_panel.cpp
+  src/ui/static_image.cpp
   src/ui/static_text.cpp
   src/ui/ui_panel.cpp
   src/utility/sdl/sdl_error.cpp

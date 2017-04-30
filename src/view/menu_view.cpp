@@ -25,6 +25,7 @@
 #include "settings/game_settings.hpp"
 #include "ui/button.hpp"
 #include "ui/menu.hpp"
+#include "ui/static_image.hpp"
 #include "ui/static_text.hpp"
 #include "video/renderer.hpp"
 #include "view/puzzle_view.hpp"
@@ -55,6 +56,9 @@ void MenuView::load_resources()
   std::string file = m_mgr.game_settings().image_dir() + "nonny.png";
   m_logo_texture = m_mgr.video_system().load_image(m_mgr.renderer(), file);
 
+  file = m_mgr.game_settings().font_dir() + "FreeSansBold.ttf";
+  m_title_font = m_mgr.video_system().new_font(file, 56);
+
   file = m_mgr.game_settings().font_dir() + "FreeSans.ttf";
   m_control_font = m_mgr.video_system().new_font(file, 24);
 }
@@ -63,8 +67,11 @@ void MenuView::main_menu()
 {
   auto menu = std::make_shared<Menu>();
 
-  auto title = std::make_shared<StaticText>(*m_control_font, NONNY_TITLE);
+  auto title = std::make_shared<StaticText>(*m_title_font, NONNY_TITLE);
   menu->add_control(title);
+
+  auto logo = std::make_shared<StaticImage>(*m_logo_texture);
+  menu->add_control(logo);
   
   auto button = std::make_shared<Button>(*m_control_font, "Play");
   ViewManager& mgr = m_mgr;

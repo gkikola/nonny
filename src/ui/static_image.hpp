@@ -18,34 +18,29 @@
  */
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
-#ifndef NONNY_MENU_VIEW_HPP
-#define NONNY_MENU_VIEW_HPP
+#ifndef NONNY_STATIC_IMAGE_HPP
 
-#include <memory>
-#include "ui/scrolling_panel.hpp"
-#include "video/font.hpp"
+#include "ui/control.hpp"
 #include "video/texture.hpp"
-#include "view/view.hpp"
 
-class MenuView : public View {
+class Texture;
+
+class StaticImage : public Control {
 public:
-  MenuView(ViewManager& vm) : View(vm) { load_resources(); main_menu(); }
-  MenuView(ViewManager& vm, unsigned width, unsigned height)
-    : View(vm, width, height) { load_resources(); main_menu(); }
+  StaticImage() = default;
+  StaticImage(const Texture& texture)
+    : m_texture(&texture) { resize(texture.width(), texture.height()); }
 
-  void update(unsigned ticks, InputHandler& input) override;
-  void draw(Renderer& renderer) override;
-  void resize(unsigned width, unsigned height) override;
+  using UIPanel::update;
+  using UIPanel::draw;
+  void update(unsigned ticks, InputHandler& input,
+              const Rect& active_region) override { }
+  void draw(Renderer& renderer, const Rect& region) const override;
+
+  bool can_focus() const override { return false; }
 
 private:
-  void load_resources();
-  void main_menu();
-  
-  ScrollingPanel m_main_panel;
-
-  std::unique_ptr<Font> m_title_font;
-  std::unique_ptr<Font> m_control_font;
-  std::unique_ptr<Texture> m_logo_texture;
+  const Texture* m_texture = nullptr;
 };
 
 #endif
