@@ -42,6 +42,7 @@ public:
   Button& operator=(Button&&) = default;
 
   void register_callback(std::function<void()> fn) { m_operation = fn; }
+  void press() { if (m_operation) m_operation(); }
 
   using UIPanel::update; //make update and draw overloads visible
   using UIPanel::draw;

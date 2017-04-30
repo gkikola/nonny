@@ -44,8 +44,8 @@ void Button::update(unsigned ticks, InputHandler& input,
     m_mouse_hover = false;
 
   if (input.was_mouse_button_released(Mouse::Button::left)) {
-    if (m_depressed && m_mouse_hover && m_operation)
-      m_operation();
+    if (m_depressed && m_mouse_hover)
+      press();
     m_depressed = false;
   }
   
@@ -55,6 +55,19 @@ void Button::update(unsigned ticks, InputHandler& input,
       m_depressed = true;
     } else {
       remove_focus();
+    }
+  }
+
+  if (has_focus()) {
+    if (input.was_key_pressed(Keyboard::Key::enter)
+        || input.was_key_pressed(Keyboard::Key::kp_enter)) {
+      m_depressed = false;
+      press();
+    } else if (m_depressed && input.was_key_released(Keyboard::Key::space)) {
+      m_depressed = false;
+      press();
+    } else if (input.was_key_pressed(Keyboard::Key::space)) {
+      m_depressed = true;
     }
   }
 }
