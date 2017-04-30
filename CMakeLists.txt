@@ -78,7 +78,6 @@ add_executable (
   src/video/texture.cpp
   src/video/video_system.cpp
   src/video/window.cpp
-  src/view/dialog_view.cpp
   src/view/puzzle_view.cpp
   src/view/view.cpp
   src/view/view_manager.cpp
