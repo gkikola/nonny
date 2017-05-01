@@ -3,6 +3,9 @@
 Nonny
 =====
 
+Description
+-----------
+
 Play and create nonogram puzzles. Nonograms (also called Griddlers or
 Picross) are logic puzzles in which numeric clues are used to fill in
 squares within a grid in order to reveal a picture.
