@@ -35,6 +35,10 @@ void Menu::position_controls()
     c->move(x + m_boundary.width() / 2 - c->boundary().width() / 2, y);
     y += c->boundary().height() + spacing;
   }
+
+  m_focused = std::find_if(m_controls.begin(), m_controls.end(),
+                           [](ControlPtr p) { return p->can_focus(); });
+  give_focus();
 }
 
 void Menu::calc_size()
