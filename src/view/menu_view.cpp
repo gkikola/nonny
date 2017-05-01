@@ -77,7 +77,7 @@ void MenuView::load_resources()
   m_title_font = m_mgr.video_system().new_font(file, 56);
 
   file = m_mgr.game_settings().font_dir() + "FreeSans.ttf";
-  m_about_font = m_mgr.video_system().new_font(file, 16);
+  m_about_font = m_mgr.video_system().new_font(file, 18);
   m_control_font = m_mgr.video_system().new_font(file, 24);
 }
 
