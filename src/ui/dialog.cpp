@@ -92,6 +92,18 @@ void Dialog::update(unsigned ticks, InputHandler& input,
       focus_next();
   }
 
+  //change control focus with arrow keys
+  if (input.was_key_pressed(Keyboard::Key::left)
+      || input.was_key_pressed(Keyboard::Key::kp_left)
+      || input.was_key_pressed(Keyboard::Key::up)
+      || input.was_key_pressed(Keyboard::Key::kp_up))
+    focus_prev();
+  else if (input.was_key_pressed(Keyboard::Key::right)
+           || input.was_key_pressed(Keyboard::Key::kp_right)
+           || input.was_key_pressed(Keyboard::Key::down)
+           || input.was_key_pressed(Keyboard::Key::kp_down))
+    focus_next();
+
   //controls should lose focus on mouse press outside
   if (input.was_mouse_button_pressed(Mouse::Button::left)
       || input.was_mouse_button_pressed(Mouse::Button::middle)
