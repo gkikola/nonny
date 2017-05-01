@@ -29,7 +29,7 @@ void SDLEventHandler::process(InputHandler& input, ViewManager& view_mgr)
   while (SDL_PollEvent(&event)) {
     switch (event.type) {
     case SDL_QUIT:
-      view_mgr.quit_game();
+      view_mgr.schedule_action(ViewManager::Action::quit_game);
       break;
     case SDL_WINDOWEVENT:
       switch (event.window.event) {

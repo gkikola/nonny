@@ -42,11 +42,10 @@ Game::Game(int argc, char* argv[])
 
   m_view_mgr = std::make_unique<ViewManager>(*m_video,
                                              *m_renderer,
-                                             m_settings);
-
-  auto view = std::make_shared<MenuView>(*m_view_mgr);
-  m_view_mgr->push(view);
-  m_view_mgr->resize(m_window->width(), m_window->height());
+                                             m_settings,
+                                             m_window->width(),
+                                             m_window->height());
+  m_view_mgr->schedule_action(ViewManager::Action::open_menu);
   
   /*//For now, start the game with a puzzle open
   auto pview = std::make_shared<PuzzleView>(*m_view_mgr,
@@ -73,7 +72,6 @@ void Game::run()
     input->update(elapsed);
 
     event->process(*input, *m_view_mgr);
-    exit = m_view_mgr->empty();
 
     m_renderer->set_draw_color(default_colors::white);
     m_renderer->clear();
@@ -82,5 +80,7 @@ void Game::run()
     m_view_mgr->draw(*m_renderer);
     
     m_renderer->present();
+    
+    exit = m_view_mgr->empty();
   }
 }

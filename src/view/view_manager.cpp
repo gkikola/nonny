@@ -26,6 +26,7 @@
 #include "input/input_handler.hpp"
 #include "settings/game_settings.hpp"
 #include "video/renderer.hpp"
+#include "view/menu_view.hpp"
 
 ViewManager::ViewManager(VideoSystem& vs, Renderer& renderer,
                          GameSettings& settings)
@@ -55,6 +56,24 @@ void ViewManager::pop()
 
 void ViewManager::update(unsigned ticks, InputHandler& input)
 {
+  if (m_action != Action::no_action) {
+    switch (m_action) {
+    default:
+    case Action::no_action:
+      break;
+    case Action::quit_game:
+      m_views.clear();
+      break;
+    case Action::choose_puzzle:
+      break;
+    case Action::open_menu:
+      push(std::make_shared<MenuView>(*this));
+      break;
+    }
+    resize(m_width, m_height);
+    m_action = Action::no_action;
+  }
+  
   if (!m_views.empty())
     m_views.back()->update(ticks, input);
 }
@@ -77,10 +96,4 @@ void ViewManager::resize(unsigned width, unsigned height)
 
   for (auto view : m_views)
     view->resize(width, height);
-}
-
-void ViewManager::quit_game()
-{
-  while (!m_views.empty())
-    m_views.pop_back();
 }

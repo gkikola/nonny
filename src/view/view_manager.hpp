@@ -37,6 +37,9 @@ public:
   ViewManager(VideoSystem& vs, Renderer& renderer, GameSettings& settings);
   ViewManager(VideoSystem& vs, Renderer& renderer, GameSettings& settings,
               unsigned width, unsigned height);
+  
+  enum class Action { no_action, quit_game, choose_puzzle, open_menu };
+  void schedule_action(Action action) { m_action = action; }
 
   void push(std::shared_ptr<View> view) { m_views.push_back(view); }
   void pop();
@@ -60,7 +63,6 @@ public:
   GameSettings& game_settings() { return m_settings; }
   const GameSettings& game_settings() const { return m_settings; }
 
-  void quit_game();
 private:
   std::vector<std::shared_ptr<View>> m_views;
   VideoSystem& m_video;
@@ -68,6 +70,7 @@ private:
   GameSettings& m_settings;
   unsigned m_width = 0;
   unsigned m_height = 0;
+  Action m_action = Action::no_action;
 };
 
 #endif
