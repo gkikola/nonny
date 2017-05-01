@@ -1,11 +1,29 @@
 **Nonny is in early development. Please check back later.**
 
-Nonny: free nonograms
-=====================
+Nonny
+=====
 
-**Nonny** is a free nonogram puzzle game. Nonograms (also called Griddlers or
-Picross) are logic puzzles in which numeric clues are used to fill in squares
-within a grid in order to reveal a picture.
+Play and create nonogram puzzles. Nonograms (also called Griddlers or
+Picross) are logic puzzles in which numeric clues are used to fill in
+squares within a grid in order to reveal a picture.
+
+
+Installation
+------------
+
+To build Nonny, you'll need CMake 3.1 or later, SDL2, SDL2_image, and
+SDL2_ttf.
+
+GNU/Linux build and install example:
+```
+git clone https://github.com/gkikola/nonny.git
+cd nonny
+mkdir build
+cd build
+cmake ..
+make
+sudo make install
+```
 
 
 Copyright
