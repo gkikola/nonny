@@ -113,11 +113,11 @@ void PuzzleView::setup_panels()
   std::string font_file = settings.font_dir() + "FreeSans.ttf";
   std::string bold_font_file = settings.font_dir() + "FreeSansBold.ttf";
   std::string texture_file = settings.image_dir() + "cross.png";
-  m_rule_font = m_mgr.video_system().new_font(font_file, 12);
+  m_clue_font = m_mgr.video_system().new_font(font_file, 12);
   m_cell_texture = m_mgr.video_system().load_image(m_mgr.renderer(),
                                                    texture_file);
   
-  auto ppanel = make_ui_panel<PuzzlePanel>(*m_rule_font, *m_cell_texture,
+  auto ppanel = make_ui_panel<PuzzlePanel>(*m_clue_font, *m_cell_texture,
                                            m_puzzle);
 
   Rect win_region(0, 0, m_width, m_height);

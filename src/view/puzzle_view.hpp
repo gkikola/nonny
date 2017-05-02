@@ -51,7 +51,7 @@ private:
   ScrollingPanel m_main_panel;
   ScrollingPanel m_info_pane;
 
-  std::unique_ptr<Font> m_rule_font;
+  std::unique_ptr<Font> m_clue_font;
   std::unique_ptr<Texture> m_cell_texture;
 
   std::unique_ptr<Font> m_title_font;
