@@ -131,6 +131,11 @@ void FileSelectionPanel::draw(Renderer& renderer, const Rect& region) const
   renderer.set_clip_rect();
 }
 
+unsigned FileSelectionPanel::entry_height() const
+{
+  return m_icon_texture.height() + 2 * spacing;
+}
+
 void FileSelectionPanel::load_file_list()
 {
   m_files.clear();
@@ -155,9 +160,22 @@ void FileSelectionPanel::load_file_list()
   }
 
   resize(entry_height() * 3, entry_height() * m_files.size());
+
+  sort_files();
 }
 
-unsigned FileSelectionPanel::entry_height() const
+bool
+FileSelectionPanel::file_info_less_than(const FileInfo& l, const FileInfo& r)
 {
-  return m_icon_texture.height() + 2 * spacing;
+  if ((l.type != FileInfo::Type::directory
+       && r.type != FileInfo::Type::directory)
+      || l.type == r.type)
+    return l.filename < r.filename;
+  else
+    return l.type == FileInfo::Type::directory;
+}
+
+void FileSelectionPanel::sort_files()
+{
+  std::sort(m_files.begin(), m_files.end(), file_info_less_than);
 }

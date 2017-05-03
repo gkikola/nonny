@@ -43,8 +43,12 @@ public:
   void draw(Renderer& renderer, const Rect& region) const override;
 
 private:
-  void load_file_list();
   unsigned entry_height() const;
+  void load_file_list();
+  void sort_files();
+
+  struct FileInfo;
+  static bool file_info_less_than(const FileInfo& l, const FileInfo& r);
 
   struct FileInfo {
     std::string filename;
