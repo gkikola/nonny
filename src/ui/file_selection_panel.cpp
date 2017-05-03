@@ -33,12 +33,14 @@ namespace stdfs = std::experimental::filesystem;
 const Color background_color = default_colors::white;
 const Color foreground_color = default_colors::black;
 const Color selection_color = default_colors::blue;
+constexpr unsigned spacing = 4;
 
 FileSelectionPanel::FileSelectionPanel(Font& filename_font, Font& info_font,
                                        Texture& icons,
                                        const std::string& path)
   : m_filename_font(filename_font),
     m_info_font(info_font),
+    m_icon_texture(icons),
     m_path(path)
 {
   load_file_list();
@@ -69,38 +71,59 @@ void FileSelectionPanel::draw(Renderer& renderer, const Rect& region) const
 {
   renderer.set_clip_rect(region);
 
-  const int entry_size = 96;
-
+  //figure out which file entries are on screen
   int min_y = region.y() - m_boundary.y();
   if (min_y < 0) min_y = 0;
   int max_y = min_y + region.height();
   unsigned min_index, max_index;
-
   if (m_files.empty()) {
     min_index = max_index = 0;
   } else {
-    min_index = min_y / entry_size;
+    min_index = min_y / entry_height();
     if (min_index > 0)
       --min_index;
     if (min_index > m_files.size())
       min_index = m_files.size() - 1;
 
-    max_index = max_y / entry_size + 1;
+    max_index = max_y / entry_height() + 1;
     if (max_index > m_files.size())
       max_index = m_files.size();
   }
-  
+
+  //draw the file entries
   for (unsigned i = min_index; i < max_index; ++i) {
+    //background
     if (m_is_selected && m_selection == i)
       renderer.set_draw_color(selection_color);
     else
       renderer.set_draw_color(background_color);
     renderer.fill_rect(Rect(m_boundary.x(),
-                            m_boundary.y() + i * entry_size,
+                            m_boundary.y() + i * entry_height(),
                             m_boundary.width(),
-                            entry_size));
+                            entry_height()));
+
+    int x = m_boundary.x() + spacing,
+      y = m_boundary.y() + i * entry_height() + spacing;
+
+    //icon
+    unsigned icon_width = m_icon_texture.width() / 2;
+    unsigned icon_height = m_icon_texture.height();
+    Rect src(0, 0, icon_width, icon_height);
+    if (m_files[i].type == FileInfo::Type::file)
+      src.x() += icon_width;
+    Rect dest(x, y, icon_width, icon_height);
+    if (m_files[i].type == FileInfo::Type::puzzle_file) {
+      renderer.set_draw_color(background_color);
+      renderer.fill_rect(dest);
+      renderer.set_draw_color(foreground_color);
+      renderer.draw_rect(dest);
+    } else {
+      renderer.copy_texture(m_icon_texture, src, dest);
+    }
+    x += icon_width + spacing;
+    
+    //filename
     renderer.set_draw_color(foreground_color);
-    int x = m_boundary.x(), y = m_boundary.y() + i * entry_size;
     renderer.draw_text(Point(x, y),
                        m_filename_font, m_files[i].filename);
   }
@@ -131,5 +154,10 @@ void FileSelectionPanel::load_file_list()
     }
   }
 
-  resize(400, 96 * m_files.size());
+  resize(entry_height() * 3, entry_height() * m_files.size());
+}
+
+unsigned FileSelectionPanel::entry_height() const
+{
+  return m_icon_texture.height() + 2 * spacing;
 }

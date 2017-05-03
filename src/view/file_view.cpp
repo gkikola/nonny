@@ -143,12 +143,16 @@ void FileView::resize(unsigned width, unsigned height)
 
   collapse_path();
 
+  unsigned new_width = m_width - 2 * panel_spacing;
+  unsigned new_height = m_height - 2 * panel_spacing - button_spacing
+    - m_up_button->boundary().height();
+  UIPanel& panel = m_file_selection.main_panel();
+  panel.resize(new_width, panel.boundary().height());
   m_file_selection.move(panel_spacing,
                         panel_spacing + m_up_button->boundary().height()
                         + button_spacing);
-  m_file_selection.resize(m_width - 2 * panel_spacing,
-                          m_height - 2 * panel_spacing - button_spacing
-                          - m_up_button->boundary().height());
+  m_file_selection.resize(new_width, new_height);
+  m_file_selection.center_main_panel();
 }
 
 void FileView::load_resources()
@@ -159,7 +163,7 @@ void FileView::load_resources()
   std::string font_file = settings.font_dir() + "FreeSans.ttf";
   std::string nav_texture_file = settings.image_dir() + "nav.png";
   std::string icon_texture_file = settings.image_dir() + "file.png";
-  m_filename_font = vs.new_font(font_file, 24);
+  m_filename_font = vs.new_font(font_file, 20);
   m_info_font = vs.new_font(font_file, 16);
   m_control_font = vs.new_font(font_file, 24);
   m_nav_texture = vs.load_image(m_mgr.renderer(), nav_texture_file);
@@ -275,10 +279,13 @@ void FileView::collapse_path()
 {    
   if (m_cur_path != m_paths.end()) {
     //update selection view
-    dynamic_cast<FileSelectionPanel&>
-      (m_file_selection.main_panel()).open_path(*m_cur_path);
-    m_file_selection.resize(m_file_selection.boundary().width(),
-                            m_file_selection.boundary().height());
+    FileSelectionPanel& file_panel
+      = dynamic_cast<FileSelectionPanel&>(m_file_selection.main_panel());
+    file_panel.open_path(*m_cur_path);
+    unsigned panel_width = m_file_selection.boundary().width();
+    unsigned panel_height = m_file_selection.boundary().height();
+    file_panel.resize(panel_width, file_panel.boundary().height());
+    m_file_selection.resize(panel_width, panel_height); //refresh scrollbars
     
     //max allowed width is screen width minus the three nav buttons
     unsigned max_width = 2 * panel_spacing

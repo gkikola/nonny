@@ -44,6 +44,7 @@ public:
 
 private:
   void load_file_list();
+  unsigned entry_height() const;
 
   struct FileInfo {
     std::string filename;
@@ -56,6 +57,7 @@ private:
   
   const Font& m_filename_font;
   const Font& m_info_font;
+  const Texture& m_icon_texture;
   std::string m_path;
   std::vector<FileInfo> m_files;
   unsigned m_selection = 0;

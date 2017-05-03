@@ -24,7 +24,6 @@
 #include "input/input_handler.hpp"
 #include "video/renderer.hpp"
 
-constexpr unsigned scrollbar_width = 16;
 const Color scrollbar_background_color(196, 196, 196);
 
 void ScrollingPanel::attach_panel(UIPanelPtr child)
@@ -43,11 +42,11 @@ void ScrollingPanel::update(unsigned ticks, InputHandler& input,
   Rect main_region = m_boundary;
   if (m_hscroll_active) {
     m_hscroll.update(ticks, input, active_region);
-    main_region.height() -= scrollbar_width;
+    main_region.height() -= s_scrollbar_width;
   }
   if (m_vscroll_active) {
     m_vscroll.update(ticks, input, active_region);
-    main_region.width() -= scrollbar_width;
+    main_region.width() -= s_scrollbar_width;
   }
 
   if (m_main_panel)
@@ -97,15 +96,15 @@ void ScrollingPanel::resize(unsigned width, unsigned height)
   unsigned adjusted_width = m_boundary.width();
   unsigned adjusted_height = m_boundary.height();
   if (m_hscroll_active)
-    adjusted_height -= scrollbar_width;
+    adjusted_height -= s_scrollbar_width;
   if (m_vscroll_active)
-    adjusted_width -= scrollbar_width;
+    adjusted_width -= s_scrollbar_width;
   m_hscroll.move(m_boundary.x(),
-                 m_boundary.y() + m_boundary.height() - scrollbar_width);
-  m_hscroll.resize(adjusted_width, scrollbar_width);
-  m_vscroll.move(m_boundary.x() + m_boundary.width() - scrollbar_width,
+                 m_boundary.y() + m_boundary.height() - s_scrollbar_width);
+  m_hscroll.resize(adjusted_width, s_scrollbar_width);
+  m_vscroll.move(m_boundary.x() + m_boundary.width() - s_scrollbar_width,
                  m_boundary.y());
-  m_vscroll.resize(scrollbar_width, adjusted_height);
+  m_vscroll.resize(s_scrollbar_width, adjusted_height);
 
   //center panel if it's smaller than the scrolling panel
   if (m_main_panel) {
