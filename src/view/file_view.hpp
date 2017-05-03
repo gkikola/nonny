@@ -25,7 +25,9 @@
 #include <list>
 #include <memory>
 #include <experimental/filesystem>
+#include "ui/file_selection_panel.hpp"
 #include "ui/image_button.hpp"
+#include "ui/scrolling_panel.hpp"
 #include "video/font.hpp"
 #include "video/rect.hpp"
 #include "video/texture.hpp"
@@ -37,6 +39,11 @@ public:
   
   FileView(ViewManager& vm, Mode mode = Mode::open);
   FileView(ViewManager& vm, Mode mode, unsigned width, unsigned height);
+
+  FileView(const FileView&) = delete;
+  FileView(FileView&&) = default;
+  FileView& operator=(const FileView&) = delete;
+  FileView& operator=(FileView&&) & = default;
 
   void update(unsigned ticks, InputHandler& input) override;
   void draw(Renderer& renderer) override;
@@ -71,10 +78,13 @@ private:
   std::shared_ptr<ImageButton> m_back_button;
   std::shared_ptr<ImageButton> m_forward_button;
 
+  ScrollingPanel m_file_selection;
+
   std::unique_ptr<Font> m_filename_font;
   std::unique_ptr<Font> m_info_font;
   std::unique_ptr<Font> m_control_font;
   std::unique_ptr<Texture> m_nav_texture;
+  std::unique_ptr<Texture> m_file_icons_texture;
 };
 
 #endif

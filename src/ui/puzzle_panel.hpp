@@ -48,6 +48,7 @@ public:
   void draw(Renderer& renderer, const Rect& region) const override;
 
   void move(int x, int y);
+
 private:
   void calc_grid_pos();
   unsigned row_clue_width(unsigned row) const;

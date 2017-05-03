@@ -79,6 +79,8 @@ void FileView::update(unsigned ticks, InputHandler& input)
   m_up_button->update(ticks, input);
   m_back_button->update(ticks, input);
   m_forward_button->update(ticks, input);
+
+  m_file_selection.update(ticks, input);
 }
 
 void FileView::draw(Renderer& renderer)
@@ -119,6 +121,10 @@ void FileView::draw(Renderer& renderer)
   m_up_button->draw(renderer);
   m_back_button->draw(renderer);
   m_forward_button->draw(renderer);
+
+  renderer.set_draw_color(default_colors::white);
+  renderer.fill_rect(m_file_selection.boundary());
+  m_file_selection.draw(renderer);
 }
 
 void FileView::resize(unsigned width, unsigned height)
@@ -136,6 +142,13 @@ void FileView::resize(unsigned width, unsigned height)
   m_up_button->move(x, y);
 
   collapse_path();
+
+  m_file_selection.move(panel_spacing,
+                        panel_spacing + m_up_button->boundary().height()
+                        + button_spacing);
+  m_file_selection.resize(m_width - 2 * panel_spacing,
+                          m_height - 2 * panel_spacing - button_spacing
+                          - m_up_button->boundary().height());
 }
 
 void FileView::load_resources()
@@ -144,11 +157,13 @@ void FileView::load_resources()
   VideoSystem& vs = m_mgr.video_system();
 
   std::string font_file = settings.font_dir() + "FreeSans.ttf";
-  std::string texture_file = settings.image_dir() + "nav.png";
-  m_filename_font = vs.new_font(font_file, 18);
-  m_info_font = vs.new_font(font_file, 12);
+  std::string nav_texture_file = settings.image_dir() + "nav.png";
+  std::string icon_texture_file = settings.image_dir() + "file.png";
+  m_filename_font = vs.new_font(font_file, 24);
+  m_info_font = vs.new_font(font_file, 16);
   m_control_font = vs.new_font(font_file, 24);
-  m_nav_texture = vs.load_image(m_mgr.renderer(), texture_file);
+  m_nav_texture = vs.load_image(m_mgr.renderer(), nav_texture_file);
+  m_file_icons_texture = vs.load_image(m_mgr.renderer(), icon_texture_file);
 
   m_up_button = std::make_shared<ImageButton>(*m_nav_texture, 0);
   m_back_button = std::make_shared<ImageButton>(*m_nav_texture, 1);
@@ -157,6 +172,11 @@ void FileView::load_resources()
   m_up_button->register_callback(std::bind(&FileView::up, this));
   m_back_button->register_callback(std::bind(&FileView::back, this));
   m_forward_button->register_callback(std::bind(&FileView::forward, this));
+
+  auto fsv = std::make_shared<FileSelectionPanel>(*m_filename_font,
+                                                  *m_info_font,
+                                                  *m_file_icons_texture);
+  m_file_selection.attach_panel(fsv);
 }
 
 void FileView::open_path(const stdfs::path& p)
@@ -252,8 +272,14 @@ unsigned FileView::path_subdir_count() const
 }
 
 void FileView::collapse_path()
-{
+{    
   if (m_cur_path != m_paths.end()) {
+    //update selection view
+    dynamic_cast<FileSelectionPanel&>
+      (m_file_selection.main_panel()).open_path(*m_cur_path);
+    m_file_selection.resize(m_file_selection.boundary().width(),
+                            m_file_selection.boundary().height());
+    
     //max allowed width is screen width minus the three nav buttons
     unsigned max_width = 2 * panel_spacing
       + 3 * (m_up_button->boundary().width() + button_spacing);

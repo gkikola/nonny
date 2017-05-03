@@ -56,6 +56,7 @@ add_executable (
   src/ui/button.cpp
   src/ui/control.cpp
   src/ui/dialog.cpp
+  src/ui/file_selection_panel.cpp
   src/ui/image_button.cpp
   src/ui/menu.cpp
   src/ui/message_box.cpp
