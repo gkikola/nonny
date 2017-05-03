@@ -20,6 +20,13 @@
 
 #include "ui/image_button.hpp"
 
+#include "video/font.hpp"
+#include "video/rect.hpp"
+#include "video/renderer.hpp"
+#include "video/texture.hpp"
+
+constexpr unsigned num_cells = 4;
+
 void ImageButton::draw(Renderer& renderer, const Rect& region) const
 {
   renderer.set_clip_rect(region);
@@ -34,4 +41,27 @@ void ImageButton::draw(Renderer& renderer, const Rect& region) const
 
 void ImageButton::draw_image(Renderer& renderer) const
 {
+  if (m_texture) {
+    unsigned cell_size = m_texture->height() / num_cells;
+    unsigned state = 0;
+    if (m_depressed)
+      state = 3;
+    else if (m_mouse_hover)
+      state = 1;
+    else if (has_focus())
+      state = 2;
+    
+    Rect src(m_cell * cell_size, state * cell_size,
+             cell_size, cell_size);
+    renderer.copy_texture(*m_texture, src, m_boundary);
+  }
+}
+
+void ImageButton::calc_size()
+{
+  unsigned width = 0, height = 0;
+  if (m_texture)
+    width = height = m_texture->height() / num_cells;
+
+  resize(width, height);
 }

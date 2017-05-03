@@ -23,6 +23,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <string>
 #include <vector>
 #include "view/view.hpp"
 #include "video/font.hpp"
@@ -39,7 +40,7 @@ public:
               unsigned width, unsigned height);
   
   enum class Action { no_action, quit_game, choose_puzzle, open_menu };
-  void schedule_action(Action action) { m_action = action; }
+  inline void schedule_action(Action action, std::string argument = "");
 
   void push(std::shared_ptr<View> view) { m_views.push_back(view); }
   void pop();
@@ -70,7 +71,18 @@ private:
   GameSettings& m_settings;
   unsigned m_width = 0;
   unsigned m_height = 0;
+
   Action m_action = Action::no_action;
+  std::string m_action_arg;
 };
+
+
+/* implementation */
+
+inline void ViewManager::schedule_action(Action action, std::string argument)
+{
+  m_action = action;
+  m_action_arg = argument;
+}
 
 #endif

@@ -26,6 +26,7 @@
 #include "input/input_handler.hpp"
 #include "settings/game_settings.hpp"
 #include "video/renderer.hpp"
+#include "view/file_view.hpp"
 #include "view/menu_view.hpp"
 
 ViewManager::ViewManager(VideoSystem& vs, Renderer& renderer,
@@ -65,6 +66,7 @@ void ViewManager::update(unsigned ticks, InputHandler& input)
       m_views.clear();
       break;
     case Action::choose_puzzle:
+      push(std::make_shared<FileView>(*this, FileView::Mode::open));
       break;
     case Action::open_menu:
       push(std::make_shared<MenuView>(*this));

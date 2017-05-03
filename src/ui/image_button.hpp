@@ -23,11 +23,13 @@
 
 #include "ui/button.hpp"
 
+class Texture;
+
 class ImageButton : public Button {
 public:
   ImageButton() = default;
-  explicit ImageButton(const Texture& texture)
-    : m_texture(&texture) { }
+  explicit ImageButton(const Texture& texture, unsigned cell = 0)
+    : m_texture(&texture), m_cell(cell) { calc_size(); }
 
   ImageButton(const ImageButton&) = default;
   ImageButton(ImageButton&&) = default;
@@ -41,7 +43,10 @@ protected:
   void draw_image(Renderer& renderer) const;
   
 private:
+  void calc_size();
+  
   const Texture* m_texture;
+  unsigned m_cell = 0;
 };
 
 #endif

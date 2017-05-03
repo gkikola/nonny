@@ -37,8 +37,10 @@ void SDLFont::text_size(const std::string& text,
 {
   int wd = 0, ht = 0;
   if (TTF_SizeUTF8(m_font, text.c_str(), &wd, &ht) == 0) {
-    *width = wd;
-    *height = ht;
+    if (width)
+      *width = wd;
+    if (height)
+      *height = ht;
   }
 }
 

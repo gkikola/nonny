@@ -92,15 +92,10 @@ void MenuView::main_menu()
   menu->add_control(logo);
   
   auto button = std::make_shared<Button>(*m_control_font, "Play");
-  ViewManager& mgr = m_mgr;
-  button->register_callback([&mgr]()
+  button->register_callback([this]()
                             {
-                              auto pview = std::make_shared<PuzzleView>
-                                (mgr,
-                                 mgr.game_settings().puzzle_dir()
-                                 + "easy/test.non");
-                              mgr.push(pview);
-                              mgr.refresh();
+                              m_mgr.schedule_action
+                                (ViewManager::Action::choose_puzzle);
                             });
   button->resize(menu_button_width, button->boundary().height());
   menu->add_control(button);
