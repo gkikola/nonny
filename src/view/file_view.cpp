@@ -152,7 +152,7 @@ void FileView::resize(unsigned width, unsigned height)
                         panel_spacing + m_up_button->boundary().height()
                         + button_spacing);
   m_file_selection.resize(new_width, new_height);
-  m_file_selection.center_main_panel();
+  panel.move(panel.boundary().x(), m_file_selection.boundary().y());
 }
 
 void FileView::load_resources()
@@ -286,6 +286,8 @@ void FileView::collapse_path()
     unsigned panel_height = m_file_selection.boundary().height();
     file_panel.resize(panel_width, file_panel.boundary().height());
     m_file_selection.resize(panel_width, panel_height); //refresh scrollbars
+    file_panel.move(file_panel.boundary().x(),
+                    m_file_selection.boundary().y());
     
     //max allowed width is screen width minus the three nav buttons
     unsigned max_width = 2 * panel_spacing

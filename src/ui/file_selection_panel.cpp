@@ -65,6 +65,42 @@ std::string FileSelectionPanel::selected_file() const
 void FileSelectionPanel::update(unsigned ticks, InputHandler& input,
                                 const Rect& active_region)
 {
+  if (!m_files.empty()) {
+    Point cursor = input.mouse_position();
+    if ((input.was_mouse_button_pressed(Mouse::Button::left)
+         || input.was_mouse_button_pressed(Mouse::Button::right))
+        && active_region.contains_point(cursor)) {
+      m_is_selected = false;
+      unsigned index = (cursor.y() - m_boundary.y()) / entry_height();
+      if (index < m_files.size()) {
+        m_selection = index;
+        m_is_selected = true;
+      }
+    }
+
+    if (input.was_key_pressed(Keyboard::Key::down)
+        || input.was_key_pressed(Keyboard::Key::kp_down)) {
+      if (!m_is_selected) {
+        m_selection = 0;
+        m_is_selected = true;
+      } else {
+        ++m_selection;
+        if (m_selection >= m_files.size())
+          m_selection = 0;
+      }
+    } else if (input.was_key_pressed(Keyboard::Key::up)
+               || input.was_key_pressed(Keyboard::Key::kp_up)) {
+      if (!m_is_selected) {
+        m_selection = m_files.size() - 1;
+        m_is_selected = true;
+      } else {
+        if (m_selection > 0)
+          --m_selection;
+        else
+          m_selection = m_files.size() - 1;
+      }
+    }
+  }
 }
 
 void FileSelectionPanel::draw(Renderer& renderer, const Rect& region) const
@@ -123,7 +159,10 @@ void FileSelectionPanel::draw(Renderer& renderer, const Rect& region) const
     x += icon_width + spacing;
     
     //filename
-    renderer.set_draw_color(foreground_color);
+    if (m_is_selected && m_selection == i)
+      renderer.set_draw_color(background_color);
+    else
+      renderer.set_draw_color(foreground_color);
     renderer.draw_text(Point(x, y),
                        m_filename_font, m_files[i].filename);
   }
