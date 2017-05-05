@@ -67,7 +67,7 @@ private:
   void handle_kb_selection(unsigned ticks, InputHandler& input);
 
   enum class Direction { up, down, left, right };
-  void move_selection(Direction dir);
+  void move_selection(Direction dir, unsigned count = 1);
   void next_color();
   inline bool is_point_in_grid(const Point& p) const;
   inline void cell_at_point(const Point& p, unsigned* x, unsigned* y) const;
@@ -98,11 +98,6 @@ private:
   unsigned m_mouse_lock_time = 0;
   unsigned m_drag_start_x = 0;
   unsigned m_drag_start_y = 0;
-
-  //Arrow key states
-  Direction m_kb_dir;
-  bool m_kb_dir_held = false;
-  unsigned m_ticks_until_sel_change = 0;
 
   //Cell selection
   bool m_selected = false;
