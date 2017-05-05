@@ -52,7 +52,7 @@ FileView::FileView(ViewManager& vm, Mode mode,
 }
 
 void FileView::update(unsigned ticks, InputHandler& input)
-{
+{  
   if (m_cur_path != m_paths.end()) {
     if (input.was_mouse_button_pressed(Mouse::Button::left)) {
       int x = panel_spacing, y = panel_spacing;
@@ -81,6 +81,12 @@ void FileView::update(unsigned ticks, InputHandler& input)
   m_forward_button->update(ticks, input);
 
   m_file_selection.update(ticks, input);
+
+  if (m_need_path_change) {
+    m_need_path_change = false;
+    open_path(stdfs::path(m_selected_path));
+    m_selected_path = "";
+  }
 }
 
 void FileView::draw(Renderer& renderer)
@@ -180,6 +186,12 @@ void FileView::load_resources()
   auto fsv = std::make_shared<FileSelectionPanel>(*m_filename_font,
                                                   *m_info_font,
                                                   *m_file_icons_texture);
+  fsv->on_dir_change([this](const std::string& p)
+                     { m_selected_path = p; m_need_path_change = true; });
+  fsv->on_file_select([this](const std::string& f)
+                      { m_mgr
+                          .schedule_action(ViewManager::Action::load_puzzle,
+                                           f); });
   m_file_selection.attach_panel(fsv);
 }
 
@@ -194,14 +206,14 @@ void FileView::open_path(const stdfs::path& p)
     m_cur_path = m_paths.end() - 1;
   }
 
-  collapse_path();
+  handle_directory_change();
 }
 
 void FileView::back()
 {
   if (m_cur_path != m_paths.begin())
     --m_cur_path;
-  collapse_path();
+  handle_directory_change();
 }
 
 void FileView::forward()
@@ -209,7 +221,7 @@ void FileView::forward()
   if (m_cur_path != m_paths.end()
       && m_cur_path + 1 != m_paths.end())
     ++m_cur_path;
-  collapse_path();
+  handle_directory_change();
 }
 
 void FileView::up()
@@ -275,20 +287,30 @@ unsigned FileView::path_subdir_count() const
   return count;
 }
 
-void FileView::collapse_path()
-{    
+void FileView::handle_directory_change()
+{
   if (m_cur_path != m_paths.end()) {
     //update selection view
     FileSelectionPanel& file_panel
       = dynamic_cast<FileSelectionPanel&>(m_file_selection.main_panel());
-    file_panel.open_path(*m_cur_path);
+    //if path hasn't already been changed, change it
+    if (*m_cur_path != file_panel.path())
+      file_panel.open_path(*m_cur_path);
+    //resize and reposition panels
     unsigned panel_width = m_file_selection.boundary().width();
     unsigned panel_height = m_file_selection.boundary().height();
     file_panel.resize(panel_width, file_panel.boundary().height());
     m_file_selection.resize(panel_width, panel_height); //refresh scrollbars
     file_panel.move(file_panel.boundary().x(),
                     m_file_selection.boundary().y());
-    
+  }
+
+  collapse_path();
+}
+
+void FileView::collapse_path()
+{    
+  if (m_cur_path != m_paths.end()) {
     //max allowed width is screen width minus the three nav buttons
     unsigned max_width = 2 * panel_spacing
       + 3 * (m_up_button->boundary().width() + button_spacing);

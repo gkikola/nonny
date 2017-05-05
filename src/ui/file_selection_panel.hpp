@@ -21,6 +21,7 @@
 #ifndef NONNY_FILE_SELECTION_PANEL
 #define NONNY_FILE_SELECTION_PANEL
 
+#include <functional>
 #include <string>
 #include <vector>
 #include "ui/ui_panel.hpp"
@@ -30,11 +31,18 @@ class Texture;
 
 class FileSelectionPanel : public UIPanel {
 public:
+  typedef std::function<void(const std::string&)> Callback;
+  
   FileSelectionPanel(Font& filename_font, Font& info_font,
                      Texture& icons, const std::string& path = "");
 
   void open_path(const std::string& path);
+  void open_file(const std::string& file);
   std::string selected_file() const;
+  std::string path() const { return m_path; }
+
+  void on_file_select(Callback fn);
+  void on_dir_change(Callback fn);
 
   using UIPanel::update;
   using UIPanel::draw;
@@ -66,6 +74,9 @@ private:
   std::vector<FileInfo> m_files;
   unsigned m_selection = 0;
   bool m_is_selected = false;
+
+  Callback m_file_callback;
+  Callback m_dir_callback;
 };
 
 #endif

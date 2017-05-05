@@ -28,6 +28,7 @@
 #include "video/renderer.hpp"
 #include "view/file_view.hpp"
 #include "view/menu_view.hpp"
+#include "view/puzzle_view.hpp"
 
 ViewManager::ViewManager(VideoSystem& vs, Renderer& renderer,
                          GameSettings& settings)
@@ -70,6 +71,9 @@ void ViewManager::update(unsigned ticks, InputHandler& input)
       break;
     case Action::open_menu:
       push(std::make_shared<MenuView>(*this));
+      break;
+    case Action::load_puzzle:
+      push(std::make_shared<PuzzleView>(*this, m_action_arg));
       break;
     }
     resize(m_width, m_height);

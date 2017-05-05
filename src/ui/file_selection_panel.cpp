@@ -50,8 +50,16 @@ void FileSelectionPanel::open_path(const std::string& path)
 {
   if (m_path != path) {
     m_path = path;
+    if (m_dir_callback)
+      m_dir_callback(path);
     load_file_list();
   }
+}
+
+void FileSelectionPanel::open_file(const std::string& file)
+{
+  if (m_file_callback)
+    m_file_callback(file);
 }
 
 std::string FileSelectionPanel::selected_file() const
@@ -62,10 +70,21 @@ std::string FileSelectionPanel::selected_file() const
     return "";
 }
 
+void FileSelectionPanel::on_file_select(Callback fn)
+{
+  m_file_callback = fn;
+}
+
+void FileSelectionPanel::on_dir_change(Callback fn)
+{
+  m_dir_callback = fn;
+}
+
 void FileSelectionPanel::update(unsigned ticks, InputHandler& input,
                                 const Rect& active_region)
 {
   if (!m_files.empty()) {
+    //check for mouse click to select a file
     Point cursor = input.mouse_position();
     if ((input.was_mouse_button_pressed(Mouse::Button::left)
          || input.was_mouse_button_pressed(Mouse::Button::right))
@@ -75,9 +94,21 @@ void FileSelectionPanel::update(unsigned ticks, InputHandler& input,
       if (index < m_files.size()) {
         m_selection = index;
         m_is_selected = true;
+
+        //handle double-clicks
+        bool dbl_click
+          = input.was_mouse_button_double_clicked(Mouse::Button::left)
+          || input.was_mouse_button_double_clicked(Mouse::Button::right);
+        if (dbl_click) {
+          if (m_files[index].type == FileInfo::Type::directory)
+            open_path(m_files[index].full_path);
+          else
+            open_file(m_files[index].full_path);
+        }
       }
     }
 
+    //change selection with arrow keys
     if (input.was_key_pressed(Keyboard::Key::down)
         || input.was_key_pressed(Keyboard::Key::kp_down)) {
       if (!m_is_selected) {
@@ -98,6 +129,17 @@ void FileSelectionPanel::update(unsigned ticks, InputHandler& input,
           --m_selection;
         else
           m_selection = m_files.size() - 1;
+      }
+    }
+
+    //handle selection with enter key
+    if (input.was_key_pressed(Keyboard::Key::enter)
+        || input.was_key_pressed(Keyboard::Key::kp_enter)) {
+      if (m_is_selected) {
+        if (m_files[m_selection].type == FileInfo::Type::directory)
+          open_path(m_files[m_selection].full_path);
+        else
+          open_file(m_files[m_selection].full_path);
       }
     }
   }
@@ -178,6 +220,8 @@ unsigned FileSelectionPanel::entry_height() const
 void FileSelectionPanel::load_file_list()
 {
   m_files.clear();
+  m_selection = 0;
+  m_is_selected = false;
 
   if (!m_path.empty()) {
     stdfs::path p(m_path);

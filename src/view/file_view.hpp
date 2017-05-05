@@ -24,6 +24,7 @@
 #include <deque>
 #include <list>
 #include <memory>
+#include <string>
 #include <experimental/filesystem>
 #include "ui/file_selection_panel.hpp"
 #include "ui/image_button.hpp"
@@ -63,6 +64,7 @@ private:
 
   unsigned path_name_width() const; //get display width of cur path name
   unsigned path_subdir_count() const; //get num subdirs in cur path
+  void handle_directory_change(); //update controls for new directory
   void collapse_path(); //calculate start and end of ellipses in path display
   void open_subdir(unsigned index); //open subdir at index in *m_cur_path
   
@@ -85,6 +87,9 @@ private:
   std::unique_ptr<Font> m_control_font;
   std::unique_ptr<Texture> m_nav_texture;
   std::unique_ptr<Texture> m_file_icons_texture;
+
+  std::string m_selected_path;
+  bool m_need_path_change = false;
 };
 
 #endif

@@ -39,7 +39,8 @@ public:
   ViewManager(VideoSystem& vs, Renderer& renderer, GameSettings& settings,
               unsigned width, unsigned height);
   
-  enum class Action { no_action, quit_game, choose_puzzle, open_menu };
+  enum class Action { no_action, quit_game, choose_puzzle, open_menu,
+      load_puzzle };
   inline void schedule_action(Action action, std::string argument = "");
 
   void push(std::shared_ptr<View> view) { m_views.push_back(view); }
