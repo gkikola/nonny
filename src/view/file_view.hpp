@@ -79,6 +79,7 @@ private:
   std::shared_ptr<ImageButton> m_up_button;
   std::shared_ptr<ImageButton> m_back_button;
   std::shared_ptr<ImageButton> m_forward_button;
+  std::shared_ptr<Button> m_open_button;
 
   ScrollingPanel m_file_selection;
 

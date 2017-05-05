@@ -40,6 +40,7 @@ public:
   void open_file(const std::string& file);
   std::string selected_file() const;
   std::string path() const { return m_path; }
+  void open_selection();
 
   void on_file_select(Callback fn);
   void on_dir_change(Callback fn);

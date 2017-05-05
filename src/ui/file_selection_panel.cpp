@@ -62,6 +62,16 @@ void FileSelectionPanel::open_file(const std::string& file)
     m_file_callback(file);
 }
 
+void FileSelectionPanel::open_selection()
+{
+  if (m_is_selected) {
+    if (m_files[m_selection].type == FileInfo::Type::directory)
+      open_path(m_files[m_selection].full_path);
+    else
+      open_file(m_files[m_selection].full_path);
+  }
+}
+
 std::string FileSelectionPanel::selected_file() const
 {
   if (m_is_selected)
