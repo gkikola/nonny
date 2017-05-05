@@ -59,9 +59,9 @@ void PuzzlePanel::update(unsigned ticks, InputHandler& input,
   if (m_puzzle) {
     update_cells(ticks);
 
-    //cycle color palette on Ctrl
-    if (input.was_key_pressed(Keyboard::Key::lctrl)
-        || input.was_key_pressed(Keyboard::Key::rctrl))
+    //cycle color palette on Alt
+    if (input.was_key_pressed(Keyboard::Key::lalt)
+        || input.was_key_pressed(Keyboard::Key::ralt))
       next_color();
 
     handle_mouse_selection(ticks, input, active_region);
@@ -449,10 +449,11 @@ void PuzzlePanel::handle_kb_selection(unsigned ticks, InputHandler& input)
   bool fill_pressed = input.was_key_pressed(Keyboard::Key::space)
     || input.was_key_pressed(Keyboard::Key::enter)
     || input.was_key_pressed(Keyboard::Key::kp_enter);
-  bool cross_pressed = input.was_key_pressed(Keyboard::Key::lalt)
-    || input.was_key_pressed(Keyboard::Key::ralt)
+  bool cross_pressed = input.was_key_pressed(Keyboard::Key::lctrl)
+    || input.was_key_pressed(Keyboard::Key::rctrl)
     || input.was_key_pressed(Keyboard::Key::backspace)
-    || input.was_key_pressed(Keyboard::Key::del);
+    || input.was_key_pressed(Keyboard::Key::del)
+    || input.was_key_pressed(Keyboard::Key::kp_del);
   if (m_selected && (fill_pressed || cross_pressed)) {
     m_kb_dragging = true;
     PuzzleCell::State cur_state
@@ -485,10 +486,11 @@ void PuzzlePanel::handle_kb_selection(unsigned ticks, InputHandler& input)
   if (input.was_key_released(Keyboard::Key::space)
       || input.was_key_released(Keyboard::Key::enter)
       || input.was_key_released(Keyboard::Key::kp_enter)
-      || input.was_key_released(Keyboard::Key::lalt)
-      || input.was_key_released(Keyboard::Key::ralt)
+      || input.was_key_released(Keyboard::Key::lctrl)
+      || input.was_key_released(Keyboard::Key::rctrl)
       || input.was_key_released(Keyboard::Key::backspace)
-      || input.was_key_released(Keyboard::Key::del))
+      || input.was_key_released(Keyboard::Key::del)
+      || input.was_key_released(Keyboard::Key::kp_del))
     m_kb_dragging = false;
 
   unsigned num_press = input.num_key_presses(Keyboard::Key::left)
