@@ -42,7 +42,8 @@ public:
   virtual void release_mouse() = 0;
   
   virtual void process_key_event(Keyboard::Key key, bool down);
-  virtual void process_mouse_button_event(Mouse::Button button, bool down);
+  virtual void process_mouse_button_event(Mouse::Button button, bool down,
+                                          unsigned num_clicks = 1);
   virtual void process_mouse_wheel_event(int vert, int horiz);
   virtual void process_mouse_move_event(int x, int y);
 
@@ -53,6 +54,7 @@ public:
   virtual bool was_mouse_button_pressed(Mouse::Button button) const;
   virtual bool was_mouse_button_released(Mouse::Button button) const;
   virtual bool is_mouse_button_down(Mouse::Button button) const;
+  virtual bool was_mouse_button_double_clicked(Mouse::Button button) const;
 
   virtual Point mouse_position() const { return m_mouse; }
   virtual Point prev_mouse_position() const { return m_prev_mouse; }
@@ -68,6 +70,7 @@ private:
 
   std::vector<bool> m_buttons;
   std::vector<bool> m_prev_buttons;
+  std::vector<bool> m_button_dbl_click;
 };
 
 #endif

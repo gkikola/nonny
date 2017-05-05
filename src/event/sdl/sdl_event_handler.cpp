@@ -51,7 +51,8 @@ void SDLEventHandler::process(InputHandler& input, ViewManager& view_mgr)
       {
         Mouse::Button button = convert_mouse_button(event.button.button);
         bool down = (event.type == SDL_MOUSEBUTTONDOWN);
-        input.process_mouse_button_event(button, down);
+        unsigned num_clicks = event.button.clicks;
+        input.process_mouse_button_event(button, down, num_clicks);
       }
       break;
     case SDL_MOUSEMOTION:

@@ -27,13 +27,16 @@
 #include "input/sdl/sdl_input_handler.hpp"
 #endif
 
+constexpr unsigned dbl_click_time = 500;
+
 InputHandler::InputHandler()
   : m_mouse(0, 0),
     m_prev_mouse(0, 0),
     m_keys(Keyboard::num_keys, false),
     m_prev_keys(Keyboard::num_keys, false),
     m_buttons(Mouse::num_buttons, false),
-    m_prev_buttons(Mouse::num_buttons, false)
+    m_prev_buttons(Mouse::num_buttons, false),
+    m_button_dbl_click(Mouse::num_buttons, false)
 {
 }
 
@@ -52,6 +55,10 @@ void InputHandler::update(unsigned ticks)
   m_prev_keys = m_keys;
   m_prev_buttons = m_buttons;
   m_prev_mouse = m_mouse;
+  for (auto it = m_button_dbl_click.begin();
+       it != m_button_dbl_click.end();
+       ++it)
+    *it = false;
 }
 
 void InputHandler::process_key_event(Keyboard::Key key, bool down)
@@ -59,9 +66,15 @@ void InputHandler::process_key_event(Keyboard::Key key, bool down)
   m_keys[key] = down;
 }
 
-void InputHandler::process_mouse_button_event(Mouse::Button button, bool down)
+void InputHandler::process_mouse_button_event(Mouse::Button button, bool down,
+                                              unsigned num_clicks)
 {
   m_buttons[button] = down;
+
+  if (down && num_clicks > 1)
+    m_button_dbl_click[button] = true;
+  else if (num_clicks == 1)
+    m_button_dbl_click[button] = false;
 }
 
 void InputHandler::process_mouse_wheel_event(int vert, int horiz)
@@ -101,4 +114,9 @@ bool InputHandler::was_mouse_button_released(Mouse::Button button) const
 bool InputHandler::is_mouse_button_down(Mouse::Button button) const
 {
   return m_buttons[button];
+}
+
+bool InputHandler::was_mouse_button_double_clicked(Mouse::Button button) const
+{
+  return m_button_dbl_click[button];
 }
