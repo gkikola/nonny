@@ -80,6 +80,7 @@ void FileView::update(unsigned ticks, InputHandler& input)
   m_back_button->update(ticks, input);
   m_forward_button->update(ticks, input);
   m_open_button->update(ticks, input);
+  m_filename_box->update(ticks, input);
 
   m_file_selection.update(ticks, input);
 
@@ -129,6 +130,7 @@ void FileView::draw(Renderer& renderer)
   m_back_button->draw(renderer);
   m_forward_button->draw(renderer);
   m_open_button->draw(renderer);
+  m_filename_box->draw(renderer);
 
   renderer.set_draw_color(default_colors::white);
   renderer.fill_rect(m_file_selection.boundary());
@@ -163,12 +165,17 @@ void FileView::resize(unsigned width, unsigned height)
   m_file_selection.resize(new_width, new_height);
   panel.move(panel.boundary().x(), m_file_selection.boundary().y());
 
+  m_filename_box->move(panel_spacing,
+                       m_height - m_open_button->boundary().height()
+                       - panel_spacing);
+  m_filename_box->resize(m_width - m_open_button->boundary().width()
+                         - 2 * panel_spacing - button_spacing,
+                         m_filename_box->boundary().height());
   m_open_button->move(m_width
                       - m_open_button->boundary().width()
                       - panel_spacing,
                       m_height - m_open_button->boundary().height()
                       - panel_spacing);
-                      
 }
 
 void FileView::load_resources()
@@ -195,14 +202,16 @@ void FileView::load_resources()
   m_up_button->register_callback(std::bind(&FileView::up, this));
   m_back_button->register_callback(std::bind(&FileView::back, this));
   m_forward_button->register_callback(std::bind(&FileView::forward, this));
-
+  
   auto open = [this]() {
     FileSelectionPanel& panel
     = dynamic_cast<FileSelectionPanel&>(m_file_selection.main_panel());
     panel.open_selection();
   };
   m_open_button->register_callback(open);
-  
+
+  m_filename_box = std::make_shared<TextBox>(*m_control_font);
+
   auto fsv = std::make_shared<FileSelectionPanel>(*m_filename_font,
                                                   *m_info_font,
                                                   *m_file_icons_texture);

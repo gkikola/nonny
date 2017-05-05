@@ -29,6 +29,7 @@
 #include "ui/file_selection_panel.hpp"
 #include "ui/image_button.hpp"
 #include "ui/scrolling_panel.hpp"
+#include "ui/text_box.hpp"
 #include "video/font.hpp"
 #include "video/rect.hpp"
 #include "video/texture.hpp"
@@ -80,6 +81,7 @@ private:
   std::shared_ptr<ImageButton> m_back_button;
   std::shared_ptr<ImageButton> m_forward_button;
   std::shared_ptr<Button> m_open_button;
+  std::shared_ptr<TextBox> m_filename_box;
 
   ScrollingPanel m_file_selection;
 
