@@ -48,6 +48,12 @@ void TextBox::update(unsigned ticks, InputHandler& input,
       give_focus();
     else
       remove_focus();
+
+    if (has_focus()) {
+      m_cursor = screen_coord_to_pos(mouse_pos.x());
+      m_cursor_visible = true;
+      m_cursor_duration = 0;
+    }
   }
   
   if (has_focus()) {
