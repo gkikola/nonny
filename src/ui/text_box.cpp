@@ -31,6 +31,13 @@ const Color foreground_color = default_colors::black;
 
 const unsigned cursor_blink_duration = 512;
 
+void TextBox::set_text(const std::string& text)
+{
+  m_text = text;
+  m_cursor = 0;
+  m_visible = 0;
+}
+
 void TextBox::update(unsigned ticks, InputHandler& input,
                      const Rect& active_region)
 {

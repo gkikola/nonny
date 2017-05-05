@@ -43,6 +43,7 @@ public:
   void open_selection();
 
   void on_file_select(Callback fn);
+  void on_file_open(Callback fn);
   void on_dir_change(Callback fn);
 
   using UIPanel::update;
@@ -52,6 +53,7 @@ public:
   void draw(Renderer& renderer, const Rect& region) const override;
 
 private:
+  void select(unsigned index);
   unsigned entry_height() const;
   void load_file_list();
   void sort_files();
@@ -76,7 +78,8 @@ private:
   unsigned m_selection = 0;
   bool m_is_selected = false;
 
-  Callback m_file_callback;
+  Callback m_file_open_callback;
+  Callback m_file_sel_callback;
   Callback m_dir_callback;
 };
 

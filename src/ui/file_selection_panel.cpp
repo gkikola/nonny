@@ -58,8 +58,8 @@ void FileSelectionPanel::open_path(const std::string& path)
 
 void FileSelectionPanel::open_file(const std::string& file)
 {
-  if (m_file_callback)
-    m_file_callback(file);
+  if (m_file_open_callback)
+    m_file_open_callback(file);
 }
 
 void FileSelectionPanel::open_selection()
@@ -82,7 +82,12 @@ std::string FileSelectionPanel::selected_file() const
 
 void FileSelectionPanel::on_file_select(Callback fn)
 {
-  m_file_callback = fn;
+  m_file_sel_callback = fn;
+}
+
+void FileSelectionPanel::on_file_open(Callback fn)
+{
+  m_file_open_callback = fn;
 }
 
 void FileSelectionPanel::on_dir_change(Callback fn)
@@ -102,8 +107,7 @@ void FileSelectionPanel::update(unsigned ticks, InputHandler& input,
       m_is_selected = false;
       unsigned index = (cursor.y() - m_boundary.y()) / entry_height();
       if (index < m_files.size()) {
-        m_selection = index;
-        m_is_selected = true;
+        select(index);
 
         //handle double-clicks
         bool dbl_click
@@ -122,23 +126,22 @@ void FileSelectionPanel::update(unsigned ticks, InputHandler& input,
     if (input.was_key_pressed(Keyboard::Key::down)
         || input.was_key_pressed(Keyboard::Key::kp_down)) {
       if (!m_is_selected) {
-        m_selection = 0;
-        m_is_selected = true;
+        select(0);
       } else {
-        ++m_selection;
-        if (m_selection >= m_files.size())
-          m_selection = 0;
+        if (m_selection + 1 >= m_files.size())
+          select(0);
+        else
+          select(m_selection + 1);
       }
     } else if (input.was_key_pressed(Keyboard::Key::up)
                || input.was_key_pressed(Keyboard::Key::kp_up)) {
-      if (!m_is_selected) {
-        m_selection = m_files.size() - 1;
-        m_is_selected = true;
-      } else {
+      if (!m_is_selected)
+        select(m_files.size() - 1);
+      else {
         if (m_selection > 0)
-          --m_selection;
+          select(m_selection - 1);
         else
-          m_selection = m_files.size() - 1;
+          select(m_files.size() - 1);
       }
     }
 
@@ -220,6 +223,16 @@ void FileSelectionPanel::draw(Renderer& renderer, const Rect& region) const
   }
   
   renderer.set_clip_rect();
+}
+
+void FileSelectionPanel::select(unsigned index)
+{
+  if (index < m_files.size()) {
+    m_is_selected = true;
+    m_selection = index;
+    if (m_file_sel_callback)
+      m_file_sel_callback(m_files[index].full_path);
+  }
 }
 
 unsigned FileSelectionPanel::entry_height() const

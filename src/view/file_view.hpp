@@ -66,6 +66,7 @@ private:
   unsigned path_name_width() const; //get display width of cur path name
   unsigned path_subdir_count() const; //get num subdirs in cur path
   void handle_directory_change(); //update controls for new directory
+  void handle_selection_change(); //update text box with selection
   void collapse_path(); //calculate start and end of ellipses in path display
   void open_subdir(unsigned index); //open subdir at index in *m_cur_path
   

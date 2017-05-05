@@ -30,6 +30,8 @@ public:
   TextBox() = default;
   TextBox(const Font& font) : m_font(&font) { calc_size(); }
 
+  void set_text(const std::string& text);
+  
   using UIPanel::update;
   using UIPanel::draw;
   void update(unsigned ticks, InputHandler& input,

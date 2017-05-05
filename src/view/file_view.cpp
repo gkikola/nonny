@@ -217,10 +217,12 @@ void FileView::load_resources()
                                                   *m_file_icons_texture);
   fsv->on_dir_change([this](const std::string& p)
                      { m_selected_path = p; m_need_path_change = true; });
+  fsv->on_file_open([this](const std::string& f)
+                    { m_mgr
+                        .schedule_action(ViewManager::Action::load_puzzle,
+                                         f); });
   fsv->on_file_select([this](const std::string& f)
-                      { m_mgr
-                          .schedule_action(ViewManager::Action::load_puzzle,
-                                           f); });
+                      { handle_selection_change(); });
   m_file_selection.attach_panel(fsv);
 }
 
@@ -335,6 +337,14 @@ void FileView::handle_directory_change()
   }
 
   collapse_path();
+}
+
+void FileView::handle_selection_change()
+{
+  FileSelectionPanel& panel
+    = dynamic_cast<FileSelectionPanel&>(m_file_selection.main_panel());
+  m_filename_box->set_text(panel.selected_file());
+  m_filename_box->remove_focus();
 }
 
 void FileView::collapse_path()
