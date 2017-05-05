@@ -59,11 +59,17 @@ void InputHandler::update(unsigned ticks)
        it != m_button_dbl_click.end();
        ++it)
     *it = false;
+  m_characters = "";
 }
 
 void InputHandler::process_key_event(Keyboard::Key key, bool down)
 {
   m_keys[key] = down;
+}
+
+void InputHandler::process_text_input_event(const std::string& text)
+{
+  m_characters += text;
 }
 
 void InputHandler::process_mouse_button_event(Mouse::Button button, bool down,

@@ -46,6 +46,9 @@ void SDLEventHandler::process(InputHandler& input, ViewManager& view_mgr)
         input.process_key_event(key, down);
       }
       break;
+    case SDL_TEXTINPUT:
+      input.process_text_input_event(event.text.text);
+      break;
     case SDL_MOUSEBUTTONDOWN:
     case SDL_MOUSEBUTTONUP:
       {
