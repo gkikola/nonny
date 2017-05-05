@@ -27,13 +27,12 @@
 #include "input/sdl/sdl_input_handler.hpp"
 #endif
 
-constexpr unsigned dbl_click_time = 500;
-
 InputHandler::InputHandler()
   : m_mouse(0, 0),
     m_prev_mouse(0, 0),
     m_keys(Keyboard::num_keys, false),
     m_prev_keys(Keyboard::num_keys, false),
+    m_num_presses(Keyboard::num_keys, 0),
     m_buttons(Mouse::num_buttons, false),
     m_prev_buttons(Mouse::num_buttons, false),
     m_button_dbl_click(Mouse::num_buttons, false)
@@ -59,12 +58,16 @@ void InputHandler::update(unsigned ticks)
        it != m_button_dbl_click.end();
        ++it)
     *it = false;
+  m_num_presses.clear();
+  m_num_presses.insert(m_num_presses.end(), Keyboard::num_keys, 0);
   m_characters = "";
 }
 
 void InputHandler::process_key_event(Keyboard::Key key, bool down)
 {
   m_keys[key] = down;
+  if (down)
+    ++m_num_presses[key];
 }
 
 void InputHandler::process_text_input_event(const std::string& text)
@@ -105,6 +108,11 @@ bool InputHandler::was_key_released(Keyboard::Key key) const
 bool InputHandler::is_key_down(Keyboard::Key key) const
 {
   return m_keys[key];
+}
+
+unsigned InputHandler::num_key_presses(Keyboard::Key key) const
+{
+  return m_num_presses[key];
 }
 
 bool InputHandler::was_mouse_button_pressed(Mouse::Button button) const

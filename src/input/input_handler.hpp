@@ -52,6 +52,7 @@ public:
   virtual bool was_key_pressed(Keyboard::Key key) const;
   virtual bool was_key_released(Keyboard::Key key) const;
   virtual bool is_key_down(Keyboard::Key key) const;
+  virtual unsigned num_key_presses(Keyboard::Key key) const;
 
   std::string chars_entered() const { return m_characters; }
 
@@ -71,6 +72,7 @@ private:
   
   std::vector<bool> m_keys;
   std::vector<bool> m_prev_keys;
+  std::vector<unsigned> m_num_presses;
 
   std::vector<bool> m_buttons;
   std::vector<bool> m_prev_buttons;
