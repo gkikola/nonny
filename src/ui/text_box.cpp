@@ -29,6 +29,8 @@ constexpr unsigned spacing = 8;
 const Color background_color = default_colors::white;
 const Color foreground_color = default_colors::black;
 
+const unsigned cursor_blink_duration = 512;
+
 void TextBox::update(unsigned ticks, InputHandler& input,
                      const Rect& active_region)
 {
@@ -42,6 +44,16 @@ void TextBox::update(unsigned ticks, InputHandler& input,
   }
   
   if (has_focus()) {
+    //handle cursor blinking
+    m_cursor_duration += ticks;
+    unsigned num_blinks = m_cursor_duration / cursor_blink_duration;
+    if (num_blinks % 2 != 0)
+      m_cursor_visible = !m_cursor_visible;
+    m_cursor_duration -= num_blinks * cursor_blink_duration;
+    
+    unsigned prev_cursor = m_cursor;
+    unsigned prev_size = m_text.size();
+    
     std::string text = input.chars_entered();
     m_text.insert(m_cursor, text);
     m_cursor += text.size();
@@ -96,6 +108,11 @@ void TextBox::update(unsigned ticks, InputHandler& input,
              + static_cast<int>(m_boundary.width() - 2 * spacing))
         --m_visible;
     }
+
+    if (m_cursor != prev_cursor || m_text.size() != prev_size) {
+      m_cursor_visible = true;
+      m_cursor_duration = 0;
+    }
   }
 }
 
@@ -111,7 +128,7 @@ void TextBox::draw(Renderer& renderer, const Rect& region) const
     Point text_pos(spacing + m_boundary.x(), spacing + m_boundary.y());
     renderer.draw_text(text_pos, *m_font, m_text.substr(m_visible));
 
-    if (has_focus()) {
+    if (has_focus() && m_cursor_visible) {
       int x = pos_to_screen_coord(m_cursor);
       Point pt1(x, m_boundary.y() + spacing);
       Point pt2(x, m_boundary.y() + m_boundary.height() - spacing);

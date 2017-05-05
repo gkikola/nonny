@@ -46,6 +46,8 @@ private:
   unsigned m_visible = 0;
   unsigned m_sel_start = 0;
   unsigned m_sel_length = 0;
+  bool m_cursor_visible = true;
+  unsigned m_cursor_duration = 0;
 };
 
 #endif
