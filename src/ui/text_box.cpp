@@ -46,25 +46,39 @@ void TextBox::update(unsigned ticks, InputHandler& input,
     m_text.insert(m_cursor, text);
     m_cursor += text.size();
 
-    if (input.was_key_pressed(Keyboard::Key::backspace) && m_cursor > 0) {
-      m_text.erase(m_cursor - 1, 1);
-      --m_cursor;
-    }
-    if ((input.was_key_pressed(Keyboard::Key::del)
-         || input.was_key_pressed(Keyboard::Key::kp_del))
-        && m_cursor < m_text.size()) {
-      m_text.erase(m_cursor, 1);
+    unsigned num_press = input.num_key_presses(Keyboard::Key::backspace);
+    if (num_press) {
+      if (m_cursor >= num_press) {
+        m_text.erase(m_cursor - num_press, num_press);
+        m_cursor -= num_press;
+      } else {
+        m_text.erase(0, m_cursor);
+        m_cursor = 0;
+      }
     }
 
-    if ((input.was_key_pressed(Keyboard::Key::left)
-         || input.was_key_pressed(Keyboard::Key::kp_left))
-        && m_cursor > 0)
-      --m_cursor;
+    num_press = input.num_key_presses(Keyboard::Key::del)
+      + input.num_key_presses(Keyboard::Key::kp_del);
+    if (num_press) {
+      if (m_cursor + num_press <= m_text.size())
+        m_text.erase(m_cursor, num_press);
+      else
+        m_text.erase(m_cursor);
+    }
 
-    if ((input.was_key_pressed(Keyboard::Key::right)
-         || input.was_key_pressed(Keyboard::Key::kp_right))
-        && m_cursor < m_text.size())
-      ++m_cursor;
+    num_press = input.num_key_presses(Keyboard::Key::left)
+      + input.num_key_presses(Keyboard::Key::kp_left);
+    if (m_cursor >= num_press)
+      m_cursor -= num_press;
+    else
+      m_cursor = 0;
+
+    num_press = input.num_key_presses(Keyboard::Key::right)
+      + input.num_key_presses(Keyboard::Key::kp_right);
+    if (m_cursor + num_press <= m_text.size())
+      m_cursor += num_press;
+    else
+      m_cursor = m_text.size();
 
     //make sure cursor is visible
     if (m_cursor < m_visible)
@@ -75,6 +89,12 @@ void TextBox::update(unsigned ticks, InputHandler& input,
              > m_boundary.x()
              + static_cast<int>(m_boundary.width() - spacing))
         ++m_visible;
+
+      while (m_visible > 0
+             && pos_to_screen_coord(m_text.size())
+             < m_boundary.x()
+             + static_cast<int>(m_boundary.width() - 2 * spacing))
+        --m_visible;
     }
   }
 }
