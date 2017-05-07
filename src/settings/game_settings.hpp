@@ -36,7 +36,7 @@ public:
   inline std::string puzzle_dir() const;
 private:
   void find_directories();
-  bool has_config(const std::string& path);
+  bool is_data_dir(const std::string& path);
   std::string m_data_dir;
   std::string m_save_dir;
   char m_separator = '/';

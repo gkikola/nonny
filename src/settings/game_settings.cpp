@@ -39,20 +39,21 @@ void GameSettings::find_directories()
   //find data directory
   //look in current directory first
   m_data_dir = base;
-  if (has_config(m_data_dir))
+  if (is_data_dir(m_data_dir))
     return;
 
   //could we be inside a build directory?
-  m_data_dir = base + "../data" + m_separator;
-  if (has_config(m_data_dir))
+  m_data_dir = base + ".." + m_separator + "data" + m_separator;
+  if (is_data_dir(m_data_dir))
     return;
 
   //none of the above, use installed directory
   m_data_dir = NONNY_DATADIR;
 }
 
-bool GameSettings::has_config(const std::string& path)
+bool GameSettings::is_data_dir(const std::string& path)
 {
-  std::ifstream file(path + "nonny.cfg");
+  std::string img_path = path + "images" + filesystem_separator();
+  std::ifstream file(img_path + "nonny.png");
   return file.is_open();
 }
