@@ -97,14 +97,15 @@ parse_property(const std::string& line);
  * Converts time in milliseconds to/from a string with the format
  * HH:MM:SS.s
  */
-std::string time_to_string(unsigned time);
+std::string time_to_string(unsigned time, bool show_fractional = false);
 unsigned string_to_time(const std::string& time_str);
 
 /*
  * Read/write the given time (in milliseconds) from/to a stream in a
  * human-readable format
  */
-std::ostream& write_time(std::ostream& os, unsigned time);
+std::ostream& write_time(std::ostream& os, unsigned time,
+                         bool show_fractional = false);
 std::istream& read_time(std::istream& is, unsigned& time);
 
 

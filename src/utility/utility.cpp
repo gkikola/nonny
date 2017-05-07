@@ -142,7 +142,7 @@ unsigned str_to_uint(const std::string& s, std::size_t* pos, int base)
   return result;
 }
 
-std::string time_to_string(unsigned time)
+std::string time_to_string(unsigned time, bool show_fractional)
 {
   time /= 100;
   unsigned tenths = time % 10;
@@ -166,14 +166,18 @@ std::string time_to_string(unsigned time)
 
   if (seconds < 10)
     result += '0';
-  result += std::to_string(seconds) + "." + std::to_string(tenths);
+  result += std::to_string(seconds);
+
+  if (show_fractional)
+    result += "." + std::to_string(tenths);
 
   return result;
 }
 
-std::ostream& write_time(std::ostream& os, unsigned time)
+std::ostream& write_time(std::ostream& os, unsigned time,
+                         bool show_fractional)
 {
-  return os << time_to_string(time);
+  return os << time_to_string(time, show_fractional);
 }
 
 unsigned string_to_time(const std::string& time_str)

@@ -30,10 +30,10 @@ std::ostream& operator<<(std::ostream& os, const PuzzleProgress& prog)
      << "completed " << (prog.m_completed ? "yes" : "no") << "\n";
   
   os << "best_time \"";
-  write_time(os, prog.m_best_time) << "\"\n";
+  write_time(os, prog.m_best_time, true) << "\"\n";
 
   os << "time \"";
-  write_time(os, prog.m_cur_time) << "\"\n";
+  write_time(os, prog.m_cur_time, true) << "\"\n";
   return os;
 }
 

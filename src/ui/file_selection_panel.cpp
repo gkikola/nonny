@@ -277,7 +277,8 @@ void FileSelectionPanel::draw(Renderer& renderer, const Rect& region) const
 
             std::string time_str = "    Best time: ";
             time_str
-              += time_to_string(m_files[i].puzzle_progress->best_time());
+              += time_to_string(m_files[i].puzzle_progress->best_time(),
+                                true);
             renderer.draw_text(Point(x, y), m_info_font, time_str);
           } else {
             renderer.set_draw_color(default_colors::red);
