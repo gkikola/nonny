@@ -94,10 +94,11 @@ parse_property(const std::string& line);
 
 
 /*
- * Converts time in milliseconds to a string with the format
+ * Converts time in milliseconds to/from a string with the format
  * HH:MM:SS.s
  */
 std::string time_to_string(unsigned time);
+unsigned string_to_time(const std::string& time_str);
 
 /*
  * Read/write the given time (in milliseconds) from/to a stream in a

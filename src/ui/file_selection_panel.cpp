@@ -261,25 +261,19 @@ void FileSelectionPanel::draw(Renderer& renderer, const Rect& region) const
                                    m_info_font, "    Completed:");
           x += txt.width();
 
-          std::string time_str = "    Best time: ";
           if (m_files[i].puzzle_progress->is_complete()) {
-            renderer.set_draw_color(default_colors::green);
-            txt = renderer.draw_text(Point(x, y),
-                                     m_info_font, " Yes");
-            renderer.set_draw_color(color);
+            txt = renderer.draw_text(Point(x, y), m_info_font, " Yes");
             x += txt.width();
+
+            std::string time_str = "    Best time: ";
             time_str
               += time_to_string(m_files[i].puzzle_progress->best_time());
+            renderer.draw_text(Point(x, y), m_info_font, time_str);
           } else {
             renderer.set_draw_color(default_colors::red);
-            txt = renderer.draw_text(Point(x, y),
-                                     m_info_font, " No");
+            renderer.draw_text(Point(x, y), m_info_font, " No");
             renderer.set_draw_color(color);
-            x += txt.width();
-            time_str += "--:--.-";
           }
-          renderer.draw_text(Point(x, y),
-                             m_info_font, time_str);
         }
       } else {
         renderer.draw_text(Point(x, y),
@@ -377,9 +371,10 @@ void FileSelectionPanel::load_puzzle_info()
     else
       id = summary->title;
   }
+
   m_save_mgr.load_progress(*progress,
                            m_files[index].full_path,
-                           summary->collection, summary->id);
+                           collection, id);
   m_files[index].puzzle_progress = progress;
   
   ++m_num_puzzles_loaded;

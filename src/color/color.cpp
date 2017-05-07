@@ -31,6 +31,7 @@ namespace default_colors {
   extern const Color red(255, 0, 0);
   extern const Color green(0, 255, 0);
   extern const Color blue(0, 0, 255);
+  extern const Color dark_green(1, 50, 32);
 }
 
 std::ostream& operator<<(std::ostream& os, const Color& color)

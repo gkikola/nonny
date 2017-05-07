@@ -27,7 +27,7 @@
 std::ostream& operator<<(std::ostream& os, const PuzzleProgress& prog)
 {
   os << "file \"" << prog.m_filename << "\"\n"
-     << "complete " << (prog.m_completed ? "yes" : "no") << "\n";
+     << "completed " << (prog.m_completed ? "yes" : "no") << "\n";
   
   os << "best_time \"";
   write_time(os, prog.m_best_time) << "\"\n";
@@ -39,5 +39,20 @@ std::ostream& operator<<(std::ostream& os, const PuzzleProgress& prog)
 
 std::istream& operator>>(std::istream& is, PuzzleProgress& prog)
 {
+  std::string line;
+  while (std::getline(is, line)) {
+    auto p = parse_property(line);
+    if (p.first == "file")
+      prog.m_filename = p.second;
+    else if (p.first == "completed") {
+      if (p.second == "yes")
+        prog.m_completed = true;
+      else
+        prog.m_completed = false;
+    } else if (p.first == "best_time")
+      prog.m_best_time = string_to_time(p.second);
+    else if (p.first == "time")
+      prog.m_cur_time = string_to_time(p.second);
+  }
   return is;
 }

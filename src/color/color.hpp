@@ -81,6 +81,7 @@ namespace default_colors {
   extern const Color red;
   extern const Color green;
   extern const Color blue;
+  extern const Color dark_green;
 }
 
 

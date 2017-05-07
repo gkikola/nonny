@@ -78,10 +78,15 @@ std::string SaveManager::find_save_file(const std::string& path,
                                         std::string id) const
 {
   std::string std_dir = standardize(collection);
-  std::string std_id = standardize(id);  
+  std::string std_id = standardize(id);
+
+  if (std_dir.empty())
+    std_dir = "default";
+  if (std_id.empty())
+    std_id = "untitled";
   
   std::string expected_dir = m_settings.save_dir();
-  expected_dir += "saves" + m_settings.filesystem_separator();
+  expected_dir += std::string("saves") + m_settings.filesystem_separator();
   expected_dir += std_dir + m_settings.filesystem_separator();
 
   unsigned counter = 0;

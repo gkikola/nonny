@@ -176,11 +176,19 @@ std::ostream& write_time(std::ostream& os, unsigned time)
   return os << time_to_string(time);
 }
 
+unsigned string_to_time(const std::string& time_str)
+{
+  unsigned result;
+  std::istringstream ss(time_str);
+  read_time(ss, result);
+  return result;
+}
+
 std::istream& read_time(std::istream& is, unsigned& time)
 {
   unsigned result = 0;
   bool has_tenths = false;
-  while (is_digit(is.peek())) {
+  while (is && is_digit(is.peek())) {
     unsigned component;
     is >> component;
     result += component;
