@@ -23,6 +23,7 @@
 
 #include <cctype>
 #include <cstddef>
+#include <iosfwd>
 #include <string>
 #include <utility>
 
@@ -90,6 +91,20 @@ inline char to_lower(char c);
  */
 std::pair<std::string, std::string>
 parse_property(const std::string& line);
+
+
+/*
+ * Converts time in milliseconds to a string with the format
+ * HH:MM:SS.s
+ */
+std::string time_to_string(unsigned time);
+
+/*
+ * Read/write the given time (in milliseconds) from/to a stream in a
+ * human-readable format
+ */
+std::ostream& write_time(std::ostream& os, unsigned time);
+std::istream& read_time(std::istream& is, unsigned& time);
 
 
 /* implementation */

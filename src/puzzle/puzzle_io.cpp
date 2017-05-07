@@ -30,6 +30,7 @@
 #include <utility>
 #include "color/color_palette.hpp"
 #include "puzzle/puzzle.hpp"
+#include "puzzle/puzzle_summary.hpp"
 #include "utility/utility.hpp"
 
 enum class ClueType { row, col };
@@ -49,6 +50,7 @@ struct PuzzleBlueprint {
 namespace non_format {
   std::ostream& write(std::ostream& os, const Puzzle& puzzle);
   std::istream& read(std::istream& is, PuzzleBlueprint& blueprint);
+  std::istream& skim(std::istream& is, PuzzleSummary& summary);
 }
 
 
@@ -69,6 +71,11 @@ std::istream& read_puzzle(std::istream& is, Puzzle& puzzle)
   puzzle.m_palette = std::move(blueprint.palette);
   puzzle.m_properties = std::move(blueprint.properties);
   return is;
+}
+
+std::istream& skim_puzzle(std::istream& is, PuzzleSummary& summary)
+{
+  return non_format::skim(is, summary);  
 }
 
 
@@ -130,6 +137,10 @@ namespace non_format {
       os << "title \"" << *val << "\"\n";
     if ( (val = puzzle.find_property("by")) )
       os << "by \"" << *val << "\"\n";
+    if ( (val = puzzle.find_property("collection")) )
+      os << "collection \"" << *val << "\"\n";
+    if ( (val = puzzle.find_property("id")) )
+      os << "id \"" << *val << "\"\n";
     if ( (val = puzzle.find_property("copyright")) )
       os << "copyright \"" << *val << "\"\n";
     if ( (val = puzzle.find_property("catalogue")) )
@@ -299,6 +310,34 @@ namespace non_format {
         blueprint.properties[property] = argument;
     }
   
+    return is;
+  }
+
+  std::istream& skim(std::istream& is, PuzzleSummary& summary)
+  {
+    try {
+      std::string line;
+      while (std::getline(is, line)) {
+        auto p = parse_property(line);
+        if (p.first == "title")
+          summary.title = p.second;
+        else if (p.first == "by")
+          summary.author = p.second;
+        else if (p.first == "width")
+          summary.width = str_to_uint(p.second);
+        else if (p.first == "height")
+          summary.height = str_to_uint(p.second);
+        else if (p.first == "collection")
+          summary.collection = p.second;
+        else if (p.first == "id")
+          summary.id = p.second;
+        else if (p.first == "rows" && !p.second.empty())
+          summary.width = str_to_uint(p.second);
+        else if (p.first == "columns" && !p.second.empty())
+          summary.height = str_to_uint(p.second);
+      }
+    } catch (const std::exception& e) { } //ignore file errors
+
     return is;
   }
   

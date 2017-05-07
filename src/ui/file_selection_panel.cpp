@@ -21,9 +21,13 @@
 #include "ui/file_selection_panel.hpp"
 
 #include <algorithm>
+#include <fstream>
 #include <experimental/filesystem>
 #include "color/color.hpp"
 #include "input/input_handler.hpp"
+#include "puzzle/puzzle_io.hpp"
+#include "save/save_manager.hpp"
+#include "utility/utility.hpp"
 #include "video/font.hpp"
 #include "video/renderer.hpp"
 #include "video/texture.hpp"
@@ -34,11 +38,14 @@ const Color background_color = default_colors::white;
 const Color foreground_color = default_colors::black;
 const Color selection_color = default_colors::blue;
 constexpr unsigned spacing = 4;
+constexpr unsigned max_puzzles_open = 9999;
 
-FileSelectionPanel::FileSelectionPanel(Font& filename_font, Font& info_font,
+FileSelectionPanel::FileSelectionPanel(SaveManager& save_mgr,
+                                       Font& filename_font, Font& info_font,
                                        Texture& icons,
                                        const std::string& path)
-  : m_filename_font(filename_font),
+  : m_save_mgr(save_mgr),
+    m_filename_font(filename_font),
     m_info_font(info_font),
     m_icon_texture(icons),
     m_path(path)
@@ -99,6 +106,11 @@ void FileSelectionPanel::update(unsigned ticks, InputHandler& input,
                                 const Rect& active_region)
 {
   if (!m_files.empty()) {
+    //see if we have new puzzle to read
+    if (m_num_puzzles_loaded < m_files.size()
+        && m_num_puzzles_loaded < max_puzzles_open)
+      load_puzzle_info();
+    
     //check for mouse click to select a file
     Point cursor = input.mouse_position();
     if ((input.was_mouse_button_pressed(Mouse::Button::left)
@@ -193,8 +205,8 @@ void FileSelectionPanel::draw(Renderer& renderer, const Rect& region) const
                             m_boundary.width(),
                             entry_height()));
 
-    int x = m_boundary.x() + spacing,
-      y = m_boundary.y() + i * entry_height() + spacing;
+    int x = m_boundary.x() + spacing;
+    int y = m_boundary.y() + i * entry_height() + spacing;
 
     //icon
     unsigned icon_width = m_icon_texture.width() / 2;
@@ -212,14 +224,68 @@ void FileSelectionPanel::draw(Renderer& renderer, const Rect& region) const
       renderer.copy_texture(m_icon_texture, src, dest);
     }
     x += icon_width + spacing;
-    
-    //filename
+
+    Color color;
     if (m_is_selected && m_selection == i)
-      renderer.set_draw_color(background_color);
+      color = background_color;
     else
-      renderer.set_draw_color(foreground_color);
-    renderer.draw_text(Point(x, y),
-                       m_filename_font, m_files[i].filename);
+      color = foreground_color;
+    renderer.set_draw_color(color);
+
+    //file/puzzle information
+    Rect txt = renderer.draw_text(Point(x, y),
+                                  m_filename_font, m_files[i].filename);
+    y += txt.height();
+
+    if (m_files[i].type == FileInfo::Type::puzzle_file) {
+      if (m_files[i].puzzle_info) {
+        std::string title;
+        if (m_files[i].puzzle_info->title.empty())
+          title = "Untitled";
+        else
+          title = m_files[i].puzzle_info->title;
+        if (!m_files[i].puzzle_info->author.empty())
+          title += " by " + m_files[i].puzzle_info->author;
+        txt = renderer.draw_text(Point(x, y), m_info_font, title);
+        y += txt.height();
+
+        std::string size = std::to_string(m_files[i].puzzle_info->width);
+        size += "\u00D7" + std::to_string(m_files[i].puzzle_info->height);
+        if (m_files[i].puzzle_info->is_multicolor)
+          size += " Multicolor";
+        txt = renderer.draw_text(Point(x, y), m_info_font, size);
+        x += txt.width();
+        
+        if (m_files[i].puzzle_progress) {
+          txt = renderer.draw_text(Point(x, y),
+                                   m_info_font, "    Completed:");
+          x += txt.width();
+
+          std::string time_str = "    Best time: ";
+          if (m_files[i].puzzle_progress->is_complete()) {
+            renderer.set_draw_color(default_colors::green);
+            txt = renderer.draw_text(Point(x, y),
+                                     m_info_font, " Yes");
+            renderer.set_draw_color(color);
+            x += txt.width();
+            time_str
+              += time_to_string(m_files[i].puzzle_progress->best_time());
+          } else {
+            renderer.set_draw_color(default_colors::red);
+            txt = renderer.draw_text(Point(x, y),
+                                     m_info_font, " No");
+            renderer.set_draw_color(color);
+            x += txt.width();
+            time_str += "--:--.-";
+          }
+          renderer.draw_text(Point(x, y),
+                             m_info_font, time_str);
+        }
+      } else {
+        renderer.draw_text(Point(x, y),
+                           m_info_font, "Loading information...");
+      }
+    }
   }
   
   renderer.set_clip_rect();
@@ -245,6 +311,7 @@ void FileSelectionPanel::load_file_list()
   m_files.clear();
   m_selection = 0;
   m_is_selected = false;
+  m_num_puzzles_loaded = 0;
 
   if (!m_path.empty()) {
     stdfs::path p(m_path);
@@ -284,4 +351,36 @@ FileSelectionPanel::file_info_less_than(const FileInfo& l, const FileInfo& r)
 void FileSelectionPanel::sort_files()
 {
   std::sort(m_files.begin(), m_files.end(), file_info_less_than);
+}
+
+void FileSelectionPanel::load_puzzle_info()
+{
+  unsigned index = m_num_puzzles_loaded;
+
+  auto summary = std::make_shared<PuzzleSummary>();
+  auto progress = std::make_shared<PuzzleProgress>();
+
+  std::ifstream sfile(m_files[index].full_path);
+  if (sfile.is_open()) {
+    skim_puzzle(sfile, *summary);
+  }
+  sfile.close();
+  m_files[index].puzzle_info = summary;
+  
+  std::string collection = summary->collection;
+  std::string id = summary->id;
+  if (collection.empty())
+    collection = "Default";
+  if (id.empty()) {
+    if (summary->title.empty())
+      id = "Untitled";
+    else
+      id = summary->title;
+  }
+  m_save_mgr.load_progress(*progress,
+                           m_files[index].full_path,
+                           summary->collection, summary->id);
+  m_files[index].puzzle_progress = progress;
+  
+  ++m_num_puzzles_loaded;
 }

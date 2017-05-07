@@ -141,3 +141,65 @@ unsigned str_to_uint(const std::string& s, std::size_t* pos, int base)
     throw std::out_of_range("::str_to_uint: out of range");
   return result;
 }
+
+std::string time_to_string(unsigned time)
+{
+  time /= 100;
+  unsigned tenths = time % 10;
+  time /= 10;
+  unsigned seconds = time % 60;
+  time /= 60;
+  unsigned minutes = time % 60;
+  time /= 60;
+  unsigned hours = time;
+
+  std::string result;
+  if (hours) {
+    if (hours < 10)
+      result += '0';
+    result += std::to_string(hours) + ":";
+  }
+
+  if (minutes < 10)
+    result += '0';
+  result += std::to_string(minutes) + ":";
+
+  if (seconds < 10)
+    result += '0';
+  result += std::to_string(seconds) + "." + std::to_string(tenths);
+
+  return result;
+}
+
+std::ostream& write_time(std::ostream& os, unsigned time)
+{
+  return os << time_to_string(time);
+}
+
+std::istream& read_time(std::istream& is, unsigned& time)
+{
+  unsigned result = 0;
+  bool has_tenths = false;
+  while (is_digit(is.peek())) {
+    unsigned component;
+    is >> component;
+    result += component;
+
+    if (is.peek() == ':') {
+      result *= 60;
+      is.get();
+    } else if (!has_tenths && is.peek() == '.') {
+      result *= 10;
+      is.get();
+      has_tenths = true;
+    }
+  }
+
+  if (has_tenths)
+    result *= 100;
+  else
+    result *= 1000;
+
+  time = result;
+  return is;
+}

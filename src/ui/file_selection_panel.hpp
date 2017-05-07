@@ -22,18 +22,23 @@
 #define NONNY_FILE_SELECTION_PANEL
 
 #include <functional>
+#include <memory>
 #include <string>
 #include <vector>
+#include "puzzle/puzzle_progress.hpp"
+#include "puzzle/puzzle_summary.hpp"
 #include "ui/ui_panel.hpp"
 
 class Font;
+class SaveManager;
 class Texture;
 
 class FileSelectionPanel : public UIPanel {
 public:
   typedef std::function<void(const std::string&)> Callback;
   
-  FileSelectionPanel(Font& filename_font, Font& info_font,
+  FileSelectionPanel(SaveManager& save_mgr,
+                     Font& filename_font, Font& info_font,
                      Texture& icons, const std::string& path = "");
 
   void open_path(const std::string& path);
@@ -57,6 +62,7 @@ private:
   unsigned entry_height() const;
   void load_file_list();
   void sort_files();
+  void load_puzzle_info();
 
   struct FileInfo;
   static bool file_info_less_than(const FileInfo& l, const FileInfo& r);
@@ -64,12 +70,12 @@ private:
   struct FileInfo {
     std::string filename;
     std::string full_path;
-    enum class Type { directory, file, puzzle_file } type;
-    std::string puzzle_name;
-    unsigned puzzle_width = 0;
-    unsigned puzzle_height = 0;
+    enum class Type { directory, file, puzzle_file } type = Type::file;
+    std::shared_ptr<PuzzleSummary> puzzle_info;
+    std::shared_ptr<PuzzleProgress> puzzle_progress;
   };
-  
+
+  SaveManager& m_save_mgr;
   const Font& m_filename_font;
   const Font& m_info_font;
   const Texture& m_icon_texture;
@@ -77,6 +83,7 @@ private:
   std::vector<FileInfo> m_files;
   unsigned m_selection = 0;
   bool m_is_selected = false;
+  unsigned m_num_puzzles_loaded = 0;
 
   Callback m_file_open_callback;
   Callback m_file_sel_callback;

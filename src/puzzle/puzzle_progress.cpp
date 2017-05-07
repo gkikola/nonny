@@ -18,27 +18,26 @@
  */
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
-#ifndef NONNY_PUZZLE_IO_HPP
-#define NONNY_PUZZLE_IO_HPP
+#include "puzzle/puzzle_progress.hpp"
 
-#include <iosfwd>
-#include <stdexcept>
-#include <string>
+#include <iomanip>
+#include <iostream>
+#include "utility/utility.hpp"
 
-class Puzzle;
-struct PuzzleSummary;
+std::ostream& operator<<(std::ostream& os, const PuzzleProgress& prog)
+{
+  os << "file \"" << prog.m_filename << "\"\n"
+     << "complete " << (prog.m_completed ? "yes" : "no") << "\n";
+  
+  os << "best_time \"";
+  write_time(os, prog.m_best_time) << "\"\n";
 
-class InvalidPuzzleFile : std::logic_error {
-public:
-  explicit InvalidPuzzleFile(const std::string& what_arg)
-    : std::logic_error(what_arg) { }
-};
+  os << "time \"";
+  write_time(os, prog.m_cur_time) << "\"\n";
+  return os;
+}
 
-// Read or write puzzles from/to a stream
-std::ostream& write_puzzle(std::ostream& os, const Puzzle& puzzle);
-std::istream& read_puzzle(std::istream& is, Puzzle& puzzle);
-
-// Collect summary information but don't actually load the puzzle
-std::istream& skim_puzzle(std::istream& is, PuzzleSummary& summary);
-
-#endif
+std::istream& operator>>(std::istream& is, PuzzleProgress& prog)
+{
+  return is;
+}

@@ -23,6 +23,7 @@
 #include <functional>
 #include "color/color.hpp"
 #include "input/input_handler.hpp"
+#include "save/save_manager.hpp"
 #include "settings/game_settings.hpp"
 #include "video/renderer.hpp"
 #include "view/view_manager.hpp"
@@ -212,7 +213,8 @@ void FileView::load_resources()
 
   m_filename_box = std::make_shared<TextBox>(*m_control_font);
 
-  auto fsv = std::make_shared<FileSelectionPanel>(*m_filename_font,
+  auto fsv = std::make_shared<FileSelectionPanel>(m_mgr.save_manager(),
+                                                  *m_filename_font,
                                                   *m_info_font,
                                                   *m_file_icons_texture);
   fsv->on_dir_change([this](const std::string& p)

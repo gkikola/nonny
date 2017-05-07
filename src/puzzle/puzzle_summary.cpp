@@ -18,27 +18,4 @@
  */
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
-#ifndef NONNY_PUZZLE_IO_HPP
-#define NONNY_PUZZLE_IO_HPP
-
-#include <iosfwd>
-#include <stdexcept>
-#include <string>
-
-class Puzzle;
-struct PuzzleSummary;
-
-class InvalidPuzzleFile : std::logic_error {
-public:
-  explicit InvalidPuzzleFile(const std::string& what_arg)
-    : std::logic_error(what_arg) { }
-};
-
-// Read or write puzzles from/to a stream
-std::ostream& write_puzzle(std::ostream& os, const Puzzle& puzzle);
-std::istream& read_puzzle(std::istream& is, Puzzle& puzzle);
-
-// Collect summary information but don't actually load the puzzle
-std::istream& skim_puzzle(std::istream& is, PuzzleSummary& summary);
-
-#endif
+#include "puzzle/puzzle_summary.hpp"

@@ -34,7 +34,8 @@ ViewManager::ViewManager(VideoSystem& vs, Renderer& renderer,
                          GameSettings& settings)
   : m_video(vs),
     m_renderer(renderer),
-    m_settings(settings)
+    m_settings(settings),
+    m_save_mgr(settings)
 {
 }
 
@@ -44,6 +45,7 @@ ViewManager::ViewManager(VideoSystem& vs, Renderer& renderer,
   : m_video(vs),
     m_renderer(renderer),
     m_settings(settings),
+    m_save_mgr(settings),
     m_width(width),
     m_height(height)
 {

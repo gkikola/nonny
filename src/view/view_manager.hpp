@@ -25,6 +25,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include "save/save_manager.hpp"
 #include "view/view.hpp"
 #include "video/font.hpp"
 #include "video/video_system.hpp"
@@ -32,6 +33,7 @@
 class GameSettings;
 class InputHandler;
 class Renderer;
+class SaveManager;
 
 class ViewManager {
 public:
@@ -65,11 +67,15 @@ public:
   GameSettings& game_settings() { return m_settings; }
   const GameSettings& game_settings() const { return m_settings; }
 
+  SaveManager& save_manager() { return m_save_mgr; }
+  const SaveManager& save_manager() const { return m_save_mgr; }
+
 private:
   std::vector<std::shared_ptr<View>> m_views;
   VideoSystem& m_video;
   Renderer& m_renderer;
   GameSettings& m_settings;
+  SaveManager m_save_mgr;
   unsigned m_width = 0;
   unsigned m_height = 0;
 
