@@ -23,6 +23,7 @@
 #include <algorithm>
 #include <string>
 #include "puzzle/puzzle.hpp"
+#include "utility/utility.hpp"
 #include "video/font.hpp"
 #include "video/renderer.hpp"
 #include "video/texture.hpp"
@@ -71,6 +72,7 @@ void PuzzleInfoPanel::setup_buttons()
 void PuzzleInfoPanel::update(unsigned ticks, InputHandler& input,
                              const Rect& active_region)
 {
+  m_time += ticks;
   m_preview.update(ticks, input, active_region);
   m_menu_button->update(ticks, input, active_region);
   m_zoom_in_button->update(ticks, input, active_region);
@@ -94,10 +96,18 @@ void PuzzleInfoPanel::draw(Renderer& renderer, const Rect& region) const
     pos.y() += text_height + spacing;
 
     //draw puzzle size
-    m_info_font.text_size(m_puzzle_size, &text_width, &text_height);
+    m_size_font.text_size(m_puzzle_size, &text_width, &text_height);
     text_pos.x() = pos.x() + m_boundary.width() / 2 - text_width / 2;
     text_pos.y() = pos.y();
     renderer.draw_text(text_pos, m_size_font, m_puzzle_size);
+    pos.y() += text_height + spacing;
+
+    //draw time
+    std::string time_str = time_to_string(m_time);
+    m_info_font.text_size(time_str, &text_width, &text_height);
+    text_pos.x() = pos.x() + m_boundary.width() / 2 - text_width / 2;
+    text_pos.y() = pos.y();
+    renderer.draw_text(text_pos, m_info_font, time_str);
     pos.y() += text_height + spacing;
 
     //leave room for preview
@@ -150,6 +160,7 @@ void PuzzleInfoPanel::retrieve_puzzle_info()
 
   m_puzzle_size = std::to_string(m_puzzle->width())
     + "\u00D7" + std::to_string(m_puzzle->height());
+  m_time = 0;
 }
 
 void PuzzleInfoPanel::calculate_bounds()
@@ -163,6 +174,10 @@ void PuzzleInfoPanel::calculate_bounds()
     height += text_ht + spacing;
 
     m_size_font.text_size(m_puzzle_size, &text_wd, &text_ht);
+    width = std::max(width, text_wd + 2 * spacing);
+    height += text_ht + spacing;
+
+    m_info_font.text_size("00:00.0", &text_wd, &text_ht);
     width = std::max(width, text_wd + 2 * spacing);
     height += text_ht + spacing;
 

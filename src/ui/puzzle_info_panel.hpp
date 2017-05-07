@@ -42,6 +42,9 @@ public:
   void start_slide() { m_sliding = true; }
   void stop_slide() { m_sliding = false; }
 
+  //get time puzzle has been open
+  unsigned time() const { return m_time; }
+
   using UIPanel::update; //make all update and draw overloads visible
   using UIPanel::draw;
   void update(unsigned ticks, InputHandler& input,
@@ -72,6 +75,7 @@ private:
   std::shared_ptr<ImageButton> m_hint_button;
 
   bool m_sliding = false;
+  unsigned m_time = 0;
 };
 
 #endif
