@@ -21,18 +21,21 @@
 #ifndef NONNY_PUZZLE_INFO_PANEL_HPP
 #define NONNY_PUZZLE_INFO_PANEL_HPP
 
-#include "ui/button.hpp"
+#include <memory>
+#include "ui/image_button.hpp"
 #include "ui/puzzle_preview.hpp"
 #include "ui/ui_panel.hpp"
 
 class Font;
 class Puzzle;
+class Texture;
 
 class PuzzleInfoPanel : public UIPanel {
 public:
-  PuzzleInfoPanel(Font& title_font, Font& info_font, Font& button_font);
-  PuzzleInfoPanel(Font& title_font, Font& info_font, Font& button_font,
-                  Puzzle& puzzle);
+  PuzzleInfoPanel(Font& title_font, Font& info_font, Font& size_font,
+                  Texture& ctrl_texture);
+  PuzzleInfoPanel(Font& title_font, Font& info_font, Font& size_font,
+                  Texture& ctrl_texture, Puzzle& puzzle);
   void attach_puzzle(Puzzle& puzzle);
 
   //start/stop sliding animation
@@ -48,12 +51,14 @@ public:
   void move(int x, int y) override;
 
 private:
+  void setup_buttons();
   void retrieve_puzzle_info();
   void calculate_bounds();
 
   Font& m_title_font;
   Font& m_info_font;
-  Font& m_button_font;
+  Font& m_size_font;
+  Texture& m_ctrl_texture;
 
   Puzzle* m_puzzle = nullptr;
   std::string m_puzzle_title;
@@ -61,6 +66,10 @@ private:
   std::string m_puzzle_size;
 
   PuzzlePreview m_preview;
+  std::shared_ptr<ImageButton> m_menu_button;
+  std::shared_ptr<ImageButton> m_zoom_in_button;
+  std::shared_ptr<ImageButton> m_zoom_out_button;
+  std::shared_ptr<ImageButton> m_hint_button;
 
   bool m_sliding = false;
 };

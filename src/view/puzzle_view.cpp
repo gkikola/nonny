@@ -125,11 +125,16 @@ void PuzzleView::setup_panels()
 
   m_title_font = m_mgr.video_system().new_font(bold_font_file, 32);
   m_info_font = m_mgr.video_system().new_font(font_file, 18);
-  m_button_font = m_mgr.video_system().new_font(font_file, 24);
+  m_size_font = m_mgr.video_system().new_font(font_file, 24);
+
+  texture_file = settings.image_dir() + "control.png";
+  m_ctrl_texture = m_mgr.video_system().load_image(m_mgr.renderer(),
+                                                   texture_file);
 
   auto ipanel = make_ui_panel<PuzzleInfoPanel>(*m_title_font,
                                                *m_info_font,
-                                               *m_button_font,
+                                               *m_size_font,
+                                               *m_ctrl_texture,
                                                m_puzzle);
   dynamic_cast<PuzzleInfoPanel*>(ipanel.get())->start_slide();
   Rect info_region(0, 0, 0, m_height);

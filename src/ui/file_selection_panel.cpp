@@ -220,6 +220,16 @@ void FileSelectionPanel::draw(Renderer& renderer, const Rect& region) const
       renderer.fill_rect(dest);
       renderer.set_draw_color(foreground_color);
       renderer.draw_rect(dest);
+
+      if (m_files[i].puzzle_progress
+          && !m_files[i].puzzle_progress->is_complete()
+          && m_files[i].puzzle_progress->current_time() == 0) {
+        unsigned wd = 0, ht = 0;
+        m_filename_font.text_size("?", &wd, &ht);
+        Point qmark_loc(x + icon_width / 2 - wd / 2,
+                        y + icon_height / 2 - ht/ 2);
+        renderer.draw_text(qmark_loc, m_filename_font, "?");
+      }
     } else {
       renderer.copy_texture(m_icon_texture, src, dest);
     }
