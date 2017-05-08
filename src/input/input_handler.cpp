@@ -54,6 +54,8 @@ void InputHandler::update(unsigned ticks)
   m_prev_keys = m_keys;
   m_prev_buttons = m_buttons;
   m_prev_mouse = m_mouse;
+  m_mwheel_vert = 0;
+  m_mwheel_horiz = 0;
   for (auto it = m_button_dbl_click.begin();
        it != m_button_dbl_click.end();
        ++it)
@@ -88,6 +90,8 @@ void InputHandler::process_mouse_button_event(Mouse::Button button, bool down,
 
 void InputHandler::process_mouse_wheel_event(int vert, int horiz)
 {
+  m_mwheel_vert += vert;
+  m_mwheel_horiz += horiz;
 }
 
 void InputHandler::process_mouse_move_event(int x, int y)

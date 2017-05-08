@@ -66,9 +66,14 @@ public:
   virtual int rel_mouse_x() const { return m_mouse.x() - m_prev_mouse.x(); }
   virtual int rel_mouse_y() const { return m_mouse.y() - m_prev_mouse.y(); }
 
+  virtual int vert_mouse_wheel_scroll() const { return m_mwheel_vert; }
+  virtual int horiz_mouse_wheel_scroll() const { return m_mwheel_horiz; }
+  
 private:
   Point m_mouse;
   Point m_prev_mouse;
+  int m_mwheel_vert = 0;
+  int m_mwheel_horiz = 0;
   
   std::vector<bool> m_keys;
   std::vector<bool> m_prev_keys;
