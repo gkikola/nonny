@@ -29,9 +29,12 @@
 
 class MenuView : public View {
 public:
-  MenuView(ViewManager& vm) : View(vm) { load_resources(); main_menu(); }
-  MenuView(ViewManager& vm, unsigned width, unsigned height)
-    : View(vm, width, height) { load_resources(); main_menu(); }
+  enum class MenuType { main_menu, in_game_menu, about_menu };
+
+  MenuView(ViewManager& vm, MenuType menu = MenuType::main_menu)
+    : View(vm) { load_resources(); open_menu(menu); start_slide(); }
+  MenuView(ViewManager& vm, unsigned width, unsigned height,
+           MenuType menu = MenuType::main_menu);
 
   void update(unsigned ticks, InputHandler& input) override;
   void draw(Renderer& renderer) override;
@@ -39,7 +42,10 @@ public:
 
 private:
   void load_resources();
+  void start_slide();
+  void open_menu(MenuType menu);
   void main_menu();
+  void in_game_menu();
   void about_menu();
 
   enum class MenuAction { no_action, load_main, load_about };
@@ -51,6 +57,9 @@ private:
   std::unique_ptr<Font> m_control_font;
   std::unique_ptr<Font> m_about_font;
   std::unique_ptr<Texture> m_logo_texture;
+
+  bool m_sliding = false;
+  int m_slide_offset = 0;
 };
 
 #endif

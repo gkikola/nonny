@@ -21,6 +21,7 @@
 #ifndef NONNY_PUZZLE_INFO_PANEL_HPP
 #define NONNY_PUZZLE_INFO_PANEL_HPP
 
+#include <functional>
 #include <memory>
 #include "ui/image_button.hpp"
 #include "ui/puzzle_preview.hpp"
@@ -38,6 +39,13 @@ public:
                   Texture& ctrl_texture, Puzzle& puzzle);
   void attach_puzzle(Puzzle& puzzle);
 
+  //register callback functions
+  typedef std::function<void()> Callback;
+  void on_menu_open(Callback fn) { m_menu_button->register_callback(fn); }
+  void on_zoom_in(Callback fn) { m_zoom_in_button->register_callback(fn); }
+  void on_zoom_out(Callback fn) { m_zoom_out_button->register_callback(fn); }
+  void on_hint_toggle(Callback fn) { m_hint_button->register_callback(fn); }
+  
   //start/stop sliding animation
   void start_slide() { m_sliding = true; }
   void stop_slide() { m_sliding = false; }
@@ -49,6 +57,7 @@ public:
   using UIPanel::draw;
   void update(unsigned ticks, InputHandler& input,
               const Rect& active_region) override;
+
   void draw(Renderer& renderer, const Rect& region) const override;
 
   void move(int x, int y) override;

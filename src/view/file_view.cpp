@@ -76,7 +76,8 @@ void FileView::update(unsigned ticks, InputHandler& input)
       }
     }
   }
-  
+
+  m_menu_button->update(ticks, input);
   m_up_button->update(ticks, input);
   m_back_button->update(ticks, input);
   m_forward_button->update(ticks, input);
@@ -126,7 +127,8 @@ void FileView::draw(Renderer& renderer)
       ++index;
     }
   }
-  
+
+  m_menu_button->draw(renderer);
   m_up_button->draw(renderer);
   m_back_button->draw(renderer);
   m_forward_button->draw(renderer);
@@ -151,6 +153,9 @@ void FileView::resize(unsigned width, unsigned height)
 
   x -= button_spacing + m_up_button->boundary().width();
   m_up_button->move(x, y);
+
+  x -= button_spacing + m_menu_button->boundary().width();
+  m_menu_button->move(x, y);
 
   collapse_path();
 
@@ -193,13 +198,16 @@ void FileView::load_resources()
   m_nav_texture = vs.load_image(m_mgr.renderer(), nav_texture_file);
   m_file_icons_texture = vs.load_image(m_mgr.renderer(), icon_texture_file);
 
-  m_up_button = std::make_shared<ImageButton>(*m_nav_texture, 0);
-  m_back_button = std::make_shared<ImageButton>(*m_nav_texture, 1);
-  m_forward_button = std::make_shared<ImageButton>(*m_nav_texture, 2);
+  m_menu_button = std::make_shared<ImageButton>(*m_nav_texture, 0);
+  m_up_button = std::make_shared<ImageButton>(*m_nav_texture, 1);
+  m_back_button = std::make_shared<ImageButton>(*m_nav_texture, 2);
+  m_forward_button = std::make_shared<ImageButton>(*m_nav_texture, 3);
 
   std::string open_label = m_mode == Mode::open ? "Load" : "Save";
   m_open_button = std::make_shared<Button>(*m_control_font, open_label);
 
+  m_menu_button->register_callback([this]() {
+      m_mgr.schedule_action(ViewManager::Action::close_menu); });
   m_up_button->register_callback(std::bind(&FileView::up, this));
   m_back_button->register_callback(std::bind(&FileView::back, this));
   m_forward_button->register_callback(std::bind(&FileView::forward, this));
@@ -352,9 +360,9 @@ void FileView::handle_selection_change()
 void FileView::collapse_path()
 {    
   if (m_cur_path != m_paths.end()) {
-    //max allowed width is screen width minus the three nav buttons
+    //max allowed width is screen width minus the four nav buttons
     unsigned max_width = 2 * panel_spacing
-      + 3 * (m_up_button->boundary().width() + button_spacing);
+      + 4 * (m_up_button->boundary().width() + button_spacing);
     if (max_width < m_width)
       max_width = m_width - max_width;
     else

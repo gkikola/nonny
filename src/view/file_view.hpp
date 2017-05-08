@@ -78,6 +78,7 @@ private:
   unsigned m_path_collapse_start;
   unsigned m_path_collapse_end;
 
+  std::shared_ptr<ImageButton> m_menu_button;
   std::shared_ptr<ImageButton> m_up_button;
   std::shared_ptr<ImageButton> m_back_button;
   std::shared_ptr<ImageButton> m_forward_button;

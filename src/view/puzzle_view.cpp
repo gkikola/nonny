@@ -131,12 +131,17 @@ void PuzzleView::setup_panels()
   m_ctrl_texture = m_mgr.video_system().load_image(m_mgr.renderer(),
                                                    texture_file);
 
-  auto ipanel = make_ui_panel<PuzzleInfoPanel>(*m_title_font,
-                                               *m_info_font,
-                                               *m_size_font,
-                                               *m_ctrl_texture,
-                                               m_puzzle);
-  dynamic_cast<PuzzleInfoPanel*>(ipanel.get())->start_slide();
+  auto ipanel = std::make_shared<PuzzleInfoPanel>(*m_title_font,
+                                                  *m_info_font,
+                                                  *m_size_font,
+                                                  *m_ctrl_texture,
+                                                  m_puzzle);
+  ipanel->on_menu_open([this]() {
+      m_mgr.schedule_action(ViewManager::Action::open_menu); });
+  ipanel->on_zoom_in([]() { });
+  ipanel->on_zoom_out([]() { });
+  ipanel->on_hint_toggle([]() { });
+  ipanel->start_slide();
   Rect info_region(0, 0, 0, m_height);
   m_info_pane = ScrollingPanel(info_region, ipanel);
 }

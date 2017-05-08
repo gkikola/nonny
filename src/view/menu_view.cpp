@@ -31,21 +31,39 @@
 #include "view/puzzle_view.hpp"
 #include "view/view_manager.hpp"
 
-constexpr unsigned menu_button_width = 128;
+constexpr unsigned menu_button_width = 150;
+constexpr unsigned menu_slide_speed = 2000;
 const Color menu_background_color(123, 175, 212);
+
+MenuView::MenuView(ViewManager& vm, unsigned width, unsigned height,
+                   MenuType menu)
+  : View(vm, width, height)
+{
+  load_resources();
+  open_menu(menu);
+  start_slide();
+}
 
 void MenuView::update(unsigned ticks, InputHandler& input)
 {
+  if (m_sliding) {
+    m_slide_offset += menu_slide_speed * ticks / 1000;
+    if (m_slide_offset >= 0) {
+      m_slide_offset = 0;
+      m_sliding = false;
+    }
+  }
+  
   if (m_action != MenuAction::no_action) {
     switch (m_action) {
     default:
     case MenuAction::no_action:
       break;
     case MenuAction::load_main:
-      main_menu();
+      open_menu(MenuType::main_menu);
       break;
     case MenuAction::load_about:
-      about_menu();
+      open_menu(MenuType::about_menu);
       break;
     }
 
@@ -59,7 +77,12 @@ void MenuView::draw(Renderer& renderer)
 {
   renderer.set_draw_color(menu_background_color);
   renderer.fill_rect(Rect(0, 0, m_width, m_height));
+
+  if (m_sliding)
+    renderer.set_viewport(Rect(0, m_slide_offset, m_width, m_height));
   m_main_panel.draw(renderer);
+  if (m_sliding)
+    renderer.set_viewport();
 }
 
 void MenuView::resize(unsigned width, unsigned height)
@@ -79,6 +102,28 @@ void MenuView::load_resources()
   file = m_mgr.game_settings().font_dir() + "FreeSans.ttf";
   m_about_font = m_mgr.video_system().new_font(file, 18);
   m_control_font = m_mgr.video_system().new_font(file, 24);
+}
+
+void MenuView::start_slide()
+{
+  m_sliding = true;
+  m_slide_offset = -m_main_panel.main_panel().boundary().height();
+}
+
+void MenuView::open_menu(MenuType menu)
+{
+  switch (menu) {
+  default:
+  case MenuType::main_menu:
+    main_menu();
+    break;
+  case MenuType::in_game_menu:
+    in_game_menu();
+    break;
+  case MenuType::about_menu:
+    about_menu();
+    break;
+  };
 }
 
 void MenuView::main_menu()
@@ -109,6 +154,39 @@ void MenuView::main_menu()
                             {
                               m_action = MenuAction::load_about;
                             });
+  button->resize(menu_button_width, button->boundary().height());
+  menu->add_control(button);
+
+  menu->position_controls();
+  m_main_panel.attach_panel(menu);
+  resize(m_width, m_height);
+}
+
+void MenuView::in_game_menu()
+{
+  auto menu = std::make_shared<Menu>();
+
+  auto title = std::make_shared<StaticText>(*m_title_font, NONNY_TITLE);
+  menu->add_control(title);
+
+  auto logo = std::make_shared<StaticImage>(*m_logo_texture);
+  menu->add_control(logo);
+
+  auto button = std::make_shared<Button>(*m_control_font, "Return");
+  button->register_callback([this]() {
+      m_mgr.schedule_action(ViewManager::Action::close_menu); });
+  button->resize(menu_button_width, button->boundary().height());
+  menu->add_control(button);
+
+  button = std::make_shared<Button>(*m_control_font, "Save Game");
+  button->register_callback([this]() {
+      m_mgr.schedule_action(ViewManager::Action::save_game); });
+  button->resize(menu_button_width, button->boundary().height());
+  menu->add_control(button);
+  
+  button = std::make_shared<Button>(*m_control_font, "Quit Puzzle");
+  button->register_callback([this]() {
+      m_mgr.schedule_action(ViewManager::Action::quit_puzzle); });
   button->resize(menu_button_width, button->boundary().height());
   menu->add_control(button);
 

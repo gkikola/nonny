@@ -72,10 +72,24 @@ void ViewManager::update(unsigned ticks, InputHandler& input)
       push(std::make_shared<FileView>(*this, FileView::Mode::open));
       break;
     case Action::open_menu:
-      push(std::make_shared<MenuView>(*this));
+      if (m_puzzle_open)
+        push(std::make_shared<MenuView>(*this,
+                                        MenuView::MenuType::in_game_menu));
+      else
+        push(std::make_shared<MenuView>(*this));
+      break;
+    case Action::close_menu:
+      pop();
       break;
     case Action::load_puzzle:
+      pop(); //close file selector
       push(std::make_shared<PuzzleView>(*this, m_action_arg));
+      m_puzzle_open = true;
+      break;
+    case Action::quit_puzzle:
+      pop(); //close the menu
+      pop(); //close the puzzle
+      m_puzzle_open = false;
       break;
     }
     resize(m_width, m_height);

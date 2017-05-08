@@ -42,7 +42,7 @@ public:
               unsigned width, unsigned height);
   
   enum class Action { no_action, quit_game, choose_puzzle, open_menu,
-      load_puzzle };
+      close_menu, load_puzzle, quit_puzzle, save_game };
   inline void schedule_action(Action action, std::string argument = "");
 
   void push(std::shared_ptr<View> view) { m_views.push_back(view); }
@@ -78,6 +78,7 @@ private:
   SaveManager m_save_mgr;
   unsigned m_width = 0;
   unsigned m_height = 0;
+  bool m_puzzle_open = false;
 
   Action m_action = Action::no_action;
   std::string m_action_arg;
