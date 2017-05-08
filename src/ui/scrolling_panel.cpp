@@ -25,6 +25,7 @@
 #include "video/renderer.hpp"
 
 const Color scrollbar_background_color(196, 196, 196);
+constexpr unsigned scroll_speed = 750;
 
 void ScrollingPanel::attach_panel(UIPanelPtr child)
 {
@@ -39,6 +40,23 @@ void ScrollingPanel::attach_panel(UIPanelPtr child)
 void ScrollingPanel::update(unsigned ticks, InputHandler& input,
                             const Rect& active_region)
 {
+  //handle smooth scroll
+  int scroll_amt = 0;
+  if (m_smooth_scroll_amount < 0) {
+    scroll_amt = -static_cast<int>(scroll_speed * ticks) / 1000;
+    if (scroll_amt < m_smooth_scroll_amount)
+      scroll_amt = m_smooth_scroll_amount;
+  } else if (m_smooth_scroll_amount > 0) {
+    scroll_amt = static_cast<int>(scroll_speed * ticks) / 1000;
+    if (scroll_amt > m_smooth_scroll_amount)
+      scroll_amt = m_smooth_scroll_amount;
+  }
+  if (scroll_amt != 0) {
+    m_smooth_scroll_amount -= scroll_amt;
+    m_main_panel->scroll(0, scroll_amt);
+    move_panel_in_bounds();
+  }
+  
   Rect main_region = m_boundary;
   if (m_hscroll_active) {
     m_hscroll.update(ticks, input, active_region);
@@ -117,6 +135,46 @@ void ScrollingPanel::resize(unsigned width, unsigned height)
     else if(m_main_panel->boundary().y() > m_boundary.y())
       m_main_panel->move(m_main_panel->boundary().x(), m_boundary.y());
   }
+}
+
+void ScrollingPanel::move_panel_in_bounds()
+{
+  Rect r = m_main_panel->boundary();
+
+  if (r.x() > m_boundary.x())
+    m_main_panel->move(m_boundary.x(), r.y());
+  if (r.y() > m_boundary.y())
+    m_main_panel->move(r.x(), m_boundary.y());
+
+  if (r.width() < m_boundary.width()
+      && r.x() < m_boundary.x())
+    m_main_panel->move(m_boundary.x(), r.y());
+  if (r.height() < m_boundary.height()
+      && r.y() < m_boundary.y())
+    m_main_panel->move(r.x(), m_boundary.y());
+
+  if (r.width() >= m_boundary.width()
+      && r.x() + r.width() < m_boundary.x() + m_boundary.width())
+    m_main_panel->move(m_boundary.x()
+                       + static_cast<int>(m_boundary.width())
+                       - static_cast<int>(r.width()), r.y());
+  if (r.height() >= m_boundary.height()
+      && r.y() + r.height() < m_boundary.y() + m_boundary.height())
+    m_main_panel->move(r.x(), m_boundary.y()
+                       + static_cast<int>(m_boundary.height())
+                       - static_cast<int>(r.height()));
+}
+
+void ScrollingPanel::smooth_scroll_up()
+{
+  int scroll_step = m_boundary.height() / 2;
+  m_smooth_scroll_amount = scroll_step;
+}
+
+void ScrollingPanel::smooth_scroll_down()
+{
+  int scroll_step = m_boundary.height() / 2;
+  m_smooth_scroll_amount = -scroll_step;
 }
 
 void ScrollingPanel::center_panel_vert()

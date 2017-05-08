@@ -77,6 +77,12 @@ void FileView::update(unsigned ticks, InputHandler& input)
     }
   }
 
+  int mwheel_scroll = input.vert_mouse_wheel_scroll();
+  if (mwheel_scroll < 0)
+    m_file_selection.smooth_scroll_down();
+  else if (mwheel_scroll > 0)
+    m_file_selection.smooth_scroll_up();
+
   m_menu_button->update(ticks, input);
   m_up_button->update(ticks, input);
   m_back_button->update(ticks, input);

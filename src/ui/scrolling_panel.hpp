@@ -43,7 +43,11 @@ public:
 
   UIPanel& main_panel() { return *m_main_panel; }
   void center_main_panel() { center_panel_vert(); center_panel_horiz(); }
+  void move_panel_in_bounds();
   unsigned scrollbar_width() const { return s_scrollbar_width; }
+
+  void smooth_scroll_up();
+  void smooth_scroll_down();
 
 private:
   void center_panel_vert();
@@ -54,6 +58,7 @@ private:
   Scrollbar m_vscroll;
   bool m_hscroll_active = false;
   bool m_vscroll_active = false;
+  int m_smooth_scroll_amount = 0;
 
   static const unsigned s_scrollbar_width = 16;
 };
