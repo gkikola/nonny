@@ -56,7 +56,7 @@ void FileView::update(unsigned ticks, InputHandler& input)
 {  
   if (m_cur_path != m_paths.end()) {
     if (input.was_mouse_button_pressed(Mouse::Button::left)) {
-      int x = panel_spacing, y = panel_spacing;
+      int x = m_path_start.x(), y = m_path_start.y();
       unsigned width, height;
       unsigned index = 0;
       for (const auto& e : *m_cur_path) {
@@ -100,7 +100,7 @@ void FileView::draw(Renderer& renderer)
 
   if (m_cur_path != m_paths.end()) {
     renderer.set_draw_color(default_colors::black);
-    int x = panel_spacing, y = panel_spacing;
+    int x = m_path_start.x(), y = m_path_start.y();
     unsigned index = 0;
     for (auto& e : *m_cur_path) {
       Rect r;
@@ -156,6 +156,12 @@ void FileView::resize(unsigned width, unsigned height)
 
   x -= button_spacing + m_menu_button->boundary().width();
   m_menu_button->move(x, y);
+
+  //vertically center path text
+  unsigned text_ht = 0;
+  m_filename_font->text_size(">", nullptr, &text_ht);
+  m_path_start = Point(panel_spacing, panel_spacing);
+  m_path_start.y() += m_menu_button->boundary().height() / 2 - text_ht / 2;
 
   collapse_path();
 

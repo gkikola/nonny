@@ -77,6 +77,7 @@ private:
   PathContainer::iterator m_cur_path;
   unsigned m_path_collapse_start;
   unsigned m_path_collapse_end;
+  Point m_path_start;
 
   std::shared_ptr<ImageButton> m_menu_button;
   std::shared_ptr<ImageButton> m_up_button;
