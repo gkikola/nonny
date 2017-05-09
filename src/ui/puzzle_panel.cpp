@@ -20,6 +20,7 @@
 
 #include "ui/puzzle_panel.hpp"
 
+#include <cmath>
 #include <string>
 #include "color/color.hpp"
 #include "input/input_handler.hpp"
@@ -34,7 +35,7 @@ const Color shaded_cell_color(230, 230, 255);
 const Color lightly_shaded_cell_color(240, 240, 255);
 
 constexpr unsigned cell_animation_duration = 100;
-constexpr unsigned mouse_lock_duration = 250;
+constexpr unsigned time_for_mouse_unlock = 128;
 
 PuzzlePanel::PuzzlePanel(Font& clue_font, const Texture& cell_texture,
                          Puzzle& puzzle)
@@ -347,13 +348,6 @@ void PuzzlePanel::handle_mouse_selection(unsigned ticks, InputHandler& input,
   if (cursor_over_grid) {
     cur_state = (*m_puzzle)[x][y].state;
   }
-
-  //release mouse lock if enough time has passed
-  if (m_mouse_locked) {
-    m_mouse_lock_time += ticks;
-    if (m_mouse_lock_time >= mouse_lock_duration)
-      m_mouse_locked = false;
-  }
   
   if (input.rel_mouse_x() != 0 || input.rel_mouse_y() != 0) {
     m_selected = cursor_over_grid;
@@ -399,31 +393,42 @@ void PuzzlePanel::handle_mouse_selection(unsigned ticks, InputHandler& input,
     input.release_mouse();
   }
         
-  if (m_mouse_dragging) {
+  if (m_mouse_dragging) {    
     Point old_cursor = input.prev_mouse_position();
     unsigned old_x, old_y;
     cell_at_point(old_cursor, &old_x, &old_y);
+
+    if (old_x == x && old_y == y)
+      m_ticks_on_cur_cell += ticks;
+    else
+      m_ticks_on_cur_cell = 0;
+
+    if (m_ticks_on_cur_cell >= time_for_mouse_unlock) {
+      m_mouse_locked = false;
+      m_drag_start_x = x;
+      m_drag_start_y = y;
+    }
 
     if (m_mouse_locked) {
       if (m_mouse_lock_type == MouseLockType::to_row) {
         y = m_mouse_lock_pos;
         old_y = m_mouse_lock_pos;
-      }
-      else {
+      } else {
         x = m_mouse_lock_pos;
         old_x = m_mouse_lock_pos;
       }
     } else {
-      if (x == m_drag_start_x && y != m_drag_start_y) {
+      if (x == m_drag_start_x && std::abs(y - m_drag_start_y) > 1) {
         m_mouse_lock_type = MouseLockType::to_col;
         m_mouse_lock_pos = x;
         m_mouse_locked = true;
-        m_mouse_lock_time = 0;
-      } else if (x != m_drag_start_x && y == m_drag_start_y) {
+      } else if (std::abs(x - m_drag_start_x) > 1 && y == m_drag_start_y) {
         m_mouse_lock_type = MouseLockType::to_row;
         m_mouse_lock_pos = y;
         m_mouse_locked = true;
-        m_mouse_lock_time = 0;
+      } else {
+        m_drag_start_x = x;
+        m_drag_start_y = y;
       }
     }
     
