@@ -53,13 +53,17 @@ public:
   unsigned width() const { return m_grid.width(); }
   unsigned height() const { return m_grid.height(); }
 
-  class PuzzleRow;
-  PuzzleRow operator[](unsigned row) const;
+  class PuzzleCol;
+  PuzzleCol operator[](unsigned col) const;
 
-  void mark_cell(unsigned row, unsigned col, const Color& color = Color());
-  inline void clear_cell(unsigned row, unsigned col);
-  inline void cross_out_cell(unsigned row, unsigned col);
-  
+  void mark_cell(unsigned col, unsigned row, const Color& color = Color());
+  inline void clear_cell(unsigned col, unsigned row);
+  inline void cross_out_cell(unsigned col, unsigned row);
+
+  bool is_solved() const;
+  bool is_row_solved(unsigned row) const;
+  bool is_col_solved(unsigned col) const;
+
   // Get color palette associated with this puzzle
   const ColorPalette& palette() const { return m_palette; }
 
@@ -91,28 +95,28 @@ inline std::ostream& operator<<(std::ostream& os, const Puzzle& puzzle);
 inline std::istream& operator>>(std::istream& is, Puzzle& puzzle);
 
 // Represents a puzzle row, used to allow two-dimensional subscripting
-class Puzzle::PuzzleRow {
+class Puzzle::PuzzleCol {
 public:
-  PuzzleRow(const Puzzle& parent, unsigned row)
-    : m_parent(parent), m_row(row) { }
+  PuzzleCol(const Puzzle& parent, unsigned col)
+    : m_parent(parent), m_col(col) { }
 
-  const PuzzleCell& operator[](unsigned col) const;
+  const PuzzleCell& operator[](unsigned row) const;
 private:
   const Puzzle& m_parent;
-  unsigned m_row;
+  unsigned m_col;
 };
 
 
 /* implementation */
 
-inline void Puzzle::clear_cell(unsigned row, unsigned col)
+inline void Puzzle::clear_cell(unsigned col, unsigned row)
 {
-  m_grid.at(row, col).state = PuzzleCell::State::blank;
+  m_grid.at(col, row).state = PuzzleCell::State::blank;
 }
 
-inline void Puzzle::cross_out_cell(unsigned row, unsigned col)
+inline void Puzzle::cross_out_cell(unsigned col, unsigned row)
 {
-  m_grid.at(row, col).state = PuzzleCell::State::crossed_out;
+  m_grid.at(col, row).state = PuzzleCell::State::crossed_out;
 }
 
 inline const std::string* Puzzle::find_property(const std::string& p) const

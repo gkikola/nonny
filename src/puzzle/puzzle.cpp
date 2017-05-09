@@ -34,19 +34,67 @@ Puzzle::Puzzle(unsigned width, unsigned height)
   }
 }
 
-void Puzzle::mark_cell(unsigned row, unsigned col, const Color& color)
+void Puzzle::mark_cell(unsigned col, unsigned row, const Color& color)
 {
-  auto& cell = m_grid.at(row, col);
+  auto& cell = m_grid.at(col, row);
   cell.state = PuzzleCell::State::filled;
   cell.color = color;
 }
 
-Puzzle::PuzzleRow Puzzle::operator[](unsigned row) const
+bool Puzzle::is_solved() const
 {
-  return PuzzleRow(*this, row);
+  for (unsigned i = 0; i < m_grid.width(); ++i) {
+    if (!is_col_solved(i))
+      return false;
+  }
+  for (unsigned j = 0; j < m_grid.height(); ++j) {
+    if (!is_row_solved(j))
+      return false;
+  }
+  return true;
 }
 
-const PuzzleCell& Puzzle::PuzzleRow::operator[](unsigned col) const
+bool Puzzle::is_row_solved(unsigned row) const
 {
-  return m_parent.m_grid.at(m_row, col);
+  //if only clue is 0, make sure row is empty
+  if (row_clues(row).size() == 1 && row_clues(row)[0].value == 0) {
+    for (unsigned i = 0; i < m_grid.width(); ++i) {
+      if (m_grid.at(row, i).state == PuzzleCell::State::filled)
+        return false;
+    }
+    return true;
+  }
+
+  unsigned pos = 0;
+  for (auto clue : row_clues(row)) {
+    while (pos < m_grid.width()
+           && m_grid.at(row, pos).state != PuzzleCell::State::filled)
+      ++pos;
+
+    for (unsigned i = 0; i < clue.value; ++i) {
+      if (pos + i > m_grid.width())
+        return false;
+      auto cell = m_grid.at(row, pos + i);
+      if (cell.state != PuzzleCell::State::filled
+          || clue.color != cell.color)
+        return false;
+    }
+  }
+
+  return true;
+}
+
+bool Puzzle::is_col_solved(unsigned col) const
+{
+  return true;
+}
+
+Puzzle::PuzzleCol Puzzle::operator[](unsigned col) const
+{
+  return PuzzleCol(*this, col);
+}
+
+const PuzzleCell& Puzzle::PuzzleCol::operator[](unsigned row) const
+{
+  return m_parent.m_grid.at(m_col, row);
 }
