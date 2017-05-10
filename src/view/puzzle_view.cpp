@@ -164,6 +164,9 @@ void PuzzleView::update(unsigned ticks, InputHandler& input)
     m_info_pane.center_main_panel();
     resize(m_width, m_height);
   }
+
+  if (m_puzzle.is_solved())
+    m_mgr.schedule_action(ViewManager::Action::show_victory_screen);
 }
 
 void PuzzleView::draw(Renderer& renderer)

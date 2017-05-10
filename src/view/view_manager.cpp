@@ -29,6 +29,7 @@
 #include "view/file_view.hpp"
 #include "view/menu_view.hpp"
 #include "view/puzzle_view.hpp"
+#include "view/victory_view.hpp"
 
 ViewManager::ViewManager(VideoSystem& vs, Renderer& renderer,
                          GameSettings& settings)
@@ -91,7 +92,19 @@ void ViewManager::update(unsigned ticks, InputHandler& input)
       pop(); //close the puzzle
       m_puzzle_open = false;
       break;
+    case Action::save_game:
+      pop(); //close the menu
+      //TODO save
+      break;
+    case Action::show_victory_screen:
+      if (!m_views.empty()) {
+        auto pv = std::dynamic_pointer_cast<PuzzleView>(m_views.back());
+        if (pv)
+          push(std::make_shared<VictoryView>(*this, pv->puzzle()));
+      }
+      break;
     }
+    input.release_mouse();
     resize(m_width, m_height);
     m_action = Action::no_action;
   }

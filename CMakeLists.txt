@@ -90,6 +90,7 @@ add_executable (
   src/view/file_view.cpp
   src/view/menu_view.cpp
   src/view/puzzle_view.cpp
+  src/view/victory_view.cpp
   src/view/view.cpp
   src/view/view_manager.cpp
   )
