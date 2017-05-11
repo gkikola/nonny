@@ -330,6 +330,8 @@ void FileSelectionPanel::load_file_list()
       else { //check for puzzle file
         if (file.path().extension() == ".non")
           info.type = FileInfo::Type::puzzle_file;
+        //        else if (file.path().extension() == ".g")
+          //          info.type = FileInfo::Type::puzzle_file;
         else
           info.type = FileInfo::Type::file;
       }

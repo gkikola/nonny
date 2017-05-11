@@ -114,6 +114,8 @@ void PuzzleView::load(const std::string& filename)
 
   if (extension.empty() || extension == "non")
     file >> m_puzzle;
+  else if (extension == "g")
+    read_puzzle(file, m_puzzle, PuzzleFormat::g);
   else
     file >> m_puzzle;
 

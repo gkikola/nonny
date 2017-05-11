@@ -397,6 +397,10 @@ namespace g_format {
     else if (title)
       os << *title << "\n";
 
+    const std::string* author = puzzle.find_property("by");
+    if (author)
+      os << "by " << *author << "\n";
+
     const std::string* copy = puzzle.find_property("copyright");
     if (copy)
       os << *copy << "\n";
@@ -476,8 +480,145 @@ namespace g_format {
   
   /* .g input */
 
+  std::istream& read_front_matter(std::istream& is,
+                                  PuzzleBlueprint& blueprint);
+  std::istream& read_colors(std::istream& is,
+                            PuzzleBlueprint& blueprint,
+                            std::map<char, std::string>& color_names);
+  std::istream& read_clues(std::istream& is,
+                           PuzzleBlueprint& blueprint,
+                           const std::map<char, std::string>& color_names,
+                           ClueType type);
+
   std::istream& read(std::istream& is, PuzzleBlueprint& blueprint)
   {
+    read_front_matter(is, blueprint);
+
+    //look for color declaration
+    std::map<char, std::string> color_names;
+    std::string line;
+    std::getline(is, line);
+    if (line.size() > 1 && line[0] == '#' && to_lower(line[1]) == 'd')
+      read_colors(is, blueprint, color_names);
+
+    read_clues(is, blueprint, color_names, ClueType::row);
+    read_clues(is, blueprint, color_names, ClueType::col);
+    return is;
+  }
+
+  std::istream& read_front_matter(std::istream& is,
+                                  PuzzleBlueprint& blueprint)
+  {
+    std::string line;
+
+    //first line should be title and catalogue
+    if (is.peek() != ':' && is.peek() != '#') {
+      std::getline(is, line);
+      auto colon_pos = line.find(':');
+      if (colon_pos != std::string::npos) {
+        blueprint.properties["catalogue"] = trim(line.substr(0, colon_pos));
+        blueprint.properties["title"] = trim(line.substr(colon_pos + 1));
+      } else {
+        blueprint.properties["title"] = trim(line);
+      }
+
+      //ignore rest of comment block
+      while (is.peek() != ':' && is.peek() != '#'
+             && std::getline(is, line)) { }
+    }
+
+    return is;
+  }
+
+  std::istream& read_colors(std::istream& is,
+                            PuzzleBlueprint& blueprint,
+                            std::map<char, std::string>& color_names)
+  {
+    std::string line;
+    while (std::getline(is, line)) {
+      if (!line.empty() && line[0] == ':')
+        break;
+
+      std::istringstream ss(trim(line));
+      char inchar, outchar;
+      ss >> inchar;
+      ss.get(); //eat the colon
+      ss >> outchar;
+      std::string color_str, name;
+      ss >> color_str;
+      ss >> name;
+
+      Color color;
+      if (!color_str.empty() && color_str[0] == '#') {
+        std::istringstream css(line.substr(1, 6));
+        css >> color;
+      } else {
+        if (color_str == "black")
+          color = default_colors::black;
+        else if (color_str == "red")
+          color = default_colors::red;
+        else if (color_str == "green")
+          color = default_colors::green;
+        else if (color_str == "blue")
+          color = default_colors::blue;
+        else if (color_str == "yellow")
+          color = default_colors::yellow;
+        else
+          color = default_colors::black;
+      }
+
+      if (inchar == '0')
+        name = "background";
+      else
+        color_names[inchar] = name;
+
+      blueprint.palette.add(color, name, outchar);
+    }
+    return is;
+  }
+
+  std::istream& read_clues(std::istream& is,
+                           PuzzleBlueprint& blueprint,
+                           const std::map<char, std::string>& color_names,
+                           ClueType type)
+  {
+    Puzzle::ClueContainer* clues = nullptr;
+    unsigned* size = nullptr;
+    if (type == ClueType::row) {
+      clues = &blueprint.row_clues;
+      size = &blueprint.height;
+    } else {
+      clues = &blueprint.col_clues;
+      size = &blueprint.width;
+    }
+    
+    std::string line;
+    while (std::getline(is, line)) {
+      if (!line.empty() && line[0] == ':')
+        break;
+      
+      std::istringstream ss(line);
+      unsigned value;
+      Puzzle::ClueSequence cseq;
+      while (ss >> value) {
+        PuzzleClue clue;
+        clue.value = value;
+        clue.color = default_colors::black;
+
+        if (ss.good()) {
+          char c = ss.get();
+          if (!is_space(c))
+            clue.color = blueprint.palette[color_names.at(c)];
+          else if (color_names.find('1') != color_names.end())
+            clue.color = blueprint.palette[color_names.at('1')];
+        }
+
+        cseq.push_back(clue);
+      }
+      clues->push_back(std::move(cseq));
+    }
+
+    *size = clues->size();
     return is;
   }
   
