@@ -46,13 +46,6 @@ Game::Game(int argc, char* argv[])
                                              m_window->width(),
                                              m_window->height());
   m_view_mgr->schedule_action(ViewManager::Action::open_menu);
-  
-  /*//For now, start the game with a puzzle open
-  auto pview = std::make_shared<PuzzleView>(*m_view_mgr,
-                                            m_settings.puzzle_dir()
-                                            + "easy/test.non");
-  m_view_mgr->push(pview);
-  m_view_mgr->resize(m_window->width(), m_window->height());*/
 }
 
 void Game::run()

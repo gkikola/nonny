@@ -34,11 +34,16 @@ public:
     : std::logic_error(what_arg) { }
 };
 
+enum class PuzzleFormat { non, g };
+
 // Read or write puzzles from/to a stream
-std::ostream& write_puzzle(std::ostream& os, const Puzzle& puzzle);
-std::istream& read_puzzle(std::istream& is, Puzzle& puzzle);
+std::ostream& write_puzzle(std::ostream& os, const Puzzle& puzzle,
+                           PuzzleFormat fmt = PuzzleFormat::non);
+std::istream& read_puzzle(std::istream& is, Puzzle& puzzle,
+                          PuzzleFormat fmt = PuzzleFormat::non);
 
 // Collect summary information but don't actually load the puzzle
-std::istream& skim_puzzle(std::istream& is, PuzzleSummary& summary);
+std::istream& skim_puzzle(std::istream& is, PuzzleSummary& summary,
+                          PuzzleFormat fmt = PuzzleFormat::non);
 
 #endif

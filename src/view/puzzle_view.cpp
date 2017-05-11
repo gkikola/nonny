@@ -20,16 +20,19 @@
 
 #include "view/puzzle_view.hpp"
 
+#include <algorithm>
 #include <fstream>
 #include <memory>
 #include <stdexcept>
 #include <utility>
 #include "color/color.hpp"
 #include "input/input_handler.hpp"
+#include "puzzle/puzzle_io.hpp"
 #include "settings/game_settings.hpp"
 #include "ui/puzzle_info_panel.hpp"
 #include "ui/puzzle_panel.hpp"
 #include "ui/scrollbar.hpp"
+#include "utility/utility.hpp"
 #include "video/font.hpp"
 #include "video/renderer.hpp"
 #include "video/texture.hpp"
@@ -101,7 +104,18 @@ void PuzzleView::load(const std::string& filename)
                              "could not open puzzle file " + filename);
   }
 
-  file >> m_puzzle;
+  auto pos = filename.rfind('.');
+  std::string extension = "";
+  if (pos != std::string::npos) {
+    extension = filename.substr(pos + 1);
+    std::transform(extension.begin(), extension.end(), extension.begin(),
+                   to_lower);
+  }
+
+  if (extension.empty() || extension == "non")
+    file >> m_puzzle;
+  else
+    file >> m_puzzle;
 
   setup_panels();
 }

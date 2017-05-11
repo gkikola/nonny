@@ -35,8 +35,10 @@
  * Class that represents a nonogram puzzle.
  */
 class Puzzle {
-  friend std::ostream& write_puzzle(std::ostream&, const Puzzle&);
-  friend std::istream& read_puzzle(std::istream&, Puzzle&);
+  friend std::ostream& write_puzzle(std::ostream&, const Puzzle&,
+                                    PuzzleFormat fmt);
+  friend std::istream& read_puzzle(std::istream&, Puzzle&,
+                                   PuzzleFormat fmt);
 
 public:
   typedef std::map<std::string, std::string> Properties;

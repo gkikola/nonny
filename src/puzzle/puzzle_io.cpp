@@ -24,6 +24,7 @@
 #include <cstddef>
 #include <iostream>
 #include <iterator>
+#include <map>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -53,16 +54,37 @@ namespace non_format {
   std::istream& skim(std::istream& is, PuzzleSummary& summary);
 }
 
-
-std::ostream& write_puzzle(std::ostream& os, const Puzzle& puzzle)
-{
-  return non_format::write(os, puzzle);
+namespace g_format {
+  std::ostream& write(std::ostream& os, const Puzzle& puzzle);
+  std::istream& read(std::istream& is, PuzzleBlueprint& blueprint);
+  std::istream& skim(std::istream& is, PuzzleSummary& summary);
 }
 
-std::istream& read_puzzle(std::istream& is, Puzzle& puzzle)
+std::ostream& write_puzzle(std::ostream& os, const Puzzle& puzzle,
+                           PuzzleFormat fmt)
+{
+  switch (fmt) {
+  default:
+  case PuzzleFormat::non:
+    return non_format::write(os, puzzle);
+  case PuzzleFormat::g:
+    return g_format::write(os, puzzle);
+  }
+}
+
+std::istream& read_puzzle(std::istream& is, Puzzle& puzzle,
+                          PuzzleFormat fmt)
 {
   PuzzleBlueprint blueprint;
-  non_format::read(is, blueprint);
+  switch (fmt) {
+  default:
+  case PuzzleFormat::non:
+    non_format::read(is, blueprint);
+    break;
+  case PuzzleFormat::g:
+    g_format::read(is, blueprint);
+    break;
+  }
   
   puzzle = Puzzle();
   puzzle.m_grid = PuzzleGrid(blueprint.width, blueprint.height);
@@ -73,9 +95,16 @@ std::istream& read_puzzle(std::istream& is, Puzzle& puzzle)
   return is;
 }
 
-std::istream& skim_puzzle(std::istream& is, PuzzleSummary& summary)
+std::istream& skim_puzzle(std::istream& is, PuzzleSummary& summary,
+                          PuzzleFormat fmt)
 {
-  return non_format::skim(is, summary);  
+  switch (fmt) {
+  default:
+  case PuzzleFormat::non:
+    return non_format::skim(is, summary);
+  case PuzzleFormat::g:
+    return g_format::skim(is, summary);
+  }
 }
 
 
@@ -84,7 +113,7 @@ std::istream& skim_puzzle(std::istream& is, PuzzleSummary& summary)
 namespace non_format {
 
   /* .non output */
-  std::ostream& write_clues(std::ostream& os, const Puzzle& puzzle,
+  std::ostream& write_clues(std::ostream& os,
                             const Puzzle::ClueContainer& clues,
                             const ColorPalette& palette);
   std::ostream& write_colors(std::ostream& os, const ColorPalette& palette);
@@ -342,3 +371,120 @@ namespace non_format {
   }
   
 } //end namespace non_format
+
+
+namespace g_format {
+
+  /* .g output */
+
+  void generate_short_color_names(const ColorPalette& palette,
+                                  std::map<std::string, char>& short_names);
+  std::ostream& write_colors(std::ostream& os, const ColorPalette& palette,
+                             const std::map<std::string, char>& short_names);
+  std::ostream& write_clues(std::ostream& os,
+                            const Puzzle::ClueContainer& clues,
+                            const ColorPalette& palette,
+                            const std::map<std::string, char>& short_names);
+  
+  std::ostream& write(std::ostream& os, const Puzzle& puzzle)
+  {
+    const std::string* cat = puzzle.find_property("catalogue");
+    const std::string* title = puzzle.find_property("title");
+    if (cat && title)
+      os << *cat << ": " << *title << "\n";
+    else if (cat)
+      os << *cat << "\n";
+    else if (title)
+      os << *title << "\n";
+
+    const std::string* copy = puzzle.find_property("copyright");
+    if (copy)
+      os << *copy << "\n";
+
+    std::map<std::string, char> short_names;
+    generate_short_color_names(puzzle.palette(), short_names);
+    
+    os << "#d\n";
+    write_colors(os, puzzle.palette(), short_names);
+
+    os << ": rows\n";
+    write_clues(os, puzzle.row_clues(), puzzle.palette(), short_names);
+    os << ": columns\n";
+    write_clues(os, puzzle.col_clues(), puzzle.palette(), short_names);
+    
+    return os;
+  }
+
+  void generate_short_color_names(const ColorPalette& palette,
+                                  std::map<std::string, char>& short_names)
+  {
+    std::string used = "";
+    char next = 'a';
+    for (const auto& c : palette) {
+      const std::string& name = c.name;
+      auto pos = name.find_first_not_of(used);
+      char sn = next;
+      if (pos != std::string::npos)
+        sn = name[pos];
+      else {
+        while (used.find(next) != std::string::npos && next < 'z')
+          ++next;
+        sn = next;
+      }
+
+      short_names[name] = sn;
+      used.push_back(sn);
+    }
+  }
+  
+  std::ostream& write_colors(std::ostream& os, const ColorPalette& palette,
+                             const std::map<std::string, char>& short_names)
+  {
+    os << "   0:   #" << palette["background"] << "   "
+       << "background\n";
+    for (auto& c : palette) {
+      if (c.name != "background") {
+        os << "   " << short_names.at(c.name) << ":" << c.symbol
+           << "  #" << c.color << "   " << c.name << "\n";
+      }
+    }
+    return os;
+  }
+  
+  std::ostream& write_clues(std::ostream& os,
+                            const Puzzle::ClueContainer& clues,
+                            const ColorPalette& palette,
+                            const std::map<std::string, char>& short_names)
+  {
+    for (auto& cseq : clues) {
+      bool first = true;
+      for (auto& clue : cseq) {
+        if (clue.value != 0) {
+          if (!first)
+            os << " ";
+          os << clue.value;
+          std::string name = palette.find(clue.color);
+          os << short_names.at(name);
+          first = false;
+        }
+      }
+      os << "\n";
+    }
+    return os;
+  }
+  
+  
+  /* .g input */
+
+  std::istream& read(std::istream& is, PuzzleBlueprint& blueprint)
+  {
+    return is;
+  }
+  
+  std::istream& skim(std::istream& is, PuzzleSummary& summary)
+  {
+    return is;
+  }
+  
+  
+} //end namespace g_format
