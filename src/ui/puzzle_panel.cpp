@@ -35,7 +35,7 @@ const Color shaded_cell_color(230, 230, 255);
 const Color lightly_shaded_cell_color(240, 240, 255);
 
 constexpr unsigned cell_animation_duration = 100;
-constexpr unsigned time_for_mouse_unlock = 128;
+constexpr unsigned time_for_mouse_unlock = 96;
 
 PuzzlePanel::PuzzlePanel(Font& clue_font, const Texture& cell_texture,
                          Puzzle& puzzle)
@@ -409,10 +409,15 @@ void PuzzlePanel::handle_mouse_selection(unsigned ticks, InputHandler& input,
     else
       m_ticks_on_cur_cell = 0;
 
-    if (m_ticks_on_cur_cell >= time_for_mouse_unlock) {
-      m_mouse_locked = false;
-      m_drag_start_x = x;
-      m_drag_start_y = y;
+    if ((m_mouse_lock_type == MouseLockType::to_row
+         && (m_mouse_lock_pos + 1 == y || m_mouse_lock_pos == y + 1))
+        || (m_mouse_lock_type == MouseLockType::to_col
+            && (m_mouse_lock_pos + 1 == x || m_mouse_lock_pos == x + 1))) {
+      if (m_ticks_on_cur_cell >= time_for_mouse_unlock) {
+        m_mouse_locked = false;
+        m_drag_start_x = x;
+        m_drag_start_y = y;
+      }
     }
 
     if (m_mouse_locked) {
@@ -424,11 +429,11 @@ void PuzzlePanel::handle_mouse_selection(unsigned ticks, InputHandler& input,
         old_x = m_mouse_lock_pos;
       }
     } else {
-      if (x == m_drag_start_x && std::abs(y - m_drag_start_y) > 1) {
+      if (x == m_drag_start_x && y != m_drag_start_y) {
         m_mouse_lock_type = MouseLockType::to_col;
         m_mouse_lock_pos = x;
         m_mouse_locked = true;
-      } else if (std::abs(x - m_drag_start_x) > 1 && y == m_drag_start_y) {
+      } else if (x != m_drag_start_x && y == m_drag_start_y) {
         m_mouse_lock_type = MouseLockType::to_row;
         m_mouse_lock_pos = y;
         m_mouse_locked = true;
