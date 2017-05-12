@@ -330,8 +330,8 @@ void FileSelectionPanel::load_file_list()
       else { //check for puzzle file
         if (file.path().extension() == ".non")
           info.type = FileInfo::Type::puzzle_file;
-        //        else if (file.path().extension() == ".g")
-          //          info.type = FileInfo::Type::puzzle_file;
+        //else if (file.path().extension() == ".g")
+        //info.type = FileInfo::Type::puzzle_file;
         else
           info.type = FileInfo::Type::file;
       }
@@ -379,9 +379,9 @@ void FileSelectionPanel::load_puzzle_info()
   if (collection.empty())
     collection = "Default";
   if (id.empty()) {
-    if (summary->title.empty())
-      id = "Untitled";
-    else
+    if (summary->title.empty()) {
+      id = stdfs::path(m_files[index].full_path).stem();
+    } else
       id = summary->title;
   }
 
