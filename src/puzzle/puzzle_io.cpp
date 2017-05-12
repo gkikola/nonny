@@ -546,11 +546,12 @@ namespace g_format {
       ss >> outchar;
       std::string color_str, name;
       ss >> color_str;
-      ss >> name;
+      std::getline(ss, name);
+      name = trim(name);
 
       Color color;
       if (!color_str.empty() && color_str[0] == '#') {
-        std::istringstream css(line.substr(1, 6));
+        std::istringstream css(color_str.substr(1, 6));
         css >> color;
       } else {
         if (color_str == "black")
