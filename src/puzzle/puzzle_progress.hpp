@@ -45,6 +45,7 @@ public:
 
   void store_progress(const Puzzle& puzzle, unsigned time,
                       bool update_solution = false);
+  void restore_progress(Puzzle& puzzle);
 
   std::string filename() const { return m_filename; }
   bool is_complete() const { return m_completed; }

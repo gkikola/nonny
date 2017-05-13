@@ -51,6 +51,8 @@ public:
 private:
   void load(const std::string& filename);
   void setup_panels();
+  std::string puzzle_id() const;
+  std::string puzzle_collection() const;
   
   Puzzle m_puzzle;
   std::string m_puzzle_filename;

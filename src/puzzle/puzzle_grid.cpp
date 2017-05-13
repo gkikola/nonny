@@ -63,7 +63,6 @@ std::ostream& operator<<(std::ostream& os, const PuzzleGrid& grid)
       }
     }
   }
-  os << "---\n";
   return write_grid(os, grid, palette);
 }
 
@@ -71,10 +70,7 @@ std::istream& operator>>(std::istream& is, PuzzleGrid& grid)
 {
   ColorPalette palette;
   std::string line;
-  while (std::getline(is, line)) {
-    if (!line.empty() && line[0] == '-')
-      break;
-
+  while (is && is.peek() != '|' && std::getline(is, line)) {
     std::istringstream ss(line);
     char symbol;
     ss >> symbol;
@@ -96,6 +92,7 @@ std::ostream& write_grid(std::ostream& os, const PuzzleGrid& grid,
   bkgd = palette.symbol("background");
   
   for (unsigned y = 0; y != grid.height(); ++y) {
+    os << "|";
     for (unsigned x = 0; x != grid.width(); ++x) {
       const PuzzleCell& cell = grid.at(x, y);
       if (cell.state == PuzzleCell::State::filled) {
@@ -108,7 +105,7 @@ std::ostream& write_grid(std::ostream& os, const PuzzleGrid& grid,
       else
         os << bkgd;
     }
-    os << "\n";
+    os << "|\n";
   }
   return os;
 }
@@ -124,24 +121,26 @@ std::istream& read_grid(std::istream& is, PuzzleGrid& grid,
   grid.m_grid.clear();
 
   std::string line;
-  while (std::getline(is, line)) {
+  while (is && is.peek() == '|' && std::getline(is, line)) {    
     unsigned counter = 0;
     for (auto c : line) {
-      try {
-        PuzzleCell cell;
-        cell.state = PuzzleCell::State::blank;
-        Color color;
-        if (c == ' ')
-          cell.state = PuzzleCell::State::crossed_out;
-        else if (c != black && c != bkgd)
-          color = palette[c];
-        if (c != ' ' && c != bkgd) {
-          cell.state = PuzzleCell::State::filled;
-          cell.color = color;
-        }
-        grid.m_grid.push_back(cell);
-        ++counter;
-      } catch (std::out_of_range) { }
+      if (c != '|') {
+        try {
+          PuzzleCell cell;
+          cell.state = PuzzleCell::State::blank;
+          Color color;
+          if (c == ' ')
+            cell.state = PuzzleCell::State::crossed_out;
+          else if (c != black && c != bkgd)
+            color = palette[c];
+          if (c != ' ' && c != bkgd) {
+            cell.state = PuzzleCell::State::filled;
+            cell.color = color;
+          }
+          grid.m_grid.push_back(cell);
+          ++counter;
+        } catch (std::out_of_range) { }
+      }
     }
     if (counter > grid.m_width)
       grid.m_width = counter;

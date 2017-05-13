@@ -50,8 +50,9 @@ public:
   void start_slide() { m_sliding = true; }
   void stop_slide() { m_sliding = false; }
 
-  //get time puzzle has been open
+  //get/set time puzzle has been open
   unsigned time() const { return m_time; }
+  void time(unsigned time) { m_time = time; }
 
   using UIPanel::update; //make all update and draw overloads visible
   using UIPanel::draw;

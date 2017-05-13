@@ -123,7 +123,40 @@ void PuzzleView::load(const std::string& filename)
   else
     file >> m_puzzle;
 
+  //load puzzle progress
+  std::string id = puzzle_id();
+  std::string collection = puzzle_collection();
+  PuzzleProgress prog;
+  m_mgr.save_manager().load_progress(prog, m_puzzle_filename,
+                                     collection, id);
+  prog.restore_progress(m_puzzle);
+
   setup_panels();
+
+  //restore game time
+  auto& ipanel
+    = dynamic_cast<PuzzleInfoPanel&>(m_info_pane.main_panel());
+  ipanel.time(prog.current_time());
+}
+
+std::string PuzzleView::puzzle_id() const
+{
+  const std::string* id = m_puzzle.find_property("id");
+  if (!id)
+    id = m_puzzle.find_property("title");
+  if (!id)
+    return stdfs::path(m_puzzle_filename).stem();
+  else
+    return *id;
+}
+
+std::string PuzzleView::puzzle_collection() const
+{
+  const std::string* col = m_puzzle.find_property("collection");
+  if (col)
+    return *col;
+  else
+    return "Default";
 }
 
 void PuzzleView::save() const
@@ -133,19 +166,8 @@ void PuzzleView::save() const
     just_completed = true;
   
   //find collection and id
-  std::string id, collection;
-  const std::string* str_p = m_puzzle.find_property("id");
-  if (!str_p)
-    str_p = m_puzzle.find_property("title");
-  if (!str_p)
-    id = stdfs::path(m_puzzle_filename).stem();
-  else
-    id = *str_p;
-  str_p = m_puzzle.find_property("collection");
-  if (str_p)
-    collection = *str_p;
-  else
-    collection = "Default";
+  std::string id = puzzle_id();
+  std::string collection = puzzle_collection();
 
   //load previous progress
   PuzzleProgress prog;
