@@ -27,6 +27,8 @@
 #include <vector>
 #include "puzzle/puzzle_grid.hpp"
 
+class Puzzle;
+
 class PuzzleProgress {
   friend std::ostream& operator<<(std::ostream&, const PuzzleProgress&);
   friend std::istream& operator>>(std::istream&, PuzzleProgress&);
@@ -35,8 +37,13 @@ public:
   PuzzleProgress(const PuzzleProgress&) = default;
   PuzzleProgress(PuzzleProgress&&) = default;
 
+  PuzzleProgress(const std::string& filename)
+    : m_filename(filename) { }
+
   PuzzleProgress& operator=(const PuzzleProgress&) & = default;
   PuzzleProgress& operator=(PuzzleProgress&&) & = default;
+
+  void store_progress(const Puzzle& puzzle, unsigned time);
 
   std::string filename() const { return m_filename; }
   bool is_complete() const { return m_completed; }

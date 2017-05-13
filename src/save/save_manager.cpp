@@ -53,7 +53,7 @@ void SaveManager::load_progress(PuzzleProgress& prog,
   if (file.is_open()) {
     file >> prog;
   } else {
-    prog = PuzzleProgress();
+    prog = PuzzleProgress(path);
   }
 }
 

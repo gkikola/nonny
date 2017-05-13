@@ -42,6 +42,7 @@ public:
   void resize(unsigned width, unsigned height) override;
 
   UIPanel& main_panel() { return *m_main_panel; }
+  const UIPanel& main_panel() const { return *m_main_panel; }
   void center_main_panel() { center_panel_vert(); center_panel_horiz(); }
   void move_panel_in_bounds();
   unsigned scrollbar_width() const { return s_scrollbar_width; }

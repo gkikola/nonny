@@ -48,9 +48,11 @@ public:
   
 private:
   void load(const std::string& filename);
+  void save() const;
   void setup_panels();
   
   Puzzle m_puzzle;
+  std::string m_puzzle_filename;
   ScrollingPanel m_main_panel;
   ScrollingPanel m_info_pane;
 

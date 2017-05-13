@@ -25,9 +25,11 @@
 #include <memory>
 #include <stdexcept>
 #include <utility>
+#include <experimental/filesystem>
 #include "color/color.hpp"
 #include "input/input_handler.hpp"
 #include "puzzle/puzzle_io.hpp"
+#include "puzzle/puzzle_progress.hpp"
 #include "settings/game_settings.hpp"
 #include "ui/puzzle_info_panel.hpp"
 #include "ui/puzzle_panel.hpp"
@@ -39,19 +41,21 @@
 #include "video/video_system.hpp"
 #include "view/view_manager.hpp"
 
+namespace stdfs = std::experimental::filesystem;
+
 constexpr unsigned info_pane_width = 256;
 constexpr unsigned info_pane_slide_speed = 1000;
 const Color info_pane_background_color(123, 175, 212);
 
 PuzzleView::PuzzleView(ViewManager& vm, const std::string& filename)
-  : View(vm)
+  : View(vm), m_puzzle_filename(filename)
 {
   load(filename);
 }
 
 PuzzleView::PuzzleView(ViewManager& vm, const std::string& filename,
                        unsigned width, unsigned height)
-  : View(vm, width, height)
+  : View(vm, width, height), m_puzzle_filename(filename)
 {
   load(filename);
 }
@@ -122,6 +126,36 @@ void PuzzleView::load(const std::string& filename)
   setup_panels();
 }
 
+void PuzzleView::save() const
+{
+  //find collection and id
+  std::string id, collection;
+  const std::string* str_p = m_puzzle.find_property("id");
+  if (!str_p)
+    str_p = m_puzzle.find_property("title");
+  if (!str_p)
+    id = stdfs::path(m_puzzle_filename).stem();
+  else
+    id = *str_p;
+  str_p = m_puzzle.find_property("collection");
+  if (str_p)
+    collection = *str_p;
+  else
+    collection = "Default";
+
+  //load previous progress
+  PuzzleProgress prog;
+  m_mgr.save_manager().load_progress(prog, m_puzzle_filename,
+                                     collection, id);
+
+  //store current progress
+  auto& ip = dynamic_cast<const PuzzleInfoPanel&>(m_info_pane.main_panel());
+  prog.store_progress(m_puzzle, ip.time());
+
+  m_mgr.save_manager().save_progress(prog, m_puzzle_filename,
+                                     collection, id);
+}
+
 void PuzzleView::setup_panels()
 {
   const GameSettings& settings = m_mgr.game_settings();
@@ -181,8 +215,10 @@ void PuzzleView::update(unsigned ticks, InputHandler& input)
     resize(m_width, m_height);
   }
 
-  if (m_puzzle.is_solved())
+  if (m_puzzle.is_solved()) {
+    save();
     m_mgr.schedule_action(ViewManager::Action::show_victory_screen);
+  }
 }
 
 void PuzzleView::draw(Renderer& renderer)
