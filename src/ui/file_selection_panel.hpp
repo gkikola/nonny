@@ -58,6 +58,8 @@ public:
   void draw(Renderer& renderer, const Rect& region) const override;
 
 private:
+  void draw_progress(Renderer& renderer, const PuzzleGrid& grid,
+                     const Rect& area) const;
   void select(unsigned index);
   unsigned entry_height() const;
   void load_file_list();

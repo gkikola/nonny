@@ -221,14 +221,18 @@ void FileSelectionPanel::draw(Renderer& renderer, const Rect& region) const
       renderer.set_draw_color(foreground_color);
       renderer.draw_rect(dest);
 
-      if (m_files[i].puzzle_progress
-          && !m_files[i].puzzle_progress->is_complete()
-          && m_files[i].puzzle_progress->current_time() == 0) {
+      auto prog = m_files[i].puzzle_progress;
+      if (prog && !prog->is_complete() && prog->current_time() == 0) {
         unsigned wd = 0, ht = 0;
         m_filename_font.text_size("?", &wd, &ht);
         Point qmark_loc(x + icon_width / 2 - wd / 2,
                         y + icon_height / 2 - ht/ 2);
         renderer.draw_text(qmark_loc, m_filename_font, "?");
+      } else if (prog) {
+        if (prog->is_complete())
+          draw_progress(renderer, prog->solution(), dest);
+        else
+          draw_progress(renderer, prog->state(), dest);
       }
     } else {
       renderer.copy_texture(m_icon_texture, src, dest);
@@ -294,6 +298,27 @@ void FileSelectionPanel::draw(Renderer& renderer, const Rect& region) const
   }
   
   renderer.set_clip_rect();
+}
+
+void FileSelectionPanel::draw_progress(Renderer& renderer,
+                                       const PuzzleGrid& grid,
+                                       const Rect& area) const
+{
+  if (!grid.width() || !grid.height())
+    return;
+  
+  for (unsigned y = 0; y != grid.height(); ++y) {
+    for (unsigned x = 0; x != grid.width(); ++x) {
+      if (grid.at(x, y).state == PuzzleCell::State::filled) {
+        Rect pixel(area.x() + x * (area.width() / grid.width()),
+                   area.y() + y * (area.height() / grid.height()),
+                   area.width() / grid.width(),
+                   area.height() / grid.height());
+        renderer.set_draw_color(grid.at(x, y).color);
+        renderer.fill_rect(pixel);
+      }      
+    }
+  }
 }
 
 void FileSelectionPanel::select(unsigned index)

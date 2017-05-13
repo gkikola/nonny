@@ -29,10 +29,12 @@
 void PuzzleProgress::store_progress(const Puzzle& puzzle, unsigned time,
                                     bool update_solution)
 {
-  m_completed = puzzle.is_solved();
-  m_cur_time = time;
-  if (m_completed && (m_best_time == 0 || m_cur_time < m_best_time))
-    m_best_time = m_cur_time;
+  if (update_solution) {
+    m_completed = true;
+    if (m_best_time == 0 || time < m_best_time)
+      m_best_time = time;
+  } else
+    m_cur_time = time;
 
   //reset progress state and then store progress or solution as needed
   m_progress = PuzzleGrid();
@@ -79,6 +81,10 @@ std::istream& operator>>(std::istream& is, PuzzleProgress& prog)
       prog.m_best_time = string_to_time(p.second);
     else if (p.first == "time")
       prog.m_cur_time = string_to_time(p.second);
+    else if (p.first == "solution")
+      is >> prog.m_solution;
+    else if (p.first == "progress")
+      is >> prog.m_progress;
   }
   return is;
 }

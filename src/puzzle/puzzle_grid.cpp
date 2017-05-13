@@ -22,6 +22,7 @@
 
 #include <iostream>
 #include <map>
+#include <sstream>
 #include <stdexcept>
 #include "color/color_palette.hpp"
 #include "puzzle/puzzle_io.hpp"
@@ -53,12 +54,12 @@ std::ostream& operator<<(std::ostream& os, const PuzzleGrid& grid)
     for (unsigned x = 0; x != grid.width(); ++x) {
       Color color = grid.at(x, y).color;
       if (palette.find(color) == palette.end()) {
-        palette.add(color, "", symbol);
+        palette.add(color, std::string(1, symbol), symbol);
+        os << symbol << "=" << color << "\n";
         if (symbol == '9')
           symbol = 'a';
         else
           ++symbol;
-        os << symbol << "=" << color << "\n";
       }
     }
   }
@@ -74,15 +75,17 @@ std::istream& operator>>(std::istream& is, PuzzleGrid& grid)
     if (!line.empty() && line[0] == '-')
       break;
 
+    std::istringstream ss(line);
     char symbol;
-    is >> symbol;
-    is.get();
-    if (is.peek() == '#')
-      is.get();
+    ss >> symbol;
+    ss.get();
+    if (ss.peek() == '#')
+      ss.get();
     Color color;
-    is >> color;
-    palette.add(color, "", symbol);
+    ss >> color;
+    palette.add(color, std::string(1, symbol), symbol);
   }
+
   return read_grid(is, grid, palette);
 }
 
