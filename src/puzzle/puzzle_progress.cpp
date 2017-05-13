@@ -31,6 +31,7 @@ void PuzzleProgress::store_progress(const Puzzle& puzzle, unsigned time,
 {
   if (update_solution) {
     m_completed = true;
+    m_cur_time = 0;
     if (m_best_time == 0 || time < m_best_time)
       m_best_time = time;
   } else
