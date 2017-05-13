@@ -307,16 +307,19 @@ void FileSelectionPanel::draw_progress(Renderer& renderer,
   if (!grid.width() || !grid.height())
     return;
 
-  Point start(area.x() + (area.width() % grid.width()) / 2,
-              area.y() + (area.height() % grid.height()) / 2);
+  unsigned pixel_size = area.width() / grid.width();
+  if (area.height() / grid.height() < pixel_size)
+    pixel_size = area.height() / grid.height();
+  
+  Point start(area.x() + area.width() / 2 - pixel_size * grid.width() / 2,
+              area.y() + area.height() / 2 - pixel_size * grid.height() / 2);
   
   for (unsigned y = 0; y != grid.height(); ++y) {
     for (unsigned x = 0; x != grid.width(); ++x) {
       if (grid.at(x, y).state == PuzzleCell::State::filled) {
-        Rect pixel(start.x() + x * (area.width() / grid.width()),
-                   start.y() + y * (area.height() / grid.height()),
-                   area.width() / grid.width(),
-                   area.height() / grid.height());
+        Rect pixel(start.x() + x * pixel_size,
+                   start.y() + y * pixel_size,
+                   pixel_size, pixel_size);
         renderer.set_draw_color(grid.at(x, y).color);
         renderer.fill_rect(pixel);
       }      
