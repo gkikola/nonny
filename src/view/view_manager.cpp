@@ -94,7 +94,11 @@ void ViewManager::update(unsigned ticks, InputHandler& input)
       break;
     case Action::save_game:
       pop(); //close the menu
-      //TODO save
+      if (!m_views.empty()) {
+        auto pv = std::dynamic_pointer_cast<PuzzleView>(m_views.back());
+        if (pv)
+          pv->save();
+      }
       break;
     case Action::show_victory_screen:
       if (!m_views.empty()) {

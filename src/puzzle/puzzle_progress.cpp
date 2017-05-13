@@ -23,19 +23,26 @@
 #include <iomanip>
 #include <iostream>
 #include "puzzle/puzzle.hpp"
+#include "puzzle/puzzle_grid.hpp"
 #include "utility/utility.hpp"
 
-void PuzzleProgress::store_progress(const Puzzle& puzzle, unsigned time)
+void PuzzleProgress::store_progress(const Puzzle& puzzle, unsigned time,
+                                    bool update_solution)
 {
   m_completed = puzzle.is_solved();
   m_cur_time = time;
   if (m_completed && (m_best_time == 0 || m_cur_time < m_best_time))
     m_best_time = m_cur_time;
-  
-  m_progress = PuzzleGrid(puzzle.width(), puzzle.height());
-  for (unsigned y = 0; y != puzzle.height(); ++y)
-    for (unsigned x = 0; x != puzzle.width(); ++x)
-      m_progress.at(x, y) = puzzle[x][y];
+
+  //reset progress state and then store progress or solution as needed
+  m_progress = PuzzleGrid();
+  PuzzleGrid* grid = update_solution ? &m_solution : &m_progress;
+  *grid = PuzzleGrid(puzzle.width(), puzzle.height());
+  for (unsigned y = 0; y != puzzle.height(); ++y) {
+    for (unsigned x = 0; x != puzzle.width(); ++x) {
+      grid->at(x, y) = puzzle[x][y];
+    }
+  }
 }
 
 std::ostream& operator<<(std::ostream& os, const PuzzleProgress& prog)
@@ -47,11 +54,12 @@ std::ostream& operator<<(std::ostream& os, const PuzzleProgress& prog)
   write_time(os, prog.m_best_time, true) << "\"\n";
   
   os << "time \"";
+  write_time(os, prog.m_cur_time, true) << "\"\n";
+
   if (prog.m_completed)
-    os << "0:00.0";
-  else
-    write_time(os, prog.m_cur_time, true);
-  os << "\"\n";
+    os << "solution\n" << prog.solution() << "\n";
+
+  os << "progress\n" << prog.state() << "\n";
   return os;
 }
 

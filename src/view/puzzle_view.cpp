@@ -128,6 +128,10 @@ void PuzzleView::load(const std::string& filename)
 
 void PuzzleView::save() const
 {
+  bool just_completed = false;
+  if (m_puzzle.is_solved())
+    just_completed = true;
+  
   //find collection and id
   std::string id, collection;
   const std::string* str_p = m_puzzle.find_property("id");
@@ -150,7 +154,7 @@ void PuzzleView::save() const
 
   //store current progress
   auto& ip = dynamic_cast<const PuzzleInfoPanel&>(m_info_pane.main_panel());
-  prog.store_progress(m_puzzle, ip.time());
+  prog.store_progress(m_puzzle, ip.time(), just_completed);
 
   m_mgr.save_manager().save_progress(prog, m_puzzle_filename,
                                      collection, id);

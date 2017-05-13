@@ -131,7 +131,8 @@ namespace non_format {
 
         if (clue.color != cur_color) {
           cur_color = clue.color;
-          os << palette.find(clue.color) << ": ";
+          auto color_entry = palette.find(clue.color);
+          os << color_entry->name << ": ";
         }
         
         os << clue.value;
@@ -467,7 +468,7 @@ namespace g_format {
           if (!first)
             os << " ";
           os << clue.value;
-          std::string name = palette.find(clue.color);
+          std::string name = palette.find(clue.color)->name;
           os << short_names.at(name);
           first = false;
         }

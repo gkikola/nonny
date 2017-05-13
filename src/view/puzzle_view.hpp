@@ -43,12 +43,13 @@ public:
   void draw(Renderer& renderer) override;
   void resize(unsigned width, unsigned height) override;
 
+  void save() const;
+  
   Puzzle& puzzle() { return m_puzzle; }
   const Puzzle& puzzle() const { return m_puzzle; }
   
 private:
   void load(const std::string& filename);
-  void save() const;
   void setup_panels();
   
   Puzzle m_puzzle;

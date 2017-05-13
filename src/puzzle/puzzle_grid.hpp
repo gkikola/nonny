@@ -21,14 +21,19 @@
 #ifndef NONNY_PUZZLE_GRID_HPP
 #define NONNY_PUZZLE_GRID_HPP
 
+#include <iosfwd>
 #include <stdexcept>
 #include <vector>
 #include "puzzle/puzzle_cell.hpp"
+
+class ColorPalette;
 
 /*
  * Represents a grid of puzzle cells.
  */
 class PuzzleGrid {
+  friend std::istream& read_grid(std::istream& is, PuzzleGrid& grid,
+                                 const ColorPalette& palette);
 public:
   PuzzleGrid() : m_width(0) { }
   PuzzleGrid(const PuzzleGrid&) = default;
@@ -50,6 +55,13 @@ private:
   unsigned m_width;
 };
 
+std::ostream& operator<<(std::ostream& os, const PuzzleGrid& grid);
+std::istream& operator>>(std::istream& is, PuzzleGrid& grid);
+
+std::ostream& write_grid(std::ostream& os, const PuzzleGrid& grid,
+                         const ColorPalette& palette);
+std::istream& read_grid(std::istream& is, PuzzleGrid& grid,
+                        const ColorPalette& palette);
 
 /* implementation */
 

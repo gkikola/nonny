@@ -56,10 +56,10 @@ public:
   const Color& operator[](const std::string& name) const;
   const Color& operator[](char symbol) const;
 
-  const std::string& find(const Color& color) const;
-
   const_iterator begin() const { return m_colors.begin(); }
   const_iterator end() const { return m_colors.end(); }
+
+  const_iterator find(const Color& color) const;
 
   std::vector<Entry>::size_type
   size() const { return m_colors.size(); }

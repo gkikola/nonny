@@ -43,13 +43,16 @@ public:
   PuzzleProgress& operator=(const PuzzleProgress&) & = default;
   PuzzleProgress& operator=(PuzzleProgress&&) & = default;
 
-  void store_progress(const Puzzle& puzzle, unsigned time);
+  void store_progress(const Puzzle& puzzle, unsigned time,
+                      bool update_solution = false);
 
   std::string filename() const { return m_filename; }
   bool is_complete() const { return m_completed; }
   unsigned best_time() const { return m_best_time; }
   unsigned current_time() const { return m_cur_time; }
-
+  
+  const PuzzleGrid& state() const { return m_progress; }
+  const PuzzleGrid& solution() const { return m_solution; }
   inline const PuzzleCell& state(unsigned row, unsigned col) const;
   inline const PuzzleCell& solution(unsigned row, unsigned col) const;
 private:

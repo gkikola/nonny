@@ -66,16 +66,10 @@ const Color& ColorPalette::operator[](char symbol) const
   return it->color;
 }
 
-const std::string& ColorPalette::find(const Color& color) const
+ColorPalette::const_iterator ColorPalette::find(const Color& color) const
 {
-  auto it = std::find_if(m_colors.begin(), m_colors.end(),
-                         [&](const Entry& e) { return e.color == color; });
-  if (it == m_colors.end()) {
-    std::ostringstream ss;
-    ss << "ColorPalette::find: color " << color << " not found";
-    throw std::out_of_range(ss.str());
-  }
-  return it->name;
+  return std::find_if(m_colors.begin(), m_colors.end(),
+                      [&](const Entry& e) { return e.color == color; });
 }
 
 ColorPalette::iterator ColorPalette::at(const std::string& name)
