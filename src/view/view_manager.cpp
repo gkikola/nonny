@@ -112,7 +112,8 @@ void ViewManager::update(unsigned ticks, InputHandler& input)
       if (!m_views.empty()) {
         auto pv = std::dynamic_pointer_cast<PuzzleView>(m_views.back());
         if (pv)
-          push(std::make_shared<VictoryView>(*this, pv->puzzle()));
+          push(std::make_shared<VictoryView>(*this, pv->puzzle(),
+                                             pv->time(), pv->best_time()));
       }
       break;
     }

@@ -48,6 +48,9 @@ public:
   
   Puzzle& puzzle() { return m_puzzle; }
   const Puzzle& puzzle() const { return m_puzzle; }
+
+  unsigned time() const;
+  unsigned best_time() const { return m_best_time; }
   
 private:
   void load(const std::string& filename);
@@ -59,6 +62,8 @@ private:
   std::string m_puzzle_filename;
   ScrollingPanel m_main_panel;
   ScrollingPanel m_info_pane;
+
+  unsigned m_best_time = 0;
 
   std::unique_ptr<Font> m_clue_font;
   std::unique_ptr<Texture> m_cell_texture;

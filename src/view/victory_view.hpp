@@ -34,11 +34,11 @@ class ViewManager;
 
 class VictoryView : public View {
 public:
-  VictoryView(ViewManager& vm, Puzzle& puzzle)
-    : View(vm), m_puzzle(puzzle) { load_resources(); }
   VictoryView(ViewManager& vm, Puzzle& puzzle,
-              unsigned width, unsigned height)
-    : View(vm, width, height), m_puzzle(puzzle) { load_resources(); }
+              unsigned clear_time, unsigned best_time);
+  VictoryView(ViewManager& vm, Puzzle& puzzle,
+              unsigned clear_time, unsigned best_time,
+              unsigned width, unsigned height);
 
   VictoryView(const VictoryView&) = default;
   VictoryView(VictoryView&&) = default;
@@ -54,8 +54,11 @@ private:
   void load_resources();
   
   Puzzle& m_puzzle;
+  unsigned m_clear_time;
+  unsigned m_best_time;
   std::string m_puzzle_title;
   std::string m_puzzle_author;
+  std::string m_times;
   std::unique_ptr<Font> m_title_font;
   std::unique_ptr<Font> m_info_font;
 

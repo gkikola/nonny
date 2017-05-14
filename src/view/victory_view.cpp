@@ -20,16 +20,39 @@
 
 #include "view/victory_view.hpp"
 
+#include <sstream>
 #include "color/color.hpp"
 #include "input/input_handler.hpp"
 #include "puzzle/puzzle.hpp"
 #include "settings/game_settings.hpp"
+#include "utility/utility.hpp"
 #include "video/rect.hpp"
 #include "video/renderer.hpp"
 #include "view/view_manager.hpp"
 
 const Color background_color(123, 175, 212);
 constexpr unsigned spacing = 8;
+
+VictoryView::VictoryView(ViewManager& vm, Puzzle& puzzle,
+                         unsigned clear_time, unsigned best_time)
+  : View(vm),
+    m_puzzle(puzzle),
+    m_clear_time(clear_time),
+    m_best_time(best_time)
+{
+  load_resources();
+}
+
+VictoryView::VictoryView(ViewManager& vm, Puzzle& puzzle,
+                         unsigned clear_time, unsigned best_time,
+                         unsigned width, unsigned height)
+  : View(vm, width, height),
+    m_puzzle(puzzle),
+    m_clear_time(clear_time),
+    m_best_time(best_time)
+{
+  load_resources();
+}
 
 void VictoryView::update(unsigned ticks, InputHandler& input)
 {
@@ -60,6 +83,14 @@ void VictoryView::draw(Renderer& renderer)
   m_preview.draw(renderer);
   pt.y() += m_preview.boundary().height() + spacing;
 
+  renderer.set_draw_color(default_colors::black);
+  renderer.draw_rect(m_preview.boundary());
+
+  m_info_font->text_size(m_times, &text_width, &text_height);
+  pt.x() = m_width / 2 - text_width / 2;
+  renderer.draw_text(pt, *m_info_font, m_times);
+  pt.y() += text_height + spacing;
+
   m_back_button->draw(renderer);
 }
 
@@ -75,9 +106,10 @@ void VictoryView::resize(unsigned width, unsigned height)
   m_info_font->text_size(m_puzzle_author, &text_width, &text_height);
   pos.y() += text_height + spacing;
 
+  m_info_font->text_size(m_times, &text_width, &text_height);
   unsigned preview_width = m_width;
   unsigned preview_height = m_height - pos.y() - spacing
-    - m_back_button->boundary().height() - spacing;
+    - m_back_button->boundary().height() - spacing - text_height - spacing;
   if (preview_width / m_puzzle.width() > preview_height / m_puzzle.height())
     preview_width = preview_height * m_puzzle.width() / m_puzzle.height();
   else
@@ -89,6 +121,7 @@ void VictoryView::resize(unsigned width, unsigned height)
   m_preview.resize(preview_width, preview_height);
 
   pos.y() += preview_height + spacing;
+  pos.y() += text_height + spacing;
   pos.x() = m_width / 2 - m_back_button->boundary().width() / 2;
 
   m_back_button->move(pos.x(), pos.y());
@@ -106,6 +139,15 @@ void VictoryView::load_resources()
   property = m_puzzle.find_property("by");
   if (property && !property->empty())
     m_puzzle_author = "by " + *property;
+
+  std::ostringstream oss;
+  oss << "Clear time: ";
+  write_time(oss, m_clear_time, true) << "    ";
+  oss << "Best time: ";
+  write_time(oss, m_best_time, true);
+  if (m_clear_time < m_best_time)
+    oss << " (New record!)";
+  m_times = oss.str();
 
   GameSettings& settings = m_mgr.game_settings();
   std::string font_file = settings.font_dir() + "FreeSans.ttf";

@@ -129,6 +129,7 @@ void PuzzleView::load(const std::string& filename)
   PuzzleProgress prog;
   m_mgr.save_manager().load_progress(prog, m_puzzle_filename,
                                      collection, id);
+  m_best_time = prog.best_time();
   prog.restore_progress(m_puzzle);
 
   setup_panels();
@@ -276,4 +277,11 @@ void PuzzleView::resize(unsigned width, unsigned height)
     m_main_panel.move(width, 0);
     m_main_panel.resize(0, height);
   }
+}
+
+unsigned PuzzleView::time() const
+{
+  auto& ipanel
+    = dynamic_cast<const PuzzleInfoPanel&>(m_info_pane.main_panel());
+  return ipanel.time();
 }
