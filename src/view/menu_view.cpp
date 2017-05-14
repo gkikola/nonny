@@ -157,6 +157,12 @@ void MenuView::main_menu()
   button->resize(menu_button_width, button->boundary().height());
   menu->add_control(button);
 
+  button = std::make_shared<Button>(*m_control_font, "Quit");
+  button->register_callback([this]() {
+      m_mgr.schedule_action(ViewManager::Action::quit_game); });
+  button->resize(menu_button_width, button->boundary().height());
+  menu->add_control(button);
+
   menu->position_controls();
   m_main_panel.attach_panel(menu);
   resize(m_width, m_height);
