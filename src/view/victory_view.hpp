@@ -21,6 +21,10 @@
 #ifndef NONNY_VICTORY_VIEW_HPP
 #define NONNY_VICTORY_VIEW_HPP
 
+#include <memory>
+#include "ui/button.hpp"
+#include "ui/puzzle_preview.hpp"
+#include "video/font.hpp"
 #include "view/view.hpp"
 
 class InputHandler;
@@ -31,10 +35,10 @@ class ViewManager;
 class VictoryView : public View {
 public:
   VictoryView(ViewManager& vm, Puzzle& puzzle)
-    : View(vm), m_puzzle(puzzle) { }
+    : View(vm), m_puzzle(puzzle) { load_resources(); }
   VictoryView(ViewManager& vm, Puzzle& puzzle,
               unsigned width, unsigned height)
-    : View(vm, width, height), m_puzzle(puzzle) { }
+    : View(vm, width, height), m_puzzle(puzzle) { load_resources(); }
 
   VictoryView(const VictoryView&) = default;
   VictoryView(VictoryView&&) = default;
@@ -47,7 +51,17 @@ public:
   void resize(unsigned width, unsigned height) override;
 
 private:
+  void load_resources();
+  
   Puzzle& m_puzzle;
+  std::string m_puzzle_title;
+  std::string m_puzzle_author;
+  std::unique_ptr<Font> m_title_font;
+  std::unique_ptr<Font> m_info_font;
+
+  std::shared_ptr<Button> m_back_button;
+
+  PuzzlePreview m_preview;
 };
 
 #endif

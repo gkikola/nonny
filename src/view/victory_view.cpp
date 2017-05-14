@@ -23,45 +23,97 @@
 #include "color/color.hpp"
 #include "input/input_handler.hpp"
 #include "puzzle/puzzle.hpp"
+#include "settings/game_settings.hpp"
 #include "video/rect.hpp"
 #include "video/renderer.hpp"
 #include "view/view_manager.hpp"
 
+const Color background_color(123, 175, 212);
+constexpr unsigned spacing = 8;
+
 void VictoryView::update(unsigned ticks, InputHandler& input)
 {
+  m_preview.update(ticks, input);
+  m_back_button->update(ticks, input);
 }
 
 void VictoryView::draw(Renderer& renderer)
 {
-  if (m_puzzle.width() > 0 && m_puzzle.height() > 0) {
-    unsigned height = m_height;
-    unsigned width = height * m_puzzle.width() / m_puzzle.height();
-    if (width > m_width) {
-      width = m_width;
-      height = width * m_puzzle.height() / m_puzzle.width();
-    }
+  Point pt(0, spacing);
 
-    Rect region(m_width / 2 - width / 2, m_height / 2 - height / 2,
-                width, height);
-    renderer.set_draw_color(default_colors::white);
-    renderer.fill_rect(region);
+  renderer.set_draw_color(background_color);
+  renderer.fill_rect(Rect(0, 0, m_width, m_height));
 
-    for (unsigned j = 0; j != m_puzzle.height(); ++j) {
-      for (unsigned i = 0; i != m_puzzle.width(); ++i) {
-        Rect pixel(region.x() + region.width() / m_puzzle.width() * i,
-                   region.y() + region.height() / m_puzzle.height() * j,
-                   region.width() / m_puzzle.width(),
-                   region.height() / m_puzzle.height());
-        if (m_puzzle[i][j].state == PuzzleCell::State::filled) {
-          renderer.set_draw_color(m_puzzle[i][j].color);
-          renderer.fill_rect(pixel);
-        }
-      }
-    }
-  }
+  renderer.set_draw_color(default_colors::black);
+  
+  unsigned text_width, text_height;
+  m_title_font->text_size(m_puzzle_title, &text_width, &text_height);
+  pt.x() = m_width / 2 - text_width / 2;
+  renderer.draw_text(pt, *m_title_font, m_puzzle_title);
+  pt.y() += text_height + spacing;
+
+  m_info_font->text_size(m_puzzle_author, &text_width, &text_height);
+  pt.x() = m_width / 2 - text_width / 2;
+  renderer.draw_text(pt, *m_info_font, m_puzzle_author);
+  pt.y() += text_height + spacing;
+  
+  m_preview.draw(renderer);
+  pt.y() += m_preview.boundary().height() + spacing;
+
+  m_back_button->draw(renderer);
 }
 
 void VictoryView::resize(unsigned width, unsigned height)
 {
   View::resize(width, height);
+
+  Point pos(0, spacing);
+  
+  unsigned text_width, text_height;
+  m_title_font->text_size(m_puzzle_title, &text_width, &text_height);
+  pos.y() += text_height + spacing;
+  m_info_font->text_size(m_puzzle_author, &text_width, &text_height);
+  pos.y() += text_height + spacing;
+
+  unsigned preview_width = m_width;
+  unsigned preview_height = m_height - pos.y() - spacing
+    - m_back_button->boundary().height() - spacing;
+  if (preview_width / m_puzzle.width() > preview_height / m_puzzle.height())
+    preview_width = preview_height * m_puzzle.width() / m_puzzle.height();
+  else
+    preview_height = preview_width * m_puzzle.height() / m_puzzle.width();
+
+  pos.x() = m_width / 2 - preview_width / 2;
+  
+  m_preview.move(pos.x(), pos.y());
+  m_preview.resize(preview_width, preview_height);
+
+  pos.y() += preview_height + spacing;
+  pos.x() = m_width / 2 - m_back_button->boundary().width() / 2;
+
+  m_back_button->move(pos.x(), pos.y());
+}
+
+void VictoryView::load_resources()
+{
+  m_preview.attach_puzzle(m_puzzle);
+
+  const std::string* property = m_puzzle.find_property("title");
+  if (property)
+    m_puzzle_title = *property;
+  else
+    m_puzzle_title = "Untitled";
+  property = m_puzzle.find_property("by");
+  if (property && !property->empty())
+    m_puzzle_author = "by " + *property;
+
+  GameSettings& settings = m_mgr.game_settings();
+  std::string font_file = settings.font_dir() + "FreeSans.ttf";
+  std::string bold_font_file = settings.font_dir() + "FreeSansBold.ttf";
+  m_title_font = m_mgr.video_system().new_font(bold_font_file, 32);
+  m_info_font = m_mgr.video_system().new_font(font_file, 24);
+
+  m_back_button = std::make_shared<Button>(*m_info_font, "Back");
+  m_back_button->register_callback([this]() {
+      m_mgr.schedule_action(ViewManager::Action::quit_puzzle); });
 }

@@ -88,7 +88,7 @@ void ViewManager::update(unsigned ticks, InputHandler& input)
       m_puzzle_open = true;
       break;
     case Action::quit_puzzle:
-      pop(); //close the menu
+      pop(); //close the menu/victory screen
       pop(); //close the puzzle
       m_puzzle_open = false;
       break;
