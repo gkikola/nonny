@@ -183,6 +183,12 @@ void MenuView::in_game_menu()
       m_mgr.schedule_action(ViewManager::Action::save_game); });
   button->resize(menu_button_width, button->boundary().height());
   menu->add_control(button);
+
+  button = std::make_shared<Button>(*m_control_font, "Start Over");
+  button->register_callback([this]() {
+      m_mgr.schedule_action(ViewManager::Action::restart); });
+  button->resize(menu_button_width, button->boundary().height());
+  menu->add_control(button);
   
   button = std::make_shared<Button>(*m_control_font, "Quit Puzzle");
   button->register_callback([this]() {

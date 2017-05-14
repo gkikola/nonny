@@ -182,6 +182,13 @@ void PuzzleView::save() const
                                      collection, id);
 }
 
+void PuzzleView::restart()
+{
+  auto& ipanel = dynamic_cast<PuzzleInfoPanel&>(m_info_pane.main_panel());
+  ipanel.time(0);
+  m_puzzle.clear_all_cells();
+}
+
 void PuzzleView::setup_panels()
 {
   const GameSettings& settings = m_mgr.game_settings();

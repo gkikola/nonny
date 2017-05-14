@@ -44,6 +44,7 @@ public:
   void resize(unsigned width, unsigned height) override;
 
   void save() const;
+  void restart();
   
   Puzzle& puzzle() { return m_puzzle; }
   const Puzzle& puzzle() const { return m_puzzle; }

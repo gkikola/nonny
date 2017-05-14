@@ -41,6 +41,11 @@ void Puzzle::mark_cell(unsigned col, unsigned row, const Color& color)
   cell.color = color;
 }
 
+void Puzzle::clear_all_cells()
+{
+  m_grid = PuzzleGrid(width(), height());
+}
+
 bool Puzzle::is_solved() const
 {
   for (unsigned i = 0; i < m_grid.width(); ++i) {

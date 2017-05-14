@@ -42,7 +42,8 @@ public:
               unsigned width, unsigned height);
   
   enum class Action { no_action, quit_game, choose_puzzle, open_menu,
-      close_menu, load_puzzle, quit_puzzle, save_game, show_victory_screen };
+      close_menu, load_puzzle, quit_puzzle, save_game, restart,
+      show_victory_screen };
   inline void schedule_action(Action action, std::string argument = "");
 
   void push(std::shared_ptr<View> view) { m_views.push_back(view); }

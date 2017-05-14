@@ -62,6 +62,8 @@ public:
   inline void clear_cell(unsigned col, unsigned row);
   inline void cross_out_cell(unsigned col, unsigned row);
 
+  void clear_all_cells();
+
   bool is_solved() const;
   bool is_row_solved(unsigned row) const;
   bool is_col_solved(unsigned col) const;

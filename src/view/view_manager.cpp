@@ -100,6 +100,14 @@ void ViewManager::update(unsigned ticks, InputHandler& input)
           pv->save();
       }
       break;
+    case Action::restart:
+      pop(); //close menu
+      if (!m_views.empty()) {
+        auto pv = std::dynamic_pointer_cast<PuzzleView>(m_views.back());
+        if (pv)
+          pv->restart();
+      }
+      break;
     case Action::show_victory_screen:
       if (!m_views.empty()) {
         auto pv = std::dynamic_pointer_cast<PuzzleView>(m_views.back());
