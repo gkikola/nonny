@@ -118,6 +118,7 @@ void ViewManager::update(unsigned ticks, InputHandler& input)
       break;
     }
     input.release_mouse();
+    input.reset_cursor();
     resize(m_width, m_height);
     m_action = Action::no_action;
   }

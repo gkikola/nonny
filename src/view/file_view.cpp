@@ -53,27 +53,40 @@ FileView::FileView(ViewManager& vm, Mode mode,
 }
 
 void FileView::update(unsigned ticks, InputHandler& input)
-{  
+{
   if (m_cur_path != m_paths.end()) {
-    if (input.was_mouse_button_pressed(Mouse::Button::left)) {
+    if (input.was_mouse_button_pressed(Mouse::Button::left)
+        || input.was_mouse_moved()) {
       int x = m_path_start.x(), y = m_path_start.y();
       unsigned width, height;
       unsigned index = 0;
+      bool set_cursor = false;
       for (const auto& e : *m_cur_path) {
         if (index < m_path_collapse_start || index >= m_path_collapse_end) {
           m_filename_font->text_size(e, &width, &height);
-          if (Rect(x, y, width, height).contains_point(input.mouse_position()))
-            open_subdir(index);
+          if (Rect(x, y, width, height)
+              .contains_point(input.mouse_position())) {
+            if (input.was_mouse_button_pressed(Mouse::Button::left))
+              open_subdir(index);
+            set_cursor = true;
+          }
           x += width + path_spacing;
         } else if (index == m_path_collapse_start) {
           m_filename_font->text_size("...", &width, nullptr);
           x += width + path_spacing;
         }
 
-        m_filename_font->text_size(">", &width, nullptr);
-        x += width + path_spacing;
+        if (index <= m_path_collapse_start || index >= m_path_collapse_end) {
+          m_filename_font->text_size(">", &width, nullptr);
+          x += width + path_spacing;
+        }
         ++index;
       }
+
+      if (set_cursor && input.cursor() != Mouse::Cursor::hand)
+        input.set_cursor(Mouse::Cursor::hand);
+      if (!set_cursor && input.cursor() != Mouse::Cursor::arrow)
+        input.reset_cursor();
     }
   }
 
