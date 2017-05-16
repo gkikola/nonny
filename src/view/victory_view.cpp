@@ -107,9 +107,10 @@ void VictoryView::resize(unsigned width, unsigned height)
   pos.y() += text_height + spacing;
 
   m_info_font->text_size(m_times, &text_width, &text_height);
+  unsigned space = pos.y() + spacing
+    + m_back_button->boundary().height() + spacing + text_height + spacing;
   unsigned preview_width = m_width;
-  unsigned preview_height = m_height - pos.y() - spacing
-    - m_back_button->boundary().height() - spacing - text_height - spacing;
+  unsigned preview_height = m_height >= space ? m_height - space : 0;
   if (preview_width / m_puzzle.width() > preview_height / m_puzzle.height())
     preview_width = preview_height * m_puzzle.width() / m_puzzle.height();
   else
