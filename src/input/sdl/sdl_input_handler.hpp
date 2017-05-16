@@ -21,18 +21,27 @@
 #ifndef NONNY_SDL_INPUT_HANDLER_HPP
 #define NONNY_SDL_INPUT_HANDLER_HPP
 
+#include <SDL2/SDL.h>
 #include "input/input_handler.hpp"
 
 class SDLInputHandler : public InputHandler {
 public:
   SDLInputHandler() { }
-  ~SDLInputHandler() { }
+  ~SDLInputHandler();
 
   SDLInputHandler(const SDLInputHandler&) = delete;
   SDLInputHandler& operator=(const SDLInputHandler&) = delete;
 
-  void capture_mouse();
-  void release_mouse();
+  void capture_mouse() override;
+  void release_mouse() override;
+
+  void set_cursor(Mouse::Cursor cursor) override;
+  void reset_cursor() override;
+  Mouse::Cursor cursor() const override { return m_cursor_type; }
+
+private:
+  Mouse::Cursor m_cursor_type = Mouse::Cursor::arrow;
+  SDL_Cursor* m_cursor = nullptr;
 };
 
 #endif

@@ -41,6 +41,10 @@ public:
 
   virtual void capture_mouse() = 0;
   virtual void release_mouse() = 0;
+
+  virtual void set_cursor(Mouse::Cursor cursor) = 0;
+  virtual void reset_cursor() = 0;
+  virtual Mouse::Cursor cursor() const = 0;
   
   virtual void process_key_event(Keyboard::Key key, bool down);
   virtual void process_text_input_event(const std::string& text);
@@ -61,6 +65,7 @@ public:
   virtual bool is_mouse_button_down(Mouse::Button button) const;
   virtual bool was_mouse_button_double_clicked(Mouse::Button button) const;
 
+  virtual bool was_mouse_moved() const;
   virtual Point mouse_position() const { return m_mouse; }
   virtual Point prev_mouse_position() const { return m_prev_mouse; }
   virtual int rel_mouse_x() const { return m_mouse.x() - m_prev_mouse.x(); }

@@ -59,6 +59,10 @@ namespace Mouse {
 
   constexpr unsigned num_buttons = forward + 1;
 
+  enum class Cursor {
+    unknown, arrow, ibeam, wait, crosshair, size_we, size_ns, no, hand
+  };
+  
   std::string button_name(Button button);
 }
 

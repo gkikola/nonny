@@ -138,3 +138,8 @@ bool InputHandler::was_mouse_button_double_clicked(Mouse::Button button) const
 {
   return m_button_dbl_click[button];
 }
+
+bool InputHandler::was_mouse_moved() const
+{
+  return rel_mouse_x() || rel_mouse_y();
+}
