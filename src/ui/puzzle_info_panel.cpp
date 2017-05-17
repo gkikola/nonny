@@ -32,22 +32,25 @@ constexpr unsigned spacing = 8;
 constexpr unsigned preview_width = 196;
 
 PuzzleInfoPanel::PuzzleInfoPanel(Font& title_font, Font& info_font,
-                                 Font& size_font, Texture& ctrl_texture)
+                                 Font& size_font, Texture& ctrl_texture,
+                                 unsigned max_width)
   : m_title_font(title_font),
     m_info_font(info_font),
     m_size_font(size_font),
-    m_ctrl_texture(ctrl_texture)
+    m_ctrl_texture(ctrl_texture),
+    m_max_width(max_width)
 {
   setup_buttons();
 }
 
 PuzzleInfoPanel::PuzzleInfoPanel(Font& title_font, Font& info_font,
                                  Font& size_font, Texture& ctrl_texture,
-                                 Puzzle& puzzle)
+                                 unsigned max_width, Puzzle& puzzle)
   : m_title_font(title_font),
     m_info_font(info_font),
     m_size_font(size_font),
-    m_ctrl_texture(ctrl_texture)
+    m_ctrl_texture(ctrl_texture),
+    m_max_width(max_width)
 {
   setup_buttons();
   attach_puzzle(puzzle);
@@ -90,9 +93,11 @@ void PuzzleInfoPanel::draw(Renderer& renderer, const Rect& region) const
 
     //draw title
     unsigned text_width, text_height;
-    m_title_font.text_size(m_puzzle_title, &text_width, &text_height);
-    Point text_pos(pos.x() + m_boundary.width() / 2 - text_width / 2, pos.y());
-    renderer.draw_text(text_pos, m_title_font, m_puzzle_title);
+    m_title_font.text_size_wrapped(m_puzzle_title, m_boundary.width(),
+                                   &text_width, &text_height);
+    Point text_pos(pos.x(), pos.y());
+    renderer.draw_text_wrapped(text_pos, m_title_font, m_puzzle_title,
+                               m_boundary.width(), true);
     pos.y() += text_height + spacing;
 
     //draw puzzle size
@@ -169,7 +174,8 @@ void PuzzleInfoPanel::calculate_bounds()
     unsigned width = 0, height = spacing;
 
     unsigned text_wd, text_ht;
-    m_title_font.text_size(m_puzzle_title, &text_wd, &text_ht);
+    m_title_font.text_size_wrapped(m_puzzle_title, m_max_width,
+                                   &text_wd, &text_ht);
     width = std::max(width, text_wd + 2 * spacing);
     height += text_ht + spacing;
 

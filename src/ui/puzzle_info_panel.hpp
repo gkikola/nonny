@@ -34,9 +34,9 @@ class Texture;
 class PuzzleInfoPanel : public UIPanel {
 public:
   PuzzleInfoPanel(Font& title_font, Font& info_font, Font& size_font,
-                  Texture& ctrl_texture);
+                  Texture& ctrl_texture, unsigned max_width);
   PuzzleInfoPanel(Font& title_font, Font& info_font, Font& size_font,
-                  Texture& ctrl_texture, Puzzle& puzzle);
+                  Texture& ctrl_texture, unsigned max_width, Puzzle& puzzle);
   void attach_puzzle(Puzzle& puzzle);
 
   //register callback functions
@@ -86,6 +86,7 @@ private:
 
   bool m_sliding = false;
   unsigned m_time = 0;
+  unsigned m_max_width = 0;
 };
 
 #endif

@@ -219,6 +219,7 @@ void PuzzleView::setup_panels()
                                                   *m_info_font,
                                                   *m_size_font,
                                                   *m_ctrl_texture,
+                                                  info_pane_width,
                                                   m_puzzle);
   ipanel->on_menu_open([this]() {
       m_mgr.schedule_action(ViewManager::Action::open_menu); });
