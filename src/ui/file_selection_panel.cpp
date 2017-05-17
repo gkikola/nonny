@@ -145,6 +145,7 @@ void FileSelectionPanel::update(unsigned ticks, InputHandler& input,
         else
           select(m_selection + 1);
       }
+      make_selection_visible(active_region);
     } else if (input.was_key_pressed(Keyboard::Key::up)
                || input.was_key_pressed(Keyboard::Key::kp_up)) {
       if (!m_is_selected)
@@ -155,6 +156,7 @@ void FileSelectionPanel::update(unsigned ticks, InputHandler& input,
         else
           select(m_files.size() - 1);
       }
+      make_selection_visible(active_region);
     }
 
     //handle selection with enter key
@@ -334,6 +336,21 @@ void FileSelectionPanel::select(unsigned index)
     m_selection = index;
     if (m_file_sel_callback)
       m_file_sel_callback(m_files[index].full_path);
+  }
+}
+
+void FileSelectionPanel::make_selection_visible(const Rect& visible_region)
+{
+  if (m_is_selected) {
+    int top = m_boundary.y() + m_selection * entry_height();
+    int bottom = top + entry_height();
+    int v_top = visible_region.y();
+    int v_bottom = v_top + visible_region.height();
+
+    if (bottom > v_bottom)
+      scroll(0, v_bottom - bottom);
+    else if (top < v_top)
+      scroll(0, v_top - top);
   }
 }
 

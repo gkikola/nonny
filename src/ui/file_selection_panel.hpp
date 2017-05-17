@@ -61,6 +61,7 @@ private:
   void draw_progress(Renderer& renderer, const PuzzleGrid& grid,
                      const Rect& area) const;
   void select(unsigned index);
+  void make_selection_visible(const Rect& visible_region);
   unsigned entry_height() const;
   void load_file_list();
   void sort_files();
