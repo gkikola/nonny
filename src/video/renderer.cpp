@@ -90,13 +90,19 @@ Rect Renderer::draw_text_wrapped(const Point& point, const Font& font,
         line = word;
         word = "";
       } else {
-        if (!line.empty())
+        if (!line.empty() && !word.empty())
           line += " ";
         line += word;
         word = "";
       }
 
       if (text[pos] == '\n') {
+        if (word.empty())
+          font.text_size(line, &txt_wd, &txt_ht);
+        else if (line.empty())
+          font.text_size(word, &txt_wd, &txt_ht);
+        else
+          font.text_size(line + " " + word, &txt_wd, &txt_ht);
         int x = pt.x();
         if (center)
           x += width / 2 - txt_wd / 2;

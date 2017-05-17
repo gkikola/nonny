@@ -19,3 +19,62 @@
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
 #include "video/font.hpp"
+
+#include <cstddef>
+
+void Font::text_size_wrapped(std::string text, unsigned wrap_width,
+                             unsigned* width, unsigned* height) const
+{
+  if (width)
+    *width = 0;
+  if (height)
+    *height = 0;
+
+  text += "\n";
+  std::size_t pos = 0;
+  std::string line, word;
+  unsigned line_wd, line_ht;
+  while (pos != text.size()) {
+    if (text[pos] != '\n' && text[pos] != ' ') {
+      word += text[pos];
+    } else {
+      if (line.empty())
+        text_size(word, &line_wd, &line_ht);
+      else
+        text_size(line + " " + word, &line_wd, &line_ht);
+
+      if (line_wd > wrap_width) {
+        text_size(line, &line_wd, &line_ht);
+        if (width)
+          *width = std::max(*width, line_wd);
+        if (height)
+          *height += line_ht;
+        line = word;
+        word = "";
+      } else {
+        if (!line.empty() && !word.empty())
+          line += " ";
+        line += word;
+        word = "";
+      }
+
+      if (text[pos] == '\n') {
+        if (word.empty())
+          text_size(line, &line_wd, &line_ht);
+        else if (line.empty())
+          text_size(word, &line_wd, &line_ht);
+        else
+          text_size(line + " " + word, &line_wd, &line_ht);
+        
+        if (width)
+          *width = std::max(*width, line_wd);
+        if (height)
+          *height += line_ht;
+        line = "";
+        word = "";
+      }
+    }
+
+    ++pos;
+  }
+}

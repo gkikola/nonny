@@ -33,6 +33,8 @@ public:
 
   virtual void text_size(const std::string& text,
                          unsigned* width, unsigned* height) const = 0;
+  virtual void text_size_wrapped(std::string text, unsigned wrap_width,
+                                 unsigned* width, unsigned* height) const;
   virtual void resize(unsigned pt_size) = 0;
 };
 
