@@ -60,6 +60,7 @@ private:
   void up();
 
   void switch_focus(bool fwd = true);
+  void clear_focus();
   
   void open_default_dir();
   void open_puzzle_dir();
@@ -87,6 +88,8 @@ private:
   std::shared_ptr<ImageButton> m_forward_button;
   std::shared_ptr<Button> m_open_button;
   std::shared_ptr<TextBox> m_filename_box;
+
+  std::vector<ControlPtr> m_controls;
 
   ScrollingPanel m_file_selection;
 

@@ -103,6 +103,19 @@ void FileView::update(unsigned ticks, InputHandler& input)
     switch_focus(!back);
   }
 
+  if (input.was_key_pressed(Keyboard::Key::left)
+      || input.was_key_pressed(Keyboard::Key::kp_left))
+    back();
+  else if (input.was_key_pressed(Keyboard::Key::right)
+           || input.was_key_pressed(Keyboard::Key::kp_right))
+    forward();
+
+  if (input.was_key_pressed(Keyboard::Key::up)
+      || input.was_key_pressed(Keyboard::Key::kp_up)
+      || input.was_key_pressed(Keyboard::Key::down)
+      || input.was_key_pressed(Keyboard::Key::kp_down))
+    clear_focus();
+
   m_menu_button->update(ticks, input);
   m_up_button->update(ticks, input);
   m_back_button->update(ticks, input);
@@ -266,6 +279,13 @@ void FileView::load_resources()
   fsv->on_file_select([this](const std::string& f)
                       { handle_selection_change(); });
   m_file_selection.attach_panel(fsv);
+
+  m_controls = { m_menu_button,
+                 m_up_button,
+                 m_back_button,
+                 m_forward_button,
+                 m_filename_box,
+                 m_open_button };
 }
 
 void FileView::open_path(const stdfs::path& p)
@@ -304,24 +324,18 @@ void FileView::up()
 }
 
 void FileView::switch_focus(bool fwd) {
-  static std::vector<ControlPtr> v = { m_menu_button,
-                                       m_up_button,
-                                       m_back_button,
-                                       m_forward_button,
-                                       m_filename_box,
-                                       m_open_button };
   bool focus_changed = false;
-  for (unsigned i = 0; i < v.size(); ++i) {
-    if (v[i]->has_focus()) {
-      v[i]->remove_focus();
+  for (unsigned i = 0; i < m_controls.size(); ++i) {
+    if (m_controls[i]->has_focus()) {
+      m_controls[i]->remove_focus();
       unsigned next;
       if (i == 0 && !fwd)
-        next = v.size() - 1;
-      else if (i == v.size() - 1 && fwd)
+        next = m_controls.size() - 1;
+      else if (i == m_controls.size() - 1 && fwd)
         next = 0;
       else
         next = fwd ? i + 1 : i - 1;
-      v[next]->give_focus();
+      m_controls[next]->give_focus();
       focus_changed = true;
       break;
     }
@@ -333,6 +347,12 @@ void FileView::switch_focus(bool fwd) {
     else
       m_filename_box->give_focus();
   }
+}
+
+void FileView::clear_focus()
+{
+  for (auto& c : m_controls)
+    c->remove_focus();
 }
 
 void FileView::open_default_dir()
@@ -418,7 +438,7 @@ void FileView::handle_selection_change()
   FileSelectionPanel& panel
     = dynamic_cast<FileSelectionPanel&>(m_file_selection.main_panel());
   m_filename_box->set_text(panel.selected_file());
-  m_filename_box->remove_focus();
+  clear_focus();
 }
 
 void FileView::collapse_path()
