@@ -292,7 +292,7 @@ void FileView::forward()
 
 void FileView::up()
 {
-  if (m_cur_path != m_paths.end())
+  if (m_cur_path != m_paths.end() && m_cur_path->has_parent_path())
     open_path(m_cur_path->parent_path());
 }
 
