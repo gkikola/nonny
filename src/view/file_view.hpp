@@ -58,6 +58,8 @@ private:
   void back();
   void forward();
   void up();
+
+  void switch_focus(bool fwd = true);
   
   void open_default_dir();
   void open_puzzle_dir();

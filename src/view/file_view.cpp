@@ -21,6 +21,7 @@
 #include "view/file_view.hpp"
 
 #include <functional>
+#include <vector>
 #include "color/color.hpp"
 #include "input/input_handler.hpp"
 #include "save/save_manager.hpp"
@@ -95,6 +96,12 @@ void FileView::update(unsigned ticks, InputHandler& input)
     m_file_selection.smooth_scroll_down();
   else if (mwheel_scroll > 0)
     m_file_selection.smooth_scroll_up();
+
+  if (input.was_key_pressed(Keyboard::Key::tab)) {
+    bool back = input.is_key_down(Keyboard::Key::lshift)
+      || input.is_key_down(Keyboard::Key::rshift);
+    switch_focus(!back);
+  }
 
   m_menu_button->update(ticks, input);
   m_up_button->update(ticks, input);
@@ -294,6 +301,38 @@ void FileView::up()
 {
   if (m_cur_path != m_paths.end() && m_cur_path->has_parent_path())
     open_path(m_cur_path->parent_path());
+}
+
+void FileView::switch_focus(bool fwd) {
+  static std::vector<ControlPtr> v = { m_menu_button,
+                                       m_up_button,
+                                       m_back_button,
+                                       m_forward_button,
+                                       m_filename_box,
+                                       m_open_button };
+  bool focus_changed = false;
+  for (unsigned i = 0; i < v.size(); ++i) {
+    if (v[i]->has_focus()) {
+      v[i]->remove_focus();
+      unsigned next;
+      if (i == 0 && !fwd)
+        next = v.size() - 1;
+      else if (i == v.size() - 1 && fwd)
+        next = 0;
+      else
+        next = fwd ? i + 1 : i - 1;
+      v[next]->give_focus();
+      focus_changed = true;
+      break;
+    }
+  }
+
+  if (!focus_changed) {
+    if (fwd)
+      m_menu_button->give_focus();
+    else
+      m_filename_box->give_focus();
+  }
 }
 
 void FileView::open_default_dir()
