@@ -53,6 +53,9 @@ public:
 
   virtual Rect draw_text(const Point& point, const Font& font,
                          const std::string& text) = 0;
+  virtual Rect draw_text_wrapped(const Point& point, const Font& font,
+                                 std::string text, unsigned width,
+                                 bool center = false);
 
   virtual void copy_texture(const Texture& src,
                             const Rect& src_rect,

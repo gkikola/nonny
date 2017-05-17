@@ -20,6 +20,9 @@
 
 #include "video/renderer.hpp"
 
+#include <algorithm>
+#include <cstddef>
+#include "video/font.hpp"
 #include "video/rect.hpp"
 
 void Renderer::draw_thick_line(const Point& start,
@@ -54,4 +57,60 @@ void Renderer::draw_dotted_rect(const Rect& rect)
                    rect.width(), false);
   draw_dotted_line(Point(rect.x() + rect.width(), rect.y()),
                    rect.height(), true);
+}
+
+Rect Renderer::draw_text_wrapped(const Point& point, const Font& font,
+                                 std::string text, unsigned width,
+                                 bool center)
+{
+  Rect bounds(point.x(), point.y(), 0, 0);
+  text += "\n";
+  std::size_t pos = 0;
+  std::string line, word;
+  Point pt = point;
+  while (pos != text.size()) {
+    if (text[pos] != '\n' && text[pos] != ' ') {
+      word += text[pos];
+    } else {
+      unsigned txt_wd, txt_ht;
+      if (line.empty())
+        font.text_size(word, &txt_wd, &txt_ht);
+      else
+        font.text_size(line + " " + word, &txt_wd, &txt_ht);
+
+      if (txt_wd > width) {
+        font.text_size(line, &txt_wd, &txt_ht);
+        int x = pt.x();
+        if (center)
+          x += width / 2 - txt_wd / 2;
+        Rect r = draw_text(Point(x, pt.y()), font, line);
+        bounds.width() = std::max(bounds.width(), r.width());
+        bounds.height() += r.height();
+        pt.y() += r.height();
+        line = word;
+        word = "";
+      } else {
+        if (!line.empty())
+          line += " ";
+        line += word;
+        word = "";
+      }
+
+      if (text[pos] == '\n') {
+        int x = pt.x();
+        if (center)
+          x += width / 2 - txt_wd / 2;
+        Rect r = draw_text(Point(x, pt.y()), font, line + " " + word);
+        bounds.width() = std::max(bounds.width(), r.width());
+        bounds.height() += r.height();
+        pt.y() += r.height();
+        line = "";
+        word = "";
+      }
+    }
+    
+    ++pos;
+  }
+  
+  return bounds;
 }
