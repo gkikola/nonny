@@ -56,6 +56,11 @@ VictoryView::VictoryView(ViewManager& vm, Puzzle& puzzle,
 
 void VictoryView::update(unsigned ticks, InputHandler& input)
 {
+  if (input.was_key_pressed(Keyboard::Key::tab)
+      || input.was_key_pressed(Keyboard::Key::enter)
+      || input.was_key_pressed(Keyboard::Key::kp_enter))
+    m_back_button->give_focus();
+  
   m_preview.update(ticks, input);
   m_back_button->update(ticks, input);
 }
