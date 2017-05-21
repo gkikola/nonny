@@ -60,6 +60,7 @@ void PuzzleInfoPanel::attach_puzzle(Puzzle& puzzle)
 {
   m_puzzle = &puzzle;
   m_preview.attach_puzzle(puzzle);
+  m_color_selector.set_palette(puzzle.palette());
   retrieve_puzzle_info();
   calculate_bounds();
 }
@@ -72,11 +73,17 @@ void PuzzleInfoPanel::setup_buttons()
   m_hint_button = std::make_shared<ImageButton>(m_ctrl_texture, 3);
 }
 
+Color PuzzleInfoPanel::active_color() const
+{
+  return m_color_selector.selected_color();
+}
+
 void PuzzleInfoPanel::update(unsigned ticks, InputHandler& input,
                              const Rect& active_region)
 {
   m_time += ticks;
   m_preview.update(ticks, input, active_region);
+  m_color_selector.update(ticks, input, active_region);
   m_menu_button->update(ticks, input, active_region);
   m_zoom_in_button->update(ticks, input, active_region);
   m_zoom_out_button->update(ticks, input, active_region);
@@ -115,11 +122,17 @@ void PuzzleInfoPanel::draw(Renderer& renderer, const Rect& region) const
     renderer.draw_text(text_pos, m_info_font, time_str);
     pos.y() += text_height + spacing;
 
-    //leave room for preview
+    //draw preview
+    m_preview.draw(renderer, region);
     pos.y() += m_preview.boundary().height() + spacing;
+    if (m_puzzle->is_multicolor()) {
+      m_color_selector.draw(renderer, region);
+      pos.y() += m_color_selector.boundary().height() + spacing;
+    }
 
     //draw author
     if (!m_puzzle_author.empty()) {
+      renderer.set_draw_color(default_colors::black);
       m_info_font.text_size(m_puzzle_author, &text_width, &text_height);
       text_pos.x() = pos.x() + m_boundary.width() / 2 - text_width / 2;
       text_pos.y() = pos.y();
@@ -127,15 +140,13 @@ void PuzzleInfoPanel::draw(Renderer& renderer, const Rect& region) const
       pos.y() += text_height + spacing;
     }
 
-    //draw preview
-    m_preview.draw(renderer, region);
-
     //draw buttons
     m_menu_button->draw(renderer, region);
     m_zoom_in_button->draw(renderer, region);
     m_zoom_out_button->draw(renderer, region);
     m_hint_button->draw(renderer, region);
-    
+    pos.y() += m_menu_button->boundary().height() + spacing;
+
     renderer.set_clip_rect();
   }
 }
@@ -145,6 +156,7 @@ void PuzzleInfoPanel::move(int x, int y)
   int old_x = m_boundary.x(), old_y = m_boundary.y();
   UIPanel::move(x, y);
   m_preview.scroll(x - old_x, y - old_y);
+  m_color_selector.scroll(x - old_x, y - old_y);
   m_menu_button->scroll(x - old_x, y - old_y);
   m_zoom_in_button->scroll(x - old_x, y - old_y);
   m_zoom_out_button->scroll(x - old_x, y - old_y);
@@ -193,6 +205,13 @@ void PuzzleInfoPanel::calculate_bounds()
     width = std::max(width, preview_width + 2 * spacing);
     height += preview_height + spacing;
 
+    unsigned color_sel_pos = m_boundary.y() + height;
+    if (m_puzzle->is_multicolor()) {
+      m_color_selector.move(m_boundary.x(), color_sel_pos);
+      m_color_selector.set_width(width);
+      height += m_color_selector.boundary().height() + spacing;
+    }
+
     if (!m_puzzle_author.empty()) {
       m_info_font.text_size(m_puzzle_author, &text_wd, &text_ht);
       width = std::max(width, text_wd + 2 * spacing);
@@ -203,7 +222,7 @@ void PuzzleInfoPanel::calculate_bounds()
     unsigned button_width = m_menu_button->boundary().width();
     unsigned button_group_width = 4 * button_width + 3 * spacing;
     height += m_menu_button->boundary().height() + spacing;
-
+    
     int x = m_boundary.x() + width / 2 - button_group_width / 2;
     m_menu_button->move(x, button_pos);
     x += button_width + spacing;

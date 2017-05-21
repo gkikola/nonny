@@ -22,6 +22,7 @@
 
 #include <algorithm>
 #include <fstream>
+#include <functional>
 #include <memory>
 #include <stdexcept>
 #include <utility>
@@ -138,6 +139,8 @@ void PuzzleView::load(const std::string& filename)
   auto& ipanel
     = dynamic_cast<PuzzleInfoPanel&>(m_info_pane.main_panel());
   ipanel.time(prog.current_time());
+
+  handle_color_change();
 }
 
 std::string PuzzleView::puzzle_id() const
@@ -226,9 +229,19 @@ void PuzzleView::setup_panels()
   ipanel->on_zoom_in([]() { });
   ipanel->on_zoom_out([]() { });
   ipanel->on_hint_toggle([]() { });
+  ipanel->on_color_change(std::bind(&PuzzleView::handle_color_change, this));
   ipanel->start_slide();
   Rect info_region(0, 0, 0, m_height);
   m_info_pane = ScrollingPanel(info_region, ipanel);
+}
+
+void PuzzleView::handle_color_change()
+{
+  auto* ipanel = dynamic_cast<PuzzleInfoPanel*>(&m_info_pane.main_panel());
+  auto* ppanel = dynamic_cast<PuzzlePanel*>(&m_main_panel.main_panel());
+  if (ipanel && ppanel) {
+    ppanel->set_active_color(ipanel->active_color());
+  }
 }
 
 void PuzzleView::update(unsigned ticks, InputHandler& input)

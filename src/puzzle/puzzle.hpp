@@ -68,6 +68,9 @@ public:
   bool is_row_solved(unsigned row) const;
   bool is_col_solved(unsigned col) const;
 
+  // Determines whether the puzzle has multiple foreground colors
+  bool is_multicolor() const { return m_palette.size() > 2; }
+  
   // Get color palette associated with this puzzle
   const ColorPalette& palette() const { return m_palette; }
 

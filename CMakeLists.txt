@@ -63,6 +63,7 @@ add_executable (
   src/ui/image_button.cpp
   src/ui/menu.cpp
   src/ui/message_box.cpp
+  src/ui/palette_panel.cpp
   src/ui/puzzle_info_panel.cpp
   src/ui/puzzle_panel.cpp
   src/ui/puzzle_preview.cpp

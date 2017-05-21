@@ -41,6 +41,8 @@ public:
 
   void attach_puzzle(Puzzle& puzzle);
 
+  void set_active_color(Color color) { m_color = color; }
+
   using UIPanel::update; //make all update and draw overloads visible
   using UIPanel::draw;
   void update(unsigned ticks, InputHandler& input,
@@ -68,7 +70,6 @@ private:
 
   enum class Direction { up, down, left, right };
   void move_selection(Direction dir, unsigned count = 1);
-  void next_color();
   inline bool is_point_in_grid(const Point& p) const;
   inline void cell_at_point(const Point& p, unsigned* x, unsigned* y) const;
 
@@ -79,7 +80,7 @@ private:
 
   //Puzzle information
   Puzzle* m_puzzle = nullptr;
-  ColorPalette::const_iterator m_color;
+  Color m_color;
   std::vector<unsigned> m_cell_time;
   std::vector<PuzzleCell::State> m_prev_cell_state;
   unsigned m_cell_size = 32;

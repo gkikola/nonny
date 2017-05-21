@@ -24,6 +24,7 @@
 #include <functional>
 #include <memory>
 #include "ui/image_button.hpp"
+#include "ui/palette_panel.hpp"
 #include "ui/puzzle_preview.hpp"
 #include "ui/ui_panel.hpp"
 
@@ -45,10 +46,14 @@ public:
   void on_zoom_in(Callback fn) { m_zoom_in_button->register_callback(fn); }
   void on_zoom_out(Callback fn) { m_zoom_out_button->register_callback(fn); }
   void on_hint_toggle(Callback fn) { m_hint_button->register_callback(fn); }
+  void on_color_change(Callback fn) { m_color_selector.on_color_change(fn); }
   
   //start/stop sliding animation
   void start_slide() { m_sliding = true; }
   void stop_slide() { m_sliding = false; }
+
+  //get currently selected color
+  Color active_color() const;
 
   //get/set time puzzle has been open
   unsigned time() const { return m_time; }
@@ -79,6 +84,7 @@ private:
   std::string m_puzzle_size;
 
   PuzzlePreview m_preview;
+  PalettePanel m_color_selector;
   std::shared_ptr<ImageButton> m_menu_button;
   std::shared_ptr<ImageButton> m_zoom_in_button;
   std::shared_ptr<ImageButton> m_zoom_out_button;
