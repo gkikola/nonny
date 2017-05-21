@@ -455,7 +455,9 @@ void PuzzlePanel::handle_kb_selection(unsigned ticks, InputHandler& input)
 {
   bool fill_pressed = input.was_key_pressed(Keyboard::Key::space)
     || input.was_key_pressed(Keyboard::Key::enter)
-    || input.was_key_pressed(Keyboard::Key::kp_enter);
+    || input.was_key_pressed(Keyboard::Key::kp_enter)
+    || input.was_key_pressed(Keyboard::Key::ins)
+    || input.was_key_pressed(Keyboard::Key::kp_ins);
   bool cross_pressed = input.was_key_pressed(Keyboard::Key::lctrl)
     || input.was_key_pressed(Keyboard::Key::rctrl)
     || input.was_key_pressed(Keyboard::Key::backspace)
