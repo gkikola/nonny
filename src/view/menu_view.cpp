@@ -146,6 +146,11 @@ void MenuView::main_menu()
   menu->add_control(button);
 
   button = std::make_shared<Button>(*m_control_font, "Create");
+  button->register_callback([this]()
+                            {
+                              m_mgr.schedule_action
+                                (ViewManager::Action::create_puzzle);
+                            });
   button->resize(menu_button_width, button->boundary().height());
   menu->add_control(button);
 

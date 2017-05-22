@@ -48,6 +48,18 @@ constexpr unsigned info_pane_width = 256;
 constexpr unsigned info_pane_slide_speed = 1000;
 const Color info_pane_background_color(123, 175, 212);
 
+PuzzleView::PuzzleView(ViewManager& vm)
+  : View(vm)
+{
+  new_puzzle();
+}
+
+PuzzleView::PuzzleView(ViewManager& vm, unsigned width, unsigned height)
+  : View(vm, width, height)
+{
+  new_puzzle();
+}
+
 PuzzleView::PuzzleView(ViewManager& vm, const std::string& filename)
   : View(vm), m_puzzle_filename(filename)
 {
@@ -62,13 +74,21 @@ PuzzleView::PuzzleView(ViewManager& vm, const std::string& filename,
 }
 
 PuzzleView::PuzzleView(const PuzzleView& pv)
-  : View(pv.m_mgr), m_puzzle(pv.m_puzzle)
+  : View(pv.m_mgr),
+    m_puzzle(pv.m_puzzle),
+    m_puzzle_filename(pv.m_puzzle_filename),
+    m_edit_mode(pv.m_edit_mode),
+    m_best_time(pv.m_best_time)
 {
   setup_panels();
 }
 
 PuzzleView::PuzzleView(PuzzleView&& pv)
-  : View(pv.m_mgr), m_puzzle(std::move(pv.m_puzzle))
+  : View(pv.m_mgr),
+    m_puzzle(std::move(pv.m_puzzle)),
+    m_puzzle_filename(std::move(pv.m_puzzle_filename)),
+    m_edit_mode(pv.m_edit_mode),
+    m_best_time(pv.m_best_time)
 {
   setup_panels();
 }
@@ -82,6 +102,9 @@ PuzzleView& PuzzleView::operator=(const PuzzleView& pv) &
                                "different view manager");
 
     m_puzzle = pv.m_puzzle;
+    m_puzzle_filename = pv.m_puzzle_filename;
+    m_edit_mode = pv.m_edit_mode;
+    m_best_time = pv.m_best_time;
     setup_panels();
   }
   return *this;
@@ -96,6 +119,9 @@ PuzzleView& PuzzleView::operator=(PuzzleView&& pv) &
                                "different view manager");
 
     m_puzzle = std::move(pv.m_puzzle);
+    m_puzzle_filename = std::move(pv.m_puzzle_filename);
+    m_edit_mode = pv.m_edit_mode;
+    m_best_time = pv.m_best_time;
     setup_panels();
   }
   return *this;
@@ -140,6 +166,14 @@ void PuzzleView::load(const std::string& filename)
     = dynamic_cast<PuzzleInfoPanel&>(m_info_pane.main_panel());
   ipanel.time(prog.current_time());
 
+  handle_color_change();
+}
+
+void PuzzleView::new_puzzle()
+{
+  m_puzzle = Puzzle(10, 10);
+  m_edit_mode = true;
+  setup_panels();
   handle_color_change();
 }
 
@@ -263,7 +297,7 @@ void PuzzleView::update(unsigned ticks, InputHandler& input)
     resize(m_width, m_height);
   }
 
-  if (m_puzzle.is_solved()) {
+  if (!m_edit_mode && m_puzzle.is_solved()) {
     save();
     m_mgr.schedule_action(ViewManager::Action::show_victory_screen);
   }

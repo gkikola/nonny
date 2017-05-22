@@ -41,8 +41,8 @@ public:
   ViewManager(VideoSystem& vs, Renderer& renderer, GameSettings& settings,
               unsigned width, unsigned height);
   
-  enum class Action { no_action, quit_game, choose_puzzle, open_menu,
-      close_menu, load_puzzle, quit_puzzle, save_game, restart,
+  enum class Action { no_action, quit_game, choose_puzzle, create_puzzle,
+      open_menu, close_menu, load_puzzle, quit_puzzle, save_game, restart,
       show_victory_screen };
   inline void schedule_action(Action action, std::string argument = "");
 

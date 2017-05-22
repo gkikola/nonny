@@ -30,6 +30,11 @@
 
 class PuzzleView : public View {
 public:
+  // Load a blank puzzle in edit mode
+  PuzzleView(ViewManager& vm);
+  PuzzleView(ViewManager& vm, unsigned width, unsigned height);
+  
+  // Load the designated puzzle file
   PuzzleView(ViewManager& vm, const std::string& filename);
   PuzzleView(ViewManager& vm, const std::string& filename,
              unsigned width, unsigned height);
@@ -54,6 +59,7 @@ public:
   
 private:
   void load(const std::string& filename);
+  void new_puzzle();
   void setup_panels();
   void handle_color_change();
   std::string puzzle_id() const;
@@ -61,10 +67,11 @@ private:
   
   Puzzle m_puzzle;
   std::string m_puzzle_filename;
+  bool m_edit_mode = false;
+  unsigned m_best_time = 0;
+
   ScrollingPanel m_main_panel;
   ScrollingPanel m_info_pane;
-
-  unsigned m_best_time = 0;
 
   std::unique_ptr<Font> m_clue_font;
   std::unique_ptr<Texture> m_cell_texture;

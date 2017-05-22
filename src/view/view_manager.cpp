@@ -72,6 +72,9 @@ void ViewManager::update(unsigned ticks, InputHandler& input)
     case Action::choose_puzzle:
       push(std::make_shared<FileView>(*this, FileView::Mode::open));
       break;
+    case Action::create_puzzle:
+      push(std::make_shared<PuzzleView>(*this));
+      break;
     case Action::open_menu:
       if (m_puzzle_open)
         push(std::make_shared<MenuView>(*this,
