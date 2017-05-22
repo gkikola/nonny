@@ -157,7 +157,15 @@ void PuzzlePanel::draw_clues(Renderer& renderer) const
     x = m_grid_pos.x() + i * (m_cell_size + 1);
     y = m_grid_pos.y() - col_clue_height(i);
     for (auto clue : m_puzzle->col_clues(i)) {
-      renderer.set_draw_color(clue.color);
+      Color color;
+      if (clue.state == PuzzleClue::State::finished) {
+        color = Color(clue.color.red() / 2,
+                      clue.color.green() / 2,
+                      clue.color.blue() / 2);
+      } else {
+        color = clue.color;
+      }
+      renderer.set_draw_color(color);
       std::string value = std::to_string(clue.value);
       unsigned wd, ht;
       m_clue_font.text_size(value, &wd, &ht);
@@ -171,7 +179,15 @@ void PuzzlePanel::draw_clues(Renderer& renderer) const
     x = m_grid_pos.x() - row_clue_width(j);
     y = m_grid_pos.y() + j * (m_cell_size + 1);
     for (auto clue : m_puzzle->row_clues(j)) {
-      renderer.set_draw_color(clue.color);
+      Color color;
+      if (clue.state == PuzzleClue::State::finished) {
+        color = Color(clue.color.red() / 2,
+                      clue.color.green() / 2,
+                      clue.color.blue() / 2);
+      } else {
+        color = clue.color;
+      }
+      renderer.set_draw_color(color);
       std::string value = std::to_string(clue.value);
       unsigned wd, ht;
       m_clue_font.text_size(value, &wd, &ht);
