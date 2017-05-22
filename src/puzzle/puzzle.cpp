@@ -39,11 +39,35 @@ void Puzzle::mark_cell(unsigned col, unsigned row, const Color& color)
   auto& cell = m_grid.at(col, row);
   cell.state = PuzzleCell::State::filled;
   cell.color = color;
+
+  m_rows_changed.insert(row);
+  m_cols_changed.insert(col);
+}
+
+void Puzzle::clear_cell(unsigned col, unsigned row)
+{
+  m_grid.at(col, row).state = PuzzleCell::State::blank;
+
+  m_rows_changed.insert(row);
+  m_cols_changed.insert(col);
+}
+
+void Puzzle::cross_out_cell(unsigned col, unsigned row)
+{
+  m_grid.at(col, row).state = PuzzleCell::State::crossed_out;
+
+  m_rows_changed.insert(row);
+  m_cols_changed.insert(col);
 }
 
 void Puzzle::clear_all_cells()
 {
   m_grid = PuzzleGrid(width(), height());
+
+  for (unsigned i = 0; i < m_grid.width(); ++i)
+    m_cols_changed.insert(i);
+  for (unsigned j = 0; j < m_grid.height(); ++j)
+    m_rows_changed.insert(j);
 }
 
 bool Puzzle::is_solved() const
@@ -126,12 +150,11 @@ bool Puzzle::is_col_solved(unsigned col) const
   return true;
 }
 
-Puzzle::PuzzleCol Puzzle::operator[](unsigned col) const
+void Puzzle::update_clues(bool edit_mode)
 {
-  return PuzzleCol(*this, col);
 }
 
-const PuzzleCell& Puzzle::PuzzleCol::operator[](unsigned row) const
+ConstPuzzleLine Puzzle::operator[](unsigned col) const
 {
-  return m_parent.m_grid.at(m_col, row);
+  return ConstPuzzleLine(*this, col, LineType::column);
 }

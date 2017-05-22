@@ -23,6 +23,7 @@
 
 #include <iosfwd>
 #include <map>
+#include <set>
 #include <string>
 #include <vector>
 #include "color/color.hpp"
@@ -30,6 +31,7 @@
 #include "puzzle/puzzle_clue.hpp"
 #include "puzzle/puzzle_grid.hpp"
 #include "puzzle/puzzle_io.hpp"
+#include "puzzle/puzzle_line.hpp"
 
 /*
  * Class that represents a nonogram puzzle.
@@ -55,12 +57,12 @@ public:
   unsigned width() const { return m_grid.width(); }
   unsigned height() const { return m_grid.height(); }
 
-  class PuzzleCol;
-  PuzzleCol operator[](unsigned col) const;
-
+  ConstPuzzleLine operator[](unsigned col) const;
+  inline const PuzzleCell& at(unsigned col, unsigned row) const;
+  
   void mark_cell(unsigned col, unsigned row, const Color& color = Color());
-  inline void clear_cell(unsigned col, unsigned row);
-  inline void cross_out_cell(unsigned col, unsigned row);
+  void clear_cell(unsigned col, unsigned row);
+  void cross_out_cell(unsigned col, unsigned row);
 
   void clear_all_cells();
 
@@ -70,6 +72,9 @@ public:
 
   // Determines whether the puzzle has multiple foreground colors
   bool is_multicolor() const { return m_palette.size() > 2; }
+
+  // Update clue numbers based on changes made to puzzle grid
+  void update_clues(bool edit_mode = false);
   
   // Get color palette associated with this puzzle
   const ColorPalette& palette() const { return m_palette; }
@@ -89,41 +94,26 @@ public:
   Puzzle& operator=(const Puzzle&) & = default;
   Puzzle& operator=(Puzzle&&) & = default;
 
-private:
+private:  
   PuzzleGrid m_grid;
   ClueContainer m_row_clues;
   ClueContainer m_col_clues;
   ColorPalette m_palette;
   Properties m_properties;
+  std::set<unsigned> m_rows_changed;
+  std::set<unsigned> m_cols_changed;
 };
 
 // Reads and writes puzzles in the .non format
 inline std::ostream& operator<<(std::ostream& os, const Puzzle& puzzle);
 inline std::istream& operator>>(std::istream& is, Puzzle& puzzle);
 
-// Represents a puzzle row, used to allow two-dimensional subscripting
-class Puzzle::PuzzleCol {
-public:
-  PuzzleCol(const Puzzle& parent, unsigned col)
-    : m_parent(parent), m_col(col) { }
-
-  const PuzzleCell& operator[](unsigned row) const;
-private:
-  const Puzzle& m_parent;
-  unsigned m_col;
-};
-
 
 /* implementation */
 
-inline void Puzzle::clear_cell(unsigned col, unsigned row)
+inline const PuzzleCell& Puzzle::at(unsigned col, unsigned row) const
 {
-  m_grid.at(col, row).state = PuzzleCell::State::blank;
-}
-
-inline void Puzzle::cross_out_cell(unsigned col, unsigned row)
-{
-  m_grid.at(col, row).state = PuzzleCell::State::crossed_out;
+  return m_grid.at(col, row);
 }
 
 inline const std::string* Puzzle::find_property(const std::string& p) const

@@ -52,6 +52,7 @@ add_executable (
   src/puzzle/puzzle_clue.cpp
   src/puzzle/puzzle_grid.cpp
   src/puzzle/puzzle_io.cpp
+  src/puzzle/puzzle_line.cpp
   src/puzzle/puzzle_progress.cpp
   src/puzzle/puzzle_summary.cpp
   src/save/save_manager.cpp
