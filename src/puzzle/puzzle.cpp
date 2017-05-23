@@ -90,6 +90,11 @@ void Puzzle::clear_all_cells()
     m_rows_changed.insert(j);
 }
 
+ConstPuzzleLine Puzzle::operator[](unsigned col) const
+{
+  return ConstPuzzleLine(*this, col, LineType::column);
+}
+
 bool Puzzle::is_solved() const
 {
   for (unsigned i = 0; i < m_grid.width(); ++i) {
@@ -115,9 +120,66 @@ bool Puzzle::is_col_solved(unsigned col) const
 
 void Puzzle::update_clues(bool edit_mode)
 {
+  while (!m_rows_changed.empty()) {
+    auto it = m_rows_changed.begin();
+    update_line(*it, LineType::row, edit_mode);
+    m_rows_changed.erase(it);
+  }
+
+  while (!m_cols_changed.empty()) {
+    auto it = m_cols_changed.begin();
+    update_line(*it, LineType::column, edit_mode);
+    m_cols_changed.erase(it);
+  }
 }
 
-ConstPuzzleLine Puzzle::operator[](unsigned col) const
+Puzzle::ClueSequence& Puzzle::line_clues(unsigned index, LineType type)
 {
-  return ConstPuzzleLine(*this, col, LineType::column);
+  if (type == LineType::row)
+    return m_row_clues[index];
+  else
+    return m_col_clues[index];
+}
+
+void Puzzle::update_line(unsigned index, LineType type, bool edit_mode)
+{
+  PuzzleLine line(*this, index, type);
+  ClueSequence& clues = line_clues(index, type);
+
+  if (edit_mode) {
+    clues.clear();
+    
+    unsigned cell_pos = 0;
+    while (cell_pos < line.size()) {
+      while (cell_pos < line.size()
+             && line[cell_pos].state != PuzzleCell::State::filled)
+        ++cell_pos;
+
+      unsigned count = 0;
+      Color color;
+      if (cell_pos < line.size())
+        color = line[cell_pos].color;
+      while (cell_pos < line.size()
+             && line[cell_pos].state == PuzzleCell::State::filled
+             && line[cell_pos].color == color) {
+        ++count;
+        ++cell_pos;
+      }
+
+      if (count > 0) {
+        PuzzleClue clue;
+        clue.value = count;
+        clue.color = color;
+        clue.state = PuzzleClue::State::normal;
+        clues.push_back(clue);
+      }
+    }
+
+    if (clues.empty()) {
+      PuzzleClue zero;
+      clues.push_back(zero);
+    }
+  } else {
+    
+  }
 }

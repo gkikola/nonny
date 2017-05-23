@@ -59,6 +59,9 @@ void PuzzlePanel::update(unsigned ticks, InputHandler& input,
   if (m_puzzle) {
     update_cells(ticks);
 
+    if (!m_mouse_dragging && !m_kb_dragging)
+      m_puzzle->update_clues(false);
+
     handle_mouse_selection(ticks, input, active_region);
     handle_kb_selection(ticks, input);
   }

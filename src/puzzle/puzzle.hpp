@@ -100,6 +100,9 @@ public:
   Puzzle& operator=(Puzzle&&) & = default;
 
 private:  
+  ClueSequence& line_clues(unsigned index, LineType type);
+  void update_line(unsigned index, LineType type, bool edit_mode);
+
   PuzzleGrid m_grid;
   ClueContainer m_row_clues;
   ClueContainer m_col_clues;
