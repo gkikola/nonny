@@ -34,6 +34,26 @@ Puzzle::Puzzle(unsigned width, unsigned height)
   }
 }
 
+PuzzleLine Puzzle::get_row(unsigned index)
+{
+  return PuzzleLine(*this, index, LineType::row);
+}
+
+ConstPuzzleLine Puzzle::get_row(unsigned index) const
+{
+  return ConstPuzzleLine(*this, index, LineType::row);
+}
+
+PuzzleLine Puzzle::get_col(unsigned index)
+{
+  return PuzzleLine(*this, index, LineType::column);
+}
+
+ConstPuzzleLine Puzzle::get_col(unsigned index) const
+{
+  return ConstPuzzleLine(*this, index, LineType::column);
+}
+
 void Puzzle::mark_cell(unsigned col, unsigned row, const Color& color)
 {
   auto& cell = m_grid.at(col, row);
@@ -85,69 +105,12 @@ bool Puzzle::is_solved() const
 
 bool Puzzle::is_row_solved(unsigned row) const
 {
-  //if only clue is 0, make sure row is empty
-  if (row_clues(row).size() == 1 && row_clues(row)[0].value == 0) {
-    for (unsigned i = 0; i < m_grid.width(); ++i) {
-      if (m_grid.at(i, row).state == PuzzleCell::State::filled)
-        return false;
-    }
-    return true;
-  }
-
-  unsigned pos = 0;
-  for (auto clue : row_clues(row)) {
-    while (pos < m_grid.width()
-           && m_grid.at(pos, row).state != PuzzleCell::State::filled)
-      ++pos;
-    if (pos >= m_grid.width())
-      return false;
-
-    unsigned count = 0;
-    while (pos < m_grid.width()
-           && m_grid.at(pos, row).state == PuzzleCell::State::filled
-           && m_grid.at(pos, row).color == clue.color) {
-      ++count;
-      ++pos;
-    }
-    if (count != clue.value)
-      return false;
-  }
-
-  return true;
+  return get_row(row).is_solved();
 }
 
 bool Puzzle::is_col_solved(unsigned col) const
 {
-  
-  //if only clue is 0, make sure col is empty
-  if (col_clues(col).size() == 1 && col_clues(col)[0].value == 0) {
-    for (unsigned j = 0; j < m_grid.height(); ++j) {
-      if (m_grid.at(col, j).state == PuzzleCell::State::filled)
-        return false;
-    }
-    return true;
-  }
-
-  unsigned pos = 0;
-  for (auto clue : col_clues(col)) {
-    while (pos < m_grid.height()
-           && m_grid.at(col, pos).state != PuzzleCell::State::filled)
-      ++pos;
-    if (pos >= m_grid.height())
-      return false;
-
-    unsigned count = 0;
-    while (pos < m_grid.height()
-           && m_grid.at(col, pos).state == PuzzleCell::State::filled
-           && m_grid.at(col, pos).color == clue.color) {
-      ++count;
-      ++pos;
-    }
-    if (count != clue.value)
-      return false;
-  }
-
-  return true;
+  return get_col(col).is_solved();
 }
 
 void Puzzle::update_clues(bool edit_mode)

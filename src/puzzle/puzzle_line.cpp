@@ -22,7 +22,61 @@
 
 #include "puzzle/puzzle.hpp"
 
+unsigned PuzzleLine::size() const
+{
+  if (m_type == LineType::row)
+    return m_puzzle.width();
+  else
+    return m_puzzle.height();
+}
+
 const PuzzleCell& PuzzleLine::operator[](unsigned index) const
+{
+  return m_puzzle.at(col(index), row(index));
+}
+
+const PuzzleCell& PuzzleLine::at(unsigned index) const
+{
+  return m_puzzle.at(col(index), row(index));
+}
+
+void PuzzleLine::mark_cell(unsigned index, const Color& color)
+{
+  m_puzzle.mark_cell(col(index), row(index), color);
+}
+
+void PuzzleLine::clear_cell(unsigned index)
+{
+  m_puzzle.clear_cell(col(index), row(index));
+}
+
+void PuzzleLine::cross_out_cell(unsigned index)
+{
+  m_puzzle.cross_out_cell(col(index), row(index));
+}
+
+const PuzzleLine::ClueSequence& PuzzleLine::clues() const
+{
+  if (m_type == LineType::row)
+    return m_puzzle.row_clues(m_line);
+  else
+    return m_puzzle.col_clues(m_line);
+}
+
+bool PuzzleLine::is_solved() const
+{
+  return ConstPuzzleLine(m_puzzle, m_line, m_type).is_solved();
+}
+
+unsigned ConstPuzzleLine::size() const
+{
+  if (m_type == LineType::row)
+    return m_puzzle.width();
+  else
+    return m_puzzle.height();
+}
+
+const PuzzleCell& ConstPuzzleLine::at(unsigned index) const
 {
   if (m_type == LineType::row)
     return m_puzzle.at(index, m_line);
@@ -30,10 +84,43 @@ const PuzzleCell& PuzzleLine::operator[](unsigned index) const
     return m_puzzle.at(m_line, index);
 }
 
-const PuzzleCell& ConstPuzzleLine::operator[](unsigned index) const
+const ConstPuzzleLine::ClueSequence& ConstPuzzleLine::clues() const
 {
   if (m_type == LineType::row)
-    return m_puzzle.at(index, m_line);
+    return m_puzzle.row_clues(m_line);
   else
-    return m_puzzle.at(m_line, index);
+    return m_puzzle.col_clues(m_line);
+}
+
+bool ConstPuzzleLine::is_solved() const
+{
+  //if only clue is 0, make sure line is empty
+  if (clues().size() == 1 && clues()[0].value == 0) {
+    for (unsigned i = 0; i < size(); ++i) {
+      if (at(i).state == PuzzleCell::State::filled)
+        return false;
+    }
+    return true;
+  }
+
+  unsigned pos = 0;
+  for (auto clue : clues()) {
+    while (pos < size()
+           && at(pos).state != PuzzleCell::State::filled)
+      ++pos;
+    if (pos >= size())
+      return false;
+
+    unsigned count = 0;
+    while (pos < size()
+           && at(pos).state == PuzzleCell::State::filled
+           && at(pos).color == clue.color) {
+      ++count;
+      ++pos;
+    }
+    if (count != clue.value)
+      return false;
+  }
+
+  return true;
 }

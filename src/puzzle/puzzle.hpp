@@ -57,6 +57,11 @@ public:
   unsigned width() const { return m_grid.width(); }
   unsigned height() const { return m_grid.height(); }
 
+  PuzzleLine get_row(unsigned index);
+  ConstPuzzleLine get_row(unsigned index) const;
+  PuzzleLine get_col(unsigned index);
+  ConstPuzzleLine get_col(unsigned index) const;
+
   ConstPuzzleLine operator[](unsigned col) const;
   inline const PuzzleCell& at(unsigned col, unsigned row) const;
   

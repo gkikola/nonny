@@ -21,6 +21,9 @@
 #ifndef NONNY_PUZZLE_LINE_HPP
 #define NONNY_PUZZLE_LINE_HPP
 
+#include <vector>
+#include "puzzle/puzzle_clue.hpp"
+
 enum class LineType { row, column };
 
 class Puzzle;
@@ -28,11 +31,29 @@ class PuzzleCell;
 
 class PuzzleLine {
 public:
+  typedef std::vector<PuzzleClue> ClueSequence;
+  
   PuzzleLine(Puzzle& puzzle, unsigned line, LineType type)
     : m_puzzle(puzzle), m_line(line), m_type(type) { }
 
+  unsigned index() const { return m_line; }
+  LineType type() const { return m_type; }
+  unsigned size() const;
+  
   const PuzzleCell& operator[](unsigned index) const;
+  const PuzzleCell& at(unsigned index) const;
+
+  void mark_cell(unsigned index, const Color& color = Color());
+  void clear_cell(unsigned index);
+  void cross_out_cell(unsigned index);
+
+  const ClueSequence& clues() const;
+
+  bool is_solved() const;
 private:
+  inline unsigned row(unsigned index) const;
+  inline unsigned col(unsigned index) const;
+  
   Puzzle& m_puzzle;
   unsigned m_line;
   LineType m_type;
@@ -40,14 +61,39 @@ private:
 
 class ConstPuzzleLine {
 public:
+  typedef std::vector<PuzzleClue> ClueSequence;
+
   ConstPuzzleLine(const Puzzle& puzzle, unsigned line, LineType type)
     : m_puzzle(puzzle), m_line(line), m_type(type) { }
 
-  const PuzzleCell& operator[](unsigned index) const;
+  unsigned index() const { return m_line; }
+  LineType type() const { return m_type; }
+  unsigned size() const;
+
+  const PuzzleCell& operator[](unsigned index) const { return at(index); }
+  const PuzzleCell& at(unsigned index) const;
+
+  const ClueSequence& clues() const;
+
+  bool is_solved() const;
+  
 private:
   const Puzzle& m_puzzle;
   unsigned m_line;
   LineType m_type;
 };
+
+
+/* implementation */
+
+inline unsigned PuzzleLine::row(unsigned index) const
+{
+  return m_type == LineType::row ? m_line : index;
+}
+
+inline unsigned PuzzleLine::col(unsigned index) const
+{
+  return m_type == LineType::column ? m_line : index;
+}
 
 #endif
