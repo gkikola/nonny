@@ -57,6 +57,9 @@ add_executable (
   src/puzzle/puzzle_summary.cpp
   src/save/save_manager.cpp
   src/settings/game_settings.cpp
+  src/solver/block_sequence.cpp
+  src/solver/line_solver.cpp
+  src/solver/solver.cpp
   src/ui/button.cpp
   src/ui/control.cpp
   src/ui/dialog.cpp
