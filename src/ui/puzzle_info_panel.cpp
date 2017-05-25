@@ -202,6 +202,8 @@ void PuzzleInfoPanel::calculate_bounds()
     unsigned preview_pos = m_boundary.y() + height;
     unsigned preview_height = preview_width
       * m_puzzle->height() / m_puzzle->width();
+    if (preview_height > preview_width)
+      preview_height = preview_width;
     width = std::max(width, preview_width + 2 * spacing);
     height += preview_height + spacing;
 
