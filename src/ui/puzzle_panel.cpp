@@ -155,6 +155,8 @@ void PuzzlePanel::draw_grid_lines(Renderer& renderer) const
 
 void PuzzlePanel::draw_clues(Renderer& renderer) const
 {
+  constexpr double finished_fade = 0.33;
+  
   int x, y;
   for (unsigned i = 0; i < m_puzzle->width(); ++i) {
     x = m_grid_pos.x() + i * (m_cell_size + 1);
@@ -162,9 +164,7 @@ void PuzzlePanel::draw_clues(Renderer& renderer) const
     for (auto clue : m_puzzle->col_clues(i)) {
       Color color;
       if (clue.state == PuzzleClue::State::finished) {
-        color = Color(clue.color.red() / 2,
-                      clue.color.green() / 2,
-                      clue.color.blue() / 2);
+        color = clue.color.fade(finished_fade);
       } else {
         color = clue.color;
       }
@@ -184,9 +184,7 @@ void PuzzlePanel::draw_clues(Renderer& renderer) const
     for (auto clue : m_puzzle->row_clues(j)) {
       Color color;
       if (clue.state == PuzzleClue::State::finished) {
-        color = Color(clue.color.red() / 2,
-                      clue.color.green() / 2,
-                      clue.color.blue() / 2);
+        color = clue.color.fade(finished_fade);
       } else {
         color = clue.color;
       }

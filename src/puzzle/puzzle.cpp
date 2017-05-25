@@ -20,6 +20,8 @@
 
 #include "puzzle/puzzle.hpp"
 
+#include "solver/line_solver.hpp"
+
 Puzzle::Puzzle(unsigned width, unsigned height)
   : m_grid(width, height)
 {
@@ -180,6 +182,7 @@ void Puzzle::update_line(unsigned index, LineType type, bool edit_mode)
       clues.push_back(zero);
     }
   } else {
-    
+    LineSolver solver(line);
+    solver.update_clues(clues);
   }
 }
