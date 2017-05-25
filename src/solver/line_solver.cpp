@@ -138,6 +138,26 @@ void LineSolver::intersect_blocks(std::vector<PuzzleCell>& result,
 
 void LineSolver::update_clues(std::vector<PuzzleClue>& clues)
 {
+  //if 0 is the only clue,
+  //line is finished only when fully crossed out
+  if (clues.size() == 1 && clues[0].value == 0) {
+    clues[0].state = PuzzleClue::State::finished;
+
+    for (unsigned pos = 0; pos < m_line.size(); ++pos) {
+      if (m_line[pos].state != PuzzleCell::State::crossed_out)
+        clues[0].state = PuzzleClue::State::normal;
+    }
+    return;
+  }
+  
+  //see if line is already solved
+  if (m_line.is_solved()) {
+    for (auto& clue : clues)
+      clue.state = PuzzleClue::State::finished;
+    return;
+  }
+
+  //find leftmost and rightmost solutions that work
   std::vector<BlockSequence> list;
   list.emplace_back(m_line.size(), clues, BlockSequence::Init::left);
   list.emplace_back(m_line.size(), clues, BlockSequence::Init::right);
@@ -155,10 +175,10 @@ void LineSolver::update_clues(std::vector<PuzzleClue>& clues)
       contradiction = true;
   }
 
-  if (contradiction) {
+  if (contradiction) { //line contains a contradiction
     for (auto& clue : clues)
       clue.state = PuzzleClue::State::error;
-  } else {
+  } else { //no contradictions
     //iterate over blocks
     for (unsigned i = 0; i < left.size(); ++i) {
       clues[i].state = PuzzleClue::State::normal;
