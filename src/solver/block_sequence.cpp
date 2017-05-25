@@ -78,6 +78,34 @@ void BlockSequence::flush_right()
   }
 }
 
+bool BlockSequence::slide_left()
+{
+  if (empty())
+    return false;
+
+  unsigned pos = 0;
+  unsigned boundary = 0;
+  while (pos < size()) {
+    if (m_blocks[pos].pos > boundary) {
+      --m_blocks[pos].pos;
+      for (unsigned index = pos; index > 0; --index) {
+        unsigned i = index - 1;
+        m_blocks[i].pos = m_blocks[i + 1].pos - m_blocks[i].length;
+        if (m_blocks[i].color == m_blocks[i + 1].color)
+          --m_blocks[i].pos;
+      }
+      return true;
+    } else {
+      boundary += m_blocks[pos].length;
+      if (pos + 1 < size() && m_blocks[pos + 1].color == m_blocks[pos].color)
+        ++boundary;
+      ++pos;
+    }
+  }
+
+  return false;
+}
+
 bool BlockSequence::slide_right()
 {
   if (empty())

@@ -38,6 +38,7 @@ public:
                 const std::vector<PuzzleClue>& line_clues,
                 Init init_type = Init::left);
 
+  bool slide_left();
   bool slide_right();
   
   std::size_t size() const { return m_blocks.size(); }

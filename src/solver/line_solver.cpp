@@ -40,6 +40,12 @@ void LineSolver::operator()()
   }
 }
 
+void LineSolver::solve_fast(std::vector<PuzzleCell>& result)
+{
+  //TODO: write fast solver
+  solve_complete(result);
+}
+
 void LineSolver::solve_complete(std::vector<PuzzleCell>& result)
 {
   BlockSequence blocks(m_line.size(), m_line.clues());
@@ -127,5 +133,53 @@ void LineSolver::intersect_blocks(std::vector<PuzzleCell>& result,
   while (pos < result.size()) {
     result[pos].state = PuzzleCell::State::crossed_out;
     ++pos;
+  }
+}
+
+void LineSolver::update_clues(std::vector<PuzzleClue>& clues)
+{
+  std::vector<BlockSequence> list;
+  list.emplace_back(m_line.size(), clues, BlockSequence::Init::left);
+  list.emplace_back(m_line.size(), clues, BlockSequence::Init::right);
+  BlockSequence& left = list[0];
+  BlockSequence& right = list[1];
+
+  bool contradiction = false;
+  while (!contradiction && !is_seq_valid(left)) {
+    if (!left.slide_right())
+      contradiction = true;
+  }
+
+  while (!contradiction && !is_seq_valid(right)) {
+    if (!right.slide_left())
+      contradiction = true;
+  }
+
+  if (contradiction) {
+    for (auto& clue : clues)
+      clue.state = PuzzleClue::State::error;
+  } else {
+    //iterate over blocks
+    for (unsigned i = 0; i < left.size(); ++i) {
+      clues[i].state = PuzzleClue::State::normal;
+      
+      //if left and right blocks cover the same area,
+      //check to make sure that area is filled with the correct color
+      if (left[i].pos == right[i].pos) {
+        bool finished = true;
+        for (unsigned pos = left[i].pos;
+             pos < left[i].pos + left[i].length;
+             ++pos) {
+          if (m_line[pos].state != PuzzleCell::State::filled
+              || m_line[pos].color != clues[i].color) {
+            finished = false;
+            break;
+          }
+        }
+
+        if (finished)
+          clues[i].state = PuzzleClue::State::finished;
+      }
+    }
   }
 }

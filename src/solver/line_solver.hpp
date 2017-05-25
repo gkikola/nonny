@@ -25,6 +25,7 @@
 
 class BlockSequence;
 class PuzzleCell;
+class PuzzleClue;
 class PuzzleLine;
 
 class LineSolver {
@@ -33,7 +34,10 @@ public:
 
   void operator()();
 
+  void solve_fast(std::vector<PuzzleCell>& result);
   void solve_complete(std::vector<PuzzleCell>& result);
+
+  void update_clues(std::vector<PuzzleClue>& clues);
 
 private:
   bool is_seq_valid(const BlockSequence& blocks);
