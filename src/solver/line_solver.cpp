@@ -187,13 +187,29 @@ void LineSolver::update_clues(std::vector<PuzzleClue>& clues)
       //check to make sure that area is filled with the correct color
       if (left[i].pos == right[i].pos) {
         bool finished = true;
-        for (unsigned pos = left[i].pos;
-             pos < left[i].pos + left[i].length;
-             ++pos) {
-          if (m_line[pos].state != PuzzleCell::State::filled
-              || m_line[pos].color != clues[i].color) {
-            finished = false;
-            break;
+
+        //make sure left is crossed out (unless multicolor)
+        if (left[i].pos > 0
+            && m_line[left[i].pos - 1].state
+            != PuzzleCell::State::crossed_out
+            && (i == 0 || left[i - 1].color == left[i].color))
+          finished = false;
+        //make sure right is crossed out (unless multicolor)
+        else if (left[i].pos + left[i].length < m_line.size()
+                 && m_line[left[i].pos + left[i].length].state
+                 != PuzzleCell::State::crossed_out
+                 && (i == left.size() - 1
+                     || left[i + 1].color == left[i].color))
+          finished = false;
+        else { //make sure block is completely filled in
+          for (unsigned pos = left[i].pos;
+               pos < left[i].pos + left[i].length;
+               ++pos) {
+            if (m_line[pos].state != PuzzleCell::State::filled
+                || m_line[pos].color != clues[i].color) {
+              finished = false;
+              break;
+            }
           }
         }
 
