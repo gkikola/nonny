@@ -37,13 +37,14 @@ public:
   Color(unsigned red, unsigned green, unsigned blue)
     : m_r(red), m_g(green), m_b(blue) { validate(); }
 
-  // Gets color components
+  // Get color components
   unsigned red() const { return m_r; }
   unsigned green() const { return m_g; }
   unsigned blue() const { return m_b; }
 
+  // Return a new color based on the current one
   inline Color inverse() const;
-  inline Color fade(double opacity = 0.5) const;
+  Color fade(double opacity = 0.5) const;
 
   inline double luminance () const;
 
@@ -95,23 +96,6 @@ inline Color Color::inverse() const
 {
   const unsigned max = 256;
   return Color(max - m_r, max - m_g, max - m_b);
-}
-
-inline Color Color::fade(double opacity) const
-{
-  const unsigned max = 256;
-  unsigned red = (1 - opacity) * max + opacity * m_r;
-  unsigned green = (1 - opacity) * max + opacity * m_g;
-  unsigned blue = (1 - opacity) * max + opacity * m_b;
-
-  if (red > max)
-    red = max;
-  if (green > max)
-    green = max;
-  if (blue > max)
-    blue = max;
-
-  return Color(red, green, blue);
 }
 
 inline double Color::luminance() const

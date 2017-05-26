@@ -35,6 +35,23 @@ namespace default_colors {
   extern const Color dark_green(1, 50, 32);
 }
 
+Color Color::fade(double opacity) const
+{
+  const unsigned max = 256;
+  unsigned red = (1 - opacity) * max + opacity * m_r;
+  unsigned green = (1 - opacity) * max + opacity * m_g;
+  unsigned blue = (1 - opacity) * max + opacity * m_b;
+
+  if (red > max)
+    red = max;
+  if (green > max)
+    green = max;
+  if (blue > max)
+    blue = max;
+
+  return Color(red, green, blue);
+}
+
 std::ostream& operator<<(std::ostream& os, const Color& color)
 {
   os << std::hex << std::uppercase
