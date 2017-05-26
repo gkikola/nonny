@@ -27,6 +27,9 @@
 #include "video/texture.hpp"
 #include "view/view.hpp"
 
+/* 
+ * Menu screen. Presents a menu with options that the user may select.
+ */
 class MenuView : public View {
 public:
   enum class MenuType { main_menu, in_game_menu, about_menu };

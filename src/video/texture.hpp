@@ -21,6 +21,9 @@
 #ifndef NONNY_TEXTURE_HPP
 #define NONNY_TEXTURE_HPP
 
+/*
+ * Holds a texture resource.
+ */
 class Texture {
 public:
   Texture() { }

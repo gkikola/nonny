@@ -35,6 +35,11 @@
 #include "video/texture.hpp"
 #include "view/view.hpp"
 
+/*
+ * File selection screen. In this View, the user can select files or
+ * directories on their storage device. The user can then open or save
+ * a puzzle in a particular location.
+ */
 class FileView : public View {
 public:
   enum class Mode { open, save };
@@ -53,7 +58,7 @@ public:
 
 private:
   void load_resources();
-  
+
   void open_path(const std::experimental::filesystem::path& p);
   void back();
   void forward();

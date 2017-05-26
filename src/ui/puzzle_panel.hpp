@@ -33,6 +33,9 @@ class InputHandler;
 class Renderer;
 class Texture;
 
+/*
+ * Represents the user interface for solving (or editing) a puzzle.
+ */
 class PuzzlePanel : public UIPanel {
 public:
   PuzzlePanel(Font& clue_font, const Texture& cell_texture)

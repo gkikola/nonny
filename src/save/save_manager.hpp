@@ -27,6 +27,11 @@
 class GameSettings;
 class PuzzleProgress;
 
+/*
+ * Handles saving and loading of puzzle progress. Progress is saved
+ * and loaded from a file whose filename and directory is based on the
+ * name of the puzzle and the collection it belongs to, if any.
+ */
 class SaveManager {
 public:
   explicit SaveManager(GameSettings& settings);

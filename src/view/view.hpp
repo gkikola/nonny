@@ -25,6 +25,11 @@ class InputHandler;
 class Renderer;
 class ViewManager;
 
+/*
+ * Base class representing a game screen. Each View corresponds to a
+ * different game state. A View manages all the interface elements
+ * that make up a particular game screen.
+ */
 class View {
 public:
   explicit View(ViewManager& vm) : m_mgr(vm) { }

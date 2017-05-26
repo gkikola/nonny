@@ -26,6 +26,10 @@
 
 class Font;
 
+/*
+ * Represents a dialog box with some control buttons that displays a
+ * message.
+ */
 class MessageBox : public Dialog {
 public:
   MessageBox() = default;

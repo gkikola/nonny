@@ -25,6 +25,9 @@
 
 class Texture;
 
+/*
+ * A Button that uses an image instead of text as a label.
+ */
 class ImageButton : public Button {
 public:
   ImageButton() = default;

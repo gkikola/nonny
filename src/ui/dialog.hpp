@@ -25,6 +25,10 @@
 #include "ui/control.hpp"
 #include "ui/ui_panel.hpp"
 
+/*
+ * Dialog base class. A Dialog is a collection of controls presented
+ * to the user as a menu or message box.
+ */
 class Dialog : public UIPanel {
 public:
   Dialog() : m_focused(m_controls.end()) { }

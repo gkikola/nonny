@@ -32,6 +32,10 @@ class Puzzle;
 class Renderer;
 class ViewManager;
 
+/*
+ * Victory screen displayed when the user completes a puzzle. Shows a
+ * picture of the puzzle and completion times.
+ */
 class VictoryView : public View {
 public:
   VictoryView(ViewManager& vm, Puzzle& puzzle,

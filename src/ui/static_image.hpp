@@ -25,6 +25,10 @@
 
 class Texture;
 
+/*
+ * A control that displays an image but which cannot be interacted
+ * with.
+ */
 class StaticImage : public Control {
 public:
   StaticImage() = default;

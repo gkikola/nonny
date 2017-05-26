@@ -27,6 +27,9 @@
 class InputHandler;
 class ViewManager;
 
+/*
+ * Processes window events and passes input to input handler
+ */
 class EventHandler {
 public:
   EventHandler() { }
@@ -34,7 +37,9 @@ public:
 
   static std::unique_ptr<EventHandler> create();
 
+  //get time in milliseconds since program started
   virtual std::size_t get_ticks() const = 0;
+
   virtual void process(InputHandler&, ViewManager&) = 0;
 };
 

@@ -28,6 +28,9 @@
 #include "video/window.hpp"
 #include "view/view_manager.hpp"
 
+/*
+ * Manages game resources at a high level
+ */
 class Game {
 public:
   Game(int argc, char* argv[]);

@@ -28,6 +28,12 @@
 class InputHandler;
 class Renderer;
 
+/*
+ * UIPanel base class. A panel is an interface element that the user
+ * can interact with. Panels can be repositioned and resized. Each
+ * panel has an update function and a draw function that gets called
+ * once per frame.
+ */
 class UIPanel {
 public:
   UIPanel() { }
@@ -40,10 +46,13 @@ public:
   UIPanel& operator=(const UIPanel&) & = default;
   UIPanel& operator=(UIPanel&&) & = default;
 
+  // Update the panel's state based on user input
   virtual void update(unsigned ticks, InputHandler& input) {
     update(ticks, input, m_boundary); }
   virtual void update(unsigned ticks, InputHandler& input,
                       const Rect& active_region) = 0;
+
+  // Draw the panel
   virtual void draw(Renderer& renderer) const { draw(renderer, m_boundary); }
   virtual void draw(Renderer& renderer, const Rect& region) const = 0;
   

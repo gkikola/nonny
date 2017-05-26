@@ -33,10 +33,13 @@ class Font;
 class SaveManager;
 class Texture;
 
+/*
+ * A file viewer/selector that shows information about puzzle files
+ * and other files on the user's storage device. The user can select a
+ * file or open a directory with the mouse or keyboard.
+ */
 class FileSelectionPanel : public UIPanel {
 public:
-  typedef std::function<void(const std::string&)> Callback;
-  
   FileSelectionPanel(SaveManager& save_mgr,
                      Font& filename_font, Font& info_font,
                      Texture& icons, const std::string& path = "");
@@ -47,6 +50,12 @@ public:
   std::string path() const { return m_path; }
   void open_selection();
 
+  /*
+   * Register callback functions. A callback function receives a
+   * string with the name of the file or directory that was selected
+   * or opened.
+   */
+  typedef std::function<void(const std::string&)> Callback;
   void on_file_select(Callback fn);
   void on_file_open(Callback fn);
   void on_dir_change(Callback fn);

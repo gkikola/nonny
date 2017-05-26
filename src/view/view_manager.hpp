@@ -35,6 +35,11 @@ class InputHandler;
 class Renderer;
 class SaveManager;
 
+/*
+ * Manages the different Views that make up the game. Responsible for
+ * updating and drawing the current View and for handling changes to
+ * the game state.
+ */
 class ViewManager {
 public:
   ViewManager(VideoSystem& vs, Renderer& renderer, GameSettings& settings);

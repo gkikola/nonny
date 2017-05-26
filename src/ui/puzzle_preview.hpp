@@ -25,6 +25,9 @@
 
 class Puzzle;
 
+/*
+ * Displays an overview of a puzzle in progress.
+ */
 class PuzzlePreview : public UIPanel {
 public:
   PuzzlePreview() { }

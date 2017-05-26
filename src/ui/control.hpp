@@ -23,6 +23,10 @@
 
 #include "ui/ui_panel.hpp"
 
+/*
+ * Control base class. A Control is an interface element, like a
+ * button or a text box, that the user can interact with.
+ */
 class Control : public UIPanel {
 public:
   Control() = default;

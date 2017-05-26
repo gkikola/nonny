@@ -23,10 +23,15 @@
 
 class Puzzle;
 
+/*
+ * Takes a reference to a puzzle and, when invoked, solves that
+ * puzzle.
+ */
 class Solver {
 public:
   Solver(Puzzle& puzzle) : m_puzzle(puzzle) { }
 
+  // Solve the puzzle
   void operator()();
   
 private:

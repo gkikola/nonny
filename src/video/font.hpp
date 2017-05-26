@@ -23,6 +23,9 @@
 
 #include <string>
 
+/*
+ * Holds a font resource.
+ */
 class Font {
 public:
   Font() { }

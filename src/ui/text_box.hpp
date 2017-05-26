@@ -25,6 +25,9 @@
 
 class Font;
 
+/*
+ * A text box control.
+ */
 class TextBox : public Control {
 public:
   TextBox() = default;

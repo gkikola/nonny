@@ -47,7 +47,7 @@ void PuzzleProgress::store_progress(const Puzzle& puzzle, unsigned time,
     }
   }
 }
-#include <iostream> //temp
+
 void PuzzleProgress::restore_progress(Puzzle& puzzle)
 {
   for (unsigned y = 0; y != m_progress.height(); ++y) {

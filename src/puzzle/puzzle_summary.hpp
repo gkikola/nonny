@@ -23,6 +23,9 @@
 
 #include <string>
 
+/*
+ * Holds puzzle metadata.
+ */
 struct PuzzleSummary {
   std::string title;
   std::string author;

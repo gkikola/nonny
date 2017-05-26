@@ -28,19 +28,38 @@ class PuzzleCell;
 class PuzzleClue;
 class PuzzleLine;
 
+/*
+ * Takes a line from a puzzle and solves just that line as much as
+ * possible based on the line's state and clues. There are two line
+ * solvers: the fast line solver is faster but doesn't always find all
+ * the information that can be deduced from the line. The complete
+ * solver is slow but does not miss anything.
+ */
 class LineSolver {
 public:
   LineSolver(PuzzleLine& line) : m_line(line) { }
 
+  // Solve the line and modify the line itself with the solution
   void operator()();
 
+  /*
+   * Solve the line and store the result in the given vector. Does not
+   * modify the original line.
+   */
   void solve_fast(std::vector<PuzzleCell>& result);
   void solve_complete(std::vector<PuzzleCell>& result);
 
+  // Update clue states based on line progress
   void update_clues(std::vector<PuzzleClue>& clues);
 
 private:
+  // Is the block sequence consistent with the current line state?
   bool is_seq_valid(const BlockSequence& blocks);
+
+  /*
+   * Find the intersection of all the block sequences and store the
+   * result in the given vector.
+   */
   void intersect_blocks(std::vector<PuzzleCell>& result,
                         std::vector<BlockSequence>& seqs);
   

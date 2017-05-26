@@ -25,12 +25,22 @@
 #include <vector>
 #include "puzzle/puzzle_clue.hpp"
 
+/*
+ * Represents a contiguous group of filled puzzle cells in a line
+ * having the same color. Each puzzle clue corresponds to one block in
+ * the solution.
+ */
 struct Block {
   unsigned pos = 0;
   unsigned length = 0;
   Color color;
 };
 
+/*
+ * Holds a sequence of blocks for a puzzle line. The blocks are set up
+ * based on the line's puzzle clues and can then be rearranged to find
+ * valid positions.
+ */
 class BlockSequence {
 public:
   enum class Init { left, right };
@@ -38,9 +48,20 @@ public:
                 const std::vector<PuzzleClue>& line_clues,
                 Init init_type = Init::left);
 
+  /*
+   * Find the previous or next valid permutation of blocks in the
+   * line. For example, slide_right will attempt to move the rightmost
+   * block one space further to the right, if this is not possible it
+   * resets that block and moves the second one from the right, and so
+   * on.
+   *
+   * These functions return true if they were able to find a new
+   * arrangement, and false if there are no further valid
+   * arrangements.
+   */
   bool slide_left();
   bool slide_right();
-  
+
   std::size_t size() const { return m_blocks.size(); }
   bool empty() const { return m_blocks.empty(); }
 
@@ -63,8 +84,8 @@ public:
   const Block& operator[](unsigned index) const { return m_blocks[index]; }
   
 private:
-  void flush_left();
-  void flush_right();
+  void flush_left(); //set up blocks in leftmost position
+  void flush_right(); //set up blocks in rightmost position
 
   std::vector<Block> m_blocks;
   unsigned m_line_size;

@@ -23,6 +23,10 @@
 
 #include "ui/dialog.hpp"
 
+/*
+ * Control container that holds the buttons and other controls that
+ * make up a menu.
+ */
 class Menu : public Dialog {
 public:
   Menu() = default;

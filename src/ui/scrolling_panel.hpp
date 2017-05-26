@@ -25,6 +25,10 @@
 #include "ui/scrollbar.hpp"
 #include "ui/ui_panel.hpp"
 
+/*
+ * An interface element containing scrollbars that allow the user to
+ * scroll a particular panel.
+ */
 class ScrollingPanel : public UIPanel {
 public:
   ScrollingPanel() { }

@@ -25,6 +25,10 @@
 
 class Font;
 
+/*
+ * A control that displays some text but which cannot be interacted
+ * with.
+ */
 class StaticText : public Control {
 public:
   StaticText() = default;

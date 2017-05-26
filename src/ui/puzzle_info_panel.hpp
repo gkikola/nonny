@@ -32,6 +32,11 @@ class Font;
 class Puzzle;
 class Texture;
 
+/*
+ * Displays information about a puzzle that the user is solving and
+ * holds some buttons to allow the user to access the menu or change
+ * options.
+ */
 class PuzzleInfoPanel : public UIPanel {
 public:
   PuzzleInfoPanel(Font& title_font, Font& info_font, Font& size_font,
@@ -40,7 +45,7 @@ public:
                   Texture& ctrl_texture, unsigned max_width, Puzzle& puzzle);
   void attach_puzzle(Puzzle& puzzle);
 
-  //register callback functions
+  // Register callback functions
   typedef std::function<void()> Callback;
   void on_menu_open(Callback fn) { m_menu_button->register_callback(fn); }
   void on_zoom_in(Callback fn) { m_zoom_in_button->register_callback(fn); }
@@ -48,14 +53,14 @@ public:
   void on_hint_toggle(Callback fn) { m_hint_button->register_callback(fn); }
   void on_color_change(Callback fn) { m_color_selector.on_color_change(fn); }
   
-  //start/stop sliding animation
+  // Start/stop sliding animation
   void start_slide() { m_sliding = true; }
   void stop_slide() { m_sliding = false; }
 
-  //get currently selected color
+  // Get currently selected color
   Color active_color() const;
 
-  //get/set time puzzle has been open
+  // Get/set time puzzle has been open
   unsigned time() const { return m_time; }
   void time(unsigned time) { m_time = time; }
 

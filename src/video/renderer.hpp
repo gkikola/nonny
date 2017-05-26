@@ -29,6 +29,10 @@ class Point;
 class Rect;
 class Texture;
 
+/*
+ * Responsible for all drawing operations. Provides basic primitives
+ * which interface elements can use to draw themselves.
+ */
 class Renderer {
 public:
   Renderer() { }

@@ -29,6 +29,15 @@
 
 class Puzzle;
 
+/*
+ * Represents the user's saved progress on a particular puzzle. This
+ * includes the state of the puzzle grid, the puzzle's solution if it
+ * was previously found, the current time and the best completion
+ * time.
+ *
+ * Progress can be loaded and saved from streams by using the << and
+ * >> operators.
+ */
 class PuzzleProgress {
   friend std::ostream& operator<<(std::ostream&, const PuzzleProgress&);
   friend std::istream& operator>>(std::istream&, PuzzleProgress&);
@@ -43,19 +52,27 @@ public:
   PuzzleProgress& operator=(const PuzzleProgress&) & = default;
   PuzzleProgress& operator=(PuzzleProgress&&) & = default;
 
+  /*
+   * Store progress on the given puzzle. This does not actually output
+   * to a file, output is done with <<.
+   */
   void store_progress(const Puzzle& puzzle, unsigned time,
                       bool update_solution = false);
+
+  // Restore saved progress on a puzzle
   void restore_progress(Puzzle& puzzle);
 
   std::string filename() const { return m_filename; }
   bool is_complete() const { return m_completed; }
   unsigned best_time() const { return m_best_time; }
   unsigned current_time() const { return m_cur_time; }
-  
+
+  // state gives the saved puzzle state, solution gives the saved solution
   const PuzzleGrid& state() const { return m_progress; }
   const PuzzleGrid& solution() const { return m_solution; }
   inline const PuzzleCell& state(unsigned row, unsigned col) const;
   inline const PuzzleCell& solution(unsigned row, unsigned col) const;
+
 private:
   std::string m_filename;
   bool m_completed = false;

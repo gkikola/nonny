@@ -27,6 +27,10 @@
 #include "input/key.hpp"
 #include "video/point.hpp"
 
+/* 
+ * Processes input events and keeps track of key states and
+ * mouse movement
+ */
 class InputHandler {
 public:
   InputHandler();
@@ -80,15 +84,15 @@ private:
   int m_mwheel_vert = 0;
   int m_mwheel_horiz = 0;
   
-  std::vector<bool> m_keys;
+  std::vector<bool> m_keys; //which keys are down
   std::vector<bool> m_prev_keys;
-  std::vector<unsigned> m_num_presses;
+  std::vector<unsigned> m_num_presses; //how many presses in last frame
 
-  std::vector<bool> m_buttons;
+  std::vector<bool> m_buttons; //which buttons are down
   std::vector<bool> m_prev_buttons;
-  std::vector<bool> m_button_dbl_click;
+  std::vector<bool> m_button_dbl_click; //which buttons were double-clicked
 
-  std::string m_characters;
+  std::string m_characters; //stores text input
 };
 
 #endif

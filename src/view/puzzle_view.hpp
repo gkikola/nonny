@@ -28,6 +28,10 @@
 #include "video/texture.hpp"
 #include "view/view.hpp"
 
+/*
+ * Puzzle screen. This View is used when the user is playing or
+ * editing a puzzle.
+ */
 class PuzzleView : public View {
 public:
   // Load a blank puzzle in edit mode

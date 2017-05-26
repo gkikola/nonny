@@ -23,6 +23,7 @@
 
 #include <string>
 
+// Settings used to initialize a window
 struct WindowSettings {
   int x = 0;
   int y = 0;
@@ -34,6 +35,9 @@ struct WindowSettings {
   std::string icon;
 };
 
+/*
+ * Represents an application window.
+ */
 class Window {
 public:
   Window() { }

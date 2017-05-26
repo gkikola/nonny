@@ -29,6 +29,9 @@ enum class LineType { row, column };
 class Puzzle;
 class PuzzleCell;
 
+/*
+ * Holds a reference to a line (row or column) of puzzle cells.
+ */
 class PuzzleLine {
 public:
   typedef std::vector<PuzzleClue> ClueSequence;
@@ -36,10 +39,16 @@ public:
   PuzzleLine(Puzzle& puzzle, unsigned line, LineType type)
     : m_puzzle(puzzle), m_line(line), m_type(type) { }
 
+  // Which row or column does this line represent?
   unsigned index() const { return m_line; }
+
+  // Is this a row or a column?
   LineType type() const { return m_type; }
+
+  // Number of cells in the line
   unsigned size() const;
-  
+
+  // Access cells
   const PuzzleCell& operator[](unsigned index) const;
   const PuzzleCell& at(unsigned index) const;
 
@@ -47,8 +56,10 @@ public:
   void clear_cell(unsigned index);
   void cross_out_cell(unsigned index);
 
+  // Get clue sequence for the current line
   const ClueSequence& clues() const;
 
+  // Is the line solved?
   bool is_solved() const;
 private:
   inline unsigned row(unsigned index) const;
@@ -59,6 +70,10 @@ private:
   LineType m_type;
 };
 
+
+/*
+ * Holds a const reference to a line of puzzle cells.
+ */
 class ConstPuzzleLine {
 public:
   typedef std::vector<PuzzleClue> ClueSequence;

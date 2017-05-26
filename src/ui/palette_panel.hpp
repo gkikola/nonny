@@ -29,6 +29,10 @@
 
 class ColorPalette;
 
+/*
+ * Displays the colors in a palette and allows the user to
+ * select a color.
+ */
 class PalettePanel : public UIPanel {
 public:
   PalettePanel() { }
@@ -36,9 +40,11 @@ public:
 
   void set_palette(const ColorPalette& palette);
 
+  // Register callback function
   typedef std::function<void()> Callback;
   void on_color_change(Callback fn) { m_color_callback = fn; }
 
+  // Gets the selected color
   Color selected_color() const { return m_colors[m_selection]; }
 
   using UIPanel::update; //make all update and draw overloads visible
@@ -47,6 +53,10 @@ public:
               const Rect& active_region) override;
   void draw(Renderer& renderer, const Rect& region) const override;
 
+  /*
+   * Set how wide the panel should be. Determines wrapping of color
+   * buttons.
+   */
   void set_width(unsigned width);
 
 private:
@@ -54,10 +64,10 @@ private:
   void next_color();
   void set_selection(unsigned selection);
 
-  unsigned colors_per_line() const;
+  unsigned colors_per_line() const; //how many colors fit on a line
   unsigned entry_at_point(Point pt) const;
   Rect entry_rect(unsigned index) const;
-  void update_offset();
+  void update_offset(); //calculate position of color button placement
 
   std::vector<Color> m_colors;
   Color m_bkgd_color;

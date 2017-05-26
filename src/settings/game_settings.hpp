@@ -23,6 +23,9 @@
 
 #include <string>
 
+/*
+ * Manage game settings and keep track of data and save directories.
+ */
 class GameSettings {
 public:
   GameSettings();
