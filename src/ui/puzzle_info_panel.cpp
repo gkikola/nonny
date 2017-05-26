@@ -107,6 +107,17 @@ void PuzzleInfoPanel::draw(Renderer& renderer, const Rect& region) const
                                m_boundary.width(), true);
     pos.y() += text_height + spacing;
 
+    //draw author
+    if (!m_puzzle_author.empty()) {
+      m_size_font.text_size_wrapped(m_puzzle_author, m_boundary.width(),
+                                    &text_width, &text_height);
+      text_pos.x() = pos.x();
+      text_pos.y() = pos.y();
+      renderer.draw_text_wrapped(text_pos, m_size_font, m_puzzle_author,
+                                 m_boundary.width(), true);
+      pos.y() += text_height + spacing;
+    }
+
     //draw puzzle size
     m_size_font.text_size(m_puzzle_size, &text_width, &text_height);
     text_pos.x() = pos.x() + m_boundary.width() / 2 - text_width / 2;
@@ -128,16 +139,6 @@ void PuzzleInfoPanel::draw(Renderer& renderer, const Rect& region) const
     if (m_puzzle->is_multicolor()) {
       m_color_selector.draw(renderer, region);
       pos.y() += m_color_selector.boundary().height() + spacing;
-    }
-
-    //draw author
-    if (!m_puzzle_author.empty()) {
-      renderer.set_draw_color(default_colors::black);
-      m_info_font.text_size(m_puzzle_author, &text_width, &text_height);
-      text_pos.x() = pos.x() + m_boundary.width() / 2 - text_width / 2;
-      text_pos.y() = pos.y();
-      renderer.draw_text(text_pos, m_info_font, m_puzzle_author);
-      pos.y() += text_height + spacing;
     }
 
     //draw buttons
@@ -171,9 +172,10 @@ void PuzzleInfoPanel::retrieve_puzzle_info()
     m_puzzle_title = *property;
   else
     m_puzzle_title = "Untitled";
+  m_puzzle_author = "";
   property = m_puzzle->find_property("by");
   if (property)
-    m_puzzle_author = "Author: " + *property;
+    m_puzzle_author = "by " + *property;
 
   m_puzzle_size = std::to_string(m_puzzle->width())
     + "\u00D7" + std::to_string(m_puzzle->height());
@@ -190,6 +192,13 @@ void PuzzleInfoPanel::calculate_bounds()
                                    &text_wd, &text_ht);
     width = std::max(width, text_wd + 2 * spacing);
     height += text_ht + spacing;
+
+    if (!m_puzzle_author.empty()) {
+      m_size_font.text_size_wrapped(m_puzzle_author, m_max_width,
+                                    &text_wd, &text_ht);
+      width = std::max(width, text_wd + 2 * spacing);
+      height += text_ht + spacing;
+    }
 
     m_size_font.text_size(m_puzzle_size, &text_wd, &text_ht);
     width = std::max(width, text_wd + 2 * spacing);
@@ -212,12 +221,6 @@ void PuzzleInfoPanel::calculate_bounds()
       m_color_selector.move(m_boundary.x(), color_sel_pos);
       m_color_selector.set_width(width);
       height += m_color_selector.boundary().height() + spacing;
-    }
-
-    if (!m_puzzle_author.empty()) {
-      m_info_font.text_size(m_puzzle_author, &text_wd, &text_ht);
-      width = std::max(width, text_wd + 2 * spacing);
-      height += text_ht + spacing;
     }
 
     unsigned button_pos = m_boundary.y() + height;
