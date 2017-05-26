@@ -238,8 +238,9 @@ void PuzzleView::setup_panels()
   m_cell_texture = m_mgr.video_system().load_image(m_mgr.renderer(),
                                                    texture_file);
   
-  auto ppanel = make_ui_panel<PuzzlePanel>(*m_clue_font, *m_cell_texture,
-                                           m_puzzle);
+  auto ppanel = std::make_shared<PuzzlePanel>(*m_clue_font, *m_cell_texture,
+                                              m_puzzle);
+  ppanel->set_edit_mode(m_edit_mode);
 
   Rect win_region(0, 0, m_width, m_height);
   m_main_panel = ScrollingPanel(win_region, ppanel);

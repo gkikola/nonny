@@ -46,6 +46,8 @@ public:
 
   void set_active_color(Color color) { m_color = color; }
 
+  void set_edit_mode(bool edit_mode = true) { m_edit_mode = edit_mode; }
+  
   using UIPanel::update; //make all update and draw overloads visible
   using UIPanel::draw;
   void update(unsigned ticks, InputHandler& input,
@@ -88,6 +90,7 @@ private:
   std::vector<PuzzleCell::State> m_prev_cell_state;
   unsigned m_cell_size = 32;
   Point m_grid_pos;
+  bool m_edit_mode = false;
 
   //Dragging states
   DragType m_mouse_drag_type = DragType::fill;
