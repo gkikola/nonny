@@ -31,4 +31,20 @@ struct PuzzleCell {
   Color color;
 };
 
+inline bool operator==(const PuzzleCell& l, const PuzzleCell& r);
+inline bool operator!=(const PuzzleCell& l, const PuzzleCell& r);
+
+
+/* implementation */
+
+inline bool operator==(const PuzzleCell& l, const PuzzleCell& r)
+{
+  return l.state == r.state && l.color == r.color;
+}
+
+inline bool operator!=(const PuzzleCell& l, const PuzzleCell& r)
+{
+  return !(l == r);
+}
+
 #endif
