@@ -82,6 +82,7 @@ private:
 
   typedef std::function<void(int, int)> CellFunction;
   void for_each_point_on_selection(CellFunction fn) const;
+  void call_on_point(CellFunction fn, int x, int y) const;
 
   enum class Direction { up, down, left, right };
   void move_selection(Direction dir, int count = 1);

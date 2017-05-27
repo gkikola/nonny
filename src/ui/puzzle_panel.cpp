@@ -21,6 +21,7 @@
 #include "ui/puzzle_panel.hpp"
 
 #include <cmath>
+#include <queue>
 #include <string>
 #include "color/color.hpp"
 #include "input/input_handler.hpp"
@@ -597,10 +598,9 @@ void PuzzlePanel::handle_kb_selection(unsigned ticks, InputHandler& input)
 
 void PuzzlePanel::do_draw_action(bool mark)
 {
-  using namespace std::placeholders;
-  
   switch (m_draw_tool) {
   case DrawTool::paint:
+    //do nothing
     break;
   case DrawTool::line:
   case DrawTool::rect:
@@ -616,6 +616,57 @@ void PuzzlePanel::do_draw_action(bool mark)
     }
     break;
   case DrawTool::fill:
+    {
+      auto fill = PuzzleCell::State::filled;
+      auto clear = PuzzleCell::State::blank;
+      auto& start = (*m_puzzle)[m_selection_x][m_selection_y];
+
+      auto target_state = start.state;
+      auto replace_state = mark ? fill : clear;
+      Color target_color = start.color;
+      Color replace_color = m_color;
+
+      if ((target_state != fill
+           && target_state == replace_state)
+          || (target_state == fill
+              && replace_state == fill
+              && target_color == replace_color))
+        break;
+      
+      std::queue<Point> queue;
+      queue.push(Point(m_selection_x, m_selection_y));
+
+      auto test_point = [=](int x, int y) -> bool {
+        if (x < 0 || x >= m_puzzle->width()
+            || y < 0 || y >= m_puzzle->height())
+          return false;
+        if ((*m_puzzle)[x][y].state != target_state)
+          return false;
+        if (target_state == fill
+            && (*m_puzzle)[x][y].color != target_color)
+          return false;
+        return true;
+      };
+
+      while (!queue.empty()) {
+        Point n = queue.front();
+        queue.pop();
+
+        Point w = n, e = n;
+        while (test_point(w.x(), w.y()))
+          --w.x();
+        while (test_point(e.x(), e.y()))
+          ++e.x();
+
+        for (int x = w.x() + 1; x < e.x(); ++x) {
+          set_cell(x, w.y(), replace_state);
+          if (test_point(x, w.y() - 1))
+            queue.push(Point(x, w.y() - 1));
+          if (test_point(x, w.y() + 1))
+            queue.push(Point(x, w.y() + 1));
+        }
+      }
+    }
     break;
   }
 }
@@ -642,10 +693,7 @@ void PuzzlePanel::for_each_point_on_selection(CellFunction fn) const
       int x = x0, y = y0;
 
       while (true) {
-        if (x >= 0 && y >= 0
-            && x < m_puzzle->width()
-            && y < m_puzzle->height())
-          fn(x, y);
+        call_on_point(fn, x, y);
 
         if (x == x1 && y == y1)
           break;
@@ -663,10 +711,77 @@ void PuzzlePanel::for_each_point_on_selection(CellFunction fn) const
     }
     break;
   case DrawTool::rect:
+    {
+      int x = x0, y = y0;
+      int sx = x0 < x1 ? 1 : -1;
+      int sy = y0 < y1 ? 1 : -1;
+      while (true) {
+        call_on_point(fn, x, y0);
+        call_on_point(fn, x, y1);
+        if (x == x1) break;
+        x += sx;
+      }
+      while (true) {
+        call_on_point(fn, x0, y);
+        call_on_point(fn, x1, y);
+        if (y == y1) break;
+        y += sy;
+      }
+    }
     break;
   case DrawTool::ellipse:
+    {
+      //thanks to Alois Zingl for ellipse algorithm
+      int a = std::abs(x1 - x0), b = std::abs(y1 - y0), b1 = b & 1;
+      int dx = 4 * (1 - a) * b * b;
+      int dy = 4 * (b1 + 1) * a * a;
+      int err = dx + dy + b1 * a * a, err2 = 0;
+
+      if (x0 > x1) { x0 = x1; x1 += a; }
+      if (y0 > y1) { y0 = y1; }
+      y0 += (b + 1) / 2;
+      y1 = y0 - b1;
+      a *= 8 * a;
+      b1 = 8 * b * b;
+
+      do {
+        call_on_point(fn, x1, y0); //quad 1
+        call_on_point(fn, x0, y0); //quad 2
+        call_on_point(fn, x0, y1); //quad 3
+        call_on_point(fn, x1, y1); //quad 4
+        err2 = 2 * err;
+        if (err2 <= dy) {
+          ++y0;
+          --y1;
+          dy += a;
+          err += dy;
+        }
+        if (err2 >= dx || 2 * err > dy) {
+          ++x0;
+          --x1;
+          dx += b1;
+          err += dx;
+        }
+      } while (x0 <= x1);
+
+      while (y0 - y1 < b) {
+        call_on_point(fn, x0 - 1, y0);
+        call_on_point(fn, x1 + 1, y0);
+        call_on_point(fn, x0 - 1, y1);
+        call_on_point(fn, x1 + 1, y1);
+        ++y0;
+        --y1;
+      }
+    }
     break;
   }
+}
+
+void PuzzlePanel::call_on_point(CellFunction fn, int x, int y) const
+{
+  if (x >= 0 && x < m_puzzle->width()
+      && y >= 0 && y < m_puzzle->height())
+    fn(x, y);
 }
 
 void PuzzlePanel::move_selection(Direction dir, int count)
