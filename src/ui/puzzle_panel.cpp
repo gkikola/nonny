@@ -556,23 +556,24 @@ void PuzzlePanel::handle_kb_selection(unsigned ticks, InputHandler& input)
     if (m_draw_tool == DrawTool::paint)
       set_cell(m_selection_x, m_selection_y, new_state);
     else if (m_draw_tool == DrawTool::fill)
-      do_draw_action();
+      do_draw_action(fill_pressed);
   }
 
-  if (input.was_key_released(Keyboard::Key::space)
-      || input.was_key_released(Keyboard::Key::enter)
-      || input.was_key_released(Keyboard::Key::kp_enter)
-      || input.was_key_released(Keyboard::Key::lctrl)
-      || input.was_key_released(Keyboard::Key::rctrl)
-      || input.was_key_released(Keyboard::Key::backspace)
-      || input.was_key_released(Keyboard::Key::del)
-      || input.was_key_released(Keyboard::Key::kp_del)) {
+  bool fill_released = input.was_key_released(Keyboard::Key::space)
+    || input.was_key_released(Keyboard::Key::enter)
+    || input.was_key_released(Keyboard::Key::kp_enter);
+  bool cross_released = input.was_key_released(Keyboard::Key::lctrl)
+    || input.was_key_released(Keyboard::Key::rctrl)
+    || input.was_key_released(Keyboard::Key::backspace)
+    || input.was_key_released(Keyboard::Key::del)
+    || input.was_key_released(Keyboard::Key::kp_del);
+  if (fill_released || cross_released) {
     m_kb_dragging = false;
 
     if (m_edit_mode
         && m_draw_tool != DrawTool::paint
         && m_draw_tool != DrawTool::fill)
-      do_draw_action();
+      do_draw_action(fill_released);
   }
 
   int num_press = input.num_key_presses(Keyboard::Key::left)
