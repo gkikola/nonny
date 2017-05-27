@@ -45,6 +45,7 @@ PuzzleInfoPanel::PuzzleInfoPanel(Font& title_font,
     m_ctrl_texture(ctrl_texture),
     m_arrow_texture(arrow_texture),
     m_draw_texture(draw_texture),
+    m_tool_selector(draw_texture),
     m_max_width(max_width),
     m_edit_mode(edit_mode)
 {
@@ -128,6 +129,7 @@ void PuzzleInfoPanel::update(unsigned ticks, InputHandler& input,
   m_time += ticks;
   m_preview.update(ticks, input, active_region);
   m_color_selector.update(ticks, input, active_region);
+  m_tool_selector.update(ticks, input, active_region);
   for (auto& button : m_buttons) {
     if (button)
       button->update(ticks, input, active_region);
@@ -170,19 +172,27 @@ void PuzzleInfoPanel::draw(Renderer& renderer, const Rect& region) const
     pos.y() += text_height + spacing;
 
     //draw time
-    std::string time_str = time_to_string(m_time);
-    m_info_font.text_size(time_str, &text_width, &text_height);
-    text_pos.x() = pos.x() + m_boundary.width() / 2 - text_width / 2;
-    text_pos.y() = pos.y();
-    renderer.draw_text(text_pos, m_info_font, time_str);
-    pos.y() += text_height + spacing;
+    if (!m_edit_mode) {
+      std::string time_str = time_to_string(m_time);
+      m_info_font.text_size(time_str, &text_width, &text_height);
+      text_pos.x() = pos.x() + m_boundary.width() / 2 - text_width / 2;
+      text_pos.y() = pos.y();
+      renderer.draw_text(text_pos, m_info_font, time_str);
+      pos.y() += text_height + spacing;
+    }
 
     //draw preview
     m_preview.draw(renderer, region);
     pos.y() += m_preview.boundary().height() + spacing;
-    if (m_puzzle->is_multicolor()) {
+
+    //draw color/tool selectors
+    if (m_edit_mode || m_puzzle->is_multicolor()) {
       m_color_selector.draw(renderer, region);
       pos.y() += m_color_selector.boundary().height() + spacing;
+    }
+    if (m_edit_mode) {
+      m_tool_selector.draw(renderer, region);
+      pos.y() += m_tool_selector.boundary().height() + spacing;
     }
 
     //draw buttons
@@ -202,6 +212,7 @@ void PuzzleInfoPanel::move(int x, int y)
   UIPanel::move(x, y);
   m_preview.scroll(x - old_x, y - old_y);
   m_color_selector.scroll(x - old_x, y - old_y);
+  m_tool_selector.scroll(x - old_x, y - old_y);
   for (auto& button : m_buttons) {
     if (button)
       button->scroll(x - old_x, y - old_y);
@@ -248,9 +259,11 @@ void PuzzleInfoPanel::calculate_bounds()
     width = std::max(width, text_wd + 2 * spacing);
     height += text_ht + spacing;
 
-    m_info_font.text_size("00:00.0", &text_wd, &text_ht);
-    width = std::max(width, text_wd + 2 * spacing);
-    height += text_ht + spacing;
+    if (!m_edit_mode) {
+      m_info_font.text_size("00:00.0", &text_wd, &text_ht);
+      width = std::max(width, text_wd + 2 * spacing);
+      height += text_ht + spacing;
+    }
 
     unsigned preview_pos = m_boundary.y() + height;
     unsigned preview_height = preview_width
@@ -261,10 +274,18 @@ void PuzzleInfoPanel::calculate_bounds()
     height += preview_height + spacing;
 
     unsigned color_sel_pos = m_boundary.y() + height;
-    if (m_puzzle->is_multicolor()) {
+    if (m_edit_mode || m_puzzle->is_multicolor()) {
       m_color_selector.move(m_boundary.x(), color_sel_pos);
       m_color_selector.set_width(width);
       height += m_color_selector.boundary().height() + spacing;
+    }
+
+    if (m_edit_mode) {
+      unsigned tool_sel_pos = m_boundary.y() + height;
+      unsigned tool_sel_width = m_tool_selector.boundary().width();
+      m_tool_selector.move(m_boundary.x() + width / 2
+                           - tool_sel_width / 2, tool_sel_pos);
+      height += m_tool_selector.boundary().height() + spacing;
     }
 
     Point button_pos(m_boundary.x(), m_boundary.y() + height);
@@ -277,7 +298,7 @@ void PuzzleInfoPanel::calculate_bounds()
     if (m_edit_mode)
       height += button_height + spacing;
 
-    button_pos.x() += width / 2 -button_group_width / 2;
+    button_pos.x() += width / 2 - button_group_width / 2;
     for (unsigned i = 0; i < m_buttons.size(); ++i) {
       if (m_buttons[i]) {
         m_buttons[i]->move(button_pos.x() + (button_width + spacing)

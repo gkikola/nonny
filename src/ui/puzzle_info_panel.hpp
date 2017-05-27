@@ -24,6 +24,7 @@
 #include <functional>
 #include <memory>
 #include <vector>
+#include "ui/draw_tool_panel.hpp"
 #include "ui/image_button.hpp"
 #include "ui/palette_panel.hpp"
 #include "ui/puzzle_preview.hpp"
@@ -96,6 +97,7 @@ private:
 
   PuzzlePreview m_preview;
   PalettePanel m_color_selector;
+  DrawToolPanel m_tool_selector;
 
   enum { menu = 0, zoom_in, zoom_out, hint,
          save, undo, redo, analyze, left, right, up, down };
