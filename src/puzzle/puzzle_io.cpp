@@ -40,8 +40,8 @@ enum class ClueType { row, col };
  * Structure holding the information needed to build a puzzle.
  */
 struct PuzzleBlueprint {
-  unsigned width = 0;
-  unsigned height = 0;
+  int width = 0;
+  int height = 0;
   Puzzle::ClueContainer row_clues;
   Puzzle::ClueContainer col_clues;
   ColorPalette palette;
@@ -209,7 +209,7 @@ namespace non_format {
   read_clues(std::istream& is, PuzzleBlueprint& blueprint, ClueType type)
   {
     Puzzle::ClueContainer* clues = nullptr;
-    unsigned count = 0;
+    int count = 0;
     if (type == ClueType::row) {
       clues = &blueprint.row_clues;
       count = blueprint.height;
@@ -317,7 +317,7 @@ namespace non_format {
         property = "height";
 
       //see if we're reading dimensions
-      unsigned* dimension = nullptr;
+      int* dimension = nullptr;
       if (property == "width")
         dimension = &blueprint.width;
       else if (property == "height")
@@ -585,7 +585,7 @@ namespace g_format {
                            ClueType type)
   {
     Puzzle::ClueContainer* clues = nullptr;
-    unsigned* size = nullptr;
+    int* size = nullptr;
     if (type == ClueType::row) {
       clues = &blueprint.row_clues;
       size = &blueprint.height;
@@ -600,7 +600,7 @@ namespace g_format {
         break;
       
       std::istringstream ss(line);
-      unsigned value;
+      int value;
       Puzzle::ClueSequence cseq;
       while (ss >> value) {
         PuzzleClue clue;

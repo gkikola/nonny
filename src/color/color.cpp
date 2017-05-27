@@ -37,10 +37,10 @@ namespace default_colors {
 
 Color Color::fade(double opacity) const
 {
-  const unsigned max = 256;
-  unsigned red = (1 - opacity) * max + opacity * m_r;
-  unsigned green = (1 - opacity) * max + opacity * m_g;
-  unsigned blue = (1 - opacity) * max + opacity * m_b;
+  const int max = 256;
+  int red = (1 - opacity) * max + opacity * m_r;
+  int green = (1 - opacity) * max + opacity * m_g;
+  int blue = (1 - opacity) * max + opacity * m_b;
 
   if (red > max)
     red = max;
@@ -62,7 +62,7 @@ std::ostream& operator<<(std::ostream& os, const Color& color)
   return os << std::dec << std::nouppercase << std::setfill(' ');
 }
 
-std::istream& read_component(std::istream& is, unsigned& val)
+std::istream& read_component(std::istream& is, int& val)
 {
   //ignore whitespace
   while (is_space(is.peek())) is.get();

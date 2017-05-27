@@ -35,10 +35,10 @@ public:
   Font& operator=(const Font&) = delete;
 
   virtual void text_size(const std::string& text,
-                         unsigned* width, unsigned* height) const = 0;
-  virtual void text_size_wrapped(std::string text, unsigned wrap_width,
-                                 unsigned* width, unsigned* height) const;
-  virtual void resize(unsigned pt_size) = 0;
+                         int* width, int* height) const = 0;
+  virtual void text_size_wrapped(std::string text, int wrap_width,
+                                 int* width, int* height) const;
+  virtual void resize(int pt_size) = 0;
 };
 
 #endif

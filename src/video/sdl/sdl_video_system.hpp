@@ -41,7 +41,7 @@ public:
   std::unique_ptr<Window> new_window(const WindowSettings& ws) const override;
   std::unique_ptr<Renderer> new_renderer(Window& window) const override;
   std::unique_ptr<Font> new_font(const std::string& filename,
-                                 unsigned pt_size = 12) const override;
+                                 int pt_size = 12) const override;
 
   std::unique_ptr<Texture>
   load_image(Renderer& renderer, const std::string& filename) const override;

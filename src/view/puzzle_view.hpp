@@ -36,12 +36,12 @@ class PuzzleView : public View {
 public:
   // Load a blank puzzle in edit mode
   PuzzleView(ViewManager& vm);
-  PuzzleView(ViewManager& vm, unsigned width, unsigned height);
+  PuzzleView(ViewManager& vm, int width, int height);
   
   // Load the designated puzzle file
   PuzzleView(ViewManager& vm, const std::string& filename);
   PuzzleView(ViewManager& vm, const std::string& filename,
-             unsigned width, unsigned height);
+             int width, int height);
 
   PuzzleView(const PuzzleView& pv);
   PuzzleView(PuzzleView&&);
@@ -50,7 +50,7 @@ public:
 
   void update(unsigned ticks, InputHandler& input) override;
   void draw(Renderer& renderer) override;
-  void resize(unsigned width, unsigned height) override;
+  void resize(int width, int height) override;
 
   void save() const;
   void restart();
@@ -66,6 +66,7 @@ private:
   void new_puzzle();
   void setup_panels();
   void handle_color_change();
+  void handle_tool_change();
   std::string puzzle_id() const;
   std::string puzzle_collection() const;
   

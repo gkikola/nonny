@@ -33,18 +33,18 @@ class ViewManager;
 class View {
 public:
   explicit View(ViewManager& vm) : m_mgr(vm) { }
-  View(ViewManager& vm, unsigned width, unsigned height)
+  View(ViewManager& vm, int width, int height)
     : m_mgr(vm), m_width(width), m_height(height) { }
   virtual ~View() { }
   
   virtual void update(unsigned ticks, InputHandler& input) = 0;
   virtual void draw(Renderer& renderer) = 0;
-  virtual void resize(unsigned width, unsigned height);
+  virtual void resize(int width, int height);
 
 protected:
   ViewManager& m_mgr;
-  unsigned m_width = 0;
-  unsigned m_height = 0;
+  int m_width = 0;
+  int m_height = 0;
 };
 
 #endif

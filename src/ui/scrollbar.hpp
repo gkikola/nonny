@@ -38,12 +38,12 @@ public:
               const Rect& active_region) override;
   void draw(Renderer& renderer, const Rect& region) const override;
 
-  void resize(unsigned width, unsigned height) override;
+  void resize(int width, int height) override;
 
 private:
   int scroll_position() const;
-  inline unsigned target_width() const;
-  inline unsigned target_height() const;
+  inline int target_width() const;
+  inline int target_height() const;
   void update_thumb_position();
   void do_thumb_drag(InputHandler& input);
   
@@ -59,12 +59,12 @@ private:
 
 /* implementation */
 
-inline unsigned Scrollbar::target_width() const
+inline int Scrollbar::target_width() const
 {
   return m_scroll_target->boundary().width();
 }
 
-inline unsigned Scrollbar::target_height() const
+inline int Scrollbar::target_height() const
 {
   return m_scroll_target->boundary().height();
 }

@@ -34,13 +34,13 @@ class Color {
 public:
   Color() : m_r(0), m_g(0), m_b(0) { }
   Color(const Color&) = default;
-  Color(unsigned red, unsigned green, unsigned blue)
+  Color(int red, int green, int blue)
     : m_r(red), m_g(green), m_b(blue) { validate(); }
 
   // Get color components
-  unsigned red() const { return m_r; }
-  unsigned green() const { return m_g; }
-  unsigned blue() const { return m_b; }
+  int red() const { return m_r; }
+  int green() const { return m_g; }
+  int blue() const { return m_b; }
 
   // Return a new color based on the current one
   inline Color inverse() const;
@@ -52,8 +52,8 @@ public:
 private:
   inline void validate() const;
   
-  unsigned m_r, m_g, m_b;
-  static constexpr unsigned s_max = 255;   
+  int m_r, m_g, m_b;
+  static constexpr int s_max = 255;   
 };
 
 /*
@@ -94,7 +94,7 @@ namespace default_colors {
 
 inline Color Color::inverse() const
 {
-  const unsigned max = 256;
+  const int max = 256;
   return Color(max - m_r, max - m_g, max - m_b);
 }
 

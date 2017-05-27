@@ -20,7 +20,7 @@
 
 #include "solver/block_sequence.hpp"
 
-BlockSequence::BlockSequence(unsigned line_size,
+BlockSequence::BlockSequence(int line_size,
                              const std::vector<PuzzleClue>& line_clues,
                              Init init_type)
   : m_line_size(line_size)
@@ -45,9 +45,9 @@ BlockSequence::BlockSequence(unsigned line_size,
 
 void BlockSequence::flush_left()
 {
-  unsigned pos = 0;
+  int pos = 0;
   Color prev_color;
-  for (unsigned block = 0; block < size(); ++block) {
+  for (int block = 0; block < static_cast<int>(size()); ++block) {
     //if previous block had same color, we need a gap
     if (block != 0 && m_blocks[block].color == prev_color)
       ++pos;
@@ -62,12 +62,12 @@ void BlockSequence::flush_left()
 
 void BlockSequence::flush_right()
 {
-  unsigned pos = m_line_size;
+  int pos = m_line_size;
   Color prev_color;
-  for (unsigned index = size(); index > 0; --index) {
-    unsigned block = index - 1;
+  for (int index = size(); index > 0; --index) {
+    int block = index - 1;
     //need gap if previous color is the same
-    if (block != size() - 1
+    if (block != static_cast<int>(size()) - 1
         && m_blocks[block].color == prev_color)
       --pos;
 
@@ -83,13 +83,13 @@ bool BlockSequence::slide_left()
   if (empty())
     return false;
 
-  unsigned pos = 0;
-  unsigned boundary = 0;
-  while (pos < size()) {
+  int pos = 0;
+  int boundary = 0;
+  while (pos < static_cast<int>(size())) {
     if (m_blocks[pos].pos > boundary) {
       --m_blocks[pos].pos;
-      for (unsigned index = pos; index > 0; --index) {
-        unsigned i = index - 1;
+      for (int index = pos; index > 0; --index) {
+        int i = index - 1;
         m_blocks[i].pos = m_blocks[i + 1].pos - m_blocks[i].length;
         if (m_blocks[i].color == m_blocks[i + 1].color)
           --m_blocks[i].pos;
@@ -97,7 +97,8 @@ bool BlockSequence::slide_left()
       return true;
     } else {
       boundary += m_blocks[pos].length;
-      if (pos + 1 < size() && m_blocks[pos + 1].color == m_blocks[pos].color)
+      if (pos + 1 < static_cast<int>(size())
+          && m_blocks[pos + 1].color == m_blocks[pos].color)
         ++boundary;
       ++pos;
     }
@@ -111,12 +112,12 @@ bool BlockSequence::slide_right()
   if (empty())
     return false;
 
-  unsigned pos = size() - 1;
-  unsigned boundary = m_line_size;
+  int pos = size() - 1;
+  int boundary = m_line_size;
   while (true) {
     if (m_blocks[pos].pos + m_blocks[pos].length < boundary) {
       ++m_blocks[pos].pos;
-      for (unsigned i = pos + 1; i < size(); ++i) {
+      for (int i = pos + 1; i < static_cast<int>(size()); ++i) {
         m_blocks[i].pos = m_blocks[i - 1].pos + m_blocks[i - 1].length;
         if (m_blocks[i].color == m_blocks[i - 1].color)
           ++m_blocks[i].pos;

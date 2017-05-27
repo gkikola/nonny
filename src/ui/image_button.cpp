@@ -25,7 +25,7 @@
 #include "video/renderer.hpp"
 #include "video/texture.hpp"
 
-constexpr unsigned num_cells = 4;
+constexpr int num_cells = 4;
 
 void ImageButton::draw(Renderer& renderer, const Rect& region) const
 {
@@ -42,8 +42,8 @@ void ImageButton::draw(Renderer& renderer, const Rect& region) const
 void ImageButton::draw_image(Renderer& renderer) const
 {
   if (m_texture) {
-    unsigned cell_size = m_texture->height() / num_cells;
-    unsigned state = 0;
+    int cell_size = m_texture->height() / num_cells;
+    int state = 0;
     if (m_depressed)
       state = 3;
     else if (m_mouse_hover)
@@ -59,7 +59,7 @@ void ImageButton::draw_image(Renderer& renderer) const
 
 void ImageButton::calc_size()
 {
-  unsigned width = 0, height = 0;
+  int width = 0, height = 0;
   if (m_texture)
     width = height = m_texture->height() / num_cells;
 

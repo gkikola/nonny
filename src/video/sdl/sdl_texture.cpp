@@ -21,7 +21,7 @@
 #include "video/sdl/sdl_texture.hpp"
 
 SDLTexture::SDLTexture(SDL_Renderer* renderer,
-                       unsigned width, unsigned height)
+                       int width, int height)
 {
   m_texture = SDL_CreateTexture(renderer,
                                 SDL_PIXELFORMAT_RGBA8888,

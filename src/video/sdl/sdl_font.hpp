@@ -27,19 +27,19 @@
 
 class SDLFont : public Font {
 public:
-  SDLFont(const std::string& filename, unsigned pt_size = 12);
+  SDLFont(const std::string& filename, int pt_size = 12);
   ~SDLFont();
 
   void text_size(const std::string& text,
-                 unsigned* width, unsigned* height) const override;
-  void resize(unsigned pt_size) override;
+                 int* width, int* height) const override;
+  void resize(int pt_size) override;
 
   TTF_Font* get_sdl_handle() const { return m_font; }
 
 private:
   TTF_Font* m_font = nullptr;
   std::string m_filename;
-  unsigned m_pt_size;
+  int m_pt_size;
 };
 
 #endif

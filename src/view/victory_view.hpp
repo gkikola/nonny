@@ -42,7 +42,7 @@ public:
               unsigned clear_time, unsigned best_time);
   VictoryView(ViewManager& vm, Puzzle& puzzle,
               unsigned clear_time, unsigned best_time,
-              unsigned width, unsigned height);
+              int width, int height);
 
   VictoryView(const VictoryView&) = default;
   VictoryView(VictoryView&&) = default;
@@ -52,7 +52,7 @@ public:
 
   void update(unsigned ticks, InputHandler& input) override;
   void draw(Renderer& renderer) override;
-  void resize(unsigned width, unsigned height) override;
+  void resize(int width, int height) override;
 
 private:
   void load_resources();

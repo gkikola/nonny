@@ -25,14 +25,14 @@
 
 void Solver::operator()()
 {
-  unsigned count = 0;
+  int count = 0;
   while (count < 32) {
-    for (unsigned row = 0; row < m_puzzle.height(); ++row) {
+    for (int row = 0; row < m_puzzle.height(); ++row) {
       PuzzleLine line = m_puzzle.get_row(row);
       LineSolver solver(line);
       solver();
     }
-    for (unsigned col = 0; col < m_puzzle.width(); ++col) {
+    for (int col = 0; col < m_puzzle.width(); ++col) {
       PuzzleLine line = m_puzzle.get_col(col);
       LineSolver solver(line);
       solver();

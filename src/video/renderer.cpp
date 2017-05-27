@@ -60,7 +60,7 @@ void Renderer::draw_dotted_rect(const Rect& rect)
 }
 
 Rect Renderer::draw_text_wrapped(const Point& point, const Font& font,
-                                 std::string text, unsigned width,
+                                 std::string text, int width,
                                  bool center)
 {
   Rect bounds(point.x(), point.y(), 0, 0);
@@ -72,7 +72,7 @@ Rect Renderer::draw_text_wrapped(const Point& point, const Font& font,
     if (text[pos] != '\n' && text[pos] != ' ') {
       word += text[pos];
     } else {
-      unsigned txt_wd, txt_ht;
+      int txt_wd, txt_ht;
       if (line.empty())
         font.text_size(word, &txt_wd, &txt_ht);
       else

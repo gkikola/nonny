@@ -22,7 +22,7 @@
 
 #include <algorithm>
 
-constexpr unsigned spacing = 16;
+constexpr int spacing = 16;
 
 void Menu::position_controls()
 {
@@ -43,8 +43,8 @@ void Menu::position_controls()
 
 void Menu::calc_size()
 {
-  unsigned width = 0;
-  unsigned height = spacing;
+  int width = 0;
+  int height = spacing;
   for (const auto& c : m_controls) {
     width = std::max(width, c->boundary().width());
     height += c->boundary().height() + spacing;

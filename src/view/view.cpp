@@ -20,7 +20,7 @@
 
 #include "view/view.hpp"
 
-void View::resize(unsigned width, unsigned height)
+void View::resize(int width, int height)
 {
   m_width = width;
   m_height = height;

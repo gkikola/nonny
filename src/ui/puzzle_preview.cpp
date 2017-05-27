@@ -39,22 +39,22 @@ void PuzzlePreview::draw(Renderer& renderer, const Rect& region) const
     renderer.fill_rect(m_boundary);
 
     //calculate sizes and offsets
-    unsigned p_width = m_puzzle->width();
-    unsigned p_height = m_puzzle->height();
-    unsigned horiz_pixel_size = 0, vert_pixel_size = 0;
+    int p_width = m_puzzle->width();
+    int p_height = m_puzzle->height();
+    int horiz_pixel_size = 0, vert_pixel_size = 0;
     if (p_width)
       horiz_pixel_size = m_boundary.width() / m_puzzle->width();
     if (p_height)
       vert_pixel_size = m_boundary.height() / m_puzzle->height();
-    unsigned pixel_size = std::min(horiz_pixel_size, vert_pixel_size);
+    int pixel_size = std::min(horiz_pixel_size, vert_pixel_size);
     Point start(m_boundary.x() + m_boundary.width() / 2
                 - pixel_size * m_puzzle->width() / 2,
                 m_boundary.y() + m_boundary.height() / 2
                 - pixel_size * m_puzzle->height() / 2);
     
     //draw the "pixels"
-    for (unsigned y = 0; y < m_puzzle->height(); ++y) {
-      for (unsigned x = 0; x < m_puzzle->width(); ++x) {
+    for (int y = 0; y < m_puzzle->height(); ++y) {
+      for (int x = 0; x < m_puzzle->width(); ++x) {
         auto cell = (*m_puzzle)[x][y];
 
         if (cell.state == PuzzleCell::State::filled) {

@@ -48,7 +48,7 @@ private:
   
   const Font* m_font = nullptr;
   std::string m_label;
-  unsigned m_label_width = 0;
+  int m_label_width = 0;
 };
 
 #endif

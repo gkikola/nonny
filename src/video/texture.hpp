@@ -29,8 +29,8 @@ public:
   Texture() { }
   virtual ~Texture() { }
 
-  virtual unsigned width() const = 0;
-  virtual unsigned height() const = 0;
+  virtual int width() const = 0;
+  virtual int height() const = 0;
 };
 
 #endif

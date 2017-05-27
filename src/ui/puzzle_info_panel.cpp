@@ -28,8 +28,8 @@
 #include "video/renderer.hpp"
 #include "video/texture.hpp"
 
-constexpr unsigned spacing = 8;
-constexpr unsigned preview_width = 196;
+constexpr int spacing = 8;
+constexpr int preview_width = 196;
 
 PuzzleInfoPanel::PuzzleInfoPanel(Font& title_font,
                                  Font& info_font,
@@ -37,7 +37,7 @@ PuzzleInfoPanel::PuzzleInfoPanel(Font& title_font,
                                  Texture& ctrl_texture,
                                  Texture& arrow_texture,
                                  Texture& draw_texture,
-                                 unsigned max_width,
+                                 int max_width,
                                  bool edit_mode)
   : m_title_font(title_font),
     m_info_font(info_font),
@@ -123,6 +123,11 @@ Color PuzzleInfoPanel::active_color() const
   return m_color_selector.selected_color();
 }
 
+PuzzlePanel::DrawTool PuzzleInfoPanel::active_draw_tool() const
+{
+  return m_tool_selector.selected_tool();
+}
+
 void PuzzleInfoPanel::update(unsigned ticks, InputHandler& input,
                              const Rect& active_region)
 {
@@ -145,7 +150,7 @@ void PuzzleInfoPanel::draw(Renderer& renderer, const Rect& region) const
     Point pos(m_boundary.x(), m_boundary.y() + spacing);
 
     //draw title
-    unsigned text_width, text_height;
+    int text_width, text_height;
     m_title_font.text_size_wrapped(m_puzzle_title, m_boundary.width(),
                                    &text_width, &text_height);
     Point text_pos(pos.x(), pos.y());
@@ -240,9 +245,9 @@ void PuzzleInfoPanel::retrieve_puzzle_info()
 void PuzzleInfoPanel::calculate_bounds()
 {
   if (m_puzzle) {
-    unsigned width = 0, height = spacing;
+    int width = 0, height = spacing;
 
-    unsigned text_wd, text_ht;
+    int text_wd, text_ht;
     m_title_font.text_size_wrapped(m_puzzle_title, m_max_width,
                                    &text_wd, &text_ht);
     width = std::max(width, text_wd + 2 * spacing);
@@ -265,15 +270,15 @@ void PuzzleInfoPanel::calculate_bounds()
       height += text_ht + spacing;
     }
 
-    unsigned preview_pos = m_boundary.y() + height;
-    unsigned preview_height = preview_width
+    int preview_pos = m_boundary.y() + height;
+    int preview_height = preview_width
       * m_puzzle->height() / m_puzzle->width();
     if (preview_height > preview_width)
       preview_height = preview_width;
     width = std::max(width, preview_width + 2 * spacing);
     height += preview_height + spacing;
 
-    unsigned color_sel_pos = m_boundary.y() + height;
+    int color_sel_pos = m_boundary.y() + height;
     if (m_edit_mode || m_puzzle->is_multicolor()) {
       m_color_selector.move(m_boundary.x(), color_sel_pos);
       m_color_selector.set_width(width);
@@ -281,25 +286,25 @@ void PuzzleInfoPanel::calculate_bounds()
     }
 
     if (m_edit_mode) {
-      unsigned tool_sel_pos = m_boundary.y() + height;
-      unsigned tool_sel_width = m_tool_selector.boundary().width();
+      int tool_sel_pos = m_boundary.y() + height;
+      int tool_sel_width = m_tool_selector.boundary().width();
       m_tool_selector.move(m_boundary.x() + width / 2
                            - tool_sel_width / 2, tool_sel_pos);
       height += m_tool_selector.boundary().height() + spacing;
     }
 
     Point button_pos(m_boundary.x(), m_boundary.y() + height);
-    unsigned button_width = m_buttons[menu]->boundary().width();
-    unsigned button_height = m_buttons[menu]->boundary().height();
-    unsigned button_group_width = 4 * button_width + 3 * spacing;
-    unsigned buttons_per_line = 4;
+    int button_width = m_buttons[menu]->boundary().width();
+    int button_height = m_buttons[menu]->boundary().height();
+    int button_group_width = 4 * button_width + 3 * spacing;
+    int buttons_per_line = 4;
     height += (button_height + spacing)
       * (m_buttons.size() / buttons_per_line - 1);
     if (m_edit_mode)
       height += button_height + spacing;
 
     button_pos.x() += width / 2 - button_group_width / 2;
-    for (unsigned i = 0; i < m_buttons.size(); ++i) {
+    for (int i = 0; i < static_cast<int>(m_buttons.size()); ++i) {
       if (m_buttons[i]) {
         m_buttons[i]->move(button_pos.x() + (button_width + spacing)
                            * (i % buttons_per_line),

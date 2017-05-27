@@ -37,8 +37,8 @@ namespace stdfs = std::experimental::filesystem;
 const Color background_color = default_colors::white;
 const Color foreground_color = default_colors::black;
 const Color selection_color = default_colors::blue;
-constexpr unsigned spacing = 4;
-constexpr unsigned max_puzzles_open = 9999;
+constexpr int spacing = 4;
+constexpr int max_puzzles_open = 9999;
 
 FileSelectionPanel::FileSelectionPanel(SaveManager& save_mgr,
                                        Font& filename_font, Font& info_font,
@@ -107,7 +107,7 @@ void FileSelectionPanel::update(unsigned ticks, InputHandler& input,
 {
   if (!m_files.empty()) {
     //see if we have new puzzle to read
-    if (m_num_puzzles_loaded < m_files.size()
+    if (m_num_puzzles_loaded < static_cast<int>(m_files.size())
         && m_num_puzzles_loaded < max_puzzles_open)
       load_puzzle_info();
     
@@ -117,8 +117,8 @@ void FileSelectionPanel::update(unsigned ticks, InputHandler& input,
          || input.was_mouse_button_pressed(Mouse::Button::right))
         && active_region.contains_point(cursor)) {
       m_is_selected = false;
-      unsigned index = (cursor.y() - m_boundary.y()) / entry_height();
-      if (index < m_files.size()) {
+      int index = (cursor.y() - m_boundary.y()) / entry_height();
+      if (index < static_cast<int>(m_files.size())) {
         select(index);
 
         //handle double-clicks
@@ -140,7 +140,7 @@ void FileSelectionPanel::update(unsigned ticks, InputHandler& input,
       if (!m_is_selected) {
         select(0);
       } else {
-        if (m_selection + 1 >= m_files.size())
+        if (m_selection + 1 >= static_cast<int>(m_files.size()))
           select(0);
         else
           select(m_selection + 1);
@@ -180,23 +180,23 @@ void FileSelectionPanel::draw(Renderer& renderer, const Rect& region) const
   int min_y = region.y() - m_boundary.y();
   if (min_y < 0) min_y = 0;
   int max_y = min_y + region.height();
-  unsigned min_index, max_index;
+  int min_index, max_index;
   if (m_files.empty()) {
     min_index = max_index = 0;
   } else {
     min_index = min_y / entry_height();
     if (min_index > 0)
       --min_index;
-    if (min_index > m_files.size())
+    if (min_index > static_cast<int>(m_files.size()))
       min_index = m_files.size() - 1;
 
     max_index = max_y / entry_height() + 1;
-    if (max_index > m_files.size())
+    if (max_index > static_cast<int>(m_files.size()))
       max_index = m_files.size();
   }
 
   //draw the file entries
-  for (unsigned i = min_index; i < max_index; ++i) {
+  for (int i = min_index; i < max_index; ++i) {
     //background
     if (m_is_selected && m_selection == i)
       renderer.set_draw_color(selection_color);
@@ -211,8 +211,8 @@ void FileSelectionPanel::draw(Renderer& renderer, const Rect& region) const
     int y = m_boundary.y() + i * entry_height() + spacing;
 
     //icon
-    unsigned icon_width = m_icon_texture.width() / 2;
-    unsigned icon_height = m_icon_texture.height();
+    int icon_width = m_icon_texture.width() / 2;
+    int icon_height = m_icon_texture.height();
     Rect src(0, 0, icon_width, icon_height);
     if (m_files[i].type == FileInfo::Type::file)
       src.x() += icon_width;
@@ -225,7 +225,7 @@ void FileSelectionPanel::draw(Renderer& renderer, const Rect& region) const
 
       auto prog = m_files[i].puzzle_progress;
       if (prog && !prog->is_complete() && prog->current_time() == 0) {
-        unsigned wd = 0, ht = 0;
+        int wd = 0, ht = 0;
         m_filename_font.text_size("?", &wd, &ht);
         Point qmark_loc(x + icon_width / 2 - wd / 2,
                         y + icon_height / 2 - ht/ 2);
@@ -309,15 +309,15 @@ void FileSelectionPanel::draw_progress(Renderer& renderer,
   if (!grid.width() || !grid.height())
     return;
 
-  unsigned pixel_size = area.width() / grid.width();
+  int pixel_size = area.width() / grid.width();
   if (area.height() / grid.height() < pixel_size)
     pixel_size = area.height() / grid.height();
   
   Point start(area.x() + area.width() / 2 - pixel_size * grid.width() / 2,
               area.y() + area.height() / 2 - pixel_size * grid.height() / 2);
   
-  for (unsigned y = 0; y != grid.height(); ++y) {
-    for (unsigned x = 0; x != grid.width(); ++x) {
+  for (int y = 0; y != grid.height(); ++y) {
+    for (int x = 0; x != grid.width(); ++x) {
       if (grid.at(x, y).state == PuzzleCell::State::filled) {
         Rect pixel(start.x() + x * pixel_size,
                    start.y() + y * pixel_size,
@@ -329,9 +329,9 @@ void FileSelectionPanel::draw_progress(Renderer& renderer,
   }
 }
 
-void FileSelectionPanel::select(unsigned index)
+void FileSelectionPanel::select(int index)
 {
-  if (index < m_files.size()) {
+  if (index < static_cast<int>(m_files.size())) {
     m_is_selected = true;
     m_selection = index;
     if (m_file_sel_callback)
@@ -354,7 +354,7 @@ void FileSelectionPanel::make_selection_visible(const Rect& visible_region)
   }
 }
 
-unsigned FileSelectionPanel::entry_height() const
+int FileSelectionPanel::entry_height() const
 {
   return m_icon_texture.height() + 2 * spacing;
 }
@@ -410,7 +410,7 @@ void FileSelectionPanel::sort_files()
 
 void FileSelectionPanel::load_puzzle_info()
 {
-  unsigned index = m_num_puzzles_loaded;
+  int index = m_num_puzzles_loaded;
 
   auto summary = std::make_shared<PuzzleSummary>();
   auto progress = std::make_shared<PuzzleProgress>();

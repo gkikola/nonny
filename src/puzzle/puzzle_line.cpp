@@ -22,7 +22,7 @@
 
 #include "puzzle/puzzle.hpp"
 
-unsigned PuzzleLine::size() const
+int PuzzleLine::size() const
 {
   if (m_type == LineType::row)
     return m_puzzle.width();
@@ -30,27 +30,27 @@ unsigned PuzzleLine::size() const
     return m_puzzle.height();
 }
 
-const PuzzleCell& PuzzleLine::operator[](unsigned index) const
+const PuzzleCell& PuzzleLine::operator[](int index) const
 {
   return m_puzzle.at(col(index), row(index));
 }
 
-const PuzzleCell& PuzzleLine::at(unsigned index) const
+const PuzzleCell& PuzzleLine::at(int index) const
 {
   return m_puzzle.at(col(index), row(index));
 }
 
-void PuzzleLine::mark_cell(unsigned index, const Color& color)
+void PuzzleLine::mark_cell(int index, const Color& color)
 {
   m_puzzle.mark_cell(col(index), row(index), color);
 }
 
-void PuzzleLine::clear_cell(unsigned index)
+void PuzzleLine::clear_cell(int index)
 {
   m_puzzle.clear_cell(col(index), row(index));
 }
 
-void PuzzleLine::cross_out_cell(unsigned index)
+void PuzzleLine::cross_out_cell(int index)
 {
   m_puzzle.cross_out_cell(col(index), row(index));
 }
@@ -68,7 +68,7 @@ bool PuzzleLine::is_solved() const
   return ConstPuzzleLine(m_puzzle, m_line, m_type).is_solved();
 }
 
-unsigned ConstPuzzleLine::size() const
+int ConstPuzzleLine::size() const
 {
   if (m_type == LineType::row)
     return m_puzzle.width();
@@ -76,7 +76,7 @@ unsigned ConstPuzzleLine::size() const
     return m_puzzle.height();
 }
 
-const PuzzleCell& ConstPuzzleLine::at(unsigned index) const
+const PuzzleCell& ConstPuzzleLine::at(int index) const
 {
   if (m_type == LineType::row)
     return m_puzzle.at(index, m_line);
@@ -96,14 +96,14 @@ bool ConstPuzzleLine::is_solved() const
 {
   //if only clue is 0, make sure line is empty
   if (clues().size() == 1 && clues()[0].value == 0) {
-    for (unsigned i = 0; i < size(); ++i) {
+    for (int i = 0; i < size(); ++i) {
       if (at(i).state == PuzzleCell::State::filled)
         return false;
     }
     return true;
   }
 
-  unsigned pos = 0;
+  int pos = 0;
   for (auto clue : clues()) {
     while (pos < size()
            && at(pos).state != PuzzleCell::State::filled)
@@ -111,7 +111,7 @@ bool ConstPuzzleLine::is_solved() const
     if (pos >= size())
       return false;
 
-    unsigned count = 0;
+    int count = 0;
     while (pos < size()
            && at(pos).state == PuzzleCell::State::filled
            && at(pos).color == clue.color) {

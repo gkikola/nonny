@@ -44,7 +44,7 @@ class ViewManager {
 public:
   ViewManager(VideoSystem& vs, Renderer& renderer, GameSettings& settings);
   ViewManager(VideoSystem& vs, Renderer& renderer, GameSettings& settings,
-              unsigned width, unsigned height);
+              int width, int height);
   
   enum class Action { no_action, quit_game, choose_puzzle, create_puzzle,
       open_menu, close_menu, load_puzzle, quit_puzzle, save_game, restart,
@@ -60,9 +60,9 @@ public:
   void draw(Renderer& renderer);
 
   void refresh();
-  void resize(unsigned width, unsigned height);
-  unsigned width() const { return m_width; }
-  unsigned height() const { return m_height; }
+  void resize(int width, int height);
+  int width() const { return m_width; }
+  int height() const { return m_height; }
 
   VideoSystem& video_system() { return m_video; }
   const VideoSystem& video_system() const { return m_video; }
@@ -82,8 +82,8 @@ private:
   Renderer& m_renderer;
   GameSettings& m_settings;
   SaveManager m_save_mgr;
-  unsigned m_width = 0;
-  unsigned m_height = 0;
+  int m_width = 0;
+  int m_height = 0;
   bool m_puzzle_open = false;
 
   Action m_action = Action::no_action;

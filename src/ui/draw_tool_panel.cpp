@@ -40,7 +40,9 @@ void DrawToolPanel::update(unsigned ticks, InputHandler& input,
     unsigned tool_size = m_texture.height() / 2;
     unsigned selection = (cursor.x() - m_boundary.x())
       / (tool_size + spacing);
-    m_cur_tool = static_cast<Tool>(selection);
+    m_cur_tool = static_cast<PuzzlePanel::DrawTool>(selection);
+    if (m_tool_callback)
+      m_tool_callback();
   }
 }
 

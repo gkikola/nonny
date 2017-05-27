@@ -36,12 +36,12 @@ public:
 
   MenuView(ViewManager& vm, MenuType menu = MenuType::main_menu)
     : View(vm) { load_resources(); open_menu(menu); start_slide(); }
-  MenuView(ViewManager& vm, unsigned width, unsigned height,
+  MenuView(ViewManager& vm, int width, int height,
            MenuType menu = MenuType::main_menu);
 
   void update(unsigned ticks, InputHandler& input) override;
   void draw(Renderer& renderer) override;
-  void resize(unsigned width, unsigned height) override;
+  void resize(int width, int height) override;
 
 private:
   void load_resources();

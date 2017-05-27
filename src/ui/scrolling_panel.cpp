@@ -25,7 +25,7 @@
 #include "video/renderer.hpp"
 
 const Color scrollbar_background_color(196, 196, 196);
-constexpr unsigned scroll_speed = 750;
+constexpr int scroll_speed = 750;
 
 void ScrollingPanel::attach_panel(UIPanelPtr child)
 {
@@ -43,11 +43,11 @@ void ScrollingPanel::update(unsigned ticks, InputHandler& input,
   //handle smooth scroll
   int scroll_amt = 0;
   if (m_smooth_scroll_amount < 0) {
-    scroll_amt = -static_cast<int>(scroll_speed * ticks) / 1000;
+    scroll_amt = -scroll_speed * ticks / 1000;
     if (scroll_amt < m_smooth_scroll_amount)
       scroll_amt = m_smooth_scroll_amount;
   } else if (m_smooth_scroll_amount > 0) {
-    scroll_amt = static_cast<int>(scroll_speed * ticks) / 1000;
+    scroll_amt = scroll_speed * ticks / 1000;
     if (scroll_amt > m_smooth_scroll_amount)
       scroll_amt = m_smooth_scroll_amount;
   }
@@ -96,7 +96,7 @@ void ScrollingPanel::draw(Renderer& renderer, const Rect& region) const
   }
 }
 
-void ScrollingPanel::resize(unsigned width, unsigned height)
+void ScrollingPanel::resize(int width, int height)
 {
   UIPanel::resize(width, height);
 
@@ -111,8 +111,8 @@ void ScrollingPanel::resize(unsigned width, unsigned height)
   }
 
   //move scrollbars into position
-  unsigned adjusted_width = m_boundary.width();
-  unsigned adjusted_height = m_boundary.height();
+  int adjusted_width = m_boundary.width();
+  int adjusted_height = m_boundary.height();
   if (m_hscroll_active)
     adjusted_height -= s_scrollbar_width;
   if (m_vscroll_active)
@@ -155,14 +155,13 @@ void ScrollingPanel::move_panel_in_bounds()
 
   if (r.width() >= m_boundary.width()
       && r.x() + r.width() < m_boundary.x() + m_boundary.width())
-    m_main_panel->move(m_boundary.x()
-                       + static_cast<int>(m_boundary.width())
-                       - static_cast<int>(r.width()), r.y());
+    m_main_panel->move(m_boundary.x() + m_boundary.width()
+                       - r.width(), r.y());
   if (r.height() >= m_boundary.height()
       && r.y() + r.height() < m_boundary.y() + m_boundary.height())
     m_main_panel->move(r.x(), m_boundary.y()
-                       + static_cast<int>(m_boundary.height())
-                       - static_cast<int>(r.height()));
+                       + m_boundary.height()
+                       - r.height());
 }
 
 void ScrollingPanel::smooth_scroll_up()
@@ -181,15 +180,15 @@ void ScrollingPanel::center_panel_vert()
 {
   m_main_panel->move(m_main_panel->boundary().x(),
                      m_boundary.y()
-                     + static_cast<int>(m_boundary.height() / 2)
-                     - static_cast<int>(m_main_panel->boundary().height()
-                                        / 2));
+                     + m_boundary.height() / 2
+                     - m_main_panel->boundary().height()
+                                        / 2);
 }
 
 void ScrollingPanel::center_panel_horiz()
 {
   m_main_panel->move(m_boundary.x()
-                     + static_cast<int>(m_boundary.width() / 2)
-                     - static_cast<int>(m_main_panel->boundary().width() / 2),
+                     + m_boundary.width() / 2
+                     - m_main_panel->boundary().width() / 2,
                      m_main_panel->boundary().y());
 }

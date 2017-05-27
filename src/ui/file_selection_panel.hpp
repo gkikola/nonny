@@ -69,9 +69,9 @@ public:
 private:
   void draw_progress(Renderer& renderer, const PuzzleGrid& grid,
                      const Rect& area) const;
-  void select(unsigned index);
+  void select(int index);
   void make_selection_visible(const Rect& visible_region);
-  unsigned entry_height() const;
+  int entry_height() const;
   void load_file_list();
   void sort_files();
   void load_puzzle_info();
@@ -93,9 +93,9 @@ private:
   const Texture& m_icon_texture;
   std::string m_path;
   std::vector<FileInfo> m_files;
-  unsigned m_selection = 0;
+  int m_selection = 0;
   bool m_is_selected = false;
-  unsigned m_num_puzzles_loaded = 0;
+  int m_num_puzzles_loaded = 0;
 
   Callback m_file_open_callback;
   Callback m_file_sel_callback;

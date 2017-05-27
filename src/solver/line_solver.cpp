@@ -30,7 +30,7 @@ void LineSolver::operator()()
   std::vector<PuzzleCell> line;
   solve_complete(line);
 
-  for (unsigned i = 0; i < line.size(); ++i) {
+  for (int i = 0; i < static_cast<int>(line.size()); ++i) {
     if (line[i].state == PuzzleCell::State::filled)
       m_line.mark_cell(i, line[i].color);
     else if (line[i].state == PuzzleCell::State::crossed_out)
@@ -62,8 +62,8 @@ void LineSolver::solve_complete(std::vector<PuzzleCell>& result)
 
 bool LineSolver::is_seq_valid(const BlockSequence& blocks)
 {
-  unsigned pos = 0;
-  for (unsigned block = 0; block < blocks.size(); ++block) {
+  int pos = 0;
+  for (int block = 0; block < static_cast<int>(blocks.size()); ++block) {
     while (pos < blocks[block].pos) {
       if (m_line[pos].state == PuzzleCell::State::filled)
         return false;
@@ -95,12 +95,12 @@ void LineSolver::intersect_blocks(std::vector<PuzzleCell>& result,
 
   result = std::vector<PuzzleCell>(m_line.size(), PuzzleCell());
   
-  unsigned size = m_line.clues().size();
-  unsigned pos = 0;
-  for (unsigned block = 0; block < size; ++block) {
+  int size = m_line.clues().size();
+  int pos = 0;
+  for (int block = 0; block < size; ++block) {
     //take minimum starting point
-    unsigned start = seqs[0][block].pos;
-    for (unsigned seq = 0; seq < seqs.size(); ++seq)
+    int start = seqs[0][block].pos;
+    for (int seq = 0; seq < static_cast<int>(seqs.size()); ++seq)
       start = std::min(start, seqs[seq][block].pos);
 
     while (pos < start) {
@@ -109,13 +109,13 @@ void LineSolver::intersect_blocks(std::vector<PuzzleCell>& result,
     }
 
     //take maximum starting point
-    for (unsigned seq = 0; seq < seqs.size(); ++seq)
+    for (int seq = 0; seq < static_cast<int>(seqs.size()); ++seq)
       start = std::max(start, seqs[seq][block].pos);
     pos = start;
 
     //take minimum ending point
-    unsigned end = seqs[0][block].pos + seqs[0][block].length;
-    for (unsigned seq = 0; seq < seqs.size(); ++seq)
+    int end = seqs[0][block].pos + seqs[0][block].length;
+    for (int seq = 0; seq < static_cast<int>(seqs.size()); ++seq)
       end = std::min(end, seqs[seq][block].pos + seqs[seq][block].length);
 
     while (pos < end) {
@@ -125,12 +125,12 @@ void LineSolver::intersect_blocks(std::vector<PuzzleCell>& result,
     }
 
     //take maximum ending point
-    for (unsigned seq = 0; seq < seqs.size(); ++seq)
+    for (int seq = 0; seq < static_cast<int>(seqs.size()); ++seq)
       end = std::max(end, seqs[seq][block].pos + seqs[seq][block].length);
     pos = end;
   }
 
-  while (pos < result.size()) {
+  while (pos < static_cast<int>(result.size())) {
     result[pos].state = PuzzleCell::State::crossed_out;
     ++pos;
   }
@@ -143,7 +143,7 @@ void LineSolver::update_clues(std::vector<PuzzleClue>& clues)
   if (clues.size() == 1 && clues[0].value == 0) {
     clues[0].state = PuzzleClue::State::finished;
 
-    for (unsigned pos = 0; pos < m_line.size(); ++pos) {
+    for (int pos = 0; pos < static_cast<int>(m_line.size()); ++pos) {
       if (m_line[pos].state != PuzzleCell::State::crossed_out)
         clues[0].state = PuzzleClue::State::normal;
     }
@@ -180,7 +180,7 @@ void LineSolver::update_clues(std::vector<PuzzleClue>& clues)
       clue.state = PuzzleClue::State::error;
   } else { //no contradictions
     //iterate over blocks
-    for (unsigned i = 0; i < left.size(); ++i) {
+    for (int i = 0; i < static_cast<int>(left.size()); ++i) {
       clues[i].state = PuzzleClue::State::normal;
       
       //if left and right blocks cover the same area,
@@ -198,11 +198,11 @@ void LineSolver::update_clues(std::vector<PuzzleClue>& clues)
         else if (left[i].pos + left[i].length < m_line.size()
                  && m_line[left[i].pos + left[i].length].state
                  != PuzzleCell::State::crossed_out
-                 && (i == left.size() - 1
+                 && (i == static_cast<int>(left.size()) - 1
                      || left[i + 1].color == left[i].color))
           finished = false;
         else { //make sure block is completely filled in
-          for (unsigned pos = left[i].pos;
+          for (int pos = left[i].pos;
                pos < left[i].pos + left[i].length;
                ++pos) {
             if (m_line[pos].state != PuzzleCell::State::filled

@@ -31,8 +31,8 @@
  * the solution.
  */
 struct Block {
-  unsigned pos = 0;
-  unsigned length = 0;
+  int pos = 0;
+  int length = 0;
   Color color;
 };
 
@@ -44,7 +44,7 @@ struct Block {
 class BlockSequence {
 public:
   enum class Init { left, right };
-  BlockSequence(unsigned line_size,
+  BlockSequence(int line_size,
                 const std::vector<PuzzleClue>& line_clues,
                 Init init_type = Init::left);
 
@@ -80,15 +80,15 @@ public:
   const_reverse_iterator rbegin() const { return m_blocks.rbegin(); }
   const_reverse_iterator rend() const { return m_blocks.rend(); }
 
-  Block& operator[](unsigned index) { return m_blocks[index]; }
-  const Block& operator[](unsigned index) const { return m_blocks[index]; }
+  Block& operator[](int index) { return m_blocks[index]; }
+  const Block& operator[](int index) const { return m_blocks[index]; }
   
 private:
   void flush_left(); //set up blocks in leftmost position
   void flush_right(); //set up blocks in rightmost position
 
   std::vector<Block> m_blocks;
-  unsigned m_line_size;
+  int m_line_size;
 };
 
 #endif

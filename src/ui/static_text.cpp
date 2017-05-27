@@ -42,7 +42,7 @@ void StaticText::draw(Renderer& renderer, const Rect& region) const
 
 void StaticText::calc_size()
 {
-  unsigned width = 0, height = 0;
+  int width = 0, height = 0;
   if (m_font) {
     m_font->text_size(m_label, &width, &height);
     m_label_width = width;

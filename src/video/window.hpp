@@ -46,8 +46,8 @@ public:
   Window(const Window&) = delete;
   Window& operator=(const Window&) = delete;
 
-  virtual unsigned width() const = 0;
-  virtual unsigned height() const = 0;
+  virtual int width() const = 0;
+  virtual int height() const = 0;
 };
 
 #endif

@@ -57,21 +57,21 @@ public:
    * Set how wide the panel should be. Determines wrapping of color
    * buttons.
    */
-  void set_width(unsigned width);
+  void set_width(int width);
 
 private:
   void prev_color();
   void next_color();
-  void set_selection(unsigned selection);
+  void set_selection(int selection);
 
-  unsigned colors_per_line() const; //how many colors fit on a line
-  unsigned entry_at_point(Point pt) const;
-  Rect entry_rect(unsigned index) const;
+  int colors_per_line() const; //how many colors fit on a line
+  int entry_at_point(Point pt) const;
+  Rect entry_rect(int index) const;
   void update_offset(); //calculate position of color button placement
 
   std::vector<Color> m_colors;
   Color m_bkgd_color;
-  unsigned m_selection = 0;
+  int m_selection = 0;
   Callback m_color_callback;
   int m_offset = 0;
 };

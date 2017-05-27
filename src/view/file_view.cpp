@@ -33,9 +33,9 @@ namespace stdfs = std::experimental::filesystem;
 
 const Color background_color(123, 175, 212);
 
-constexpr unsigned path_spacing = 8;
-constexpr unsigned button_spacing = 16;
-constexpr unsigned panel_spacing = 32;
+constexpr int path_spacing = 8;
+constexpr int button_spacing = 16;
+constexpr int panel_spacing = 32;
 
 FileView::FileView(ViewManager& vm, Mode mode)
   : View(vm), m_mode(mode), m_cur_path(m_paths.end())
@@ -45,7 +45,7 @@ FileView::FileView(ViewManager& vm, Mode mode)
 }
 
 FileView::FileView(ViewManager& vm, Mode mode,
-                   unsigned width, unsigned height)
+                   int width, int height)
   : View(vm, width, height), m_mode(mode), m_cur_path(m_paths.end())
 {
   load_resources();
@@ -59,8 +59,8 @@ void FileView::update(unsigned ticks, InputHandler& input)
     if (input.was_mouse_button_pressed(Mouse::Button::left)
         || input.was_mouse_moved()) {
       int x = m_path_start.x(), y = m_path_start.y();
-      unsigned width, height;
-      unsigned index = 0;
+      int width, height;
+      int index = 0;
       bool set_cursor = false;
       for (const auto& e : *m_cur_path) {
         if (index < m_path_collapse_start || index >= m_path_collapse_end) {
@@ -140,7 +140,7 @@ void FileView::draw(Renderer& renderer)
   if (m_cur_path != m_paths.end()) {
     renderer.set_draw_color(default_colors::black);
     int x = m_path_start.x(), y = m_path_start.y();
-    unsigned index = 0;
+    int index = 0;
     for (auto& e : *m_cur_path) {
       Rect r;
       if (index != 0
@@ -179,7 +179,7 @@ void FileView::draw(Renderer& renderer)
   m_file_selection.draw(renderer);
 }
 
-void FileView::resize(unsigned width, unsigned height)
+void FileView::resize(int width, int height)
 {
   View::resize(width, height);
 
@@ -197,15 +197,15 @@ void FileView::resize(unsigned width, unsigned height)
   m_menu_button->move(x, y);
 
   //vertically center path text
-  unsigned text_ht = 0;
+  int text_ht = 0;
   m_filename_font->text_size(">", nullptr, &text_ht);
   m_path_start = Point(panel_spacing, panel_spacing);
   m_path_start.y() += m_menu_button->boundary().height() / 2 - text_ht / 2;
 
   collapse_path();
 
-  unsigned new_width = m_width - 2 * panel_spacing;
-  unsigned new_height = m_height - 2 * panel_spacing - button_spacing
+  int new_width = m_width - 2 * panel_spacing;
+  int new_height = m_height - 2 * panel_spacing - button_spacing
     - m_up_button->boundary().height()
     - m_open_button->boundary().height() - button_spacing;
   UIPanel& panel = m_file_selection.main_panel();
@@ -325,13 +325,13 @@ void FileView::up()
 
 void FileView::switch_focus(bool fwd) {
   bool focus_changed = false;
-  for (unsigned i = 0; i < m_controls.size(); ++i) {
+  for (int i = 0; i < static_cast<int>(m_controls.size()); ++i) {
     if (m_controls[i]->has_focus()) {
       m_controls[i]->remove_focus();
-      unsigned next;
+      int next;
       if (i == 0 && !fwd)
         next = m_controls.size() - 1;
-      else if (i == m_controls.size() - 1 && fwd)
+      else if (i == static_cast<int>(m_controls.size()) - 1 && fwd)
         next = 0;
       else
         next = fwd ? i + 1 : i - 1;
@@ -373,14 +373,14 @@ void FileView::open_save_dir()
   open_path(stdfs::canonical(stdfs::path(m_mgr.game_settings().save_dir())));
 }
 
-unsigned FileView::path_name_width() const
+int FileView::path_name_width() const
 {
-  unsigned total = 0;
+  int total = 0;
   
   if (m_cur_path != m_paths.end()) {
-    unsigned index = 0;
+    int index = 0;
     for (const auto& e : *m_cur_path) {
-      unsigned width = 0;
+      int width = 0;
       if (index == m_path_collapse_start
           && index < m_path_collapse_end)
         m_filename_font->text_size("...", &width, nullptr);
@@ -401,9 +401,9 @@ unsigned FileView::path_name_width() const
   return total;
 }
 
-unsigned FileView::path_subdir_count() const
+int FileView::path_subdir_count() const
 {
-  unsigned count = 0;
+  int count = 0;
   if (m_cur_path != m_paths.end()) {
     for (auto it = m_cur_path->begin(); it != m_cur_path->end(); ++it) {
       ++count;
@@ -422,8 +422,8 @@ void FileView::handle_directory_change()
     if (*m_cur_path != file_panel.path())
       file_panel.open_path(*m_cur_path);
     //resize and reposition panels
-    unsigned panel_width = m_file_selection.boundary().width();
-    unsigned panel_height = m_file_selection.boundary().height();
+    int panel_width = m_file_selection.boundary().width();
+    int panel_height = m_file_selection.boundary().height();
     file_panel.resize(panel_width, file_panel.boundary().height());
     m_file_selection.resize(panel_width, panel_height); //refresh scrollbars
     file_panel.move(file_panel.boundary().x(),
@@ -445,7 +445,7 @@ void FileView::collapse_path()
 {    
   if (m_cur_path != m_paths.end()) {
     //max allowed width is screen width minus the four nav buttons
-    unsigned max_width = 2 * panel_spacing
+    int max_width = 2 * panel_spacing
       + 4 * (m_up_button->boundary().width() + button_spacing);
     if (max_width < m_width)
       max_width = m_width - max_width;
@@ -453,7 +453,7 @@ void FileView::collapse_path()
       max_width = 0;
 
     //move collapse points until width is within bounds
-    unsigned count = path_subdir_count();
+    int count = path_subdir_count();
     m_path_collapse_start = count / 2;
     m_path_collapse_end = m_path_collapse_start;
 
@@ -479,10 +479,10 @@ void FileView::collapse_path()
   }
 }
 
-void FileView::open_subdir(unsigned index)
+void FileView::open_subdir(int index)
 {
   if (m_cur_path != m_paths.end()) {
-    unsigned count = path_subdir_count();
+    int count = path_subdir_count();
     stdfs::path p = *m_cur_path;
 
     while (index + 1 < count) {

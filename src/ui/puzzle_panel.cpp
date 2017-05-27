@@ -34,8 +34,8 @@ const Color blank_cell_color(255, 255, 255);
 const Color shaded_cell_color(230, 230, 255);
 const Color lightly_shaded_cell_color(240, 240, 255);
 
-constexpr unsigned cell_animation_duration = 100;
-constexpr unsigned time_for_mouse_unlock = 96;
+constexpr int cell_animation_duration = 100;
+constexpr int time_for_mouse_unlock = 96;
 
 PuzzlePanel::PuzzlePanel(Font& clue_font, const Texture& cell_texture,
                          Puzzle& puzzle)
@@ -48,7 +48,7 @@ PuzzlePanel::PuzzlePanel(Font& clue_font, const Texture& cell_texture,
 void PuzzlePanel::attach_puzzle(Puzzle& puzzle)
 {
   m_puzzle = &puzzle;
-  unsigned size = puzzle.width() * puzzle.height();
+  int size = puzzle.width() * puzzle.height();
   m_cell_time.resize(size, 0);
   m_prev_cell_state.resize(size, PuzzleCell::State::blank);
 }
@@ -87,13 +87,13 @@ void PuzzlePanel::calc_grid_pos()
     m_grid_pos.x() = m_boundary.x();
     m_grid_pos.y() = m_boundary.y();
 
-    for (unsigned i = 0; i < m_puzzle->width(); ++i) {
+    for (int i = 0; i < m_puzzle->width(); ++i) {
       int bottom = m_boundary.y() + col_clue_height(i);
       if (bottom > m_grid_pos.y())
         m_grid_pos.y() = bottom;
     }
 
-    for (unsigned j = 0; j < m_puzzle->height(); ++j) {
+    for (int j = 0; j < m_puzzle->height(); ++j) {
       int side = m_boundary.x() + row_clue_width(j);
       if (side > m_grid_pos.x())
         m_grid_pos.x() = side;
@@ -106,22 +106,22 @@ void PuzzlePanel::calc_grid_pos()
   }
 }
 
-unsigned PuzzlePanel::row_clue_width(unsigned row) const
+int PuzzlePanel::row_clue_width(int row) const
 {
-  unsigned width = 0;
+  int width = 0;
   for (auto clue : m_puzzle->row_clues(row)) {
-    unsigned text_wd, text_ht;
+    int text_wd, text_ht;
     m_clue_font.text_size(std::to_string(clue.value), &text_wd, &text_ht);
     width += text_wd + clue_spacing();
   }
   return width;
 }
 
-unsigned PuzzlePanel::col_clue_height(unsigned col) const
+int PuzzlePanel::col_clue_height(int col) const
 {
-  unsigned height = 0;
+  int height = 0;
   for (auto clue : m_puzzle->col_clues(col)) {
-    unsigned text_wd, text_ht;
+    int text_wd, text_ht;
     m_clue_font.text_size(std::to_string(clue.value), &text_wd, &text_ht);
     height += text_ht + clue_spacing();
   }
@@ -131,9 +131,9 @@ unsigned PuzzlePanel::col_clue_height(unsigned col) const
 void PuzzlePanel::draw_grid_lines(Renderer& renderer) const
 {
   renderer.set_draw_color(cell_border_color);
-  unsigned width = m_puzzle->width();
-  unsigned height = m_puzzle->height();
-  for (unsigned x = 0; x <= width; ++x) {
+  int width = m_puzzle->width();
+  int height = m_puzzle->height();
+  for (int x = 0; x <= width; ++x) {
     Point start(m_grid_pos.x() + x * (m_cell_size + 1), m_grid_pos.y());
     Point end(start.x(), m_grid_pos.y() + height * (m_cell_size + 1));
 
@@ -142,7 +142,7 @@ void PuzzlePanel::draw_grid_lines(Renderer& renderer) const
     else
       renderer.draw_line(start, end);
   }
-  for (unsigned y = 0; y <= height; ++y) {
+  for (int y = 0; y <= height; ++y) {
     Point start(m_grid_pos.x(), m_grid_pos.y() + y * (m_cell_size + 1));
     Point end(m_grid_pos.x() + width * (m_cell_size + 1), start.y());
 
@@ -158,7 +158,7 @@ void PuzzlePanel::draw_clues(Renderer& renderer) const
   constexpr double finished_fade = 0.33;
   
   int x, y;
-  for (unsigned i = 0; i < m_puzzle->width(); ++i) {
+  for (int i = 0; i < m_puzzle->width(); ++i) {
     x = m_grid_pos.x() + i * (m_cell_size + 1);
     y = m_grid_pos.y() - col_clue_height(i);
     for (auto clue : m_puzzle->col_clues(i)) {
@@ -170,7 +170,7 @@ void PuzzlePanel::draw_clues(Renderer& renderer) const
       }
       renderer.set_draw_color(color);
       std::string value = std::to_string(clue.value);
-      unsigned wd, ht;
+      int wd, ht;
       m_clue_font.text_size(value, &wd, &ht);
       Point pos(x + (m_cell_size + 1) / 2 - wd / 2, y);
       renderer.draw_text(pos, m_clue_font, value);
@@ -178,7 +178,7 @@ void PuzzlePanel::draw_clues(Renderer& renderer) const
     }
   }
 
-  for (unsigned j = 0; j < m_puzzle->height(); ++j) {
+  for (int j = 0; j < m_puzzle->height(); ++j) {
     x = m_grid_pos.x() - row_clue_width(j);
     y = m_grid_pos.y() + j * (m_cell_size + 1);
     for (auto clue : m_puzzle->row_clues(j)) {
@@ -190,7 +190,7 @@ void PuzzlePanel::draw_clues(Renderer& renderer) const
       }
       renderer.set_draw_color(color);
       std::string value = std::to_string(clue.value);
-      unsigned wd, ht;
+      int wd, ht;
       m_clue_font.text_size(value, &wd, &ht);
       Point pos(x, y + (m_cell_size + 1) / 2 - ht / 2);
       renderer.draw_text(pos, m_clue_font, value);
@@ -201,60 +201,69 @@ void PuzzlePanel::draw_clues(Renderer& renderer) const
 
 void PuzzlePanel::draw_cells(Renderer& renderer) const
 {
-  unsigned index = 0;
-  for (unsigned y = 0; y < m_puzzle->height(); ++y) {
-    for (unsigned x = 0; x < m_puzzle->width(); ++x, ++index) {
-      Rect dest(m_grid_pos.x() + x * (m_cell_size + 1) + 1,
-                m_grid_pos.y() + y * (m_cell_size + 1) + 1,
-                m_cell_size, m_cell_size);
-      const PuzzleCell& cell = (*m_puzzle)[x][y];
+  int index = 0;
+  for (int y = 0; y < m_puzzle->height(); ++y) {
+    for (int x = 0; x < m_puzzle->width(); ++x, ++index) {
+      draw_cell(renderer, x, y, (*m_puzzle)[x][y].state,
+                m_prev_cell_state[index], (*m_puzzle)[x][y].color,
+                m_cell_time[index]);
+    }
+  }
+}
 
-      if (x % 2 != y % 2)
-        renderer.set_draw_color(lightly_shaded_cell_color);
-      else if (x % 2 == 0)
-        renderer.set_draw_color(shaded_cell_color);
-      else
-        renderer.set_draw_color(blank_cell_color);
-      renderer.fill_rect(dest);
+void PuzzlePanel::draw_cell(Renderer& renderer, int x, int y,
+                            PuzzleCell::State state,
+                            PuzzleCell::State prev_state,
+                            const Color& color,
+                            unsigned animation_time) const
+{
+  Rect dest(m_grid_pos.x() + x * (m_cell_size + 1) + 1,
+            m_grid_pos.y() + y * (m_cell_size + 1) + 1,
+            m_cell_size, m_cell_size);
 
-      //change size of square based on time elapsed
-      if (cell.state != m_prev_cell_state[index]) {
-        if (m_cell_time[index] < cell_animation_duration) {
-          int size_reduction = (m_cell_size / 2)
-            * (cell_animation_duration - m_cell_time[index])
-            / cell_animation_duration;
-          if (size_reduction < 0)
-            size_reduction = 0;
-          else if (size_reduction >= static_cast<int>(m_cell_size) / 2)
-            size_reduction = m_cell_size / 2 - 1;
+  if (x % 2 != y % 2)
+    renderer.set_draw_color(lightly_shaded_cell_color);
+  else if (x % 2 == 0)
+    renderer.set_draw_color(shaded_cell_color);
+  else
+    renderer.set_draw_color(blank_cell_color);
+  renderer.fill_rect(dest);
 
-          if (cell.state == PuzzleCell::State::blank)
-            size_reduction = m_cell_size / 2 - 1 - size_reduction;
+  //change size of square based on time elapsed
+  if (state != prev_state) {
+    if (animation_time < cell_animation_duration) {
+      int size_reduction = (m_cell_size / 2)
+        * (cell_animation_duration - animation_time)
+        / cell_animation_duration;
+      if (size_reduction < 0)
+        size_reduction = 0;
+      else if (size_reduction >= m_cell_size / 2)
+        size_reduction = m_cell_size / 2 - 1;
+
+      if (state == PuzzleCell::State::blank)
+        size_reduction = m_cell_size / 2 - 1 - size_reduction;
         
-          dest.x() += size_reduction;
-          dest.y() += size_reduction;
-          dest.width() -= 2 * size_reduction;
-          dest.height() -= 2 * size_reduction;
-        }
-      }
+      dest.x() += size_reduction;
+      dest.y() += size_reduction;
+      dest.width() -= 2 * size_reduction;
+      dest.height() -= 2 * size_reduction;
+    }
+  }
 
-      if (cell.state == PuzzleCell::State::filled) {
-        renderer.set_draw_color(cell.color);
-        renderer.fill_rect(dest);
-      } else if (cell.state == PuzzleCell::State::crossed_out) {
-        renderer.copy_texture(m_cell_texture, Rect(), dest);
-      }
+  if (state == PuzzleCell::State::filled) {
+    renderer.set_draw_color(color);
+    renderer.fill_rect(dest);
+  } else if (state == PuzzleCell::State::crossed_out) {
+    renderer.copy_texture(m_cell_texture, Rect(), dest);
+  }
 
-      if (cell.state == PuzzleCell::State::blank
-          && m_cell_time[index] < cell_animation_duration) {
-        if (m_prev_cell_state[index] == PuzzleCell::State::filled) {
-          renderer.set_draw_color(cell.color);
-          renderer.fill_rect(dest);
-        } else if (m_prev_cell_state[index]
-                   == PuzzleCell::State::crossed_out) {
-          renderer.copy_texture(m_cell_texture, Rect(), dest);
-        }
-      }
+  if (state == PuzzleCell::State::blank
+      && animation_time < cell_animation_duration) {
+    if (prev_state == PuzzleCell::State::filled) {
+      renderer.set_draw_color(color);
+      renderer.fill_rect(dest);
+    } else if (prev_state == PuzzleCell::State::crossed_out) {
+      renderer.copy_texture(m_cell_texture, Rect(), dest);
     }
   }
 }
@@ -282,6 +291,24 @@ void PuzzlePanel::draw_selection(Renderer& renderer) const
     renderer.draw_thick_line(Point(cell.x(), m_boundary.y()),
                              m_cell_size + 1, 3, false);
   }
+
+  if ((m_mouse_dragging || m_kb_dragging)
+      && m_draw_tool != DrawTool::paint
+      && m_draw_tool != DrawTool::fill) {
+    if (m_drag_marks)
+      renderer.set_draw_color(m_color);
+    else
+      renderer.set_draw_color(default_colors::white);
+    auto fn = [this, &renderer](int x, int y) {
+      auto& cell = (*m_puzzle)[x][y];
+      auto state = (m_drag_marks
+                    ? PuzzleCell::State::filled
+                    : PuzzleCell::State::blank);
+      draw_cell(renderer, x, y, state, state,
+                cell.color, cell_animation_duration);
+    };
+    for_each_point_on_selection(fn);
+  }
 }
 
 void PuzzlePanel::move(int x, int y)
@@ -301,9 +328,9 @@ void PuzzlePanel::update_cells(unsigned ticks)
   }
 }
 
-void PuzzlePanel::set_cell(unsigned x, unsigned y, PuzzleCell::State state)
+void PuzzlePanel::set_cell(int x, int y, PuzzleCell::State state)
 {
-  unsigned index = x + y * m_puzzle->width();
+  int index = x + y * m_puzzle->width();
   m_prev_cell_state[index] = (*m_puzzle)[x][y].state;
   m_cell_time[index] = 0;
   switch (state) {
@@ -320,7 +347,7 @@ void PuzzlePanel::set_cell(unsigned x, unsigned y, PuzzleCell::State state)
   };
 }
 
-void PuzzlePanel::drag_over_cell(unsigned x, unsigned y)
+void PuzzlePanel::drag_over_cell(int x, int y)
 {
   PuzzleCell::State cur_state = (*m_puzzle)[x][y].state;
   PuzzleCell::State new_state;
@@ -353,7 +380,7 @@ void PuzzlePanel::handle_mouse_selection(unsigned ticks, InputHandler& input,
 {
   //figure out which cell is under the mouse cursor
   Point cursor = input.mouse_position();
-  unsigned x = 0, y = 0;
+  int x = 0, y = 0;
   cell_at_point(cursor, &x, &y);
 
   PuzzleCell::State cur_state;
@@ -369,7 +396,7 @@ void PuzzlePanel::handle_mouse_selection(unsigned ticks, InputHandler& input,
       m_selection_x = x;
       m_selection_y = y;
 
-      if (m_mouse_locked) {
+      if (m_mouse_locked && !m_edit_mode) {
         if (m_mouse_lock_type == MouseLockType::to_row)
           m_selection_y = m_mouse_lock_pos;
         else
@@ -395,13 +422,23 @@ void PuzzlePanel::handle_mouse_selection(unsigned ticks, InputHandler& input,
       input.capture_mouse();
 
       //keep track of current cell in order to lock mouse later on
+      //or for edit mode
       m_drag_start_x = x;
       m_drag_start_y = y;
+      m_drag_marks = left_pressed;
+
+      if (m_draw_tool == DrawTool::fill)
+        do_draw_action(left_pressed);
     }
   }
 
   if (input.was_mouse_button_released(Mouse::Button::left)
       || input.was_mouse_button_released(Mouse::Button::right)) {
+    if (m_mouse_dragging && m_edit_mode
+        && m_draw_tool != DrawTool::paint
+        && m_draw_tool != DrawTool::fill)
+      do_draw_action(input.was_mouse_button_released(Mouse::Button::left));
+    
     m_mouse_dragging = false;
     m_mouse_locked = false;
     input.release_mouse();
@@ -409,7 +446,7 @@ void PuzzlePanel::handle_mouse_selection(unsigned ticks, InputHandler& input,
         
   if (m_mouse_dragging) {    
     Point old_cursor = input.prev_mouse_position();
-    unsigned old_x, old_y;
+    int old_x, old_y;
     cell_at_point(old_cursor, &old_x, &old_y);
 
     if (old_x == x && old_y == y)
@@ -417,11 +454,13 @@ void PuzzlePanel::handle_mouse_selection(unsigned ticks, InputHandler& input,
     else
       m_ticks_on_cur_cell = 0;
 
+    generalized_cell_at_point(cursor, &m_drag_end_x, &m_drag_end_y);
+
     if ((m_mouse_lock_type == MouseLockType::to_row
          && (m_mouse_lock_pos + 1 == y || m_mouse_lock_pos == y + 1))
         || (m_mouse_lock_type == MouseLockType::to_col
             && (m_mouse_lock_pos + 1 == x || m_mouse_lock_pos == x + 1))) {
-      if (m_ticks_on_cur_cell >= time_for_mouse_unlock) {
+      if (!m_edit_mode && m_ticks_on_cur_cell >= time_for_mouse_unlock) {
         m_mouse_locked = false;
         m_drag_start_x = x;
         m_drag_start_y = y;
@@ -436,7 +475,7 @@ void PuzzlePanel::handle_mouse_selection(unsigned ticks, InputHandler& input,
         x = m_mouse_lock_pos;
         old_x = m_mouse_lock_pos;
       }
-    } else {
+    } else if (!m_edit_mode) {
       if (x == m_drag_start_x && y != m_drag_start_y) {
         m_mouse_lock_type = MouseLockType::to_col;
         m_mouse_lock_pos = x;
@@ -452,18 +491,20 @@ void PuzzlePanel::handle_mouse_selection(unsigned ticks, InputHandler& input,
     }
     
     //mark current cell and any cells that the mouse passed over
-    drag_over_cell(x, y);
+    if (m_draw_tool == DrawTool::paint) {
+      drag_over_cell(x, y);
     
-    while (old_x != x || old_y != y) {
-      drag_over_cell(old_x, old_y);
-      if (old_x < x)
-        ++old_x;
-      else if (old_x > x)
-        --old_x;
-      if (old_y < y)
-        ++old_y;
-      else if (old_y > y)
-        --old_y;
+      while (old_x != x || old_y != y) {
+        drag_over_cell(old_x, old_y);
+        if (old_x < x)
+          ++old_x;
+        else if (old_x > x)
+          --old_x;
+        if (old_y < y)
+          ++old_y;
+        else if (old_y > y)
+          --old_y;
+      }
     }
   }
 }
@@ -482,6 +523,11 @@ void PuzzlePanel::handle_kb_selection(unsigned ticks, InputHandler& input)
     || input.was_key_pressed(Keyboard::Key::kp_del);
   if (m_selected && (fill_pressed || cross_pressed)) {
     m_kb_dragging = true;
+    m_drag_start_x = m_selection_x;
+    m_drag_start_y = m_selection_y;
+    m_drag_end_x = m_drag_start_x;
+    m_drag_end_y = m_drag_start_y;
+    m_drag_marks = fill_pressed;
     PuzzleCell::State cur_state
       = (*m_puzzle)[m_selection_x][m_selection_y].state;
     PuzzleCell::State new_state;
@@ -506,7 +552,10 @@ void PuzzlePanel::handle_kb_selection(unsigned ticks, InputHandler& input)
       break;
     };
 
-    set_cell(m_selection_x, m_selection_y, new_state);
+    if (m_draw_tool == DrawTool::paint)
+      set_cell(m_selection_x, m_selection_y, new_state);
+    else if (m_draw_tool == DrawTool::fill)
+      do_draw_action();
   }
 
   if (input.was_key_released(Keyboard::Key::space)
@@ -516,10 +565,16 @@ void PuzzlePanel::handle_kb_selection(unsigned ticks, InputHandler& input)
       || input.was_key_released(Keyboard::Key::rctrl)
       || input.was_key_released(Keyboard::Key::backspace)
       || input.was_key_released(Keyboard::Key::del)
-      || input.was_key_released(Keyboard::Key::kp_del))
+      || input.was_key_released(Keyboard::Key::kp_del)) {
     m_kb_dragging = false;
 
-  unsigned num_press = input.num_key_presses(Keyboard::Key::left)
+    if (m_edit_mode
+        && m_draw_tool != DrawTool::paint
+        && m_draw_tool != DrawTool::fill)
+      do_draw_action();
+  }
+
+  int num_press = input.num_key_presses(Keyboard::Key::left)
     + input.num_key_presses(Keyboard::Key::kp_left);
   if (num_press)
     move_selection(Direction::left, num_press);
@@ -540,9 +595,83 @@ void PuzzlePanel::handle_kb_selection(unsigned ticks, InputHandler& input)
     move_selection(Direction::up, num_press);  
 }
 
-void PuzzlePanel::move_selection(Direction dir, unsigned count)
+void PuzzlePanel::do_draw_action(bool mark)
 {
-  for (unsigned i = 0; i < count; ++i) {
+  using namespace std::placeholders;
+  
+  switch (m_draw_tool) {
+  case DrawTool::paint:
+    break;
+  case DrawTool::line:
+  case DrawTool::rect:
+  case DrawTool::ellipse:
+    {
+      auto f = [this, mark](int x, int y) {
+        if (mark)
+          m_puzzle->mark_cell(x, y, m_color);
+        else
+          m_puzzle->clear_cell(x, y);
+      };
+      for_each_point_on_selection(f);
+    }
+    break;
+  case DrawTool::fill:
+    break;
+  }
+}
+
+void PuzzlePanel::for_each_point_on_selection(CellFunction fn) const
+{
+  int x0 = m_drag_start_x;
+  int y0 = m_drag_start_y;
+  int x1 = m_drag_end_x;
+  int y1 = m_drag_end_y;
+  
+  switch (m_draw_tool) {
+  case DrawTool::paint:
+  case DrawTool::fill:
+    //do nothing
+    break;
+  case DrawTool::line:
+    {
+      int dx = std::abs(x1 - x0);
+      int dy = -std::abs(y1 - y0);
+      int sx = x0 < x1 ? 1 : -1;
+      int sy = y0 < y1 ? 1 : -1;
+      int err = dx + dy;
+      int x = x0, y = y0;
+
+      while (true) {
+        if (x >= 0 && y >= 0
+            && x < m_puzzle->width()
+            && y < m_puzzle->height())
+          fn(x, y);
+
+        if (x == x1 && y == y1)
+          break;
+
+        int err2 = 2 * err;
+        if (err2 >= dy) {
+          err += dy;
+          x += sx;
+        }
+        if (err2 <= dx) {
+          err += dx;
+          y += sy;
+        }
+      }
+    }
+    break;
+  case DrawTool::rect:
+    break;
+  case DrawTool::ellipse:
+    break;
+  }
+}
+
+void PuzzlePanel::move_selection(Direction dir, int count)
+{
+  for (int i = 0; i < count; ++i) {
     if (!m_selected)
       m_selected = true;
     else {
@@ -573,7 +702,7 @@ void PuzzlePanel::move_selection(Direction dir, unsigned count)
         break;
       }
 
-      if (m_kb_dragging) {
+      if (m_kb_dragging && m_draw_tool == DrawTool::paint) {
         auto cur_state = (*m_puzzle)[m_selection_x][m_selection_y].state;
         decltype(cur_state) new_state;
         bool set_state = false;
@@ -610,4 +739,9 @@ void PuzzlePanel::move_selection(Direction dir, unsigned count)
       } //end if kb_dragging
     }
   } //end for
+
+  if (m_kb_dragging) {
+    m_drag_end_x = m_selection_x;
+    m_drag_end_y = m_selection_y;
+  }
 }

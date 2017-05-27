@@ -29,8 +29,8 @@
 struct PuzzleSummary {
   std::string title;
   std::string author;
-  unsigned width = 0;
-  unsigned height = 0;
+  int width = 0;
+  int height = 0;
   std::string collection;
   std::string id;
   bool is_multicolor = false;

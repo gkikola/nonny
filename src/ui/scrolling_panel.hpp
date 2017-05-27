@@ -43,13 +43,13 @@ public:
   void update(unsigned ticks, InputHandler& input,
               const Rect& active_region) override;
   void draw(Renderer& renderer, const Rect& region) const override;
-  void resize(unsigned width, unsigned height) override;
+  void resize(int width, int height) override;
 
   UIPanel& main_panel() { return *m_main_panel; }
   const UIPanel& main_panel() const { return *m_main_panel; }
   void center_main_panel() { center_panel_vert(); center_panel_horiz(); }
   void move_panel_in_bounds();
-  unsigned scrollbar_width() const { return s_scrollbar_width; }
+  int scrollbar_width() const { return s_scrollbar_width; }
 
   void smooth_scroll_up();
   void smooth_scroll_down();
@@ -65,7 +65,7 @@ private:
   bool m_vscroll_active = false;
   int m_smooth_scroll_amount = 0;
 
-  static const unsigned s_scrollbar_width = 16;
+  static const int s_scrollbar_width = 16;
 };
 
 #endif

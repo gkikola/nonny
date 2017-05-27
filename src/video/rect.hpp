@@ -29,7 +29,7 @@
 class Rect {
 public:
   Rect() = default;
-  Rect(int x, int y, unsigned width, unsigned height)
+  Rect(int x, int y, int width, int height)
     : m_x(x), m_y(y), m_width(width), m_height(height) { }
   
   Rect(const Rect&) = default;
@@ -43,13 +43,13 @@ public:
   int x() const { return m_x; }
   int& y() { return m_y; }
   int y() const { return m_y; }
-  unsigned& width() { return m_width; }
-  unsigned width() const { return m_width; }
-  unsigned& height() { return m_height; }
-  unsigned height() const { return m_height; }
+  int& width() { return m_width; }
+  int width() const { return m_width; }
+  int& height() { return m_height; }
+  int height() const { return m_height; }
 
   void move(int x, int y) { m_x = x; m_y = y; }
-  inline void resize(unsigned width, unsigned height);
+  inline void resize(int width, int height);
 
   inline bool contains_point(int x, int y) const;
   inline bool contains_point(const Point& p) const;
@@ -57,8 +57,8 @@ public:
 private:
   int m_x = 0;
   int m_y = 0;
-  unsigned m_width = 0;
-  unsigned m_height = 0;
+  int m_width = 0;
+  int m_height = 0;
 };
 
 /*
@@ -69,15 +69,15 @@ Rect intersection(const Rect& r1, const Rect& r2);
 
 /* implementation */
 
-inline void Rect::resize(unsigned width, unsigned height)
+inline void Rect::resize(int width, int height)
 {
   m_width = width; m_height = height;
 }
 
 inline bool Rect::contains_point(int x, int y) const
 {
-  return x >= m_x && x <= m_x + static_cast<int>(m_width)
-    && y >= m_y && y <= m_y + static_cast<int>(m_height);
+  return x >= m_x && x <= m_x + m_width
+    && y >= m_y && y <= m_y + m_height;
 }
 
 inline bool Rect::contains_point(const Point& p) const

@@ -70,8 +70,8 @@ public:
   // state gives the saved puzzle state, solution gives the saved solution
   const PuzzleGrid& state() const { return m_progress; }
   const PuzzleGrid& solution() const { return m_solution; }
-  inline const PuzzleCell& state(unsigned row, unsigned col) const;
-  inline const PuzzleCell& solution(unsigned row, unsigned col) const;
+  inline const PuzzleCell& state(int row, int col) const;
+  inline const PuzzleCell& solution(int row, int col) const;
 
 private:
   std::string m_filename;
@@ -89,13 +89,13 @@ std::istream& operator>>(std::istream&, PuzzleProgress&);
 /* implementation */
 
 inline const PuzzleCell&
-PuzzleProgress::state(unsigned row, unsigned col) const
+PuzzleProgress::state(int row, int col) const
 {
   return m_progress.at(row, col);
 }
 
 inline const PuzzleCell&
-PuzzleProgress::solution(unsigned row, unsigned col) const
+PuzzleProgress::solution(int row, int col) const
 {
   return m_solution.at(row, col);
 }

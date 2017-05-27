@@ -26,8 +26,8 @@
 #include "input/input_handler.hpp"
 #include "video/renderer.hpp"
 
-constexpr unsigned color_size = 32;
-constexpr unsigned spacing = 4;
+constexpr int color_size = 32;
+constexpr int spacing = 4;
 
 PalettePanel::PalettePanel(const ColorPalette& palette)
 {
@@ -70,7 +70,7 @@ void PalettePanel::draw(Renderer& renderer, const Rect& region) const
 {
   renderer.set_clip_rect(region);
   
-  for (unsigned i = 0; i < m_colors.size(); ++i) {
+  for (int i = 0; i < static_cast<int>(m_colors.size()); ++i) {
     Rect r = entry_rect(i);
     renderer.set_draw_color(m_colors[i]);
     renderer.fill_rect(r);
@@ -85,11 +85,11 @@ void PalettePanel::draw(Renderer& renderer, const Rect& region) const
   renderer.set_clip_rect();
 }
 
-void PalettePanel::set_width(unsigned width)
+void PalettePanel::set_width(int width)
 {
   resize(width, 0);
   if (colors_per_line() > 0 && !m_colors.empty()) {
-    unsigned num_lines = m_colors.size() / colors_per_line();
+    int num_lines = m_colors.size() / colors_per_line();
     if (m_colors.size() % colors_per_line() != 0)
       ++num_lines;
     resize(width, color_size * num_lines + spacing * (num_lines - 1));
@@ -110,44 +110,44 @@ void PalettePanel::prev_color()
 void PalettePanel::next_color()
 {
   ++m_selection;
-  if (m_selection >= m_colors.size())
+  if (m_selection >= static_cast<int>(m_colors.size()))
     m_selection = 0;
   if (m_color_callback)
     m_color_callback();
 }
 
-void PalettePanel::set_selection(unsigned selection)
+void PalettePanel::set_selection(int selection)
 {
   m_selection = selection;
   if (m_color_callback)
     m_color_callback();
 }
 
-unsigned PalettePanel::colors_per_line() const
+int PalettePanel::colors_per_line() const
 {
   return (m_boundary.width() + spacing) / (color_size + spacing);
 }
 
-unsigned PalettePanel::entry_at_point(Point pt) const
+int PalettePanel::entry_at_point(Point pt) const
 {  
   int x = (pt.x() - m_boundary.x() - m_offset)
-    / static_cast<int>(color_size + spacing);
+    / (color_size + spacing);
   int y = (pt.y() - m_boundary.y()) / (color_size + spacing);
   if (x < 0)
     x = 0;
   if (y < 0)
     y = 0;
 
-  unsigned index = x + y * colors_per_line();
-  if (index >= m_colors.size())
+  int index = x + y * colors_per_line();
+  if (index >= static_cast<int>(m_colors.size()))
     index = m_colors.size() - 1;
 
   return index;
 }
 
-Rect PalettePanel::entry_rect(unsigned index) const
+Rect PalettePanel::entry_rect(int index) const
 {
-  unsigned cpl = colors_per_line();
+  int cpl = colors_per_line();
   int x = cpl ? index % cpl : 0;
   int y = cpl ? index / cpl : 0;
 
@@ -162,10 +162,10 @@ void PalettePanel::update_offset()
   if (m_colors.empty() || colors_per_line() == 0) {
     m_offset = 0;
   } else {
-    unsigned num_colors = colors_per_line();
-    if (num_colors > m_colors.size())
+    int num_colors = colors_per_line();
+    if (num_colors > static_cast<int>(m_colors.size()))
       num_colors = m_colors.size();
-    unsigned color_wd = color_size * num_colors + spacing * (num_colors - 1);
+    int color_wd = color_size * num_colors + spacing * (num_colors - 1);
     if (m_boundary.width() >= color_wd)
       m_offset = m_boundary.width() / 2 - color_wd / 2;
     else

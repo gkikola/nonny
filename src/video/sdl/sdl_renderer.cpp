@@ -31,8 +31,7 @@
 
 SDL_Rect rect_to_sdl_rect(const Rect& r)
 {
-  return SDL_Rect { r.x(), r.y(),
-      static_cast<int>(r.width()), static_cast<int>(r.height()) };
+  return SDL_Rect { r.x(), r.y(), r.width(), r.height() };
 }
 
 SDLRenderer::SDLRenderer(Window& window)

@@ -58,7 +58,7 @@ public:
   
   virtual void move(int x, int y) { m_boundary.move(x, y); }
   virtual void scroll(int x, int y);
-  virtual void resize(unsigned width, unsigned height);
+  virtual void resize(int width, int height);
   
   Rect boundary() const { return m_boundary; }
 

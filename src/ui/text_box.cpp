@@ -25,11 +25,11 @@
 #include "video/font.hpp"
 #include "video/renderer.hpp"
 
-constexpr unsigned spacing = 8;
+constexpr int spacing = 8;
 const Color background_color = default_colors::white;
 const Color foreground_color = default_colors::black;
 
-const unsigned cursor_blink_duration = 512;
+const int cursor_blink_duration = 512;
 
 void TextBox::set_text(const std::string& text)
 {
@@ -59,19 +59,19 @@ void TextBox::update(unsigned ticks, InputHandler& input,
   if (has_focus()) {
     //handle cursor blinking
     m_cursor_duration += ticks;
-    unsigned num_blinks = m_cursor_duration / cursor_blink_duration;
+    int num_blinks = m_cursor_duration / cursor_blink_duration;
     if (num_blinks % 2 != 0)
       m_cursor_visible = !m_cursor_visible;
     m_cursor_duration -= num_blinks * cursor_blink_duration;
     
-    unsigned prev_cursor = m_cursor;
-    unsigned prev_size = m_text.size();
+    int prev_cursor = m_cursor;
+    int prev_size = m_text.size();
     
     std::string text = input.chars_entered();
     m_text.insert(m_cursor, text);
     m_cursor += text.size();
 
-    unsigned num_press = input.num_key_presses(Keyboard::Key::backspace);
+    int num_press = input.num_key_presses(Keyboard::Key::backspace);
     if (num_press) {
       if (m_cursor >= num_press) {
         m_text.erase(m_cursor - num_press, num_press);
@@ -85,7 +85,7 @@ void TextBox::update(unsigned ticks, InputHandler& input,
     num_press = input.num_key_presses(Keyboard::Key::del)
       + input.num_key_presses(Keyboard::Key::kp_del);
     if (num_press) {
-      if (m_cursor + num_press <= m_text.size())
+      if (m_cursor + num_press <= static_cast<int>(m_text.size()))
         m_text.erase(m_cursor, num_press);
       else
         m_text.erase(m_cursor);
@@ -100,7 +100,7 @@ void TextBox::update(unsigned ticks, InputHandler& input,
 
     num_press = input.num_key_presses(Keyboard::Key::right)
       + input.num_key_presses(Keyboard::Key::kp_right);
-    if (m_cursor + num_press <= m_text.size())
+    if (m_cursor + num_press <= static_cast<int>(m_text.size()))
       m_cursor += num_press;
     else
       m_cursor = m_text.size();
@@ -109,20 +109,21 @@ void TextBox::update(unsigned ticks, InputHandler& input,
     if (m_cursor < m_visible)
       m_visible = m_cursor;
     else {
-      while (m_visible < m_text.size() - 1
+      while (m_visible < static_cast<int>(m_text.size()) - 1
              && pos_to_screen_coord(m_cursor)
              > m_boundary.x()
-             + static_cast<int>(m_boundary.width() - spacing))
+             + m_boundary.width() - spacing)
         ++m_visible;
 
       while (m_visible > 0
              && pos_to_screen_coord(m_text.size())
              < m_boundary.x()
-             + static_cast<int>(m_boundary.width() - 2 * spacing))
+             + m_boundary.width() - 2 * spacing)
         --m_visible;
     }
 
-    if (m_cursor != prev_cursor || m_text.size() != prev_size) {
+    if (m_cursor != prev_cursor
+        || static_cast<int>(m_text.size()) != prev_size) {
       m_cursor_visible = true;
       m_cursor_duration = 0;
     }
@@ -154,7 +155,7 @@ void TextBox::draw(Renderer& renderer, const Rect& region) const
 
 void TextBox::calc_size()
 {
-  unsigned width = 0, height = 0;
+  int width = 0, height = 0;
   if (m_font)
     m_font->text_size("Sample text", &width, &height);
   width += 2 * spacing;
@@ -162,18 +163,18 @@ void TextBox::calc_size()
   resize(width, height);
 }
 
-int TextBox::pos_to_screen_coord(unsigned pos) const
+int TextBox::pos_to_screen_coord(int pos) const
 {
   if (pos <= m_visible || !m_font)
     return m_boundary.x() + spacing;
 
   std::string text = m_text.substr(m_visible, pos - m_visible);
-  unsigned width;
+  int width;
   m_font->text_size(text, &width, nullptr);
   return m_boundary.x() + spacing + width;
 }
 
-unsigned TextBox::screen_coord_to_pos(int x) const
+int TextBox::screen_coord_to_pos(int x) const
 {
   if (!m_font)
     return 0;
@@ -181,13 +182,13 @@ unsigned TextBox::screen_coord_to_pos(int x) const
   if (x <= m_boundary.x())
     return m_visible;
 
-  if (x > m_boundary.x() + static_cast<int>(m_boundary.width()))
+  if (x > m_boundary.x() + m_boundary.width())
     x = m_boundary.x() + m_boundary.width();
 
-  unsigned cur_pos = m_visible;
-  while (cur_pos < m_text.size()
-         && x > m_boundary.x() + static_cast<int>(spacing)) {
-    unsigned width;
+  int cur_pos = m_visible;
+  while (cur_pos < static_cast<int>(m_text.size())
+         && x > m_boundary.x() + spacing) {
+    int width;
     m_font->text_size(m_text.substr(cur_pos, 1), &width, nullptr);
     x -= width;
     ++cur_pos;

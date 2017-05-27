@@ -26,6 +26,7 @@
 #include <iosfwd>
 #include <string>
 #include <utility>
+#include "video/point.hpp"
 
 // Returns the directory from which the application was run
 std::string base_path();

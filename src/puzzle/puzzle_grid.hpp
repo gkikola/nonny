@@ -39,20 +39,20 @@ public:
   PuzzleGrid(const PuzzleGrid&) = default;
   PuzzleGrid(PuzzleGrid&&) = default;
   
-  PuzzleGrid(unsigned width, unsigned height)
+  PuzzleGrid(int width, int height)
     : m_grid(width * height), m_width(width) { }
 
-  unsigned width() const { return m_width; }
-  inline unsigned height() const;
+  int width() const { return m_width; }
+  inline int height() const;
 
-  PuzzleCell& at(unsigned x, unsigned y);
-  const PuzzleCell& at(unsigned x, unsigned y) const;
+  PuzzleCell& at(int x, int y);
+  const PuzzleCell& at(int x, int y) const;
 
   PuzzleGrid& operator=(const PuzzleGrid&) & = default;
   PuzzleGrid& operator=(PuzzleGrid&&) & = default;
 private:
   std::vector<PuzzleCell> m_grid;
-  unsigned m_width;
+  int m_width;
 };
 
 std::ostream& operator<<(std::ostream& os, const PuzzleGrid& grid);
@@ -65,7 +65,7 @@ std::istream& read_grid(std::istream& is, PuzzleGrid& grid,
 
 /* implementation */
 
-inline unsigned PuzzleGrid::height() const
+inline int PuzzleGrid::height() const
 {
   if (m_width)
     return m_grid.size() / m_width;

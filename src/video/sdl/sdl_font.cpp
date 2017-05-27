@@ -20,7 +20,7 @@
 
 #include "video/sdl/sdl_font.hpp"
 
-SDLFont::SDLFont(const std::string& filename, unsigned pt_size)
+SDLFont::SDLFont(const std::string& filename, int pt_size)
   : m_filename(filename), m_pt_size(pt_size)
 {
   resize(pt_size);
@@ -33,7 +33,7 @@ SDLFont::~SDLFont()
 }
 
 void SDLFont::text_size(const std::string& text,
-                        unsigned* width, unsigned* height) const
+                        int* width, int* height) const
 {
   int wd = 0, ht = 0;
   if (TTF_SizeUTF8(m_font, text.c_str(), &wd, &ht) == 0) {
@@ -44,7 +44,7 @@ void SDLFont::text_size(const std::string& text,
   }
 }
 
-void SDLFont::resize(unsigned pt_size)
+void SDLFont::resize(int pt_size)
 {
   if (m_font)
     TTF_CloseFont(m_font);

@@ -31,7 +31,7 @@ const Color button_label_hover_color(0, 0, 0);
 const Color button_label_focus_color(0, 0, 255);
 const Color button_label_depressed_color(25, 25, 112);
 const Color button_selection_color(0, 0, 0);
-constexpr unsigned spacing = 4;
+constexpr int spacing = 4;
 
 void Button::update(unsigned ticks, InputHandler& input,
                     const Rect& active_region)
@@ -132,7 +132,7 @@ void Button::draw_label(Renderer& renderer) const
 
 void Button::calc_size()
 {
-  unsigned width = 0, height = 0;
+  int width = 0, height = 0;
   if (m_font) {
     m_font->text_size(m_label, &width, &height);
     m_label_width = width;

@@ -78,7 +78,7 @@ void InputHandler::process_text_input_event(const std::string& text)
 }
 
 void InputHandler::process_mouse_button_event(Mouse::Button button, bool down,
-                                              unsigned num_clicks)
+                                              int num_clicks)
 {
   m_buttons[button] = down;
 
@@ -114,7 +114,7 @@ bool InputHandler::is_key_down(Keyboard::Key key) const
   return m_keys[key];
 }
 
-unsigned InputHandler::num_key_presses(Keyboard::Key key) const
+int InputHandler::num_key_presses(Keyboard::Key key) const
 {
   return m_num_presses[key];
 }

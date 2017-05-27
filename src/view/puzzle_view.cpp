@@ -44,8 +44,8 @@
 
 namespace stdfs = std::experimental::filesystem;
 
-constexpr unsigned info_pane_width = 256;
-constexpr unsigned info_pane_slide_speed = 1000;
+constexpr int info_pane_width = 256;
+constexpr int info_pane_slide_speed = 1000;
 const Color info_pane_background_color(123, 175, 212);
 
 PuzzleView::PuzzleView(ViewManager& vm)
@@ -54,7 +54,7 @@ PuzzleView::PuzzleView(ViewManager& vm)
   new_puzzle();
 }
 
-PuzzleView::PuzzleView(ViewManager& vm, unsigned width, unsigned height)
+PuzzleView::PuzzleView(ViewManager& vm, int width, int height)
   : View(vm, width, height)
 {
   new_puzzle();
@@ -67,7 +67,7 @@ PuzzleView::PuzzleView(ViewManager& vm, const std::string& filename)
 }
 
 PuzzleView::PuzzleView(ViewManager& vm, const std::string& filename,
-                       unsigned width, unsigned height)
+                       int width, int height)
   : View(vm, width, height), m_puzzle_filename(filename)
 {
   load(filename);
@@ -276,6 +276,7 @@ void PuzzleView::setup_panels()
   ipanel->on_zoom_out([]() { });
   ipanel->on_hint_toggle([]() { });
   ipanel->on_color_change(std::bind(&PuzzleView::handle_color_change, this));
+  ipanel->on_tool_change(std::bind(&PuzzleView::handle_tool_change, this));
   ipanel->start_slide();
   Rect info_region(0, 0, 0, m_height);
   m_info_pane = ScrollingPanel(info_region, ipanel);
@@ -290,12 +291,21 @@ void PuzzleView::handle_color_change()
   }
 }
 
+void PuzzleView::handle_tool_change()
+{
+  auto* ipanel = dynamic_cast<PuzzleInfoPanel*>(&m_info_pane.main_panel());
+  auto* ppanel = dynamic_cast<PuzzlePanel*>(&m_main_panel.main_panel());
+  if (ipanel && ppanel) {
+    ppanel->set_draw_tool(ipanel->active_draw_tool());
+  }
+}
+
 void PuzzleView::update(unsigned ticks, InputHandler& input)
 {
   m_main_panel.update(ticks, input);
   m_info_pane.update(ticks, input);
 
-  unsigned cur_info_width = m_info_pane.boundary().width();
+  int cur_info_width = m_info_pane.boundary().width();
   if (cur_info_width < info_pane_width) {
     cur_info_width += info_pane_slide_speed * ticks / 1000;
     if (cur_info_width >= info_pane_width) {
@@ -324,11 +334,11 @@ void PuzzleView::draw(Renderer& renderer)
   m_info_pane.draw(renderer);
 }
 
-void PuzzleView::resize(unsigned width, unsigned height)
+void PuzzleView::resize(int width, int height)
 {
   View::resize(width, height);
 
-  unsigned info_width = m_info_pane.boundary().width();
+  int info_width = m_info_pane.boundary().width();
   m_info_pane.resize(info_width, height);
   if (width >= info_width) {
     m_main_panel.move(info_width, 0);

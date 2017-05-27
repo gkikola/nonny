@@ -41,8 +41,8 @@ void PuzzleProgress::store_progress(const Puzzle& puzzle, unsigned time,
   m_progress = PuzzleGrid();
   PuzzleGrid* grid = update_solution ? &m_solution : &m_progress;
   *grid = PuzzleGrid(puzzle.width(), puzzle.height());
-  for (unsigned y = 0; y != puzzle.height(); ++y) {
-    for (unsigned x = 0; x != puzzle.width(); ++x) {
+  for (int y = 0; y != puzzle.height(); ++y) {
+    for (int x = 0; x != puzzle.width(); ++x) {
       grid->at(x, y) = puzzle[x][y];
     }
   }
@@ -50,8 +50,8 @@ void PuzzleProgress::store_progress(const Puzzle& puzzle, unsigned time,
 
 void PuzzleProgress::restore_progress(Puzzle& puzzle)
 {
-  for (unsigned y = 0; y != m_progress.height(); ++y) {
-    for (unsigned x = 0; x != m_progress.width(); ++x) {
+  for (int y = 0; y != m_progress.height(); ++y) {
+    for (int x = 0; x != m_progress.width(); ++x) {
       PuzzleCell& cell = m_progress.at(x, y);
       if (cell.state == PuzzleCell::State::filled)
         puzzle.mark_cell(x, y, cell.color);

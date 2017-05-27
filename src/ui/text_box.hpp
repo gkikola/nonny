@@ -42,17 +42,17 @@ public:
   void draw(Renderer& renderer, const Rect& region) const override;
 private:
   void calc_size();
-  int pos_to_screen_coord(unsigned pos) const;
-  unsigned screen_coord_to_pos(int x) const;
+  int pos_to_screen_coord(int pos) const;
+  int screen_coord_to_pos(int x) const;
   
   const Font* m_font = nullptr;
   std::string m_text;
-  unsigned m_cursor = 0;
-  unsigned m_visible = 0;
-  unsigned m_sel_start = 0;
-  unsigned m_sel_length = 0;
+  int m_cursor = 0;
+  int m_visible = 0;
+  int m_sel_start = 0;
+  int m_sel_length = 0;
   bool m_cursor_visible = true;
-  unsigned m_cursor_duration = 0;
+  int m_cursor_duration = 0;
 };
 
 #endif

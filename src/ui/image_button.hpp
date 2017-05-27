@@ -31,7 +31,7 @@ class Texture;
 class ImageButton : public Button {
 public:
   ImageButton() = default;
-  explicit ImageButton(const Texture& texture, unsigned cell = 0)
+  explicit ImageButton(const Texture& texture, int cell = 0)
     : m_texture(&texture), m_cell(cell) { calc_size(); }
 
   ImageButton(const ImageButton&) = default;
@@ -49,7 +49,7 @@ private:
   void calc_size();
   
   const Texture* m_texture;
-  unsigned m_cell = 0;
+  int m_cell = 0;
 };
 
 #endif

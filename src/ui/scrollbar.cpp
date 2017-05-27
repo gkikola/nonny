@@ -26,7 +26,7 @@
 #include "video/rect.hpp"
 #include "video/renderer.hpp"
 
-constexpr unsigned padding = 4;
+constexpr int padding = 4;
 const Color background(196, 196, 196);
 const Color thumb(128, 128, 128);
 const Color thumb_hover(88, 88, 88);
@@ -107,7 +107,7 @@ void Scrollbar::draw(Renderer& renderer, const Rect& region) const
   }
 }
 
-void Scrollbar::resize(unsigned width, unsigned height)
+void Scrollbar::resize(int width, int height)
 {
   UIPanel::resize(width, height);
 
@@ -163,8 +163,8 @@ void Scrollbar::do_thumb_drag(InputHandler& input)
     m_thumb_pos.y() = input.mouse_position().y() - m_drag_pos;
     m_thumb_pos.y() = std::max(m_thumb_pos.y(), m_boundary.y());
     m_thumb_pos.y() = std::min(m_thumb_pos.y(), m_boundary.y()
-                               + static_cast<int>(m_boundary.height())
-                               - static_cast<int>(m_thumb_pos.height()));
+                               + m_boundary.height()
+                               - m_thumb_pos.height());
 
     m_scroll_target->move(m_scroll_target->boundary().x(),
                           m_boundary.y() - target_height()
@@ -174,8 +174,8 @@ void Scrollbar::do_thumb_drag(InputHandler& input)
     m_thumb_pos.x() = input.mouse_position().x() - m_drag_pos;
     m_thumb_pos.x() = std::max(m_thumb_pos.x(), m_boundary.x());
     m_thumb_pos.x() = std::min(m_thumb_pos.x(), m_boundary.x()
-                               + static_cast<int>(m_boundary.width())
-                               - static_cast<int>(m_thumb_pos.width()));
+                               + m_boundary.width()
+                               - m_thumb_pos.width());
 
     m_scroll_target->move(m_boundary.x() - target_width()
                           * (m_thumb_pos.x() - m_boundary.x())

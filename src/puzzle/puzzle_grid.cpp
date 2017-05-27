@@ -28,14 +28,14 @@
 #include "puzzle/puzzle_io.hpp"
 #include "utility/utility.hpp"
 
-PuzzleCell& PuzzleGrid::at(unsigned x, unsigned y)
+PuzzleCell& PuzzleGrid::at(int x, int y)
 {
   //call const version and convert back
   return const_cast<PuzzleCell&>
     (const_cast<const PuzzleGrid*>(this)->at(x, y));
 }
 
-const PuzzleCell& PuzzleGrid::at(unsigned x, unsigned y) const
+const PuzzleCell& PuzzleGrid::at(int x, int y) const
 {
   decltype(m_grid.size()) pos = y * m_width + x;
   
@@ -50,8 +50,8 @@ std::ostream& operator<<(std::ostream& os, const PuzzleGrid& grid)
 {
   ColorPalette palette;
   char symbol = '0';
-  for (unsigned y = 0; y != grid.height(); ++y) {
-    for (unsigned x = 0; x != grid.width(); ++x) {
+  for (int y = 0; y != grid.height(); ++y) {
+    for (int x = 0; x != grid.width(); ++x) {
       Color color = grid.at(x, y).color;
       if (palette.find(color) == palette.end()) {
         palette.add(color, std::string(1, symbol), symbol);
@@ -91,9 +91,9 @@ std::ostream& write_grid(std::ostream& os, const PuzzleGrid& grid,
   char bkgd;
   bkgd = palette.symbol("background");
   
-  for (unsigned y = 0; y != grid.height(); ++y) {
+  for (int y = 0; y != grid.height(); ++y) {
     os << "|";
-    for (unsigned x = 0; x != grid.width(); ++x) {
+    for (int x = 0; x != grid.width(); ++x) {
       const PuzzleCell& cell = grid.at(x, y);
       if (cell.state == PuzzleCell::State::filled) {
         auto it = palette.find(cell.color);
@@ -122,7 +122,7 @@ std::istream& read_grid(std::istream& is, PuzzleGrid& grid,
 
   std::string line;
   while (is && is.peek() == '|' && std::getline(is, line)) {    
-    unsigned counter = 0;
+    int counter = 0;
     for (auto c : line) {
       if (c != '|') {
         try {

@@ -53,14 +53,14 @@ public:
   virtual void process_key_event(Keyboard::Key key, bool down);
   virtual void process_text_input_event(const std::string& text);
   virtual void process_mouse_button_event(Mouse::Button button, bool down,
-                                          unsigned num_clicks = 1);
+                                          int num_clicks = 1);
   virtual void process_mouse_wheel_event(int vert, int horiz);
   virtual void process_mouse_move_event(int x, int y);
 
   virtual bool was_key_pressed(Keyboard::Key key) const;
   virtual bool was_key_released(Keyboard::Key key) const;
   virtual bool is_key_down(Keyboard::Key key) const;
-  virtual unsigned num_key_presses(Keyboard::Key key) const;
+  virtual int num_key_presses(Keyboard::Key key) const;
 
   std::string chars_entered() const { return m_characters; }
 
@@ -86,7 +86,7 @@ private:
   
   std::vector<bool> m_keys; //which keys are down
   std::vector<bool> m_prev_keys;
-  std::vector<unsigned> m_num_presses; //how many presses in last frame
+  std::vector<int> m_num_presses; //how many presses in last frame
 
   std::vector<bool> m_buttons; //which buttons are down
   std::vector<bool> m_prev_buttons;

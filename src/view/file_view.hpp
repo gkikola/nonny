@@ -45,7 +45,7 @@ public:
   enum class Mode { open, save };
   
   FileView(ViewManager& vm, Mode mode = Mode::open);
-  FileView(ViewManager& vm, Mode mode, unsigned width, unsigned height);
+  FileView(ViewManager& vm, Mode mode, int width, int height);
 
   FileView(const FileView&) = delete;
   FileView(FileView&&) = default;
@@ -54,7 +54,7 @@ public:
 
   void update(unsigned ticks, InputHandler& input) override;
   void draw(Renderer& renderer) override;
-  void resize(unsigned width, unsigned height) override;
+  void resize(int width, int height) override;
 
 private:
   void load_resources();
@@ -71,20 +71,20 @@ private:
   void open_puzzle_dir();
   void open_save_dir();
 
-  unsigned path_name_width() const; //get display width of cur path name
-  unsigned path_subdir_count() const; //get num subdirs in cur path
+  int path_name_width() const; //get display width of cur path name
+  int path_subdir_count() const; //get num subdirs in cur path
   void handle_directory_change(); //update controls for new directory
   void handle_selection_change(); //update text box with selection
   void collapse_path(); //calculate start and end of ellipses in path display
-  void open_subdir(unsigned index); //open subdir at index in *m_cur_path
+  void open_subdir(int index); //open subdir at index in *m_cur_path
   
   Mode m_mode;
 
   typedef std::deque<std::experimental::filesystem::path> PathContainer;
   PathContainer m_paths;
   PathContainer::iterator m_cur_path;
-  unsigned m_path_collapse_start;
-  unsigned m_path_collapse_end;
+  int m_path_collapse_start;
+  int m_path_collapse_end;
   Point m_path_start;
 
   std::shared_ptr<ImageButton> m_menu_button;

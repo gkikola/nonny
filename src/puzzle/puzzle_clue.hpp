@@ -27,7 +27,7 @@
  * Represents a clue number in a puzzle.
  */
 struct PuzzleClue {
-  unsigned value = 0;
+  int value = 0;
   Color color;
   enum class State { normal, finished, error, hint } state = State::normal;
 };

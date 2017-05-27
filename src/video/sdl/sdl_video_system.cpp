@@ -70,7 +70,7 @@ SDLVideoSystem::new_renderer(Window& window) const
 }
 
 std::unique_ptr<Font>
-SDLVideoSystem::new_font(const std::string& filename, unsigned pt_size) const
+SDLVideoSystem::new_font(const std::string& filename, int pt_size) const
 {
   return std::make_unique<SDLFont>(filename, pt_size);
 }

@@ -42,7 +42,7 @@ ViewManager::ViewManager(VideoSystem& vs, Renderer& renderer,
 
 ViewManager::ViewManager(VideoSystem& vs, Renderer& renderer,
                          GameSettings& settings,
-                         unsigned width, unsigned height)
+                         int width, int height)
   : m_video(vs),
     m_renderer(renderer),
     m_settings(settings),
@@ -141,7 +141,7 @@ void ViewManager::refresh()
   resize(m_width, m_height);
 }
 
-void ViewManager::resize(unsigned width, unsigned height)
+void ViewManager::resize(int width, int height)
 {
   m_width = width;
   m_height = height;

@@ -52,28 +52,28 @@ public:
   Puzzle(Puzzle&&) = default;
 
   // Creates a blank puzzle of the given size
-  Puzzle(unsigned width, unsigned height);
+  Puzzle(int width, int height);
 
-  unsigned width() const { return m_grid.width(); }
-  unsigned height() const { return m_grid.height(); }
+  int width() const { return m_grid.width(); }
+  int height() const { return m_grid.height(); }
 
-  PuzzleLine get_row(unsigned index);
-  ConstPuzzleLine get_row(unsigned index) const;
-  PuzzleLine get_col(unsigned index);
-  ConstPuzzleLine get_col(unsigned index) const;
+  PuzzleLine get_row(int index);
+  ConstPuzzleLine get_row(int index) const;
+  PuzzleLine get_col(int index);
+  ConstPuzzleLine get_col(int index) const;
 
-  ConstPuzzleLine operator[](unsigned col) const;
-  inline const PuzzleCell& at(unsigned col, unsigned row) const;
+  ConstPuzzleLine operator[](int col) const;
+  inline const PuzzleCell& at(int col, int row) const;
   
-  void mark_cell(unsigned col, unsigned row, const Color& color = Color());
-  void clear_cell(unsigned col, unsigned row);
-  void cross_out_cell(unsigned col, unsigned row);
+  void mark_cell(int col, int row, const Color& color = Color());
+  void clear_cell(int col, int row);
+  void cross_out_cell(int col, int row);
 
   void clear_all_cells();
 
   bool is_solved() const;
-  bool is_row_solved(unsigned row) const;
-  bool is_col_solved(unsigned col) const;
+  bool is_row_solved(int row) const;
+  bool is_col_solved(int col) const;
 
   // Determines whether the puzzle has multiple foreground colors
   bool is_multicolor() const { return m_palette.size() > 2; }
@@ -93,23 +93,23 @@ public:
 
   const ClueContainer& row_clues() const { return m_row_clues; }
   const ClueContainer& col_clues() const { return m_col_clues; }
-  inline const ClueSequence& row_clues(unsigned row) const;
-  inline const ClueSequence& col_clues(unsigned col) const;
+  inline const ClueSequence& row_clues(int row) const;
+  inline const ClueSequence& col_clues(int col) const;
   
   Puzzle& operator=(const Puzzle&) & = default;
   Puzzle& operator=(Puzzle&&) & = default;
 
 private:  
-  ClueSequence& line_clues(unsigned index, LineType type);
-  void update_line(unsigned index, LineType type, bool edit_mode);
+  ClueSequence& line_clues(int index, LineType type);
+  void update_line(int index, LineType type, bool edit_mode);
 
   PuzzleGrid m_grid;
   ClueContainer m_row_clues;
   ClueContainer m_col_clues;
   ColorPalette m_palette;
   Properties m_properties;
-  std::set<unsigned> m_rows_changed;
-  std::set<unsigned> m_cols_changed;
+  std::set<int> m_rows_changed;
+  std::set<int> m_cols_changed;
 };
 
 // Reads and writes puzzles in the .non format
@@ -119,7 +119,7 @@ inline std::istream& operator>>(std::istream& is, Puzzle& puzzle);
 
 /* implementation */
 
-inline const PuzzleCell& Puzzle::at(unsigned col, unsigned row) const
+inline const PuzzleCell& Puzzle::at(int col, int row) const
 {
   return m_grid.at(col, row);
 }
@@ -130,12 +130,12 @@ inline const std::string* Puzzle::find_property(const std::string& p) const
   return (it == m_properties.end()) ? nullptr : &it->second;
 }
 
-inline const Puzzle::ClueSequence& Puzzle::row_clues(unsigned row) const
+inline const Puzzle::ClueSequence& Puzzle::row_clues(int row) const
 {
   return m_row_clues.at(row);
 }
 
-inline const Puzzle::ClueSequence& Puzzle::col_clues(unsigned col) const
+inline const Puzzle::ClueSequence& Puzzle::col_clues(int col) const
 {
   return m_col_clues.at(col);
 }

@@ -22,6 +22,7 @@
 #define NONNY_DRAW_TOOL_PANEL
 
 #include <functional>
+#include "ui/puzzle_panel.hpp"
 #include "ui/ui_panel.hpp"
 
 class Texture;
@@ -30,13 +31,11 @@ class DrawToolPanel : public UIPanel {
 public:
   DrawToolPanel(Texture& texture) : m_texture(texture) { calc_size(); }
 
-  enum class Tool { paint = 0, line, rect, ellipse, fill };
-  
   // Register callback functions
   typedef std::function<void()> Callback;
   void on_tool_change(Callback fn) { m_tool_callback = fn; }
 
-  Tool selected_tool() const { return m_cur_tool; }
+  PuzzlePanel::DrawTool selected_tool() const { return m_cur_tool; }
 
   using UIPanel::update; //make all update and draw overloads visible
   using UIPanel::draw;
@@ -49,7 +48,7 @@ private:
   
   Texture& m_texture;
   Callback m_tool_callback;
-  Tool m_cur_tool = Tool::paint;
+  PuzzlePanel::DrawTool m_cur_tool = PuzzlePanel::DrawTool::paint;
 };
 
 #endif

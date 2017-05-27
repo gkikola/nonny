@@ -34,8 +34,8 @@ namespace stdfs = std::experimental::filesystem;
 std::istream& scan_for_path(std::istream& is, std::string& path);
 std::string standardize(const std::string& name);
 
-constexpr unsigned max_id_size = 32;
-constexpr unsigned max_file_counter = 9999;
+constexpr int max_id_size = 32;
+constexpr int max_file_counter = 9999;
 
 SaveManager::SaveManager(GameSettings& settings)
   : m_settings(settings)
@@ -89,7 +89,7 @@ std::string SaveManager::find_save_file(const std::string& path,
   expected_dir += std::string("saves") + m_settings.filesystem_separator();
   expected_dir += std_dir + m_settings.filesystem_separator();
 
-  unsigned counter = 0;
+  int counter = 0;
   while (counter < max_file_counter) {
     std::string full_name = expected_dir;
     if (counter == 0)

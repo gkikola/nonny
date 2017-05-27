@@ -31,7 +31,7 @@
 #include "view/view_manager.hpp"
 
 const Color background_color(123, 175, 212);
-constexpr unsigned spacing = 8;
+constexpr int spacing = 8;
 
 VictoryView::VictoryView(ViewManager& vm, Puzzle& puzzle,
                          unsigned clear_time, unsigned best_time)
@@ -45,7 +45,7 @@ VictoryView::VictoryView(ViewManager& vm, Puzzle& puzzle,
 
 VictoryView::VictoryView(ViewManager& vm, Puzzle& puzzle,
                          unsigned clear_time, unsigned best_time,
-                         unsigned width, unsigned height)
+                         int width, int height)
   : View(vm, width, height),
     m_puzzle(puzzle),
     m_clear_time(clear_time),
@@ -74,7 +74,7 @@ void VictoryView::draw(Renderer& renderer)
 
   renderer.set_draw_color(default_colors::black);
   
-  unsigned text_width, text_height;
+  int text_width, text_height;
   m_title_font->text_size(m_puzzle_title, &text_width, &text_height);
   pt.x() = m_width / 2 - text_width / 2;
   renderer.draw_text(pt, *m_title_font, m_puzzle_title);
@@ -99,23 +99,23 @@ void VictoryView::draw(Renderer& renderer)
   m_back_button->draw(renderer);
 }
 
-void VictoryView::resize(unsigned width, unsigned height)
+void VictoryView::resize(int width, int height)
 {
   View::resize(width, height);
 
   Point pos(0, spacing);
   
-  unsigned text_width, text_height;
+  int text_width, text_height;
   m_title_font->text_size(m_puzzle_title, &text_width, &text_height);
   pos.y() += text_height + spacing;
   m_info_font->text_size(m_puzzle_author, &text_width, &text_height);
   pos.y() += text_height + spacing;
 
   m_info_font->text_size(m_times, &text_width, &text_height);
-  unsigned space = pos.y() + spacing
+  int space = pos.y() + spacing
     + m_back_button->boundary().height() + spacing + text_height + spacing;
-  unsigned preview_width = m_width;
-  unsigned preview_height = m_height >= space ? m_height - space : 0;
+  int preview_width = m_width;
+  int preview_height = m_height >= space ? m_height - space : 0;
   if (preview_width / m_puzzle.width() > preview_height / m_puzzle.height())
     preview_width = preview_height * m_puzzle.width() / m_puzzle.height();
   else

@@ -27,6 +27,7 @@
 #include "ui/draw_tool_panel.hpp"
 #include "ui/image_button.hpp"
 #include "ui/palette_panel.hpp"
+#include "ui/puzzle_panel.hpp"
 #include "ui/puzzle_preview.hpp"
 #include "ui/ui_panel.hpp"
 
@@ -43,7 +44,7 @@ class PuzzleInfoPanel : public UIPanel {
 public:
   PuzzleInfoPanel(Font& title_font, Font& info_font, Font& size_font,
                   Texture& ctrl_texture, Texture& arrow_texture,
-                  Texture& draw_texture, unsigned max_width,
+                  Texture& draw_texture, int max_width,
                   bool edit_mode = false);
   void attach_puzzle(Puzzle& puzzle);
 
@@ -54,6 +55,7 @@ public:
   void on_zoom_out(Callback fn) { m_buttons[zoom_out]->register_callback(fn); }
   void on_hint_toggle(Callback fn);
   void on_clear_puzzle(Callback fn);
+  void on_tool_change(Callback fn) { m_tool_selector.on_tool_change(fn); }
   void on_color_change(Callback fn) { m_color_selector.on_color_change(fn); }
   
   // Start/stop sliding animation
@@ -66,6 +68,9 @@ public:
   // Get currently selected color
   Color active_color() const;
 
+  // Get currently selected draw tool
+  PuzzlePanel::DrawTool active_draw_tool() const;
+  
   // Get/set time puzzle has been open
   unsigned time() const { return m_time; }
   void time(unsigned time) { m_time = time; }
@@ -108,7 +113,7 @@ private:
 
   bool m_sliding = false;
   unsigned m_time = 0;
-  unsigned m_max_width = 0;
+  int m_max_width = 0;
   bool m_edit_mode = false;
 };
 

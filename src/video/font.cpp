@@ -22,8 +22,8 @@
 
 #include <cstddef>
 
-void Font::text_size_wrapped(std::string text, unsigned wrap_width,
-                             unsigned* width, unsigned* height) const
+void Font::text_size_wrapped(std::string text, int wrap_width,
+                             int* width, int* height) const
 {
   if (width)
     *width = 0;
@@ -33,7 +33,7 @@ void Font::text_size_wrapped(std::string text, unsigned wrap_width,
   text += "\n";
   std::size_t pos = 0;
   std::string line, word;
-  unsigned line_wd, line_ht;
+  int line_wd, line_ht;
   while (pos != text.size()) {
     if (text[pos] != '\n' && text[pos] != ' ') {
       word += text[pos];

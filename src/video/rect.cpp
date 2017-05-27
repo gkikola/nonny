@@ -34,7 +34,5 @@ Rect intersection(const Rect& r1, const Rect& r2)
   if (width < 0 || height < 0)
     width = height = 0;
 
-  return Rect(x, y,
-              static_cast<unsigned>(width),
-              static_cast<unsigned>(height));
+  return Rect(x, y, width, height);
 }

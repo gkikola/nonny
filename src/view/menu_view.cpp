@@ -31,11 +31,11 @@
 #include "view/puzzle_view.hpp"
 #include "view/view_manager.hpp"
 
-constexpr unsigned menu_button_width = 150;
-constexpr unsigned menu_slide_speed = 2000;
+constexpr int menu_button_width = 150;
+constexpr int menu_slide_speed = 2000;
 const Color menu_background_color(123, 175, 212);
 
-MenuView::MenuView(ViewManager& vm, unsigned width, unsigned height,
+MenuView::MenuView(ViewManager& vm, int width, int height,
                    MenuType menu)
   : View(vm, width, height)
 {
@@ -85,7 +85,7 @@ void MenuView::draw(Renderer& renderer)
     renderer.set_viewport();
 }
 
-void MenuView::resize(unsigned width, unsigned height)
+void MenuView::resize(int width, int height)
 {
   View::resize(width, height);
   m_main_panel.resize(width, height);
