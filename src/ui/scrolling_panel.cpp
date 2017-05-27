@@ -43,11 +43,11 @@ void ScrollingPanel::update(unsigned ticks, InputHandler& input,
   //handle smooth scroll
   int scroll_amt = 0;
   if (m_smooth_scroll_amount < 0) {
-    scroll_amt = -scroll_speed * ticks / 1000;
+    scroll_amt = -scroll_speed * static_cast<int>(ticks) / 1000;
     if (scroll_amt < m_smooth_scroll_amount)
       scroll_amt = m_smooth_scroll_amount;
   } else if (m_smooth_scroll_amount > 0) {
-    scroll_amt = scroll_speed * ticks / 1000;
+    scroll_amt = scroll_speed * static_cast<int>(ticks) / 1000;
     if (scroll_amt > m_smooth_scroll_amount)
       scroll_amt = m_smooth_scroll_amount;
   }
