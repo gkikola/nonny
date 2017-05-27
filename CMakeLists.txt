@@ -47,6 +47,7 @@ add_executable (
   src/input/key.cpp
   src/main/game.cpp
   src/main/main.cpp
+  src/puzzle/compressed_state.cpp
   src/puzzle/puzzle.cpp
   src/puzzle/puzzle_cell.cpp
   src/puzzle/puzzle_clue.cpp

@@ -86,10 +86,50 @@ void Puzzle::clear_all_cells()
 {
   m_grid = PuzzleGrid(width(), height());
 
+  refresh_all_cells();
+}
+
+void Puzzle::refresh_all_cells()
+{
   for (int i = 0; i < m_grid.width(); ++i)
     m_cols_changed.insert(i);
   for (int j = 0; j < m_grid.height(); ++j)
     m_rows_changed.insert(j);
+}
+
+void Puzzle::copy_state(CompressedState& state) const
+{
+  state.m_width = width();
+  state.m_height = height();
+  state.m_state.clear();
+
+  int pos = 0;
+  PuzzleCell prev_cell;
+  while (pos < width() * height()) {
+    const PuzzleCell& cur_cell = m_grid.at(pos % width(), pos / width());
+    if (pos == 0 || prev_cell != cur_cell) {
+      CompressedState::Entry e;
+      e.cell = cur_cell;
+      e.count = 0;
+      state.m_state.push_back(e);
+    }
+    
+    prev_cell = cur_cell;
+    ++pos;
+    ++state.m_state[state.m_state.size() - 1].count;
+  }
+}
+
+void Puzzle::load_state(const CompressedState& state)
+{
+  m_grid = PuzzleGrid(state.m_width, state.m_height);
+  int pos = 0;
+  for (const auto& e : state.m_state) {
+    for (int i = 0; i < e.count; ++i) {
+      m_grid.at(pos % width(), pos / width()) = e.cell;
+      ++pos;
+    }
+  }
 }
 
 ConstPuzzleLine Puzzle::operator[](int col) const

@@ -28,6 +28,7 @@
 #include <vector>
 #include "color/color.hpp"
 #include "color/color_palette.hpp"
+#include "puzzle/compressed_state.hpp"
 #include "puzzle/puzzle_clue.hpp"
 #include "puzzle/puzzle_grid.hpp"
 #include "puzzle/puzzle_io.hpp"
@@ -71,6 +72,9 @@ public:
 
   void clear_all_cells();
 
+  void copy_state(CompressedState& state) const;
+  void load_state(const CompressedState& state);
+
   bool is_solved() const;
   bool is_row_solved(int row) const;
   bool is_col_solved(int col) const;
@@ -99,7 +103,8 @@ public:
   Puzzle& operator=(const Puzzle&) & = default;
   Puzzle& operator=(Puzzle&&) & = default;
 
-private:  
+private:
+  void refresh_all_cells();
   ClueSequence& line_clues(int index, LineType type);
   void update_line(int index, LineType type, bool edit_mode);
 
