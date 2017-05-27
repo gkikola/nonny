@@ -84,6 +84,8 @@ private:
   std::unique_ptr<Font> m_info_font;
   std::unique_ptr<Font> m_size_font;
   std::unique_ptr<Texture> m_ctrl_texture;
+  std::unique_ptr<Texture> m_arrow_texture;
+  std::unique_ptr<Texture> m_draw_texture;
 };
 
 #endif

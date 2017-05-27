@@ -253,12 +253,23 @@ void PuzzleView::setup_panels()
   m_ctrl_texture = m_mgr.video_system().load_image(m_mgr.renderer(),
                                                    texture_file);
 
+  texture_file = settings.image_dir() + "nav.png";
+  m_arrow_texture = m_mgr.video_system().load_image(m_mgr.renderer(),
+                                                    texture_file);
+
+  texture_file = settings.image_dir() + "draw.png";
+  m_draw_texture = m_mgr.video_system().load_image(m_mgr.renderer(),
+                                                   texture_file);
+
   auto ipanel = std::make_shared<PuzzleInfoPanel>(*m_title_font,
                                                   *m_info_font,
                                                   *m_size_font,
                                                   *m_ctrl_texture,
+                                                  *m_arrow_texture,
+                                                  *m_draw_texture,
                                                   info_pane_width,
-                                                  m_puzzle);
+                                                  m_edit_mode);
+  ipanel->attach_puzzle(m_puzzle);
   ipanel->on_menu_open([this]() {
       m_mgr.schedule_action(ViewManager::Action::open_menu); });
   ipanel->on_zoom_in([]() { });

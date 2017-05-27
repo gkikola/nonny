@@ -31,29 +31,24 @@
 constexpr unsigned spacing = 8;
 constexpr unsigned preview_width = 196;
 
-PuzzleInfoPanel::PuzzleInfoPanel(Font& title_font, Font& info_font,
-                                 Font& size_font, Texture& ctrl_texture,
-                                 unsigned max_width)
+PuzzleInfoPanel::PuzzleInfoPanel(Font& title_font,
+                                 Font& info_font,
+                                 Font& size_font,
+                                 Texture& ctrl_texture,
+                                 Texture& arrow_texture,
+                                 Texture& draw_texture,
+                                 unsigned max_width,
+                                 bool edit_mode)
   : m_title_font(title_font),
     m_info_font(info_font),
     m_size_font(size_font),
     m_ctrl_texture(ctrl_texture),
-    m_max_width(max_width)
+    m_arrow_texture(arrow_texture),
+    m_draw_texture(draw_texture),
+    m_max_width(max_width),
+    m_edit_mode(edit_mode)
 {
   setup_buttons();
-}
-
-PuzzleInfoPanel::PuzzleInfoPanel(Font& title_font, Font& info_font,
-                                 Font& size_font, Texture& ctrl_texture,
-                                 unsigned max_width, Puzzle& puzzle)
-  : m_title_font(title_font),
-    m_info_font(info_font),
-    m_size_font(size_font),
-    m_ctrl_texture(ctrl_texture),
-    m_max_width(max_width)
-{
-  setup_buttons();
-  attach_puzzle(puzzle);
 }
 
 void PuzzleInfoPanel::attach_puzzle(Puzzle& puzzle)
@@ -67,10 +62,59 @@ void PuzzleInfoPanel::attach_puzzle(Puzzle& puzzle)
 
 void PuzzleInfoPanel::setup_buttons()
 {
-  m_menu_button = std::make_shared<ImageButton>(m_ctrl_texture, 0);
-  m_zoom_in_button = std::make_shared<ImageButton>(m_ctrl_texture, 1);
-  m_zoom_out_button = std::make_shared<ImageButton>(m_ctrl_texture, 2);
-  m_hint_button = std::make_shared<ImageButton>(m_ctrl_texture, 3);
+  m_buttons.clear();
+  m_buttons.insert(m_buttons.begin(), num_buttons, nullptr);
+  m_buttons[menu] = std::make_shared<ImageButton>(m_ctrl_texture, 0);
+  m_buttons[zoom_in] = std::make_shared<ImageButton>(m_ctrl_texture, 1);
+  m_buttons[zoom_out] = std::make_shared<ImageButton>(m_ctrl_texture, 2);
+
+  if (m_edit_mode)
+    m_buttons[hint] = std::make_shared<ImageButton>(m_ctrl_texture, 4);
+  else
+    m_buttons[hint] = std::make_shared<ImageButton>(m_ctrl_texture, 3);
+
+  m_buttons[save] = std::make_shared<ImageButton>(m_ctrl_texture, 5);
+  m_buttons[undo] = std::make_shared<ImageButton>(m_ctrl_texture, 6);
+  m_buttons[redo] = std::make_shared<ImageButton>(m_ctrl_texture, 7);
+  m_buttons[analyze] = std::make_shared<ImageButton>(m_ctrl_texture, 8);
+
+  if (m_edit_mode) {
+    m_buttons[up] = std::make_shared<ImageButton>(m_arrow_texture, 1);
+    m_buttons[left] = std::make_shared<ImageButton>(m_arrow_texture, 2);
+    m_buttons[right] = std::make_shared<ImageButton>(m_arrow_texture, 3);
+    m_buttons[down] = std::make_shared<ImageButton>(m_arrow_texture, 4);
+  }
+}
+
+void PuzzleInfoPanel::on_hint_toggle(Callback fn)
+{
+  m_hint_callback = fn;
+  if (!m_edit_mode)
+    m_buttons[hint]->register_callback(fn);
+}
+
+void PuzzleInfoPanel::on_clear_puzzle(Callback fn)
+{
+  m_clear_callback = fn;
+  if (m_edit_mode)
+    m_buttons[hint]->register_callback(fn);
+}
+
+void PuzzleInfoPanel::set_edit_mode(bool edit_mode)
+{
+  if (m_edit_mode != edit_mode) {
+    m_edit_mode = edit_mode;
+
+    setup_buttons();
+    calculate_bounds();
+    
+    //switch between hint and clear buttons
+    if (edit_mode) {
+      m_buttons[hint]->register_callback(m_hint_callback);
+    } else {
+      m_buttons[hint]->register_callback(m_clear_callback);
+    }
+  }
 }
 
 Color PuzzleInfoPanel::active_color() const
@@ -84,10 +128,10 @@ void PuzzleInfoPanel::update(unsigned ticks, InputHandler& input,
   m_time += ticks;
   m_preview.update(ticks, input, active_region);
   m_color_selector.update(ticks, input, active_region);
-  m_menu_button->update(ticks, input, active_region);
-  m_zoom_in_button->update(ticks, input, active_region);
-  m_zoom_out_button->update(ticks, input, active_region);
-  m_hint_button->update(ticks, input, active_region);
+  for (auto& button : m_buttons) {
+    if (button)
+      button->update(ticks, input, active_region);
+  }
 }
 
 void PuzzleInfoPanel::draw(Renderer& renderer, const Rect& region) const
@@ -142,11 +186,11 @@ void PuzzleInfoPanel::draw(Renderer& renderer, const Rect& region) const
     }
 
     //draw buttons
-    m_menu_button->draw(renderer, region);
-    m_zoom_in_button->draw(renderer, region);
-    m_zoom_out_button->draw(renderer, region);
-    m_hint_button->draw(renderer, region);
-    pos.y() += m_menu_button->boundary().height() + spacing;
+    for (auto& button : m_buttons) {
+      if (button)
+        button->draw(renderer, region);
+    }
+    pos.y() += 2 * m_buttons[0]->boundary().height() + 2 * spacing;
 
     renderer.set_clip_rect();
   }
@@ -158,10 +202,10 @@ void PuzzleInfoPanel::move(int x, int y)
   UIPanel::move(x, y);
   m_preview.scroll(x - old_x, y - old_y);
   m_color_selector.scroll(x - old_x, y - old_y);
-  m_menu_button->scroll(x - old_x, y - old_y);
-  m_zoom_in_button->scroll(x - old_x, y - old_y);
-  m_zoom_out_button->scroll(x - old_x, y - old_y);
-  m_hint_button->scroll(x - old_x, y - old_y);
+  for (auto& button : m_buttons) {
+    if (button)
+      button->scroll(x - old_x, y - old_y);
+  }
 }
 
 void PuzzleInfoPanel::retrieve_puzzle_info()
@@ -223,19 +267,25 @@ void PuzzleInfoPanel::calculate_bounds()
       height += m_color_selector.boundary().height() + spacing;
     }
 
-    unsigned button_pos = m_boundary.y() + height;
-    unsigned button_width = m_menu_button->boundary().width();
+    Point button_pos(m_boundary.x(), m_boundary.y() + height);
+    unsigned button_width = m_buttons[menu]->boundary().width();
+    unsigned button_height = m_buttons[menu]->boundary().height();
     unsigned button_group_width = 4 * button_width + 3 * spacing;
-    height += m_menu_button->boundary().height() + spacing;
-    
-    int x = m_boundary.x() + width / 2 - button_group_width / 2;
-    m_menu_button->move(x, button_pos);
-    x += button_width + spacing;
-    m_zoom_in_button->move(x, button_pos);
-    x += button_width + spacing;
-    m_zoom_out_button->move(x, button_pos);
-    x += button_width + spacing;
-    m_hint_button->move(x, button_pos);
+    unsigned buttons_per_line = 4;
+    height += (button_height + spacing)
+      * (m_buttons.size() / buttons_per_line - 1);
+    if (m_edit_mode)
+      height += button_height + spacing;
+
+    button_pos.x() += width / 2 -button_group_width / 2;
+    for (unsigned i = 0; i < m_buttons.size(); ++i) {
+      if (m_buttons[i]) {
+        m_buttons[i]->move(button_pos.x() + (button_width + spacing)
+                           * (i % buttons_per_line),
+                           button_pos.y() + (button_height + spacing)
+                           * (i / buttons_per_line));
+      }
+    }
 
     m_preview.move(m_boundary.x() + width / 2 - preview_width / 2,
                    preview_pos);
