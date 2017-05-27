@@ -55,6 +55,14 @@ public:
   void on_zoom_out(Callback fn) { m_buttons[zoom_out]->register_callback(fn); }
   void on_hint_toggle(Callback fn);
   void on_clear_puzzle(Callback fn);
+  void on_save(Callback fn) { m_buttons[save]->register_callback(fn); }
+  void on_undo(Callback fn) { m_buttons[undo]->register_callback(fn); }
+  void on_redo(Callback fn) { m_buttons[redo]->register_callback(fn); }
+  void on_analyze(Callback fn) { m_buttons[analyze]->register_callback(fn); }
+  void on_left(Callback fn);
+  void on_right(Callback fn);
+  void on_up(Callback fn);
+  void on_down(Callback fn);
   void on_tool_change(Callback fn) { m_tool_selector.on_tool_change(fn); }
   void on_color_change(Callback fn) { m_color_selector.on_color_change(fn); }
   
@@ -108,6 +116,10 @@ private:
          save, undo, redo, analyze, left, right, up, down };
   const int num_buttons = down + 1;
   std::vector<std::shared_ptr<ImageButton>> m_buttons;
+  Callback m_left_callback;
+  Callback m_right_callback;
+  Callback m_up_callback;
+  Callback m_down_callback;
   Callback m_hint_callback;
   Callback m_clear_callback;
 

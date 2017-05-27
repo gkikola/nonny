@@ -101,6 +101,34 @@ void PuzzleInfoPanel::on_clear_puzzle(Callback fn)
     m_buttons[hint]->register_callback(fn);
 }
 
+void PuzzleInfoPanel::on_left(Callback fn)
+{
+  m_left_callback = fn;
+  if (m_buttons[left])
+    m_buttons[left]->register_callback(fn);
+}
+
+void PuzzleInfoPanel::on_right(Callback fn)
+{
+  m_right_callback = fn;
+  if (m_buttons[right])
+    m_buttons[right]->register_callback(fn);
+}
+
+void PuzzleInfoPanel::on_up(Callback fn)
+{
+  m_up_callback = fn;
+  if (m_buttons[up])
+    m_buttons[up]->register_callback(fn);
+}
+
+void PuzzleInfoPanel::on_down(Callback fn)
+{
+  m_down_callback = fn;
+  if (m_buttons[down])
+    m_buttons[down]->register_callback(fn);
+}
+
 void PuzzleInfoPanel::set_edit_mode(bool edit_mode)
 {
   if (m_edit_mode != edit_mode) {
@@ -112,6 +140,10 @@ void PuzzleInfoPanel::set_edit_mode(bool edit_mode)
     //switch between hint and clear buttons
     if (edit_mode) {
       m_buttons[hint]->register_callback(m_hint_callback);
+      m_buttons[up]->register_callback(m_up_callback);
+      m_buttons[down]->register_callback(m_down_callback);
+      m_buttons[left]->register_callback(m_left_callback);
+      m_buttons[right]->register_callback(m_right_callback);
     } else {
       m_buttons[hint]->register_callback(m_clear_callback);
     }

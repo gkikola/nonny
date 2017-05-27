@@ -37,11 +37,13 @@ const Color lightly_shaded_cell_color(240, 240, 255);
 
 constexpr int cell_animation_duration = 100;
 constexpr int time_for_mouse_unlock = 96;
+constexpr int max_undo_size = 64;
 
 PuzzlePanel::PuzzlePanel(Font& clue_font, const Texture& cell_texture,
                          Puzzle& puzzle)
   : m_clue_font(clue_font), m_cell_texture(cell_texture)
 {
+  m_cur_state = m_state_history.begin();
   attach_puzzle(puzzle);
   calc_grid_pos();
 }
@@ -60,8 +62,11 @@ void PuzzlePanel::update(unsigned ticks, InputHandler& input,
   if (m_puzzle) {
     update_cells(ticks);
 
-    if (!m_mouse_dragging && !m_kb_dragging)
+    if (!m_mouse_dragging && !m_kb_dragging) {
       m_puzzle->update_clues(m_edit_mode);
+      if (m_has_state_changed)
+        save_undo_state();
+    }
 
     handle_mouse_selection(ticks, input, active_region);
     handle_kb_selection(ticks, input);
@@ -334,6 +339,9 @@ void PuzzlePanel::set_cell(int x, int y, PuzzleCell::State state)
   int index = x + y * m_puzzle->width();
   m_prev_cell_state[index] = (*m_puzzle)[x][y].state;
   m_cell_time[index] = 0;
+
+  if (m_prev_cell_state[index] != state)
+    m_has_state_changed = true;
   switch (state) {
   case PuzzleCell::State::filled:
     m_puzzle->mark_cell(x, y, m_color);
@@ -612,6 +620,7 @@ void PuzzlePanel::do_draw_action(bool mark)
           m_puzzle->mark_cell(x, y, m_color);
         else
           m_puzzle->clear_cell(x, y);
+        m_has_state_changed = true;
       };
       for_each_point_on_selection(f);
     }
@@ -859,5 +868,39 @@ void PuzzlePanel::move_selection(Direction dir, int count)
   if (m_kb_dragging) {
     m_drag_end_x = m_selection_x;
     m_drag_end_y = m_selection_y;
+  }
+}
+
+void PuzzlePanel::save_undo_state()
+{
+  m_has_state_changed = false;
+
+  if (!m_state_history.empty())
+    ++m_cur_state;
+  if (m_cur_state != m_state_history.end())
+    m_state_history.erase(m_cur_state, m_state_history.end());
+  if (m_state_history.size() >= max_undo_size)
+    m_state_history.erase(m_state_history.begin());
+  m_cur_state = m_state_history.insert(m_state_history.end(),
+                                       CompressedState());
+  m_puzzle->copy_state(*m_cur_state);
+}
+
+void PuzzlePanel::undo()
+{
+  if (m_cur_state != m_state_history.begin()) {
+    --m_cur_state;
+    m_puzzle->load_state(*m_cur_state);
+  }
+}
+
+void PuzzlePanel::redo()
+{
+  if (m_cur_state != m_state_history.end()) {
+    ++m_cur_state;
+    if (m_cur_state != m_state_history.end())
+      m_puzzle->load_state(*m_cur_state);
+    else
+      --m_cur_state;
   }
 }

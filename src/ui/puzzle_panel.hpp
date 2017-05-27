@@ -22,8 +22,10 @@
 #define NONNY_PUZZLE_PANEL_HPP
 
 #include <functional>
+#include <list>
 #include <vector>
 #include "color/color_palette.hpp"
+#include "puzzle/compressed_state.hpp"
 #include "puzzle/puzzle.hpp"
 #include "puzzle/puzzle_cell.hpp"
 #include "ui/ui_panel.hpp"
@@ -50,7 +52,10 @@ public:
   enum class DrawTool { paint = 0, line, rect, ellipse, fill };
   void set_edit_mode(bool edit_mode = true) { m_edit_mode = edit_mode; }
   void set_draw_tool(DrawTool tool) { m_draw_tool = tool; }
-  
+
+  void undo();
+  void redo();
+
   using UIPanel::update; //make all update and draw overloads visible
   using UIPanel::draw;
   void update(unsigned ticks, InputHandler& input,
@@ -92,6 +97,8 @@ private:
   //find coordinates of cell without making sure they're in bounds
   inline void generalized_cell_at_point(const Point&p, int* x, int* y) const;
 
+  void save_undo_state();
+
   Font& m_clue_font;
   const Texture& m_cell_texture;
 
@@ -106,6 +113,11 @@ private:
   Point m_grid_pos;
   bool m_edit_mode = false;
   DrawTool m_draw_tool = DrawTool::paint;
+
+  //Undo/redo
+  std::list<CompressedState> m_state_history;
+  std::list<CompressedState>::iterator m_cur_state;
+  bool m_has_state_changed = true;
 
   //Dragging states
   DragType m_mouse_drag_type = DragType::fill;

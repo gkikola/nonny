@@ -275,6 +275,15 @@ void PuzzleView::setup_panels()
   ipanel->on_zoom_in([]() { });
   ipanel->on_zoom_out([]() { });
   ipanel->on_hint_toggle([]() { });
+  ipanel->on_clear_puzzle([]() { });
+  ipanel->on_save([]() { });
+  ipanel->on_undo([ppanel]() { ppanel->undo(); });
+  ipanel->on_redo([ppanel]() { ppanel->redo(); });
+  ipanel->on_analyze([]() { });
+  ipanel->on_left([]() { });
+  ipanel->on_right([]() { });
+  ipanel->on_up([]() { });
+  ipanel->on_down([]() { });
   ipanel->on_color_change(std::bind(&PuzzleView::handle_color_change, this));
   ipanel->on_tool_change(std::bind(&PuzzleView::handle_tool_change, this));
   ipanel->start_slide();
