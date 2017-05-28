@@ -19,12 +19,9 @@ in squares within a grid in order to reveal a picture.
 Development Status
 ------------------
 
-Nonny is playable but not yet ready for an initial release. Currently,
-you can solve both black and white as well as multicolor nonograms
-located anywhere on your hard drive and Nonny will track your
-completion status and times. You can even save your progress in the
-middle of a puzzle. However, creating your own nonograms with Nonny is
-not yet possible, as this functionality has not yet been implemented.
+Nonny is playable but not yet ready for an initial release. Most of
+the basic functionality for playing and editing puzzles has been
+implemented, but it's still very much a work in progress.
 
 At the moment, Nonny only supports two file formats: [Steven Simpson's
 .non format](http://www.lancaster.ac.uk/~simpsons/nonogram/) (extended
@@ -32,11 +29,6 @@ for multicolor support) and the .g format used by [Mirek Olšák and
 Petr Olšák's nonogram
 solver](http://www.olsak.net/grid.html#English). Many other popular
 formats will be supported in the future.
-
-Finally, Nonny does not yet come prepackaged with a large puzzle
-selection. There are a few puzzles included now that are used for
-testing but these are not finalized. When Nonny is officially
-released, it will include a good assortment of puzzles to play.
 
 
 Installation
