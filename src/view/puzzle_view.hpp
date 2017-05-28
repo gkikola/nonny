@@ -52,10 +52,12 @@ public:
   void draw(Renderer& renderer) override;
   void resize(int width, int height) override;
 
-  void save() const;
+  void save();
   void restart();
 
-  void save_puzzle(std::string filename);
+  void save_puzzle(std::string filename = "");
+
+  bool is_save_needed() const;
   
   Puzzle& puzzle() { return m_puzzle; }
   const Puzzle& puzzle() const { return m_puzzle; }

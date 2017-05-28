@@ -82,6 +82,9 @@ public:
   bool is_row_solved(int row) const;
   bool is_col_solved(int col) const;
 
+  // Determines whether all of the cells are blank
+  bool is_clear() const;
+
   // Determines whether the puzzle has multiple foreground colors
   bool is_multicolor() const { return m_palette.size() > 2; }
 

@@ -88,7 +88,31 @@ void ViewManager::update(unsigned ticks, InputHandler& input)
     case Action::no_action:
       break;
     case Action::quit_game:
+      {
+        if (is_save_needed()) {
+          std::string message;
+          if (m_puzzle_status == puzzle_play)
+            message = "Do you want to save your progress before exiting?";
+          else if (m_puzzle_status == puzzle_edit)
+            message = "Do you want to save your puzzle before exiting?";
+          message_box(message, MessageBoxView::Type::yes_no_cancel,
+                      std::bind(&ViewManager::schedule_action,
+                                this, Action::save_and_quit, ""),
+                      std::bind(&ViewManager::schedule_action,
+                                this, Action::force_quit, ""),
+                      std::bind(&ViewManager::schedule_action,
+                                this, Action::close_message_box, ""));
+        } else {
+          m_views.clear();
+        }
+      }
+      break;
+    case Action::force_quit:
       m_views.clear();
+      break;
+    case Action::save_and_quit:
+      if (save())
+        m_views.clear();
       break;
     case Action::choose_puzzle:
       push(std::make_shared<FileView>(*this, FileView::Mode::open));
@@ -212,4 +236,30 @@ void ViewManager::resize(int width, int height)
 
   for (auto view : m_views)
     view->resize(width, height);
+}
+
+bool ViewManager::is_save_needed() const
+{
+  for (auto it = m_views.rbegin(); it != m_views.rend(); ++it) {
+    if (typeid(**it) == typeid(PuzzleView)) {
+      auto pv = std::dynamic_pointer_cast<PuzzleView>(*it);
+      return pv->is_save_needed();
+    }
+  }
+  return false;
+}
+
+bool ViewManager::save()
+{
+  for (auto it = m_views.rbegin(); it != m_views.rend(); ++it) {
+    if (typeid(**it) == typeid(PuzzleView)) {
+      auto pv = std::dynamic_pointer_cast<PuzzleView>(*it);
+      if (m_puzzle_status == puzzle_play)
+        pv->save();
+      else if (m_puzzle_status == puzzle_edit)
+        pv->save_puzzle();
+      return !pv->is_save_needed();
+    }
+  }
+  return true;
 }

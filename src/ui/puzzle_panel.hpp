@@ -65,6 +65,9 @@ public:
   void undo();
   void redo();
 
+  bool is_save_needed() const { return m_need_save; }
+  void clear_save_flag() { m_need_save = false; }
+  
   using UIPanel::update; //make all update and draw overloads visible
   using UIPanel::draw;
   void update(unsigned ticks, InputHandler& input,
@@ -122,6 +125,7 @@ private:
   Point m_grid_pos;
   bool m_edit_mode = false;
   DrawTool m_draw_tool = DrawTool::paint;
+  bool m_need_save = false;
 
   //Undo/redo
   std::list<CompressedState> m_state_history;

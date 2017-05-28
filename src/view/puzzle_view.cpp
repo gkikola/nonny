@@ -204,7 +204,7 @@ std::string PuzzleView::puzzle_collection() const
     return "Default";
 }
 
-void PuzzleView::save() const
+void PuzzleView::save()
 {
   bool just_completed = false;
   if (m_puzzle.is_solved())
@@ -218,13 +218,17 @@ void PuzzleView::save() const
   PuzzleProgress prog;
   m_mgr.save_manager().load_progress(prog, m_puzzle_filename,
                                      collection, id);
-
+  
   //store current progress
   auto& ip = dynamic_cast<const PuzzleInfoPanel&>(m_info_pane.main_panel());
   prog.store_progress(m_puzzle, ip.time(), just_completed);
 
   m_mgr.save_manager().save_progress(prog, m_puzzle_filename,
                                      collection, id);
+
+  //clear save flag
+  auto& pp = dynamic_cast<PuzzlePanel&>(m_main_panel.main_panel());
+  pp.clear_save_flag();
 }
 
 void PuzzleView::restart()
@@ -248,7 +252,18 @@ void PuzzleView::save_puzzle(std::string filename)
       m_puzzle_filename = filename;
     
     write_puzzle(file, m_puzzle, file_type(filename));
+    auto& pp = dynamic_cast<PuzzlePanel&>(m_main_panel.main_panel());
+    pp.clear_save_flag();
   }
+}
+
+bool PuzzleView::is_save_needed() const
+{
+  auto ppanel = dynamic_cast<const PuzzlePanel*>(&m_main_panel.main_panel());
+  if (ppanel)
+    return ppanel->is_save_needed();
+  else
+    return false;
 }
 
 void PuzzleView::setup_panels()
@@ -265,6 +280,7 @@ void PuzzleView::setup_panels()
   auto ppanel = std::make_shared<PuzzlePanel>(*m_clue_font, *m_cell_texture,
                                               m_puzzle);
   ppanel->set_edit_mode(m_edit_mode);
+  ppanel->clear_save_flag();
 
   Rect win_region(0, 0, m_width, m_height);
   m_main_panel = ScrollingPanel(win_region, ppanel);

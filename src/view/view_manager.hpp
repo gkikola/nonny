@@ -47,7 +47,8 @@ public:
   ViewManager(VideoSystem& vs, Renderer& renderer, GameSettings& settings,
               int width, int height);
   
-  enum class Action { no_action, quit_game, choose_puzzle, create_puzzle,
+  enum class Action { no_action, quit_game, force_quit, save_and_quit,
+      choose_puzzle, create_puzzle,
       open_menu, close_menu, load_puzzle, save_puzzle, save_puzzle_as,
       analyze_puzzle, quit_puzzle, save_game, restart, show_victory_screen,
       message_box, close_message_box };
@@ -84,6 +85,9 @@ public:
   const SaveManager& save_manager() const { return m_save_mgr; }
 
 private:
+  bool is_save_needed() const;
+  bool save(); //returns true if save was successful or unneeded
+  
   std::vector<std::shared_ptr<View>> m_views;
   VideoSystem& m_video;
   Renderer& m_renderer;

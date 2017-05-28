@@ -180,6 +180,16 @@ bool Puzzle::is_col_solved(int col) const
   return get_col(col).is_solved();
 }
 
+bool Puzzle::is_clear() const
+{
+  for (int row = 0; row != height(); ++row)
+    for (int col = 0; col != width(); ++col)
+      if (m_grid.at(col, row).state != PuzzleCell::State::blank)
+        return false;
+
+  return true;
+}
+
 void Puzzle::update_clues(bool edit_mode)
 {
   //make sure clue entries exist

@@ -94,8 +94,10 @@ void PuzzlePanel::update(unsigned ticks, InputHandler& input,
 
     if (!m_mouse_dragging && !m_kb_dragging) {
       m_puzzle->update_clues(m_edit_mode);
-      if (m_has_state_changed)
+      if (m_has_state_changed) {
         save_undo_state();
+        m_need_save = !m_puzzle->is_clear();
+      }
     }
 
     handle_mouse_selection(ticks, input, active_region);
