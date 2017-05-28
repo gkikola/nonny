@@ -56,6 +56,12 @@ void PuzzlePanel::attach_puzzle(Puzzle& puzzle)
   m_prev_cell_state.resize(size, PuzzleCell::State::blank);
 }
 
+void PuzzlePanel::clear_puzzle()
+{
+  m_puzzle->clear_all_cells();
+  m_has_state_changed = true;
+}
+
 void PuzzlePanel::shift_left()
 {
   m_puzzle->shift_cells(-1, 0);

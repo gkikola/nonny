@@ -53,6 +53,9 @@ public:
   void set_edit_mode(bool edit_mode = true) { m_edit_mode = edit_mode; }
   void set_draw_tool(DrawTool tool) { m_draw_tool = tool; }
 
+  //make all cells blank
+  void clear_puzzle();
+  
   //shift puzzle cells
   void shift_left();
   void shift_right();
@@ -89,7 +92,7 @@ private:
   void handle_mouse_selection(unsigned ticks, InputHandler& input,
                               const Rect& region);
   void handle_kb_selection(unsigned ticks, InputHandler& input);
-  void do_draw_action(bool mark = true);
+  void do_draw_action(bool mark = true);  
 
   typedef std::function<void(int, int)> CellFunction;
   void for_each_point_on_selection(CellFunction fn) const;

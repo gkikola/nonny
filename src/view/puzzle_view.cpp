@@ -299,7 +299,7 @@ void PuzzleView::setup_panels()
   ipanel->on_zoom_in([]() { });
   ipanel->on_zoom_out([]() { });
   ipanel->on_hint_toggle([]() { });
-  ipanel->on_clear_puzzle([]() { });
+  ipanel->on_clear_puzzle([ppanel]() { ppanel->clear_puzzle(); });
   ipanel->on_save(std::bind(&PuzzleView::save_puzzle, this, ""));
   ipanel->on_undo([ppanel]() { ppanel->undo(); });
   ipanel->on_redo([ppanel]() { ppanel->redo(); });
