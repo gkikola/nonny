@@ -52,6 +52,20 @@ ViewManager::ViewManager(VideoSystem& vs, Renderer& renderer,
 {
 }
 
+void ViewManager::message_box(const std::string& message,
+                              MessageBoxView::Type type,
+                              Callback on_yes,
+                              Callback on_no,
+                              Callback on_cancel)
+{
+  m_mbox_yes = on_yes;
+  m_mbox_no = on_no;
+  m_mbox_cancel = on_cancel;
+  m_mbox_type = type;
+  m_action_arg = message;
+  m_action = Action::message_box;
+}
+
 void ViewManager::pop()
 {
   if (m_views.empty())
@@ -62,6 +76,11 @@ void ViewManager::pop()
 void ViewManager::update(unsigned ticks, InputHandler& input)
 {
   if (m_action != Action::no_action) {
+    if (m_mbox_open && m_action != Action::message_box) {
+      m_mbox_open = false;
+      pop();
+    }
+
     Action action = m_action;
     m_action = Action::no_action;
     switch (action) {
@@ -141,6 +160,15 @@ void ViewManager::update(unsigned ticks, InputHandler& input)
                                              pv->time(), pv->best_time()));
       }
       break;
+    case Action::message_box:
+      push(std::make_shared<MessageBoxView>(*this, m_action_arg,
+                                            m_mbox_type, m_mbox_yes,
+                                            m_mbox_no, m_mbox_cancel));
+      m_mbox_open = true;
+      break;
+    case Action::close_message_box:
+      //don't need to do anything here, was closed before the switch
+      break;
     }
     input.release_mouse();
     input.reset_cursor();
@@ -153,8 +181,17 @@ void ViewManager::update(unsigned ticks, InputHandler& input)
 
 void ViewManager::draw(Renderer& renderer)
 {
-  if (!m_views.empty())
+  if (!m_views.empty()) {
+    auto cur = m_views.end() - 1;
+    while (true) {
+      (*cur)->draw(renderer);
+      if (!(*cur)->is_transparent() || cur == m_views.begin())
+        break;
+      
+      --cur;
+    }
     m_views.back()->draw(renderer);
+  }
 }
 
 void ViewManager::refresh()

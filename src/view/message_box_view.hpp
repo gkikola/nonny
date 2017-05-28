@@ -18,33 +18,36 @@
  */
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
-#ifndef NONNY_MESSAGE_BOX_HPP
-#define NONNY_MESSAGE_BOX_HPP
+#ifndef NONNY_MESSAGE_BOX_VIEW_HPP
+#define NONNY_MESSAGE_BOX_VIEW_HPP
 
-#include <string>
-#include "ui/dialog.hpp"
+#include <functional>
+#include <memory>
+#include "ui/message_box.hpp"
+#include "view/view.hpp"
 
 class Font;
 
-/*
- * Represents a dialog box with some control buttons that displays a
- * message.
- */
-class MessageBox : public Dialog {
+class MessageBoxView : public View {
 public:
-  MessageBox() = default;
-  MessageBox(const Font& text_font, const std::string& text,
-             int width);
+  enum class Type { okay, yes_no, yes_no_cancel };
+  typedef std::function<void()> Callback;
+  MessageBoxView(ViewManager& vm, const std::string& message,
+                 Type type, Callback on_yes,
+                 Callback on_no, Callback on_cancel);
 
-  void position_controls() override;
-  void recalculate_size();
+  void update(unsigned ticks, InputHandler& input) override;
+  void draw(Renderer& renderer) override;
+  void resize(int width, int height) override;
 
-  using Dialog::draw;
-  void draw(Renderer& renderer, const Rect& region) const override;
+  bool is_transparent() const override { return true; }
 
 private:
-  const Font* m_text_font;
-  std::string m_text;
+  void load_resources();
+
+  MessageBox m_mbox;
+  std::unique_ptr<Font> m_text_font;
+  std::unique_ptr<Font> m_control_font;
 };
 
 #endif

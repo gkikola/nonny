@@ -71,6 +71,8 @@ private:
   void open_puzzle_dir();
   void open_save_dir();
 
+  void open_file(const std::string& filename = "");
+
   int path_name_width() const; //get display width of cur path name
   int path_subdir_count() const; //get num subdirs in cur path
   void handle_directory_change(); //update controls for new directory

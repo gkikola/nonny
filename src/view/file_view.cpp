@@ -27,6 +27,7 @@
 #include "save/save_manager.hpp"
 #include "settings/game_settings.hpp"
 #include "video/renderer.hpp"
+#include "view/message_box_view.hpp"
 #include "view/view_manager.hpp"
 
 namespace stdfs = std::experimental::filesystem;
@@ -231,6 +232,8 @@ void FileView::resize(int width, int height)
 
 void FileView::load_resources()
 {
+  using namespace std::placeholders;
+
   const GameSettings& settings = m_mgr.game_settings();
   VideoSystem& vs = m_mgr.video_system();
 
@@ -257,16 +260,7 @@ void FileView::load_resources()
   m_back_button->register_callback(std::bind(&FileView::back, this));
   m_forward_button->register_callback(std::bind(&FileView::forward, this));
   
-  auto open = [this]() {
-    FileSelectionPanel& panel
-    = dynamic_cast<FileSelectionPanel&>(m_file_selection.main_panel());
-    if (m_mode == Mode::open)
-      panel.open_selection();
-    else if (m_cur_path != m_paths.end())
-      m_mgr.schedule_action(ViewManager::Action::save_puzzle,
-                            *m_cur_path / m_filename_box->get_text());
-  };
-  m_open_button->register_callback(open);
+  m_open_button->register_callback(std::bind(&FileView::open_file, this, ""));
 
   m_filename_box = std::make_shared<TextBox>(*m_control_font);
 
@@ -276,11 +270,7 @@ void FileView::load_resources()
                                                   *m_file_icons_texture);
   fsv->on_dir_change([this](const std::string& p)
                      { m_selected_path = p; m_need_path_change = true; });
-  fsv->on_file_open([this](const std::string& f) {
-      if (m_mode == Mode::open)
-        m_mgr.schedule_action(ViewManager::Action::load_puzzle, f);
-      else
-        m_mgr.schedule_action(ViewManager::Action::save_puzzle, f); });
+  fsv->on_file_open(std::bind(&FileView::open_file, this, _1));
   fsv->on_file_select([this](const std::string& f)
                       { handle_selection_change(); });
   m_file_selection.attach_panel(fsv);
@@ -376,6 +366,42 @@ void FileView::open_puzzle_dir()
 void FileView::open_save_dir()
 {
   open_path(stdfs::canonical(stdfs::path(m_mgr.game_settings().save_dir())));
+}
+
+void FileView::open_file(const std::string& filename)
+{
+  if (filename.empty()) {
+    if (m_mode == Mode::open) {
+      FileSelectionPanel& panel
+        = dynamic_cast<FileSelectionPanel&>(m_file_selection.main_panel());
+      panel.open_selection();
+    } else if (m_cur_path != m_paths.end()) {
+      stdfs::path p = *m_cur_path / m_filename_box->get_text();
+      if (p.has_filename()) {
+        if (p.extension().empty())
+          p.replace_extension(".non");
+        if (!p.empty())
+          open_file(p);
+      }
+    }
+  } else {
+    if (m_mode == Mode::open)
+      m_mgr.schedule_action(ViewManager::Action::load_puzzle, filename);
+    else {
+      auto save = [this, filename]() {
+        m_mgr.schedule_action(ViewManager::Action::save_puzzle, filename); };
+      auto cancel = [this]() {
+        m_mgr.schedule_action(ViewManager::Action::close_message_box); };
+      if (stdfs::exists(filename)) {
+        m_mgr.message_box("Are you sure you want to overwrite the file \""
+                          + stdfs::path(filename).filename().string() + "\"?",
+                          MessageBoxView::Type::yes_no,
+                          save, cancel, cancel);
+      } else {
+        save();
+      }
+    }
+  }
 }
 
 int FileView::path_name_width() const

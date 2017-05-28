@@ -20,16 +20,76 @@
 
 #include "ui/message_box.hpp"
 
+#include <algorithm>
+#include "color/color.hpp"
 #include "video/font.hpp"
+#include "video/renderer.hpp"
 
-MessageBox::MessageBox(const Font& text_font, const Font& button_font,
-                       const std::string& text)
+const Color background_color(192, 192, 192);
+constexpr int spacing = 8;
+
+MessageBox::MessageBox(const Font& text_font,
+                       const std::string& text,
+                       int width)
   : m_text_font(&text_font),
-    m_button_font(&button_font),
     m_text(text)
 {
+  resize(width, spacing * 2);
 }
 
 void MessageBox::position_controls()
 {
+  m_need_reposition = false;
+
+  //figure out how wide the controls are
+  int control_wd = spacing;
+  for (auto& c : m_controls)
+    control_wd += c->boundary().width() + spacing;
+
+  //center the controls at the bottom of the message box
+  int x = m_boundary.x() + m_boundary.width() / 2 - control_wd / 2
+    + spacing;
+  int y = m_boundary.y() + m_boundary.height() - spacing;
+  for (auto& c : m_controls) {
+    c->move(x, y - c->boundary().height());
+    x += c->boundary().width() + spacing;
+  }
+}
+
+void MessageBox::recalculate_size()
+{
+  int width = m_boundary.width();
+  int height = 2 * spacing;
+
+  int control_wd = spacing;
+  int control_ht = spacing;
+  for (auto& c : m_controls) {
+    control_wd += c->boundary().width() + spacing;
+    control_ht = std::max(control_ht, c->boundary().height());
+  }
+
+  width = std::max(width, control_wd);
+  height += control_ht + spacing;
+
+  int text_wd, text_ht;
+  m_text_font->text_size_wrapped(m_text, width - 2 * spacing,
+                                 &text_wd, &text_ht);
+  height += text_ht + spacing;
+
+  resize(width, height);
+}
+
+void MessageBox::draw(Renderer& renderer, const Rect& region) const
+{
+  Rect rect = intersection(m_boundary, region);
+  renderer.set_draw_color(background_color);
+  renderer.fill_rect(rect);
+  renderer.set_draw_color(default_colors::black);
+  renderer.draw_rect(rect);
+
+  Point text_pos(m_boundary.x() + spacing, m_boundary.y() + spacing);
+  renderer.draw_text_wrapped(text_pos, *m_text_font, m_text,
+                             m_boundary.width() - 2 * spacing, true);
+  
+  Dialog::draw(renderer, region);
 }

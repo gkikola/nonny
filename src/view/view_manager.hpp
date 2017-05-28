@@ -26,6 +26,7 @@
 #include <string>
 #include <vector>
 #include "save/save_manager.hpp"
+#include "view/message_box_view.hpp"
 #include "view/view.hpp"
 #include "video/font.hpp"
 #include "video/video_system.hpp"
@@ -48,9 +49,15 @@ public:
   
   enum class Action { no_action, quit_game, choose_puzzle, create_puzzle,
       open_menu, close_menu, load_puzzle, save_puzzle, save_puzzle_as,
-      analyze_puzzle, quit_puzzle, save_game, restart, show_victory_screen };
+      analyze_puzzle, quit_puzzle, save_game, restart, show_victory_screen,
+      message_box, close_message_box };
   inline void schedule_action(Action action, std::string argument = "");
 
+  typedef std::function<void()> Callback;
+  void message_box(const std::string& message,
+                   MessageBoxView::Type type,
+                   Callback on_yes, Callback on_no, Callback on_cancel);
+  
   void push(std::shared_ptr<View> view) { m_views.push_back(view); }
   void pop();
   bool empty() const { return m_views.empty(); }
@@ -89,6 +96,13 @@ private:
 
   Action m_action = Action::no_action;
   std::string m_action_arg;
+
+  //Message box callbacks
+  MessageBoxView::Type m_mbox_type;
+  Callback m_mbox_yes;
+  Callback m_mbox_no;
+  Callback m_mbox_cancel;
+  bool m_mbox_open = false;
 };
 
 

@@ -96,6 +96,7 @@ add_executable (
   src/video/window.cpp
   src/view/file_view.cpp
   src/view/menu_view.cpp
+  src/view/message_box_view.cpp
   src/view/puzzle_view.cpp
   src/view/victory_view.cpp
   src/view/view.cpp

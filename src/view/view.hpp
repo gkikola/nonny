@@ -41,6 +41,8 @@ public:
   virtual void draw(Renderer& renderer) = 0;
   virtual void resize(int width, int height);
 
+  virtual bool is_transparent() const { return false; }
+
 protected:
   ViewManager& m_mgr;
   int m_width = 0;
