@@ -130,6 +130,7 @@ void Puzzle::load_state(const CompressedState& state)
       ++pos;
     }
   }
+  refresh_all_cells();
 }
 
 ConstPuzzleLine Puzzle::operator[](int col) const
