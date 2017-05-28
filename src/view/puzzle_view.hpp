@@ -67,6 +67,7 @@ private:
   void load(const std::string& filename);
   PuzzleFormat file_type(const std::string& filename) const;
   void new_puzzle();
+  void setup_default_palette();
   void setup_panels();
   void handle_color_change();
   void handle_tool_change();

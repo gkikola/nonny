@@ -56,6 +56,8 @@ public:
   const Color& operator[](const std::string& name) const;
   const Color& operator[](char symbol) const;
 
+  static ColorPalette default_palette();
+
   const_iterator begin() const { return m_colors.begin(); }
   const_iterator end() const { return m_colors.end(); }
 

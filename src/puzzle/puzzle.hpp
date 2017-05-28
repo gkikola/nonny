@@ -54,6 +54,7 @@ public:
 
   // Creates a blank puzzle of the given size
   Puzzle(int width, int height);
+  Puzzle(int width, int height, ColorPalette palette);
 
   int width() const { return m_grid.width(); }
   int height() const { return m_grid.height(); }

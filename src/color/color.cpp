@@ -30,9 +30,11 @@ namespace default_colors {
   extern const Color white(255, 255, 255);
   extern const Color red(255, 0, 0);
   extern const Color green(0, 255, 0);
+  extern const Color dark_green(0, 176, 0);
   extern const Color blue(0, 0, 255);
   extern const Color yellow(255, 255, 0);
-  extern const Color dark_green(1, 50, 32);
+  extern const Color orange(255, 128, 0);
+  extern const Color purple(128, 0, 128);
 }
 
 Color Color::fade(double opacity) const

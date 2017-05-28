@@ -25,15 +25,15 @@
 Puzzle::Puzzle(int width, int height)
   : m_grid(width, height)
 {
-  PuzzleClue zero;
-  
-  for (int y = 0; y < height; ++y) {
-    m_row_clues.push_back(ClueSequence(1, zero)); // add 0 clue for each row
-  }
+  refresh_all_cells();
+  update_clues(true);
+}
 
-  for (int x = 0; x < width; ++x) {
-    m_col_clues.push_back(ClueSequence(1, zero)); // add 0 clue for each column
-  }
+Puzzle::Puzzle(int width, int height, ColorPalette palette)
+  : m_grid(width, height), m_palette(palette)
+{
+  refresh_all_cells();
+  update_clues(true);
 }
 
 PuzzleLine Puzzle::get_row(int index)
@@ -163,6 +163,13 @@ bool Puzzle::is_col_solved(int col) const
 
 void Puzzle::update_clues(bool edit_mode)
 {
+  //make sure clue entries exist
+  if (m_row_clues.empty())
+    m_row_clues = ClueContainer(width(), ClueSequence());
+  if (m_col_clues.empty())
+    m_col_clues = ClueContainer(height(), ClueSequence());
+
+  //update changed lines
   while (!m_rows_changed.empty()) {
     auto it = m_rows_changed.begin();
     update_line(*it, LineType::row, edit_mode);

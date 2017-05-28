@@ -178,7 +178,7 @@ PuzzleFormat PuzzleView::file_type(const std::string& filename) const
 
 void PuzzleView::new_puzzle()
 {
-  m_puzzle = Puzzle(10, 10);
+  m_puzzle = Puzzle(10, 10, std::move(ColorPalette::default_palette()));
   m_edit_mode = true;
   setup_panels();
   handle_color_change();

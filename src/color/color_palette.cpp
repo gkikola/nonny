@@ -66,6 +66,17 @@ const Color& ColorPalette::operator[](char symbol) const
   return it->color;
 }
 
+ColorPalette ColorPalette::default_palette()
+{
+  ColorPalette palette;
+  palette.add(default_colors::red, "red", '@');
+  palette.add(default_colors::dark_green, "green", '#');
+  palette.add(default_colors::blue, "blue", '$');
+  palette.add(default_colors::orange, "orange", '%');
+  palette.add(default_colors::purple, "purple", '!');
+  return palette;
+}
+
 ColorPalette::const_iterator ColorPalette::find(const Color& color) const
 {
   return std::find_if(m_colors.begin(), m_colors.end(),
