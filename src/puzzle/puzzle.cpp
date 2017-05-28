@@ -97,6 +97,25 @@ void Puzzle::refresh_all_cells()
     m_rows_changed.insert(j);
 }
 
+void Puzzle::shift_cells(int x, int y)
+{
+  int wd = width(), ht = height();
+  PuzzleGrid copy(m_grid);
+  m_grid = PuzzleGrid(wd, ht);
+
+  for (int row = 0; row < ht; ++row) {
+    for (int col = 0; col < wd; ++col) {
+      int new_row = row + y;
+      int new_col = col + x;
+
+      if (new_row >= 0 && new_row < ht
+          && new_col >= 0 && new_col < wd)
+        m_grid.at(new_col, new_row) = copy.at(col, row);
+    }
+  }
+  refresh_all_cells();
+}
+
 void Puzzle::copy_state(CompressedState& state) const
 {
   state.m_width = width();

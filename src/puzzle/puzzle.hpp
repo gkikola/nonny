@@ -73,6 +73,8 @@ public:
 
   void clear_all_cells();
 
+  void shift_cells(int x, int y);
+  
   void copy_state(CompressedState& state) const;
   void load_state(const CompressedState& state);
 

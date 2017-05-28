@@ -304,10 +304,10 @@ void PuzzleView::setup_panels()
   ipanel->on_undo([ppanel]() { ppanel->undo(); });
   ipanel->on_redo([ppanel]() { ppanel->redo(); });
   ipanel->on_analyze([]() { });
-  ipanel->on_left([]() { });
-  ipanel->on_right([]() { });
-  ipanel->on_up([]() { });
-  ipanel->on_down([]() { });
+  ipanel->on_left([ppanel]() { ppanel->shift_left(); });
+  ipanel->on_right([ppanel]() { ppanel->shift_right(); });
+  ipanel->on_up([ppanel]() { ppanel->shift_up(); });
+  ipanel->on_down([ppanel]() { ppanel->shift_down(); });
   ipanel->on_color_change(std::bind(&PuzzleView::handle_color_change, this));
   ipanel->on_tool_change(std::bind(&PuzzleView::handle_tool_change, this));
   ipanel->start_slide();

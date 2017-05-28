@@ -56,6 +56,30 @@ void PuzzlePanel::attach_puzzle(Puzzle& puzzle)
   m_prev_cell_state.resize(size, PuzzleCell::State::blank);
 }
 
+void PuzzlePanel::shift_left()
+{
+  m_puzzle->shift_cells(-1, 0);
+  m_has_state_changed = true;
+}
+
+void PuzzlePanel::shift_right()
+{
+  m_puzzle->shift_cells(1, 0);
+  m_has_state_changed = true;
+}
+
+void PuzzlePanel::shift_up()
+{
+  m_puzzle->shift_cells(0, -1);
+  m_has_state_changed = true;
+}
+
+void PuzzlePanel::shift_down()
+{
+  m_puzzle->shift_cells(0, 1);
+  m_has_state_changed = true;
+}
+
 void PuzzlePanel::update(unsigned ticks, InputHandler& input,
                          const Rect& active_region)
 {

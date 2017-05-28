@@ -53,6 +53,12 @@ public:
   void set_edit_mode(bool edit_mode = true) { m_edit_mode = edit_mode; }
   void set_draw_tool(DrawTool tool) { m_draw_tool = tool; }
 
+  //shift puzzle cells
+  void shift_left();
+  void shift_right();
+  void shift_up();
+  void shift_down();
+
   void undo();
   void redo();
 
