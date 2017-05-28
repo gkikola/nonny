@@ -212,6 +212,7 @@ void ViewManager::update(unsigned ticks, InputHandler& input)
         if (pv)
           push(std::make_shared<VictoryView>(*this, pv->puzzle(),
                                              pv->time(), pv->best_time()));
+        m_puzzle_status = no_puzzle;
       }
       break;
     case Action::message_box:
