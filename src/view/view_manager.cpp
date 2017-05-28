@@ -162,6 +162,30 @@ void ViewManager::update(unsigned ticks, InputHandler& input)
     case Action::analyze_puzzle:
       break;
     case Action::quit_puzzle:
+      if (!m_views.empty()
+          && typeid(*m_views.back()) != typeid(VictoryView)
+          && is_save_needed()) {
+        std::string message;
+        if (m_puzzle_status == puzzle_play)
+          message = "Do you want to save your progress before exiting?";
+        else if (m_puzzle_status == puzzle_edit)
+          message = "Do you want to save your puzzle before exiting?";
+        message_box(message, MessageBoxView::Type::yes_no_cancel,
+                    std::bind(&ViewManager::schedule_action,
+                              this, Action::save_and_quit_puzzle, ""),
+                    std::bind(&ViewManager::schedule_action,
+                              this, Action::force_quit_puzzle, ""),
+                    std::bind(&ViewManager::schedule_action,
+                              this, Action::close_message_box, ""));
+      } else {
+        schedule_action(Action::force_quit_puzzle);
+      }
+      break;
+    case Action::save_and_quit_puzzle:
+      if (save())
+        schedule_action(Action::force_quit_puzzle);
+      break;
+    case Action::force_quit_puzzle:
       pop(); //close the menu/victory screen
       pop(); //close the puzzle
       m_puzzle_status = no_puzzle;
