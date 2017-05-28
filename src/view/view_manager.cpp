@@ -216,6 +216,8 @@ void ViewManager::update(unsigned ticks, InputHandler& input)
         m_puzzle_status = no_puzzle;
       }
       break;
+    case Action::edit_puzzle_data:
+      break;
     case Action::message_box:
       push(std::make_shared<MessageBoxView>(*this, m_action_arg,
                                             m_mbox_type, m_mbox_yes,

@@ -63,6 +63,7 @@ public:
   void on_right(Callback fn);
   void on_up(Callback fn);
   void on_down(Callback fn);
+  void on_data_edit_request(Callback fn);
   void on_tool_change(Callback fn) { m_tool_selector.on_tool_change(fn); }
   void on_color_change(Callback fn) { m_color_selector.on_color_change(fn); }
   
@@ -122,6 +123,7 @@ private:
   Callback m_down_callback;
   Callback m_hint_callback;
   Callback m_clear_callback;
+  Callback m_data_edit_callback;
 
   bool m_sliding = false;
   unsigned m_time = 0;

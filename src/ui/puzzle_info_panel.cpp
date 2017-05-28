@@ -22,6 +22,7 @@
 
 #include <algorithm>
 #include <string>
+#include "input/input_handler.hpp"
 #include "puzzle/puzzle.hpp"
 #include "utility/utility.hpp"
 #include "video/font.hpp"
@@ -129,6 +130,11 @@ void PuzzleInfoPanel::on_down(Callback fn)
     m_buttons[down]->register_callback(fn);
 }
 
+void PuzzleInfoPanel::on_data_edit_request(Callback fn)
+{
+  m_data_edit_callback = fn;
+}
+
 void PuzzleInfoPanel::set_edit_mode(bool edit_mode)
 {
   if (m_edit_mode != edit_mode) {
@@ -170,6 +176,14 @@ void PuzzleInfoPanel::update(unsigned ticks, InputHandler& input,
   for (auto& button : m_buttons) {
     if (button)
       button->update(ticks, input, active_region);
+  }
+
+  if (m_edit_mode && input.was_mouse_button_pressed(Mouse::Button::left)) {
+    Rect area = m_boundary;
+    area.height() = (m_preview.boundary().y() - area.y()) - spacing;
+    if (area.contains_point(input.mouse_position())
+        && m_data_edit_callback)
+      m_data_edit_callback();
   }
 }
 
@@ -215,6 +229,13 @@ void PuzzleInfoPanel::draw(Renderer& renderer, const Rect& region) const
       text_pos.x() = pos.x() + m_boundary.width() / 2 - text_width / 2;
       text_pos.y() = pos.y();
       renderer.draw_text(text_pos, m_info_font, time_str);
+      pos.y() += text_height + spacing;
+    } else { //edit message
+      std::string edit_str = "(Click to edit)";
+      m_info_font.text_size(edit_str, &text_width, &text_height);
+      text_pos.x() = pos.x() + m_boundary.width() / 2 - text_width / 2;
+      text_pos.y() = pos.y();
+      renderer.draw_text(text_pos, m_info_font, edit_str);
       pos.y() += text_height + spacing;
     }
 
@@ -298,6 +319,10 @@ void PuzzleInfoPanel::calculate_bounds()
 
     if (!m_edit_mode) {
       m_info_font.text_size("00:00.0", &text_wd, &text_ht);
+      width = std::max(width, text_wd + 2 * spacing);
+      height += text_ht + spacing;
+    } else {
+      m_info_font.text_size("(Click to edit)", &text_wd, &text_ht);
       width = std::max(width, text_wd + 2 * spacing);
       height += text_ht + spacing;
     }

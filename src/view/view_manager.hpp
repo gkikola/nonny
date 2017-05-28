@@ -51,7 +51,7 @@ public:
       choose_puzzle, create_puzzle,
       open_menu, close_menu, load_puzzle, save_puzzle, save_puzzle_as,
       analyze_puzzle, quit_puzzle, save_and_quit_puzzle, force_quit_puzzle,
-      save_game, restart, show_victory_screen,
+      save_game, restart, show_victory_screen, edit_puzzle_data,
       message_box, close_message_box };
   inline void schedule_action(Action action, std::string argument = "");
 

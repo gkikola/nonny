@@ -324,6 +324,8 @@ void PuzzleView::setup_panels()
   ipanel->on_right([ppanel]() { ppanel->shift_right(); });
   ipanel->on_up([ppanel]() { ppanel->shift_up(); });
   ipanel->on_down([ppanel]() { ppanel->shift_down(); });
+  ipanel->on_data_edit_request([this]() {
+      m_mgr.schedule_action(ViewManager::Action::edit_puzzle_data); });
   ipanel->on_color_change(std::bind(&PuzzleView::handle_color_change, this));
   ipanel->on_tool_change(std::bind(&PuzzleView::handle_tool_change, this));
   ipanel->start_slide();
