@@ -54,6 +54,8 @@ public:
 
   void save() const;
   void restart();
+
+  void save_puzzle(std::string filename);
   
   Puzzle& puzzle() { return m_puzzle; }
   const Puzzle& puzzle() const { return m_puzzle; }
@@ -63,6 +65,7 @@ public:
   
 private:
   void load(const std::string& filename);
+  PuzzleFormat file_type(const std::string& filename) const;
   void new_puzzle();
   void setup_panels();
   void handle_color_change();

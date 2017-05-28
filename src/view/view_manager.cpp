@@ -62,7 +62,9 @@ void ViewManager::pop()
 void ViewManager::update(unsigned ticks, InputHandler& input)
 {
   if (m_action != Action::no_action) {
-    switch (m_action) {
+    Action action = m_action;
+    m_action = Action::no_action;
+    switch (action) {
     default:
     case Action::no_action:
       break;
@@ -74,11 +76,15 @@ void ViewManager::update(unsigned ticks, InputHandler& input)
       break;
     case Action::create_puzzle:
       push(std::make_shared<PuzzleView>(*this));
+      m_puzzle_status = puzzle_edit;
       break;
     case Action::open_menu:
-      if (m_puzzle_open)
+      if (m_puzzle_status == puzzle_play)
         push(std::make_shared<MenuView>(*this,
                                         MenuView::MenuType::in_game_menu));
+      else if (m_puzzle_status == puzzle_edit)
+        push(std::make_shared<MenuView>(*this,
+                                        MenuView::MenuType::edit_menu));
       else
         push(std::make_shared<MenuView>(*this));
       break;
@@ -88,12 +94,28 @@ void ViewManager::update(unsigned ticks, InputHandler& input)
     case Action::load_puzzle:
       pop(); //close file selector
       push(std::make_shared<PuzzleView>(*this, m_action_arg));
-      m_puzzle_open = true;
+      m_puzzle_status = puzzle_play;
+      break;
+    case Action::save_puzzle_as:
+      push(std::make_shared<FileView>(*this, FileView::Mode::save));
+      break;
+    case Action::save_puzzle:
+      {
+        if (typeid(*m_views.back()) == typeid(FileView))
+          pop();
+        if (typeid(*m_views.back()) == typeid(MenuView))
+          pop();
+        auto view = std::dynamic_pointer_cast<PuzzleView>(m_views.back());
+        if (view)
+          view->save_puzzle(m_action_arg);
+      }
+      break;
+    case Action::analyze_puzzle:
       break;
     case Action::quit_puzzle:
       pop(); //close the menu/victory screen
       pop(); //close the puzzle
-      m_puzzle_open = false;
+      m_puzzle_status = no_puzzle;
       break;
     case Action::save_game:
       pop(); //close the menu
@@ -123,7 +145,6 @@ void ViewManager::update(unsigned ticks, InputHandler& input)
     input.release_mouse();
     input.reset_cursor();
     resize(m_width, m_height);
-    m_action = Action::no_action;
   }
   
   if (!m_views.empty())

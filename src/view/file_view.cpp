@@ -260,7 +260,11 @@ void FileView::load_resources()
   auto open = [this]() {
     FileSelectionPanel& panel
     = dynamic_cast<FileSelectionPanel&>(m_file_selection.main_panel());
-    panel.open_selection();
+    if (m_mode == Mode::open)
+      panel.open_selection();
+    else if (m_cur_path != m_paths.end())
+      m_mgr.schedule_action(ViewManager::Action::save_puzzle,
+                            *m_cur_path / m_filename_box->get_text());
   };
   m_open_button->register_callback(open);
 
@@ -272,10 +276,11 @@ void FileView::load_resources()
                                                   *m_file_icons_texture);
   fsv->on_dir_change([this](const std::string& p)
                      { m_selected_path = p; m_need_path_change = true; });
-  fsv->on_file_open([this](const std::string& f)
-                    { m_mgr
-                        .schedule_action(ViewManager::Action::load_puzzle,
-                                         f); });
+  fsv->on_file_open([this](const std::string& f) {
+      if (m_mode == Mode::open)
+        m_mgr.schedule_action(ViewManager::Action::load_puzzle, f);
+      else
+        m_mgr.schedule_action(ViewManager::Action::save_puzzle, f); });
   fsv->on_file_select([this](const std::string& f)
                       { handle_selection_change(); });
   m_file_selection.attach_panel(fsv);

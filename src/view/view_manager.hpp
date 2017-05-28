@@ -47,8 +47,8 @@ public:
               int width, int height);
   
   enum class Action { no_action, quit_game, choose_puzzle, create_puzzle,
-      open_menu, close_menu, load_puzzle, quit_puzzle, save_game, restart,
-      show_victory_screen };
+      open_menu, close_menu, load_puzzle, save_puzzle, save_puzzle_as,
+      analyze_puzzle, quit_puzzle, save_game, restart, show_victory_screen };
   inline void schedule_action(Action action, std::string argument = "");
 
   void push(std::shared_ptr<View> view) { m_views.push_back(view); }
@@ -84,7 +84,8 @@ private:
   SaveManager m_save_mgr;
   int m_width = 0;
   int m_height = 0;
-  bool m_puzzle_open = false;
+  enum PuzzleStatus { no_puzzle, puzzle_play, puzzle_edit };
+  PuzzleStatus m_puzzle_status = no_puzzle;
 
   Action m_action = Action::no_action;
   std::string m_action_arg;

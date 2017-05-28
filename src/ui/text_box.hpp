@@ -33,6 +33,7 @@ public:
   TextBox() = default;
   TextBox(const Font& font) : m_font(&font) { calc_size(); }
 
+  const std::string& get_text() const { return m_text; }
   void set_text(const std::string& text);
   
   using UIPanel::update;

@@ -61,14 +61,14 @@ PuzzleView::PuzzleView(ViewManager& vm, int width, int height)
 }
 
 PuzzleView::PuzzleView(ViewManager& vm, const std::string& filename)
-  : View(vm), m_puzzle_filename(filename)
+  : View(vm)
 {
   load(filename);
 }
 
 PuzzleView::PuzzleView(ViewManager& vm, const std::string& filename,
                        int width, int height)
-  : View(vm, width, height), m_puzzle_filename(filename)
+  : View(vm, width, height)
 {
   load(filename);
 }
@@ -135,20 +135,9 @@ void PuzzleView::load(const std::string& filename)
                              "could not open puzzle file " + filename);
   }
 
-  auto pos = filename.rfind('.');
-  std::string extension = "";
-  if (pos != std::string::npos) {
-    extension = filename.substr(pos + 1);
-    std::transform(extension.begin(), extension.end(), extension.begin(),
-                   to_lower);
-  }
+  m_puzzle_filename = filename;
 
-  if (extension.empty() || extension == "non")
-    file >> m_puzzle;
-  else if (extension == "g")
-    read_puzzle(file, m_puzzle, PuzzleFormat::g);
-  else
-    file >> m_puzzle;
+  read_puzzle(file, m_puzzle, file_type(filename));
 
   //load puzzle progress
   std::string id = puzzle_id();
@@ -167,6 +156,24 @@ void PuzzleView::load(const std::string& filename)
   ipanel.time(prog.current_time());
 
   handle_color_change();
+}
+
+PuzzleFormat PuzzleView::file_type(const std::string& filename) const
+{
+  auto pos = filename.rfind('.');
+  std::string extension = "";
+  if (pos != std::string::npos) {
+    extension = filename.substr(pos + 1);
+    std::transform(extension.begin(), extension.end(), extension.begin(),
+                   to_lower);
+  }
+
+  if (extension.empty() || extension == "non")
+    return PuzzleFormat::non;
+  else if (extension == ".g")
+    return PuzzleFormat::g;
+  else
+    return PuzzleFormat::non;
 }
 
 void PuzzleView::new_puzzle()
@@ -225,6 +232,23 @@ void PuzzleView::restart()
   auto& ipanel = dynamic_cast<PuzzleInfoPanel&>(m_info_pane.main_panel());
   ipanel.time(0);
   m_puzzle.clear_all_cells();
+}
+
+void PuzzleView::save_puzzle(std::string filename)
+{
+  if (filename.empty())
+    filename = m_puzzle_filename;
+
+  if (filename.empty()) {
+    m_mgr.schedule_action(ViewManager::Action::save_puzzle_as);
+  } else {
+    std::ofstream file(filename);
+
+    if (file.is_open())
+      m_puzzle_filename = filename;
+    
+    write_puzzle(file, m_puzzle, file_type(filename));
+  }
 }
 
 void PuzzleView::setup_panels()

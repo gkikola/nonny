@@ -32,7 +32,7 @@
  */
 class MenuView : public View {
 public:
-  enum class MenuType { main_menu, in_game_menu, about_menu };
+  enum class MenuType { main_menu, in_game_menu, edit_menu, about_menu };
 
   MenuView(ViewManager& vm, MenuType menu = MenuType::main_menu)
     : View(vm) { load_resources(); open_menu(menu); start_slide(); }
@@ -49,6 +49,7 @@ private:
   void open_menu(MenuType menu);
   void main_menu();
   void in_game_menu();
+  void edit_menu();
   void about_menu();
 
   enum class MenuAction { no_action, load_main, load_about };

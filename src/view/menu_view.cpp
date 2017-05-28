@@ -120,6 +120,9 @@ void MenuView::open_menu(MenuType menu)
   case MenuType::in_game_menu:
     in_game_menu();
     break;
+  case MenuType::edit_menu:
+    edit_menu();
+    break;
   case MenuType::about_menu:
     about_menu();
     break;
@@ -198,6 +201,57 @@ void MenuView::in_game_menu()
   button = std::make_shared<Button>(*m_control_font, "Start Over");
   button->register_callback([this]() {
       m_mgr.schedule_action(ViewManager::Action::restart); });
+  button->resize(menu_button_width, button->boundary().height());
+  menu->add_control(button);
+
+  button = std::make_shared<Button>(*m_control_font, "Analyze...");
+  button->register_callback([this]() {
+      m_mgr.schedule_action(ViewManager::Action::analyze_puzzle); });
+  button->resize(menu_button_width, button->boundary().height());
+  menu->add_control(button);
+  
+  button = std::make_shared<Button>(*m_control_font, "Quit Puzzle");
+  button->register_callback([this]() {
+      m_mgr.schedule_action(ViewManager::Action::quit_puzzle); });
+  button->resize(menu_button_width, button->boundary().height());
+  menu->add_control(button);
+
+  menu->position_controls();
+  m_main_panel.attach_panel(menu);
+  resize(m_width, m_height);
+}
+
+void MenuView::edit_menu()
+{
+  auto menu = std::make_shared<Menu>();
+
+  auto title = std::make_shared<StaticText>(*m_title_font, NONNY_TITLE);
+  menu->add_control(title);
+
+  auto logo = std::make_shared<StaticImage>(*m_logo_texture);
+  menu->add_control(logo);
+
+  auto button = std::make_shared<Button>(*m_control_font, "Return");
+  button->register_callback([this]() {
+      m_mgr.schedule_action(ViewManager::Action::close_menu); });
+  button->resize(menu_button_width, button->boundary().height());
+  menu->add_control(button);
+
+  button = std::make_shared<Button>(*m_control_font, "Save");
+  button->register_callback([this]() {
+      m_mgr.schedule_action(ViewManager::Action::save_puzzle); });
+  button->resize(menu_button_width, button->boundary().height());
+  menu->add_control(button);
+  
+  button = std::make_shared<Button>(*m_control_font, "Save As...");
+  button->register_callback([this]() {
+      m_mgr.schedule_action(ViewManager::Action::save_puzzle_as); });
+  button->resize(menu_button_width, button->boundary().height());
+  menu->add_control(button);
+
+  button = std::make_shared<Button>(*m_control_font, "Analyze...");
+  button->register_callback([this]() {
+      m_mgr.schedule_action(ViewManager::Action::analyze_puzzle); });
   button->resize(menu_button_width, button->boundary().height());
   menu->add_control(button);
   
