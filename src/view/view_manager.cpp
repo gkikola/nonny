@@ -146,7 +146,8 @@ void ViewManager::update(unsigned ticks, InputHandler& input)
       m_puzzle_status = puzzle_play;
       break;
     case Action::save_puzzle_as:
-      push(std::make_shared<FileView>(*this, FileView::Mode::save));
+      if (!m_views.empty() && typeid(*m_views.back()) != typeid(FileView))
+        push(std::make_shared<FileView>(*this, FileView::Mode::save));
       break;
     case Action::save_puzzle:
       {
