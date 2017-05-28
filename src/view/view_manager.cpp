@@ -98,14 +98,20 @@ void ViewManager::update(unsigned ticks, InputHandler& input)
       m_puzzle_status = puzzle_edit;
       break;
     case Action::open_menu:
-      if (m_puzzle_status == puzzle_play)
-        push(std::make_shared<MenuView>(*this,
-                                        MenuView::MenuType::in_game_menu));
-      else if (m_puzzle_status == puzzle_edit)
-        push(std::make_shared<MenuView>(*this,
-                                        MenuView::MenuType::edit_menu));
-      else
-        push(std::make_shared<MenuView>(*this));
+      if (!m_views.empty()
+          && typeid(*m_views.back()) == typeid(FileView))
+        pop();
+      if (m_views.empty()
+          || typeid(*m_views.back()) != typeid(MenuView)) {
+        if (m_puzzle_status == puzzle_play)
+          push(std::make_shared<MenuView>(*this,
+                                          MenuView::MenuType::in_game_menu));
+        else if (m_puzzle_status == puzzle_edit)
+          push(std::make_shared<MenuView>(*this,
+                                          MenuView::MenuType::edit_menu));
+        else
+          push(std::make_shared<MenuView>(*this));
+      }
       break;
     case Action::close_menu:
       pop();

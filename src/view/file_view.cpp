@@ -255,7 +255,7 @@ void FileView::load_resources()
   m_open_button = std::make_shared<Button>(*m_control_font, open_label);
 
   m_menu_button->register_callback([this]() {
-      m_mgr.schedule_action(ViewManager::Action::close_menu); });
+      m_mgr.schedule_action(ViewManager::Action::open_menu); });
   m_up_button->register_callback(std::bind(&FileView::up, this));
   m_back_button->register_callback(std::bind(&FileView::back, this));
   m_forward_button->register_callback(std::bind(&FileView::forward, this));
