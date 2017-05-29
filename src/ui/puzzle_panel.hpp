@@ -129,6 +129,7 @@ private:
   std::vector<unsigned> m_cell_time;
   std::vector<PuzzleCell::State> m_prev_cell_state;
   int m_cell_size = 32;
+  Point m_clue_pos;
   Point m_grid_pos;
   bool m_edit_mode = false;
   DrawTool m_draw_tool = DrawTool::paint;

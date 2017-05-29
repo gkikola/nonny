@@ -130,6 +130,8 @@ void PuzzlePanel::calc_grid_pos()
     m_clue_font.resize(m_cell_size * 3 / 5);
     m_grid_pos.x() = m_boundary.x();
     m_grid_pos.y() = m_boundary.y();
+    m_clue_pos.x() = m_boundary.x();
+    m_clue_pos.y() = m_boundary.y();
 
     for (int i = 0; i < m_puzzle->width(); ++i) {
       int bottom = m_boundary.y() + col_clue_height(i);
@@ -331,18 +333,18 @@ void PuzzlePanel::draw_selection(Renderer& renderer) const
     renderer.set_draw_color(m_color);
     renderer.draw_thick_rect(cell, 3);
 
-    renderer.draw_thick_line(Point(m_boundary.x(), cell.y()),
-                             m_grid_pos.x() - m_boundary.x(), 3, false);
-    renderer.draw_thick_line(Point(m_boundary.x(), cell.y() + m_cell_size + 1),
-                             m_grid_pos.x() - m_boundary.x(), 3, false);
-    renderer.draw_thick_line(Point(m_boundary.x(), cell.y()),
+    renderer.draw_thick_line(Point(m_clue_pos.x(), cell.y()),
+                             m_grid_pos.x() - m_clue_pos.x(), 3, false);
+    renderer.draw_thick_line(Point(m_clue_pos.x(), cell.y() + m_cell_size + 1),
+                             m_grid_pos.x() - m_clue_pos.x(), 3, false);
+    renderer.draw_thick_line(Point(m_clue_pos.x(), cell.y()),
                              m_cell_size + 1, 3, true);
 
-    renderer.draw_thick_line(Point(cell.x(), m_boundary.y()),
-                             m_grid_pos.y() - m_boundary.y(), 3, true);
-    renderer.draw_thick_line(Point(cell.x() + m_cell_size + 1, m_boundary.y()),
-                             m_grid_pos.y() - m_boundary.y(), 3, true);
-    renderer.draw_thick_line(Point(cell.x(), m_boundary.y()),
+    renderer.draw_thick_line(Point(cell.x(), m_clue_pos.y()),
+                             m_grid_pos.y() - m_clue_pos.y(), 3, true);
+    renderer.draw_thick_line(Point(cell.x() + m_cell_size + 1, m_clue_pos.y()),
+                             m_grid_pos.y() - m_clue_pos.y(), 3, true);
+    renderer.draw_thick_line(Point(cell.x(), m_clue_pos.y()),
                              m_cell_size + 1, 3, false);
   }
 
@@ -372,6 +374,8 @@ void PuzzlePanel::move(int x, int y)
   UIPanel::move(x, y);
   m_grid_pos.x() += delta_x;
   m_grid_pos.y() += delta_y;
+  m_clue_pos.x() += delta_x;
+  m_clue_pos.y() += delta_y;
 }
 
 void PuzzlePanel::update_cells(unsigned ticks)
