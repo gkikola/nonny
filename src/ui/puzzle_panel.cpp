@@ -45,7 +45,6 @@ PuzzlePanel::PuzzlePanel(Font& clue_font, const Texture& cell_texture,
 {
   m_cur_state = m_state_history.begin();
   attach_puzzle(puzzle);
-  calc_grid_pos();
 }
 
 void PuzzlePanel::attach_puzzle(Puzzle& puzzle)
@@ -54,6 +53,7 @@ void PuzzlePanel::attach_puzzle(Puzzle& puzzle)
   m_cur_puzzle_size = puzzle.width() * puzzle.height();
   m_cell_time.resize(m_cur_puzzle_size, 0);
   m_prev_cell_state.resize(m_cur_puzzle_size, PuzzleCell::State::blank);
+  calc_grid_pos();
 }
 
 void PuzzlePanel::clear_puzzle()
@@ -143,12 +143,20 @@ void PuzzlePanel::calc_grid_pos()
         m_grid_pos.x() = side;
     }
 
+    int grid_width = m_puzzle->width() * (m_cell_size + 1) + 1;
+    int grid_height = m_puzzle->height() * (m_cell_size + 1) + 1;
     m_boundary.width()
-      = (m_grid_pos.x() - m_boundary.x())
-      + m_puzzle->width() * (m_cell_size + 1) + 1;
+      = (m_grid_pos.x() - m_boundary.x()) + grid_width;
     m_boundary.height()
-      = (m_grid_pos.y() - m_boundary.y())
-      + m_puzzle->height() * (m_cell_size + 1) + 1;
+      = (m_grid_pos.y() - m_boundary.y()) + grid_height;
+
+    //add extra space
+    int x_padding = grid_width;
+    int y_padding = grid_height;
+    m_boundary.x() -= x_padding;
+    m_boundary.y() -= y_padding;
+    m_boundary.width() += 2 * x_padding;
+    m_boundary.height() += 2 * y_padding;
   }
 }
 
