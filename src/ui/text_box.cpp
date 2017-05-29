@@ -96,7 +96,7 @@ void TextBox::update(unsigned ticks, InputHandler& input,
 
 void TextBox::draw(Renderer& renderer, const Rect& region) const
 {
-  renderer.set_clip_rect(region);
+  renderer.set_clip_rect(intersection(region, m_boundary));
 
   renderer.set_draw_color(background_color);
   renderer.fill_rect(m_boundary);
@@ -119,7 +119,9 @@ void TextBox::draw(Renderer& renderer, const Rect& region) const
 
       Rect sel(x1, m_boundary.y() + spacing,
                x2 - x1, m_boundary.height() - 2 * spacing);
-      renderer.set_clip_rect(intersection(sel, region));
+      Rect clip_region = intersection(intersection(sel, region),
+                                      m_boundary);
+      renderer.set_clip_rect(clip_region);
       renderer.set_draw_color(selection_color);
       renderer.fill_rect(sel);
       renderer.set_draw_color(background_color);
