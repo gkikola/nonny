@@ -21,6 +21,7 @@
 #include "puzzle/puzzle.hpp"
 
 #include <algorithm>
+#include <set>
 #include "solver/line_solver.hpp"
 
 Puzzle::Puzzle(int width, int height)
@@ -214,6 +215,26 @@ void Puzzle::update_clues(bool edit_mode)
     auto it = m_cols_changed.begin();
     update_line(*it, LineType::column, edit_mode);
     m_cols_changed.erase(it);
+  }
+}
+
+void Puzzle::purge_unused_colors()
+{
+  std::set<Color> used_colors;
+  for (auto clues : m_row_clues)
+    for (auto clue : clues)
+      used_colors.insert(clue.color);
+
+  //erase the unused colors
+  auto it = m_palette.begin();
+  while (it != m_palette.end()) {
+    if (it->name != "background"
+        && used_colors.find(it->color) == used_colors.end()) {
+      m_palette.remove(it->name);
+      it = m_palette.begin();
+    } else {
+      ++it;
+    }
   }
 }
 

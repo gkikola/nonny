@@ -94,6 +94,9 @@ public:
   // Get color palette associated with this puzzle
   const ColorPalette& palette() const { return m_palette; }
 
+  // Get rid of palette colors that aren't being used
+  void purge_unused_colors();
+
   // Return pointer to p's property value or nullptr if p is not found
   inline const std::string* find_property(const std::string& p) const;
 
