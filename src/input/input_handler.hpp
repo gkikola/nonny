@@ -62,6 +62,10 @@ public:
   virtual bool is_key_down(Keyboard::Key key) const;
   virtual int num_key_presses(Keyboard::Key key) const;
 
+  virtual bool is_ctrl_down() const;
+  virtual bool is_shift_down() const;
+  virtual bool is_alt_down() const;
+
   std::string chars_entered() const { return m_characters; }
 
   virtual bool was_mouse_button_pressed(Mouse::Button button) const;

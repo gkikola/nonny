@@ -119,6 +119,24 @@ int InputHandler::num_key_presses(Keyboard::Key key) const
   return m_num_presses[key];
 }
 
+bool InputHandler::is_ctrl_down() const
+{
+  return is_key_down(Keyboard::Key::lctrl)
+    || is_key_down(Keyboard::Key::rctrl);
+}
+
+bool InputHandler::is_shift_down() const
+{
+  return is_key_down(Keyboard::Key::lshift)
+    || is_key_down(Keyboard::Key::rshift);
+}
+
+bool InputHandler::is_alt_down() const
+{
+  return is_key_down(Keyboard::Key::lalt)
+    || is_key_down(Keyboard::Key::ralt);
+}
+
 bool InputHandler::was_mouse_button_pressed(Mouse::Button button) const
 {
   return !m_prev_buttons[button] && m_buttons[button];
