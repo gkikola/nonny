@@ -37,7 +37,7 @@ public:
 enum class PuzzleFormat { non, g };
 
 // Read or write puzzles from/to a stream
-std::ostream& write_puzzle(std::ostream& os, const Puzzle& puzzle,
+std::ostream& write_puzzle(std::ostream& os, Puzzle puzzle,
                            PuzzleFormat fmt = PuzzleFormat::non);
 std::istream& read_puzzle(std::istream& is, Puzzle& puzzle,
                           PuzzleFormat fmt = PuzzleFormat::non);

@@ -60,9 +60,12 @@ namespace g_format {
   std::istream& skim(std::istream& is, PuzzleSummary& summary);
 }
 
-std::ostream& write_puzzle(std::ostream& os, const Puzzle& puzzle,
+std::ostream& write_puzzle(std::ostream& os, Puzzle puzzle,
                            PuzzleFormat fmt)
 {
+  //just modifying local copy
+  puzzle.purge_unused_colors();
+  
   switch (fmt) {
   default:
   case PuzzleFormat::non:
@@ -92,7 +95,6 @@ std::istream& read_puzzle(std::istream& is, Puzzle& puzzle,
   puzzle.m_col_clues = std::move(blueprint.col_clues);
   puzzle.m_palette = std::move(blueprint.palette);
   puzzle.m_properties = std::move(blueprint.properties);
-  puzzle.purge_unused_colors();
   return is;
 }
 
