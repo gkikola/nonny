@@ -16,12 +16,46 @@ in squares within a grid in order to reveal a picture.
 ![Puzzle](media/screenshots/puzzle_sm.png)
 
 
+What Is a Nonogram?
+-------------------
+
+Nonograms are logic puzzles originating from Japan. You start with a
+blank grid and then fill in the cells according to the clue numbers at
+the sides. When you finish the puzzle, you're left with a picture to
+look at:
+
+![Solving a puzzle](media/tutorial/solving.png)
+
+For example, a clue of "4" means that you need to fill in four
+consecutive blocks somewhere within that line. By considering the
+different possible positions you can determine that some of the cells
+in the line must be filled:
+
+![Line solving - 4](media/tutorial/clue.png)
+
+Similarly, a clue of "1 2" means that one cell is to be filled,
+followed by a gap of at least one blank cell, followed by two
+consecutive filled cells:
+
+![Line solving - 1 2](media/tutorial/clue2.png)
+
+By working line by line in this way, you can solve most
+puzzles. Harder puzzles may require more advanced techniques, but
+well-made puzzles should not require guessing.
+
+There are also multicolor puzzles. These puzzles work the same way,
+but each clue number is colored to indicate which color the cells must
+be painted. Adjacent blocks of cells of different colors need not have
+a gap between them.
+
+
 Development Status
 ------------------
 
 Nonny is playable but not yet ready for an initial release. Most of
 the basic functionality for playing and editing puzzles has been
-implemented, but it's still very much a work in progress.
+implemented. However, the built-in solver/analysis tool is still being
+developed, and there are other minor features that are still missing.
 
 At the moment, Nonny only supports two file formats: [Steven Simpson's
 .non format](http://www.lancaster.ac.uk/~simpsons/nonogram/) (extended
