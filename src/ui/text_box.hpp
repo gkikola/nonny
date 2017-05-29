@@ -50,6 +50,7 @@ private:
   void read_chars(InputHandler& input);
   void handle_arrow_keys(InputHandler& input);
   void handle_delete_keys(InputHandler& input);
+  void handle_home_end(InputHandler& input);
   void handle_mouse_input(InputHandler& input, const Rect& region);
   
   const Font* m_font = nullptr;

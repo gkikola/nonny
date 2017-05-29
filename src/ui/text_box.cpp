@@ -64,6 +64,7 @@ void TextBox::update(unsigned ticks, InputHandler& input,
     read_chars(input);
     handle_delete_keys(input);
     handle_arrow_keys(input);
+    handle_home_end(input);
 
     //make sure cursor is visible
     if (m_cursor < m_visible)
@@ -263,6 +264,21 @@ void TextBox::handle_delete_keys(InputHandler& input)
       m_text.erase(m_cursor, num_press);
     else
       m_text.erase(m_cursor);
+  }
+}
+
+void TextBox::handle_home_end(InputHandler& input)
+{
+  if (input.was_key_pressed(Keyboard::Key::home)
+      || input.was_key_pressed(Keyboard::Key::kp_home)) {
+    m_cursor = 0;
+    m_visible = 0;
+    m_sel_start = 0;
+    m_sel_length = 0;
+  } else if (input.was_key_pressed(Keyboard::Key::end)
+             || input.was_key_pressed(Keyboard::Key::kp_end)) {
+    m_cursor = m_sel_start = m_text.size();
+    m_sel_length = 0;
   }
 }
 
