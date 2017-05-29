@@ -35,6 +35,8 @@ public:
 
   const std::string& get_text() const { return m_text; }
   void set_text(const std::string& text);
+
+  void select_all();
   
   using UIPanel::update;
   using UIPanel::draw;
@@ -45,6 +47,10 @@ private:
   void calc_size();
   int pos_to_screen_coord(int pos) const;
   int screen_coord_to_pos(int x) const;
+  void read_chars(InputHandler& input);
+  void handle_arrow_keys(InputHandler& input);
+  void handle_delete_keys(InputHandler& input);
+  void handle_mouse_input(InputHandler& input, const Rect& region);
   
   const Font* m_font = nullptr;
   std::string m_text;
@@ -52,6 +58,8 @@ private:
   int m_visible = 0;
   int m_sel_start = 0;
   int m_sel_length = 0;
+  bool m_dragging_sel = false;
+  int m_drag_start_pos = 0;
   bool m_cursor_visible = true;
   int m_cursor_duration = 0;
 };
