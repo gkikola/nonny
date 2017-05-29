@@ -41,6 +41,7 @@ OptionDialog::OptionDialog(Font& label_font, Font& ctrl_font)
 
 void OptionDialog::position_controls()
 {
+  m_need_reposition = false;
   calc_size();
 
   int num_lines = m_num_controls.size();
@@ -106,6 +107,9 @@ void OptionDialog::add_text_box(const std::string& label,
 
   m_controls.push_back(label_ctrl);
   m_controls.push_back(text_box);
+  m_focused = m_controls.end();
+  m_need_reposition = true;
+
   m_num_controls.push_back(2);
   m_id_map[id] = text_box;
 }
@@ -133,6 +137,8 @@ void OptionDialog::add_size_text_box(const std::string& label,
   m_controls.push_back(label_ctrl);
   m_controls.push_back(text_box);
   m_id_map[ht_id] = text_box;
+  m_focused = m_controls.end();
+  m_need_reposition = true;
 
   m_num_controls.push_back(4);
 }
@@ -150,6 +156,8 @@ void OptionDialog::add_buttons(const std::string& save_label,
   button->register_callback(on_cancel);
   button->resize(button_width, button->boundary().height());
   m_controls.push_back(button);
+  m_focused = m_controls.end();
+  m_need_reposition = true;
 
   m_num_controls.push_back(2);
 }

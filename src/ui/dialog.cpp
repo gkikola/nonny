@@ -62,7 +62,8 @@ void Dialog::focus_next()
     remove_focus();
     give_focus();
   } else {
-    ++m_focused;
+    if (m_focused != m_controls.end())
+      ++m_focused;
 
     auto pred = [](ControlPtr& p) { return p->can_focus(); };
     auto result = std::find_if(m_focused, m_controls.end(), pred);
@@ -85,8 +86,7 @@ void Dialog::update(unsigned ticks, InputHandler& input,
 
   //change control focus with tab key
   if (input.was_key_pressed(Keyboard::Key::tab)) {
-    if (input.is_key_down(Keyboard::Key::lshift)
-        || input.is_key_down(Keyboard::Key::rshift))
+    if (input.is_shift_down())
       focus_prev();
     else
       focus_next();
