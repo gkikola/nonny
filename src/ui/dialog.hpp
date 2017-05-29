@@ -34,7 +34,7 @@ public:
   Dialog() : m_focused(m_controls.end()) { }
   virtual ~Dialog() { }
 
-  void add_control(ControlPtr control);
+  virtual void add_control(ControlPtr control);
   virtual void position_controls() = 0;
   
   void focus_prev();

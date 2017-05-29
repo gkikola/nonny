@@ -84,6 +84,9 @@ public:
   unsigned time() const { return m_time; }
   void time(unsigned time) { m_time = time; }
 
+  // Reload puzzle metadata and size
+  void refresh_puzzle_properties();
+
   using UIPanel::update; //make all update and draw overloads visible
   using UIPanel::draw;
   void update(unsigned ticks, InputHandler& input,

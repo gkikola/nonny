@@ -20,7 +20,6 @@
 
 #include "puzzle/puzzle_grid.hpp"
 
-#include <iostream>
 #include <map>
 #include <sstream>
 #include <stdexcept>

@@ -51,9 +51,9 @@ PuzzlePanel::PuzzlePanel(Font& clue_font, const Texture& cell_texture,
 void PuzzlePanel::attach_puzzle(Puzzle& puzzle)
 {
   m_puzzle = &puzzle;
-  int size = puzzle.width() * puzzle.height();
-  m_cell_time.resize(size, 0);
-  m_prev_cell_state.resize(size, PuzzleCell::State::blank);
+  m_cur_puzzle_size = puzzle.width() * puzzle.height();
+  m_cell_time.resize(m_cur_puzzle_size, 0);
+  m_prev_cell_state.resize(m_cur_puzzle_size, PuzzleCell::State::blank);
 }
 
 void PuzzlePanel::clear_puzzle()
@@ -90,6 +90,12 @@ void PuzzlePanel::update(unsigned ticks, InputHandler& input,
                          const Rect& active_region)
 {
   if (m_puzzle) {
+    int size = m_puzzle->width() * m_puzzle->height();
+    if (size != m_cur_puzzle_size) { //size has changed
+      handle_resize();
+      m_has_state_changed = true;
+    }
+    
     update_cells(ticks);
 
     if (!m_mouse_dragging && !m_kb_dragging) {
@@ -138,9 +144,11 @@ void PuzzlePanel::calc_grid_pos()
     }
 
     m_boundary.width()
-      = m_grid_pos.x() + m_puzzle->width() * (m_cell_size + 1) + 1;
+      = (m_grid_pos.x() - m_boundary.x())
+      + m_puzzle->width() * (m_cell_size + 1) + 1;
     m_boundary.height()
-      = m_grid_pos.y() + m_puzzle->height() * (m_cell_size + 1) + 1;
+      = (m_grid_pos.y() - m_boundary.y())
+      + m_puzzle->height() * (m_cell_size + 1) + 1;
   }
 }
 
@@ -637,6 +645,27 @@ void PuzzlePanel::handle_kb_selection(unsigned ticks, InputHandler& input)
     move_selection(Direction::up, num_press);  
 }
 
+void PuzzlePanel::handle_resize()
+{
+  m_cur_puzzle_size = m_puzzle->width() * m_puzzle->height();
+  m_cell_time.resize(m_cur_puzzle_size, cell_animation_duration);
+  m_prev_cell_state.resize(m_cur_puzzle_size, PuzzleCell::State::blank);
+
+  m_selection_x = 0;
+  m_selection_y = 0;
+  m_selected = false;
+
+  calc_grid_pos();
+
+  //update function will check for size change,
+  //so we don't need to save undo state just yet
+  m_has_state_changed = false;
+  m_need_save = true;
+
+  if (m_resize_callback)
+    m_resize_callback();
+}
+
 void PuzzlePanel::do_draw_action(bool mark)
 {
   switch (m_draw_tool) {
@@ -918,11 +947,20 @@ void PuzzlePanel::save_undo_state()
   m_puzzle->copy_state(*m_cur_state);
 }
 
+void PuzzlePanel::load_undo_state()
+{
+  if (m_cur_state != m_state_history.end()) {
+    m_puzzle->load_state(*m_cur_state);
+    if (m_cur_puzzle_size != m_puzzle->width() * m_puzzle->height())
+      handle_resize();
+  }
+}
+
 void PuzzlePanel::undo()
 {
   if (m_cur_state != m_state_history.begin()) {
     --m_cur_state;
-    m_puzzle->load_state(*m_cur_state);
+    load_undo_state();
   }
 }
 
@@ -931,7 +969,7 @@ void PuzzlePanel::redo()
   if (m_cur_state != m_state_history.end()) {
     ++m_cur_state;
     if (m_cur_state != m_state_history.end())
-      m_puzzle->load_state(*m_cur_state);
+      load_undo_state();
     else
       --m_cur_state;
   }

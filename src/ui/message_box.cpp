@@ -27,6 +27,7 @@
 
 const Color background_color(192, 192, 192);
 constexpr int spacing = 8;
+constexpr int border_spacing = 16;
 
 MessageBox::MessageBox(const Font& text_font,
                        const std::string& text,
@@ -49,7 +50,7 @@ void MessageBox::position_controls()
   //center the controls at the bottom of the message box
   int x = m_boundary.x() + m_boundary.width() / 2 - control_wd / 2
     + spacing;
-  int y = m_boundary.y() + m_boundary.height() - spacing;
+  int y = m_boundary.y() + m_boundary.height() - border_spacing;
   for (auto& c : m_controls) {
     c->move(x, y - c->boundary().height());
     x += c->boundary().width() + spacing;
@@ -59,20 +60,21 @@ void MessageBox::position_controls()
 void MessageBox::recalculate_size()
 {
   int width = m_boundary.width();
-  int height = 2 * spacing;
+  int height = 2 * border_spacing;
 
-  int control_wd = spacing;
+  int control_wd = border_spacing;
   int control_ht = spacing;
   for (auto& c : m_controls) {
     control_wd += c->boundary().width() + spacing;
     control_ht = std::max(control_ht, c->boundary().height());
   }
-
+  control_wd += border_spacing - spacing;
+  
   width = std::max(width, control_wd);
   height += control_ht + spacing;
 
   int text_wd, text_ht;
-  m_text_font->text_size_wrapped(m_text, width - 2 * spacing,
+  m_text_font->text_size_wrapped(m_text, width - 2 * border_spacing,
                                  &text_wd, &text_ht);
   height += text_ht + spacing;
 
@@ -87,9 +89,11 @@ void MessageBox::draw(Renderer& renderer, const Rect& region) const
   renderer.set_draw_color(default_colors::black);
   renderer.draw_rect(rect);
 
-  Point text_pos(m_boundary.x() + spacing, m_boundary.y() + spacing);
+  Point text_pos(m_boundary.x() + border_spacing,
+                 m_boundary.y() + border_spacing);
   renderer.draw_text_wrapped(text_pos, *m_text_font, m_text,
-                             m_boundary.width() - 2 * spacing, true);
+                             m_boundary.width()
+                             - 2 * border_spacing, true);
   
   Dialog::draw(renderer, region);
 }

@@ -59,6 +59,8 @@ private:
   void center_panel_horiz();
   
   UIPanelPtr m_main_panel = nullptr;
+  int m_main_panel_width = 0;
+  int m_main_panel_height = 0;
   Scrollbar m_hscroll;
   Scrollbar m_vscroll;
   bool m_hscroll_active = false;

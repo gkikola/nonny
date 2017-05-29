@@ -40,6 +40,11 @@ void ScrollingPanel::attach_panel(UIPanelPtr child)
 void ScrollingPanel::update(unsigned ticks, InputHandler& input,
                             const Rect& active_region)
 {
+  //see if panel changed size
+  if (m_main_panel->boundary().width() != m_main_panel_width
+      || m_main_panel->boundary().height() != m_main_panel_height)
+    resize(m_boundary.width(), m_boundary.height());
+  
   //handle smooth scroll
   int scroll_amt = 0;
   if (m_smooth_scroll_amount < 0) {
@@ -100,13 +105,16 @@ void ScrollingPanel::resize(int width, int height)
 {
   UIPanel::resize(width, height);
 
+  m_main_panel_width = m_main_panel->boundary().width();
+  m_main_panel_height = m_main_panel->boundary().height();
+  
   //figure out if we need scrollbars
   m_hscroll_active = false;
   m_vscroll_active = false;
   if (m_main_panel) {
-    if (m_main_panel->boundary().height() > height)
+    if (m_main_panel_height > height)
       m_vscroll_active = true;
-    if (m_main_panel->boundary().width() > width)
+    if (m_main_panel_width > width)
       m_hscroll_active = true;
   }
 

@@ -166,6 +166,12 @@ PuzzlePanel::DrawTool PuzzleInfoPanel::active_draw_tool() const
   return m_tool_selector.selected_tool();
 }
 
+void PuzzleInfoPanel::refresh_puzzle_properties()
+{
+  retrieve_puzzle_info();
+  calculate_bounds();
+}
+
 void PuzzleInfoPanel::update(unsigned ticks, InputHandler& input,
                              const Rect& active_region)
 {

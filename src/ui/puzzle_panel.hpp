@@ -47,16 +47,20 @@ public:
 
   void attach_puzzle(Puzzle& puzzle);
 
+  // Notify on resize
+  typedef std::function<void()> Callback;
+  void on_resize(Callback fn) { m_resize_callback = fn; }
+  
   void set_active_color(Color color) { m_color = color; }
 
   enum class DrawTool { paint = 0, line, rect, ellipse, fill };
   void set_edit_mode(bool edit_mode = true) { m_edit_mode = edit_mode; }
   void set_draw_tool(DrawTool tool) { m_draw_tool = tool; }
 
-  //make all cells blank
+  // Make all cells blank
   void clear_puzzle();
   
-  //shift puzzle cells
+  // Shift puzzle cells
   void shift_left();
   void shift_right();
   void shift_up();
@@ -95,6 +99,8 @@ private:
   void handle_mouse_selection(unsigned ticks, InputHandler& input,
                               const Rect& region);
   void handle_kb_selection(unsigned ticks, InputHandler& input);
+  void handle_resize();
+
   void do_draw_action(bool mark = true);  
 
   typedef std::function<void(int, int)> CellFunction;
@@ -110,6 +116,7 @@ private:
   inline void generalized_cell_at_point(const Point&p, int* x, int* y) const;
 
   void save_undo_state();
+  void load_undo_state();
 
   Font& m_clue_font;
   const Texture& m_cell_texture;
@@ -126,6 +133,10 @@ private:
   bool m_edit_mode = false;
   DrawTool m_draw_tool = DrawTool::paint;
   bool m_need_save = false;
+  Callback m_resize_callback;
+
+  //Needed to detect size changes in edit mode
+  int m_cur_puzzle_size = 0;
 
   //Undo/redo
   std::list<CompressedState> m_state_history;

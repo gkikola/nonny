@@ -69,6 +69,7 @@ add_executable (
   src/ui/image_button.cpp
   src/ui/menu.cpp
   src/ui/message_box.cpp
+  src/ui/option_dialog.cpp
   src/ui/palette_panel.cpp
   src/ui/puzzle_info_panel.cpp
   src/ui/puzzle_panel.cpp
@@ -94,6 +95,7 @@ add_executable (
   src/video/texture.cpp
   src/video/video_system.cpp
   src/video/window.cpp
+  src/view/data_edit_view.cpp
   src/view/file_view.cpp
   src/view/menu_view.cpp
   src/view/message_box_view.cpp

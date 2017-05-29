@@ -26,6 +26,7 @@
 #include "input/input_handler.hpp"
 #include "settings/game_settings.hpp"
 #include "video/renderer.hpp"
+#include "view/data_edit_view.hpp"
 #include "view/file_view.hpp"
 #include "view/menu_view.hpp"
 #include "view/puzzle_view.hpp"
@@ -120,6 +121,17 @@ void ViewManager::update(unsigned ticks, InputHandler& input)
     case Action::create_puzzle:
       push(std::make_shared<PuzzleView>(*this));
       m_puzzle_status = puzzle_edit;
+      break;
+    case Action::save_properties:
+      if (m_views.size() > 1) {
+        auto dv = std::dynamic_pointer_cast<DataEditView>(m_views.back());
+        if (dv)
+          dv->save_properties();
+        pop();
+        auto pv = std::dynamic_pointer_cast<PuzzleView>(m_views.back());
+        if (pv)
+          pv->update_properties();
+      }
       break;
     case Action::open_menu:
       if (!m_views.empty()
@@ -217,6 +229,11 @@ void ViewManager::update(unsigned ticks, InputHandler& input)
       }
       break;
     case Action::edit_puzzle_data:
+      if (!m_views.empty()) {
+        auto pv = std::dynamic_pointer_cast<PuzzleView>(m_views.back());
+        if (pv)
+          push(std::make_shared<DataEditView>(*this, pv->puzzle()));
+      }
       break;
     case Action::message_box:
       push(std::make_shared<MessageBoxView>(*this, m_action_arg,

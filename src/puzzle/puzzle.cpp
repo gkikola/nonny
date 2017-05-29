@@ -20,6 +20,7 @@
 
 #include "puzzle/puzzle.hpp"
 
+#include <algorithm>
 #include "solver/line_solver.hpp"
 
 Puzzle::Puzzle(int width, int height)
@@ -141,14 +142,18 @@ void Puzzle::copy_state(CompressedState& state) const
 
 void Puzzle::load_state(const CompressedState& state)
 {
+  int old_size = width() * height();
   m_grid = PuzzleGrid(state.m_width, state.m_height);
   int pos = 0;
   for (const auto& e : state.m_state) {
     for (int i = 0; i < e.count; ++i) {
-      m_grid.at(pos % width(), pos / width()) = e.cell;
+      m_grid.at(pos % m_grid.width(), pos / m_grid.width()) = e.cell;
       ++pos;
     }
   }
+
+  if (old_size != m_grid.width() * m_grid.height())
+    handle_size_change();
   refresh_all_cells();
 }
 
@@ -194,9 +199,9 @@ void Puzzle::update_clues(bool edit_mode)
 {
   //make sure clue entries exist
   if (m_row_clues.empty())
-    m_row_clues = ClueContainer(width(), ClueSequence());
+    m_row_clues = ClueContainer(height(), ClueSequence());
   if (m_col_clues.empty())
-    m_col_clues = ClueContainer(height(), ClueSequence());
+    m_col_clues = ClueContainer(width(), ClueSequence());
 
   //update changed lines
   while (!m_rows_changed.empty()) {
@@ -210,6 +215,38 @@ void Puzzle::update_clues(bool edit_mode)
     update_line(*it, LineType::column, edit_mode);
     m_cols_changed.erase(it);
   }
+}
+
+void Puzzle::set_property(const std::string& property,
+                          const std::string& value)
+{
+  m_properties[property] = value;
+}
+
+void Puzzle::resize(int width, int height)
+{
+  PuzzleGrid copy(m_grid);
+  m_grid = PuzzleGrid(width, height);
+
+  int common_width = std::min(width, copy.width());
+  int common_height = std::min(height, copy.height());
+  for (int row = 0; row < common_height; ++row) {
+    for (int col = 0; col < common_width; ++col) {
+      m_grid.at(col, row) = copy.at(col, row);
+    }
+  }
+
+  handle_size_change();
+}
+
+void Puzzle::handle_size_change()
+{
+  m_row_clues.clear();
+  m_col_clues.clear();
+  m_rows_changed.clear();
+  m_cols_changed.clear();
+  refresh_all_cells();
+  update_clues(true);
 }
 
 Puzzle::ClueSequence& Puzzle::line_clues(int index, LineType type)
@@ -227,7 +264,7 @@ void Puzzle::update_line(int index, LineType type, bool edit_mode)
 
   if (edit_mode) {
     clues.clear();
-    
+
     int cell_pos = 0;
     while (cell_pos < line.size()) {
       while (cell_pos < line.size()

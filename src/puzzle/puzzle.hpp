@@ -96,6 +96,9 @@ public:
 
   // Return pointer to p's property value or nullptr if p is not found
   inline const std::string* find_property(const std::string& p) const;
+
+  void set_property(const std::string& property, const std::string& value);
+  void resize(int width, int height);
   
   // Throw exception if p is not found in property map
   const std::string&
@@ -111,6 +114,7 @@ public:
 
 private:
   void refresh_all_cells();
+  void handle_size_change();
   ClueSequence& line_clues(int index, LineType type);
   void update_line(int index, LineType type, bool edit_mode);
 

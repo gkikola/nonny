@@ -257,6 +257,14 @@ void PuzzleView::save_puzzle(std::string filename)
   }
 }
 
+void PuzzleView::update_properties()
+{
+  m_main_panel.center_main_panel();
+  auto ipanel = dynamic_cast<PuzzleInfoPanel*>(&m_info_pane.main_panel());
+  if (ipanel)
+    ipanel->refresh_puzzle_properties();
+}
+
 bool PuzzleView::is_save_needed() const
 {
   auto ppanel = dynamic_cast<const PuzzlePanel*>(&m_main_panel.main_panel());
@@ -331,6 +339,10 @@ void PuzzleView::setup_panels()
   ipanel->start_slide();
   Rect info_region(0, 0, 0, m_height);
   m_info_pane = ScrollingPanel(info_region, ipanel);
+
+  ppanel->on_resize([ipanel]() {
+      ipanel->refresh_puzzle_properties();
+    });
 }
 
 void PuzzleView::handle_color_change()
@@ -352,7 +364,7 @@ void PuzzleView::handle_tool_change()
 }
 
 void PuzzleView::update(unsigned ticks, InputHandler& input)
-{
+{  
   m_main_panel.update(ticks, input);
   m_info_pane.update(ticks, input);
 
