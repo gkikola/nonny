@@ -259,7 +259,6 @@ void PuzzleView::save_puzzle(std::string filename)
 
 void PuzzleView::update_properties()
 {
-  m_main_panel.center_main_panel();
   auto ipanel = dynamic_cast<PuzzleInfoPanel*>(&m_info_pane.main_panel());
   if (ipanel)
     ipanel->refresh_puzzle_properties();
@@ -340,7 +339,8 @@ void PuzzleView::setup_panels()
   Rect info_region(0, 0, 0, m_height);
   m_info_pane = ScrollingPanel(info_region, ipanel);
 
-  ppanel->on_resize([ipanel]() {
+  ppanel->on_resize([this, ipanel]() {
+      m_main_panel.center_main_panel();
       ipanel->refresh_puzzle_properties();
     });
 }
