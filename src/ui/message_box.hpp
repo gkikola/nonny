@@ -42,6 +42,9 @@ public:
   using Dialog::draw;
   void draw(Renderer& renderer, const Rect& region) const override;
 
+protected:
+  bool allow_arrow_focus() const override { return true; }
+  
 private:
   const Font* m_text_font;
   std::string m_text;

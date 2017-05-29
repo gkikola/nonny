@@ -35,6 +35,7 @@ public:
   
 protected:
   void calc_size();
+  bool allow_arrow_focus() const override { return true; }
 };
 
 #endif

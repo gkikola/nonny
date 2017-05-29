@@ -52,6 +52,8 @@ protected:
   void find_focus();
   void give_focus();
   void remove_focus();
+
+  virtual bool allow_arrow_focus() const { return false; }
   
   std::vector<ControlPtr> m_controls;
   std::vector<ControlPtr>::iterator m_focused;
