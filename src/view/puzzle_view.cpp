@@ -371,15 +371,18 @@ void PuzzleView::update(unsigned ticks, InputHandler& input)
   int cur_info_width = m_info_pane.boundary().width();
   if (cur_info_width < info_pane_width) {
     cur_info_width += info_pane_slide_speed * ticks / 1000;
+    
     if (cur_info_width >= info_pane_width) {
       cur_info_width = info_pane_width;
-      PuzzleInfoPanel* panel
+
+      PuzzleInfoPanel* ipanel
         = dynamic_cast<PuzzleInfoPanel*>(&m_info_pane.main_panel());
-      panel->stop_slide();
+      ipanel->stop_slide();
     }
     m_info_pane.resize(cur_info_width, m_height);
     m_info_pane.center_main_panel();
     resize(m_width, m_height);
+    m_main_panel.center_main_panel();
   }
 
   if (!m_edit_mode && m_puzzle.is_solved()) {
