@@ -43,7 +43,7 @@ void TextBox::set_text(const std::string& text)
 void TextBox::select_all()
 {
   m_sel_start = 0;
-  m_sel_length = m_text.size();
+  m_cursor = m_sel_length = m_text.size();
 }
 
 void TextBox::update(unsigned ticks, InputHandler& input,
@@ -52,6 +52,10 @@ void TextBox::update(unsigned ticks, InputHandler& input,
   handle_mouse_input(input, active_region);
   
   if (has_focus()) {
+    //select text if tabbing onto control
+    if (input.was_key_pressed(Keyboard::Key::tab))
+      select_all();
+    
     //handle cursor blinking
     m_cursor_duration += ticks;
     int num_blinks = m_cursor_duration / cursor_blink_duration;
@@ -92,6 +96,8 @@ void TextBox::update(unsigned ticks, InputHandler& input,
       if (m_sel_length == 0)
         m_sel_start = m_cursor;
     }
+  } else { //no focus
+    m_sel_length = 0;
   }
 }
 
