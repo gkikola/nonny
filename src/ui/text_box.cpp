@@ -20,6 +20,7 @@
 
 #include "ui/text_box.hpp"
 
+#include <algorithm>
 #include "color/color.hpp"
 #include "input/input_handler.hpp"
 #include "video/font.hpp"
@@ -271,16 +272,29 @@ void TextBox::handle_delete_keys(InputHandler& input)
 
 void TextBox::handle_home_end(InputHandler& input)
 {
+  int old_sel_start = m_sel_start;
   if (input.was_key_pressed(Keyboard::Key::home)
       || input.was_key_pressed(Keyboard::Key::kp_home)) {
     m_cursor = 0;
     m_visible = 0;
-    m_sel_start = 0;
-    m_sel_length = 0;
+
+    if (input.is_shift_down()) {
+      m_sel_start = 0;
+      m_sel_length += old_sel_start;
+    } else {
+      m_sel_start = 0;
+      m_sel_length = 0;
+    }
   } else if (input.was_key_pressed(Keyboard::Key::end)
              || input.was_key_pressed(Keyboard::Key::kp_end)) {
     m_cursor = m_sel_start = m_text.size();
-    m_sel_length = 0;
+
+    if (input.is_shift_down()) {
+      m_sel_start = old_sel_start;
+      m_sel_length = m_text.size() - old_sel_start;
+    } else {
+      m_sel_length = 0;
+    }
   }
 }
 
