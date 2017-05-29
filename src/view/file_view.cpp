@@ -104,18 +104,20 @@ void FileView::update(unsigned ticks, InputHandler& input)
     switch_focus(!back);
   }
 
-  if (input.was_key_pressed(Keyboard::Key::left)
-      || input.was_key_pressed(Keyboard::Key::kp_left))
-    back();
-  else if (input.was_key_pressed(Keyboard::Key::right)
-           || input.was_key_pressed(Keyboard::Key::kp_right))
-    forward();
+  if (!m_filename_box->has_focus()) {
+    if (input.was_key_pressed(Keyboard::Key::left)
+        || input.was_key_pressed(Keyboard::Key::kp_left)) {
+      back();
+    } else if (input.was_key_pressed(Keyboard::Key::right)
+               || input.was_key_pressed(Keyboard::Key::kp_right))
+      forward();
 
-  if (input.was_key_pressed(Keyboard::Key::up)
-      || input.was_key_pressed(Keyboard::Key::kp_up)
-      || input.was_key_pressed(Keyboard::Key::down)
-      || input.was_key_pressed(Keyboard::Key::kp_down))
-    clear_focus();
+    if (input.was_key_pressed(Keyboard::Key::up)
+        || input.was_key_pressed(Keyboard::Key::kp_up)
+        || input.was_key_pressed(Keyboard::Key::down)
+        || input.was_key_pressed(Keyboard::Key::kp_down))
+      clear_focus();
+  }
 
   m_menu_button->update(ticks, input);
   m_up_button->update(ticks, input);
