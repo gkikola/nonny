@@ -88,8 +88,11 @@ public:
   // Determines whether the puzzle has multiple foreground colors
   bool is_multicolor() const { return m_palette.size() > 2; }
 
-  // Update clue numbers based on changes made to puzzle grid
-  void update_clues(bool edit_mode = false);
+  /*
+   * Update clue numbers based on changes made to puzzle grid and
+   * update line solve status
+   */
+  void update(bool edit_mode = false);
   
   // Get color palette associated with this puzzle
   const ColorPalette& palette() const { return m_palette; }
@@ -128,6 +131,8 @@ private:
   Properties m_properties;
   std::set<int> m_rows_changed;
   std::set<int> m_cols_changed;
+  std::set<int> m_rows_solved;
+  std::set<int> m_cols_solved;
 };
 
 // Reads and writes puzzles in the .non format

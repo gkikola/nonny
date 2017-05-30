@@ -136,7 +136,7 @@ void LineSolver::intersect_blocks(std::vector<PuzzleCell>& result,
   }
 }
 
-void LineSolver::update_clues(std::vector<PuzzleClue>& clues)
+bool LineSolver::update_clues(std::vector<PuzzleClue>& clues)
 {
   //if 0 is the only clue,
   //line is finished only when fully crossed out
@@ -144,17 +144,20 @@ void LineSolver::update_clues(std::vector<PuzzleClue>& clues)
     clues[0].state = PuzzleClue::State::finished;
 
     for (int pos = 0; pos < static_cast<int>(m_line.size()); ++pos) {
-      if (m_line[pos].state != PuzzleCell::State::crossed_out)
+      if (m_line[pos].state != PuzzleCell::State::crossed_out) {
         clues[0].state = PuzzleClue::State::normal;
+        if (m_line[pos].state == PuzzleCell::State::filled)
+          return false;
+      }
     }
-    return;
+    return true;
   }
-  
+
   //see if line is already solved
   if (m_line.is_solved()) {
     for (auto& clue : clues)
       clue.state = PuzzleClue::State::finished;
-    return;
+    return true;
   }
 
   //find leftmost and rightmost solutions that work
@@ -218,4 +221,5 @@ void LineSolver::update_clues(std::vector<PuzzleClue>& clues)
       }
     }
   }
+  return false;
 }

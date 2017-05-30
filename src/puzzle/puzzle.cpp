@@ -28,14 +28,14 @@ Puzzle::Puzzle(int width, int height)
   : m_grid(width, height)
 {
   refresh_all_cells();
-  update_clues(true);
+  update(true);
 }
 
 Puzzle::Puzzle(int width, int height, ColorPalette palette)
   : m_grid(width, height), m_palette(palette)
 {
   refresh_all_cells();
-  update_clues(true);
+  update(true);
 }
 
 PuzzleLine Puzzle::get_row(int index)
@@ -165,25 +165,18 @@ ConstPuzzleLine Puzzle::operator[](int col) const
 
 bool Puzzle::is_solved() const
 {
-  for (int i = 0; i < m_grid.width(); ++i) {
-    if (!is_col_solved(i))
-      return false;
-  }
-  for (int j = 0; j < m_grid.height(); ++j) {
-    if (!is_row_solved(j))
-      return false;
-  }
-  return true;
+  return static_cast<int>(m_rows_solved.size()) == m_grid.height()
+    && static_cast<int>(m_cols_solved.size()) == m_grid.width();
 }
 
 bool Puzzle::is_row_solved(int row) const
 {
-  return get_row(row).is_solved();
+  return m_rows_solved.count(row);
 }
 
 bool Puzzle::is_col_solved(int col) const
 {
-  return get_col(col).is_solved();
+  return m_cols_solved.count(col);
 }
 
 bool Puzzle::is_clear() const
@@ -196,7 +189,7 @@ bool Puzzle::is_clear() const
   return true;
 }
 
-void Puzzle::update_clues(bool edit_mode)
+void Puzzle::update(bool edit_mode)
 {
   //make sure clue entries exist
   if (m_row_clues.empty())
@@ -266,8 +259,10 @@ void Puzzle::handle_size_change()
   m_col_clues.clear();
   m_rows_changed.clear();
   m_cols_changed.clear();
+  m_rows_solved.clear();
+  m_cols_solved.clear();
   refresh_all_cells();
-  update_clues(true);
+  update(true);
 }
 
 Puzzle::ClueSequence& Puzzle::line_clues(int index, LineType type)
@@ -318,6 +313,17 @@ void Puzzle::update_line(int index, LineType type, bool edit_mode)
     }
   } else {
     LineSolver solver(line);
-    solver.update_clues(clues);
+    bool solved = solver.update_clues(clues);
+    if (type == LineType::row) {
+      if (solved)
+        m_rows_solved.insert(index);
+      else
+        m_rows_solved.erase(index);
+    } else {
+      if (solved)
+        m_cols_solved.insert(index);
+      else
+        m_cols_solved.erase(index);
+    }
   }
 }

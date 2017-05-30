@@ -99,7 +99,7 @@ void PuzzlePanel::update(unsigned ticks, InputHandler& input,
     update_cells(ticks);
 
     if (!m_mouse_dragging && !m_kb_dragging) {
-      m_puzzle->update_clues(m_edit_mode);
+      m_puzzle->update(m_edit_mode);
       if (m_has_state_changed) {
         m_need_save = !m_state_history.empty();
         save_undo_state();

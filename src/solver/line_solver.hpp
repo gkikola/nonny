@@ -49,8 +49,11 @@ public:
   void solve_fast(std::vector<PuzzleCell>& result);
   void solve_complete(std::vector<PuzzleCell>& result);
 
-  // Update clue states based on line progress
-  void update_clues(std::vector<PuzzleClue>& clues);
+  /*
+   * Update clue states based on line progress. Returns true if line
+   * is solved.
+   */
+  bool update_clues(std::vector<PuzzleClue>& clues);
 
 private:
   // Is the block sequence consistent with the current line state?
