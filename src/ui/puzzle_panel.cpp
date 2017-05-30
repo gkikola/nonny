@@ -356,12 +356,11 @@ void PuzzlePanel::draw_selection(Renderer& renderer) const
     else
       renderer.set_draw_color(default_colors::white);
     auto fn = [this, &renderer](int x, int y) {
-      auto& cell = (*m_puzzle)[x][y];
       auto state = (m_drag_marks
                     ? PuzzleCell::State::filled
                     : PuzzleCell::State::blank);
       draw_cell(renderer, x, y, state, state,
-                cell.color, cell_animation_duration);
+                m_color, cell_animation_duration);
     };
     for_each_point_on_selection(fn);
   }
