@@ -56,6 +56,7 @@ public:
   void restart();
   void save_puzzle(std::string filename = "");
   void update_properties();
+  void set_edit_mode();
 
   bool is_save_needed() const;
   

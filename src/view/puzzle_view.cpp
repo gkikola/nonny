@@ -264,6 +264,15 @@ void PuzzleView::update_properties()
     ipanel->refresh_puzzle_properties();
 }
 
+void PuzzleView::set_edit_mode()
+{
+  //TODO: run solver then switch
+  /*auto ppanel = dynamic_cast<PuzzlePanel*>(&m_main_panel.main_panel());
+  auto ipanel = dynamic_cast<PuzzleInfoPanel*>(&m_info_pane.main_panel());
+  ppanel->set_edit_mode(true);
+  ipanel->set_edit_mode(true);*/
+}
+
 bool PuzzleView::is_save_needed() const
 {
   auto ppanel = dynamic_cast<const PuzzlePanel*>(&m_main_panel.main_panel());

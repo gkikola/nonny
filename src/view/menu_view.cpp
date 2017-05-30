@@ -204,9 +204,9 @@ void MenuView::in_game_menu()
   button->resize(menu_button_width, button->boundary().height());
   menu->add_control(button);
 
-  button = std::make_shared<Button>(*m_control_font, "Analyze...");
+  button = std::make_shared<Button>(*m_control_font, "Edit Puzzle");
   button->register_callback([this]() {
-      m_mgr.schedule_action(ViewManager::Action::analyze_puzzle); });
+      m_mgr.schedule_action(ViewManager::Action::edit_puzzle); });
   button->resize(menu_button_width, button->boundary().height());
   menu->add_control(button);
   
