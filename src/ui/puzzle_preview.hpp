@@ -31,9 +31,9 @@ class Puzzle;
 class PuzzlePreview : public UIPanel {
 public:
   PuzzlePreview() { }
-  PuzzlePreview(Puzzle& puzzle) { attach_puzzle(puzzle); }
+  PuzzlePreview(const Puzzle& puzzle) { attach_puzzle(puzzle); }
 
-  void attach_puzzle(Puzzle& puzzle) { m_puzzle = &puzzle; }
+  void attach_puzzle(const Puzzle& puzzle) { m_puzzle = &puzzle; }
 
   using UIPanel::update; //make all update and draw overloads visible
   using UIPanel::draw;
@@ -42,7 +42,7 @@ public:
   void draw(Renderer& renderer, const Rect& region) const override;
 
 private:
-  Puzzle* m_puzzle;
+  const Puzzle* m_puzzle = nullptr;
 };
 
 #endif
