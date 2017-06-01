@@ -82,13 +82,27 @@ void AnalysisPanel::draw(Renderer& renderer, const Rect& region) const
   r = renderer.draw_text(Point(x, y), m_font, "Time: " + time_str);
   y += r.height() + text_spacing;
 
-  r = renderer.draw_text(Point(x, y), m_font, "Unique solution: ");
-  y += r.height() + text_spacing;
-  
-  r = renderer.draw_text(Point(x, y), m_font, "Line solvable: ");
+  std::string unique_str = "Unique solution: ";
+  if (!m_solver.is_finished())
+    unique_str += "?";
+  else if (m_solver.num_solutions() == 1)
+    unique_str += "Yes";
+  else
+    unique_str += "No";
+  r = renderer.draw_text(Point(x, y), m_font, unique_str);
   y += r.height() + text_spacing;
 
-  r = renderer.draw_text(Point(x, y), m_font, "Difficulty: ");
+  std::string lsolvable_str = "Line solvable: ";
+  if (!m_solver.is_finished())
+    lsolvable_str += "?";
+  else if (m_solver.is_line_solvable())
+    lsolvable_str += "Yes";
+  else
+    lsolvable_str += "No";
+  r = renderer.draw_text(Point(x, y), m_font, lsolvable_str);
+  y += r.height() + text_spacing;
+
+  r = renderer.draw_text(Point(x, y), m_font, "Difficulty: ?");
   y += r.height() + text_spacing;
 
   m_preview.draw(renderer, region);

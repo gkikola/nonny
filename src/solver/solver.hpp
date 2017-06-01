@@ -41,7 +41,16 @@ public:
   // Solve the puzzle
   void operator()();
 
+  // Is the puzzle solved?
   inline bool is_finished() const;
+
+  // How many solutions were found?
+  int num_solutions() const { if (is_finished()) return 1; else return 0; }
+
+  // Can the puzzle be solved one line at a time?
+  bool is_line_solvable() const { return !m_used_guessing; }
+
+  // Is there an inconsistency in the puzzle?
   bool was_contradiction_found() const { return m_inconsistent; }
   
 private:
@@ -54,7 +63,7 @@ private:
   std::set<int> m_cols_to_check;
   std::set<int> m_rows_solved;
   std::set<int> m_cols_solved;
-  bool m_need_guess = false;
+  bool m_used_guessing = false;
   bool m_inconsistent = false;
   bool m_use_complete = false;
 };

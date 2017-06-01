@@ -60,10 +60,14 @@ bool Solver::step()
   if (!m_use_complete
       && m_rows_to_check.empty() && m_cols_to_check.empty()) {
     m_use_complete = true;
-    for (int i = 0; i < m_puzzle.width(); ++i)
-      m_cols_to_check.insert(i);
-    for (int j = 0; j < m_puzzle.height(); ++j)
-      m_rows_to_check.insert(j);
+    for (int i = 0; i < m_puzzle.width(); ++i) {
+      if (m_cols_solved.count(i) == 0)
+        m_cols_to_check.insert(i);
+    }
+    for (int j = 0; j < m_puzzle.height(); ++j) {
+      if (m_rows_solved.count(j) == 0)
+        m_rows_to_check.insert(j);
+    }
   }
   
   return is_finished();
