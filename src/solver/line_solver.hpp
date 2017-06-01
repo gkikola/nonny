@@ -39,15 +39,19 @@ class LineSolver {
 public:
   LineSolver(PuzzleLine& line) : m_line(line) { }
 
-  // Solve the line and modify the line itself with the solution
-  void operator()();
+  /*
+   * Solve the line and modify the line itself with the solution.
+   * Returns false if there is a contradiction.
+   */
+  bool operator()();
 
   /*
    * Solve the line and store the result in the given vector. Does not
-   * modify the original line.
+   * modify the original line. Returns false if there's a
+   * contradiction.
    */
-  void solve_fast(std::vector<PuzzleCell>& result);
-  void solve_complete(std::vector<PuzzleCell>& result);
+  bool solve_fast(std::vector<PuzzleCell>& result);
+  bool solve_complete(std::vector<PuzzleCell>& result);
 
   /*
    * Update clue states based on line progress. Returns true if line
@@ -56,9 +60,6 @@ public:
   bool update_clues(std::vector<PuzzleClue>& clues);
 
 private:
-  // Is the block sequence consistent with the current line state?
-  bool is_seq_valid(const BlockSequence& blocks);
-
   /*
    * Find the intersection of all the block sequences and store the
    * result in the given vector.

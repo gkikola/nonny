@@ -335,7 +335,8 @@ void PuzzleView::setup_panels()
   ipanel->on_save(std::bind(&PuzzleView::save_puzzle, this, ""));
   ipanel->on_undo([ppanel]() { ppanel->undo(); });
   ipanel->on_redo([ppanel]() { ppanel->redo(); });
-  ipanel->on_analyze([]() { });
+  ipanel->on_analyze([this]() {
+      m_mgr.schedule_action(ViewManager::Action::analyze_puzzle); });
   ipanel->on_left([ppanel]() { ppanel->shift_left(); });
   ipanel->on_right([ppanel]() { ppanel->shift_right(); });
   ipanel->on_up([ppanel]() { ppanel->shift_up(); });

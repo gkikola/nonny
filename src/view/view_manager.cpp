@@ -26,6 +26,7 @@
 #include "input/input_handler.hpp"
 #include "settings/game_settings.hpp"
 #include "video/renderer.hpp"
+#include "view/analyze_view.hpp"
 #include "view/data_edit_view.hpp"
 #include "view/file_view.hpp"
 #include "view/menu_view.hpp"
@@ -173,6 +174,13 @@ void ViewManager::update(unsigned ticks, InputHandler& input)
       }
       break;
     case Action::analyze_puzzle:
+      if (!m_views.empty()) {
+        if (typeid(*m_views.back()) == typeid(MenuView))
+          pop();
+        auto pv = std::dynamic_pointer_cast<PuzzleView>(m_views.back());
+        if (pv)
+          push(std::make_shared<AnalyzeView>(*this, pv->puzzle()));
+      }
       break;
     case Action::edit_puzzle:
       if (!m_views.empty()) {
@@ -266,14 +274,12 @@ void ViewManager::draw(Renderer& renderer)
 {
   if (!m_views.empty()) {
     auto cur = m_views.end() - 1;
-    while (true) {
-      (*cur)->draw(renderer);
-      if (!(*cur)->is_transparent() || cur == m_views.begin())
-        break;
-      
+    while ((*cur)->is_transparent() && cur != m_views.begin())
       --cur;
+    while (cur != m_views.end()) {
+      (*cur)->draw(renderer);
+      ++cur;
     }
-    m_views.back()->draw(renderer);
   }
 }
 
@@ -286,7 +292,6 @@ void ViewManager::resize(int width, int height)
 {
   m_width = width;
   m_height = height;
-
   for (auto view : m_views)
     view->resize(width, height);
 }

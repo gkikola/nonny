@@ -18,41 +18,39 @@
  */
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
-#ifndef NONNY_SOLVER_HPP
-#define NONNY_SOLVER_HPP
+#ifndef NONNY_ANALYZE_VIEW_HPP
+#define NONNY_ANALYZE_VIEW_HPP
 
-#include <set>
-#include <stack>
-#include <vector>
-#include "puzzle/puzzle.hpp"
-#include "puzzle/puzzle_cell.hpp"
+#include <memory>
+#include "ui/analysis_panel.hpp"
+#include "video/font.hpp"
+#include "view/view.hpp"
+
+class Puzzle;
+class ViewManager;
 
 /*
- * Takes a reference to a puzzle and, when invoked, solves that
- * puzzle.
+ * Game screen that displays solution analysis such as number of
+ * solutions, solvability, and difficulty. Also includes a solution
+ * preview.
  */
-class Solver {
+class AnalyzeView : public View {
 public:
-  Solver(Puzzle& puzzle);
+  AnalyzeView(ViewManager& vm, Puzzle& puzzle);
 
-  // Execute one step in solving the puzzle, returns true if solved
-  bool step();
-  
-  // Solve the puzzle
-  void operator()();
+  void update(unsigned ticks, InputHandler& input) override;
+  void draw(Renderer& renderer) override;
+  void resize(int width, int height) override;
 
-  bool was_contradiction_found() const { return m_inconsistent; }
+  bool is_transparent() const override { return true; }
   
 private:
-  bool solve_line(PuzzleLine& line, bool complete = false);
+  void load_resources();
+  
   Puzzle& m_puzzle;
-  std::vector<PuzzleCell> m_solved_line;
 
-  std::set<int> m_rows_to_check;
-  std::set<int> m_cols_to_check;
-  bool m_need_guess = false;
-  bool m_inconsistent = false;
-  bool m_complete = false;
+  std::shared_ptr<AnalysisPanel> m_panel;
+  std::unique_ptr<Font> m_font;
 };
 
 #endif

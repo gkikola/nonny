@@ -25,10 +25,11 @@
 #include "puzzle/puzzle_line.hpp"
 #include "solver/block_sequence.hpp"
 
-void LineSolver::operator()()
+bool LineSolver::operator()()
 {
   std::vector<PuzzleCell> line;
-  solve_complete(line);
+  if (!solve_complete(line))
+    return false;
 
   for (int i = 0; i < static_cast<int>(line.size()); ++i) {
     if (line[i].state == PuzzleCell::State::filled)
@@ -38,51 +39,44 @@ void LineSolver::operator()()
     else
       m_line.clear_cell(i);
   }
+  return true;
 }
 
-void LineSolver::solve_fast(std::vector<PuzzleCell>& result)
-{
-  //TODO: write fast solver
-  solve_complete(result);
+bool LineSolver::solve_fast(std::vector<PuzzleCell>& result)
+{  
+  std::vector<BlockSequence> seqs;
+  seqs.emplace_back(m_line);
+  seqs.emplace_back(m_line);
+
+  auto& lblocks = seqs[0];
+  auto& rblocks = seqs[1];
+
+  if (!lblocks.arrange_left())
+    return false;
+
+  if (!rblocks.arrange_right())
+    return false;
+
+  intersect_blocks(result, seqs);
+  return true;
 }
 
-void LineSolver::solve_complete(std::vector<PuzzleCell>& result)
+bool LineSolver::solve_complete(std::vector<PuzzleCell>& result)
 {
-  BlockSequence blocks(m_line.size(), m_line.clues());
-
+  BlockSequence blocks(m_line);
+  if (!blocks.arrange_left())
+    return false;
+  
   std::vector<BlockSequence> valid;
 
-  do {
-    if (is_seq_valid(blocks))
-      valid.push_back(blocks);
-  } while (blocks.slide_right());
+  do
+    valid.push_back(blocks);
+  while (blocks.slide_right());
+
+  if (valid.empty())
+    return false;
 
   intersect_blocks(result, valid);
-}
-
-bool LineSolver::is_seq_valid(const BlockSequence& blocks)
-{
-  int pos = 0;
-  for (int block = 0; block < static_cast<int>(blocks.size()); ++block) {
-    while (pos < blocks[block].pos) {
-      if (m_line[pos].state == PuzzleCell::State::filled)
-        return false;
-      ++pos;
-    }
-
-    while (pos < blocks[block].pos + blocks[block].length) {
-      if (m_line[pos].state == PuzzleCell::State::crossed_out)
-        return false;
-      ++pos;
-    }
-  }
-
-  while (pos < m_line.size()) {
-    if (m_line[pos].state == PuzzleCell::State::filled)
-      return false;
-    ++pos;
-  }
-
   return true;
 }
 
@@ -90,12 +84,18 @@ void LineSolver::intersect_blocks(std::vector<PuzzleCell>& result,
                                   std::vector<BlockSequence>& seqs)
 {
   result.clear();
-  if (seqs.empty())
+  if (seqs.empty()) {
+    PuzzleCell cross;
+    cross.state = PuzzleCell::State::crossed_out;
+    result = std::vector<PuzzleCell>(m_line.size(), cross);
     return;
+  }
 
   result = std::vector<PuzzleCell>(m_line.size(), PuzzleCell());
   
   int size = m_line.clues().size();
+  if (size == 1 && m_line.clues()[0].value == 0)
+    size = 0;
   int pos = 0;
   for (int block = 0; block < size; ++block) {
     //take minimum starting point
@@ -162,21 +162,14 @@ bool LineSolver::update_clues(std::vector<PuzzleClue>& clues)
 
   //find leftmost and rightmost solutions that work
   std::vector<BlockSequence> list;
-  list.emplace_back(m_line.size(), clues, BlockSequence::Init::left);
-  list.emplace_back(m_line.size(), clues, BlockSequence::Init::right);
+  list.emplace_back(m_line);
+  list.emplace_back(m_line);
   BlockSequence& left = list[0];
   BlockSequence& right = list[1];
 
   bool contradiction = false;
-  while (!contradiction && !is_seq_valid(left)) {
-    if (!left.slide_right())
-      contradiction = true;
-  }
-
-  while (!contradiction && !is_seq_valid(right)) {
-    if (!right.slide_left())
-      contradiction = true;
-  }
+  if (!left.arrange_left() || !right.arrange_right())
+    contradiction = true;
 
   if (contradiction) { //line contains a contradiction
     for (auto& clue : clues)

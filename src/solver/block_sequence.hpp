@@ -23,7 +23,9 @@
 
 #include <cstddef>
 #include <vector>
-#include "puzzle/puzzle_clue.hpp"
+#include "color/color.hpp"
+
+class PuzzleLine;
 
 /*
  * Represents a contiguous group of filled puzzle cells in a line
@@ -43,10 +45,22 @@ struct Block {
  */
 class BlockSequence {
 public:
-  enum class Init { left, right };
-  BlockSequence(int line_size,
-                const std::vector<PuzzleClue>& line_clues,
-                Init init_type = Init::left);
+  BlockSequence(PuzzleLine& line);
+
+  /*
+   * Determines whether the current block sequence is valid. It is not
+   * valid if there are filled cells that are not covered by a block,
+   * or if there are crossed out cells that are covered by a block.
+   */
+  bool is_valid() const;
+  
+  /*
+   * Arranges the blocks as far to the left or as far to the right as
+   * possible while still producing a consistent arrangement. Returns
+   * false if no possible arrangement was found.
+   */
+  bool arrange_left();
+  bool arrange_right();
 
   /*
    * Find the previous or next valid permutation of blocks in the
@@ -84,11 +98,14 @@ public:
   const Block& operator[](int index) const { return m_blocks[index]; }
   
 private:
-  void flush_left(); //set up blocks in leftmost position
-  void flush_right(); //set up blocks in rightmost position
-
+  bool move_block_left(int index);
+  bool move_block_right(int index);
+  bool force_block_left(int index);
+  bool force_block_right(int index);
+  bool is_block_valid(const Block& block) const;
+  
   std::vector<Block> m_blocks;
-  int m_line_size;
+  PuzzleLine& m_line;
 };
 
 #endif

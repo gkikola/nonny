@@ -52,7 +52,7 @@ public:
   PuzzleGrid& operator=(PuzzleGrid&&) & = default;
 private:
   std::vector<PuzzleCell> m_grid;
-  int m_width;
+  int m_width = 0;
 };
 
 std::ostream& operator<<(std::ostream& os, const PuzzleGrid& grid);

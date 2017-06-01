@@ -61,6 +61,7 @@ add_executable (
   src/solver/block_sequence.cpp
   src/solver/line_solver.cpp
   src/solver/solver.cpp
+  src/ui/analysis_panel.cpp
   src/ui/button.cpp
   src/ui/control.cpp
   src/ui/dialog.cpp
@@ -95,6 +96,7 @@ add_executable (
   src/video/texture.cpp
   src/video/video_system.cpp
   src/video/window.cpp
+  src/view/analyze_view.cpp
   src/view/data_edit_view.cpp
   src/view/file_view.cpp
   src/view/menu_view.cpp
