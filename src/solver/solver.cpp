@@ -34,13 +34,15 @@ Solver::Solver(Puzzle& puzzle)
 
 bool Solver::step()
 {
+  if (is_finished())
+    return true;
   if (m_inconsistent)
     return false;
 
   while (!m_rows_to_check.empty()) {
     int row = *m_rows_to_check.begin();
     PuzzleLine line = m_puzzle.get_row(row);
-    if (!solve_line(line, m_complete)) {
+    if (!solve_line(line, m_use_complete)) {
       m_inconsistent = true;
       return false;
     }
@@ -48,21 +50,23 @@ bool Solver::step()
   while (!m_cols_to_check.empty()) {
     int col = *m_cols_to_check.begin();
     PuzzleLine line = m_puzzle.get_col(col);
-    if (!solve_line(line, m_complete)) {
+    if (!solve_line(line, m_use_complete)) {
       m_inconsistent = true;
       return false;
     }
   }
 
-  if (!m_complete && m_rows_to_check.empty() && m_cols_to_check.empty()) {
-    m_complete = true;
+  //switch to complete line solver if the fast one didn't produce any info
+  if (!m_use_complete
+      && m_rows_to_check.empty() && m_cols_to_check.empty()) {
+    m_use_complete = true;
     for (int i = 0; i < m_puzzle.width(); ++i)
       m_cols_to_check.insert(i);
     for (int j = 0; j < m_puzzle.height(); ++j)
       m_rows_to_check.insert(j);
   }
   
-  return false;
+  return is_finished();
 }
 
 void Solver::operator()()
@@ -96,7 +100,14 @@ bool Solver::solve_line(PuzzleLine& line, bool complete)
       return false;
   }
 
+  bool is_solved = true;
   for (int i = 0; i < line.size(); ++i) {
+    //if line is completely filled in, we're done with this line
+    if (m_solved_line[i].state == PuzzleCell::State::blank)
+      is_solved = false;
+    
+    //line solver produced new information, update puzzle line
+    //and record changed perpendicular lines
     if (line[i] != m_solved_line[i]
         && m_solved_line[i].state != PuzzleCell::State::blank) {
       if (line.type() == LineType::row)
@@ -117,10 +128,15 @@ bool Solver::solve_line(PuzzleLine& line, bool complete)
     }
   }
 
-  if (line.type() == LineType::row)
+  if (line.type() == LineType::row) {
+    if (is_solved)
+      m_rows_solved.insert(line.index());
     m_rows_to_check.erase(line.index());
-  else
+  } else {
+    if (is_solved)
+      m_cols_solved.insert(line.index());
     m_cols_to_check.erase(line.index());
+  }
   
   return true;
 }

@@ -41,18 +41,31 @@ public:
   // Solve the puzzle
   void operator()();
 
+  inline bool is_finished() const;
   bool was_contradiction_found() const { return m_inconsistent; }
   
 private:
+  // Returns false on contradiction
   bool solve_line(PuzzleLine& line, bool complete = false);
   Puzzle& m_puzzle;
   std::vector<PuzzleCell> m_solved_line;
 
   std::set<int> m_rows_to_check;
   std::set<int> m_cols_to_check;
+  std::set<int> m_rows_solved;
+  std::set<int> m_cols_solved;
   bool m_need_guess = false;
   bool m_inconsistent = false;
-  bool m_complete = false;
+  bool m_use_complete = false;
 };
+
+
+/* implementation */
+
+inline bool Solver::is_finished() const
+{
+  return static_cast<int>(m_rows_solved.size()) == m_puzzle.height()
+    && static_cast<int>(m_cols_solved.size()) == m_puzzle.width();
+}
 
 #endif

@@ -41,29 +41,18 @@ AnalysisPanel::AnalysisPanel(const Font& font, const Puzzle& puzzle)
   calc_size();
   m_puzzle.clear_all_cells();
 }
-#include <iostream>//temp
+
 void AnalysisPanel::update(unsigned ticks, InputHandler& input,
                            const Rect& active_region)
 {
   if (m_solver_running) {
     m_run_time += ticks;
-    if (m_solver.step())
+    if (m_solver.step()) {
+      m_done_solving = true;
       m_solver_running = false;
-    else if (m_solver.was_contradiction_found()) {
+    } else if (m_solver.was_contradiction_found()) {
+      m_inconsistent = true;
       m_solver_running = false;
-      for (int row = 0; row < m_puzzle.height(); ++row) {
-        for (int col = 0; col < m_puzzle.width(); ++col) {
-          if (m_puzzle[col][row].state == PuzzleCell::State::filled)
-            std::cout << 'X';
-          else if (m_puzzle[col][row].state == PuzzleCell::State::crossed_out)
-            std::cout << '.';
-          else
-            std::cout << '\'';
-        }
-        std::cout << std::endl;
-      }
-      
-      throw int(4);
     }
   }
   m_preview.update(ticks, input, active_region);
@@ -83,7 +72,7 @@ void AnalysisPanel::draw(Renderer& renderer, const Rect& region) const
   int y = m_boundary.y() + panel_spacing;
   if (m_solver_running)
     r = renderer.draw_text(Point(x, y), m_font, "Status: solving");
-  else if (m_puzzle.is_solved())
+  else if (m_solver.is_finished())
     r = renderer.draw_text(Point(x, y), m_font, "Status: solved");
   else
     r = renderer.draw_text(Point(x, y), m_font, "Status: ready");

@@ -61,6 +61,8 @@ private:
   Button m_solve_button;
   Button m_close_button;
   bool m_solver_running = false;
+  bool m_done_solving = false;
+  bool m_inconsistent = false;
   unsigned m_run_time = 0;
 };
 
