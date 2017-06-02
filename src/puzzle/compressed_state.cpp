@@ -19,3 +19,24 @@
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
 #include "puzzle/compressed_state.hpp"
+
+#include <algorithm>
+
+bool operator==(const CompressedState& l, const CompressedState& r)
+{
+  if (l.m_width != r.m_width || l.m_height != r.m_height)
+    return false;
+
+  for (unsigned i = 0; i < l.m_state.size(); ++i) {
+    if (l.m_state[i].cell != r.m_state[i].cell
+        || l.m_state[i].count != r.m_state[i].count)
+      return false;
+  }
+
+  return true;
+}
+
+bool operator!=(const CompressedState& l, const CompressedState& r)
+{
+  return !(l == r);
+}

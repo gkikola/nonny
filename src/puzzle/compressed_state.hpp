@@ -26,6 +26,8 @@
 
 class CompressedState {
   friend class Puzzle;
+  friend bool operator==(const CompressedState& l, const CompressedState& r);
+
 private:
   struct Entry {
     PuzzleCell cell;
@@ -35,5 +37,8 @@ private:
   int m_width = 0;
   int m_height = 0;
 };
+
+bool operator==(const CompressedState& l, const CompressedState& r);
+bool operator!=(const CompressedState& l, const CompressedState& r);
 
 #endif
