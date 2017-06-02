@@ -34,6 +34,7 @@ constexpr int panel_spacing = 16;
 constexpr int text_spacing = 8;
 constexpr int preview_size = 256;
 constexpr int button_width = 150;
+constexpr unsigned solution_cycle_duration = 1000;
 
 AnalysisPanel::AnalysisPanel(const Font& font, const Puzzle& puzzle)
   : m_puzzle(puzzle), m_solver(m_puzzle), m_font(font)
@@ -56,6 +57,15 @@ void AnalysisPanel::update(unsigned ticks, InputHandler& input,
       m_solver_running = false;
     }
   }
+
+  if (m_solver.is_finished()) {
+    m_sol_cycle_time += ticks;
+    if (m_sol_cycle_time >= solution_cycle_duration) {
+      m_solver.cycle_solution();
+      m_sol_cycle_time = 0;
+    }
+  }
+  
   m_preview.update(ticks, input, active_region);
   m_solve_button.update(ticks, input, active_region);
   m_close_button.update(ticks, input, active_region);
@@ -170,11 +180,11 @@ void AnalysisPanel::calc_size()
   width = std::max(width, text_wd + 2 * panel_spacing);
   height += text_ht + text_spacing;
   
-  m_font.text_size("Unique solution: ", &text_wd, &text_ht);
+  m_font.text_size("Unique solution: Yes", &text_wd, &text_ht);
   width = std::max(width, text_wd + 2 * panel_spacing);
   height += text_ht + text_spacing;
 
-  m_font.text_size("Line solvable: ", &text_wd, &text_ht);
+  m_font.text_size("Line solvable: Yes", &text_wd, &text_ht);
   width = std::max(width, text_wd + 2 * panel_spacing);
   height += text_ht + text_spacing;
 

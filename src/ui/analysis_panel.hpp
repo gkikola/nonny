@@ -64,6 +64,7 @@ private:
   bool m_done_solving = false;
   bool m_inconsistent = false;
   unsigned m_run_time = 0;
+  unsigned m_sol_cycle_time = 0;
 };
 
 #endif

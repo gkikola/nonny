@@ -58,6 +58,12 @@ public:
    */
   bool is_finished() const { return m_finished; }
 
+  /*
+   * If solver is finished, switch puzzle state to that of the
+   * solution, or cycle to the next solution if more than one.
+   */
+  void cycle_solution();
+  
   // How many solutions were found?
   int num_solutions() const { return m_solutions.size(); }
 
@@ -103,6 +109,8 @@ private:
   // Solutions found and alternatives to consider
   std::vector<CompressedState> m_solutions;
   std::stack<SolverState> m_alternatives;
+  std::vector<CompressedState>::iterator m_cur_solution;
+  bool m_solution_selected = false;
 
   // Priority and solved lines
   std::vector<int> m_row_priority;

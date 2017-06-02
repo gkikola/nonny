@@ -81,6 +81,7 @@ bool Solver::step()
     if (m_alternatives.empty()) {
       //no other possibilities, so we're done
       m_finished = true;
+      cycle_solution();
     } else {
       //backtrack to find alternative solutions
       backtrack();
@@ -127,6 +128,28 @@ bool Solver::step()
 void Solver::operator()()
 {
   while (!step()) { }
+}
+
+void Solver::cycle_solution()
+{
+  if (!is_finished())
+    return;
+
+  bool has_changed = false;
+  
+  if (!m_solution_selected) {
+    m_cur_solution = m_solutions.begin();
+    m_solution_selected = true;
+    has_changed = true;
+  } else {
+    has_changed = m_solutions.size() > 1;
+    ++m_cur_solution;
+    if (m_cur_solution == m_solutions.end())
+      m_cur_solution = m_solutions.begin();
+  }
+
+  if (has_changed && m_cur_solution != m_solutions.end())
+    m_puzzle.load_state(*m_cur_solution);
 }
 
 int Solver::select_row()
@@ -202,11 +225,14 @@ void Solver::backtrack()
 {
   if (m_alternatives.empty()) {
     //no alternatives
-    //if no solutions were found yet, then the puzzle is inconsistent
-    if (num_solutions() == 0)
-      m_inconsistent = true;
-
     m_finished = true;
+    
+    //if no solutions were found yet, then the puzzle is inconsistent
+    if (num_solutions() == 0) {
+      m_inconsistent = true;
+    } else {
+      cycle_solution();
+    }
   } else {
     //backtrack to last alternative
     m_puzzle.load_state(m_alternatives.top().puzzle_state);
@@ -229,9 +255,6 @@ void Solver::backtrack()
 void Solver::guess()
 {
   const int max_search_dist = 4;
-
-  //increment guess counter
-  ++m_num_guesses;
 
   //try to locate a good cell for a guess
   int best_x = -1, best_y = -1;
@@ -285,6 +308,9 @@ void Solver::guess()
   state.puzzle_state = std::move(grid_state);
   m_alternatives.push(state);
 
+  //increment guess counter
+  ++m_num_guesses;
+  
   //try each different color and push states onto the stack
   auto first = m_puzzle.palette().begin();
   if (first->name == "background") ++first;
@@ -410,4 +436,6 @@ void Solver::record_solution()
   
   //otherwise, record the solution
   m_solutions.push_back(std::move(sol));
+  m_cur_solution = m_solutions.begin();
+  m_solution_selected = false;
 }
