@@ -21,6 +21,7 @@
 #include "ui/analysis_panel.hpp"
 
 #include <algorithm>
+#include <string>
 #include "color/color.hpp"
 #include "input/input_handler.hpp"
 #include "utility/utility.hpp"
@@ -105,6 +106,30 @@ void AnalysisPanel::draw(Renderer& renderer, const Rect& region) const
   r = renderer.draw_text(Point(x, y), m_font, "Difficulty: ?");
   y += r.height() + text_spacing;
 
+  std::string sol_str;
+  if (m_solver.is_finished() && m_solver.was_contradiction_found())
+    sol_str = "No solution";
+  else if (m_solver.num_solutions() == 1)
+    sol_str = "Found 1 solution";
+  else if (m_solver.num_solutions() > 1)
+    sol_str = "Found " + std::to_string(m_solver.num_solutions())
+      + " solutions";
+  if (!sol_str.empty()) {
+    r = renderer.draw_text(Point(x, y), m_font, sol_str);
+    y += r.height() + text_spacing;
+  }
+
+  std::string guess_str;
+  if (m_solver.num_guesses() == 1)
+    guess_str = "Made 1 guess";
+  else if (m_solver.num_guesses() > 1)
+    guess_str = "Made " + std::to_string(m_solver.num_guesses())
+      + " guesses";
+  if (!guess_str.empty()) {
+    r = renderer.draw_text(Point(x, y), m_font, guess_str);
+    y += r.height() + text_spacing;
+  }
+
   m_preview.draw(renderer, region);
   m_solve_button.draw(renderer, region);
   m_close_button.draw(renderer, region);
@@ -141,6 +166,10 @@ void AnalysisPanel::calc_size()
   width = std::max(width, text_wd + 2 * panel_spacing);
   height += text_ht + text_spacing;
 
+  m_font.text_size("Time: 00:00.0", &text_wd, &text_ht);
+  width = std::max(width, text_wd + 2 * panel_spacing);
+  height += text_ht + text_spacing;
+  
   m_font.text_size("Unique solution: ", &text_wd, &text_ht);
   width = std::max(width, text_wd + 2 * panel_spacing);
   height += text_ht + text_spacing;
@@ -149,11 +178,15 @@ void AnalysisPanel::calc_size()
   width = std::max(width, text_wd + 2 * panel_spacing);
   height += text_ht + text_spacing;
 
-  m_font.text_size("Difficulty: moderate: ", &text_wd, &text_ht);
+  m_font.text_size("Difficulty: moderate", &text_wd, &text_ht);
   width = std::max(width, text_wd + 2 * panel_spacing);
   height += text_ht + text_spacing;
 
-  m_font.text_size("Does not require guessing", &text_wd, &text_ht);
+  m_font.text_size("Found m solutions", &text_wd, &text_ht);
+  width = std::max(width, text_wd + 2 * panel_spacing);
+  height += text_ht + panel_spacing;
+  
+  m_font.text_size("Made n guesses", &text_wd, &text_ht);
   width = std::max(width, text_wd + 2 * panel_spacing);
   height += text_ht + panel_spacing;
 
