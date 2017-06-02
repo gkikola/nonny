@@ -132,38 +132,6 @@ bool BlockSequence::arrange_left()
   return true;
 }
 
-/*bool BlockSequence::arrange_left_absolute()
-{
-  int pos = 0;
-  int num_blocks = size();
-  //for each block, left-to-right
-  for (int i = 0; i < num_blocks; ++i) {
-    //move block into current position
-    m_blocks[i].pos = pos;
-    //slide block to the right until it's in a valid position
-    while (!is_block_valid(m_blocks[i])) {
-      ++m_blocks[i].pos;
-      //if we fall off the line, then it can't be solved
-      if (m_blocks[i].pos + m_blocks[i].length > m_line.size())
-        return false;
-    }
-    //move position to the right of current block
-    pos = m_blocks[i].pos + m_blocks[i].length;
-    //make sure blocks with the same color have a gap
-    if (i + 1 < num_blocks
-        && m_blocks[i].color == m_blocks[i + 1].color)
-      ++pos;
-  }
-
-  //slide the line right until it's in a valid state
-  while (!is_valid()) {
-    if (!slide_right())
-      return false;
-  }
-
-  return true;
-  }*/
-
 bool BlockSequence::arrange_right()
 {
   int pos = m_line.size();
@@ -255,7 +223,7 @@ bool BlockSequence::force_block_right(int index)
          >= m_blocks[index + 1].pos)
         || m_blocks[index].pos + m_blocks[index].length
         >= m_blocks[index + 1].pos) {
-      //touching next block, so need to move is right, recursively
+      //touching next block, so need to move it right, recursively
       if (!force_block_right(index + 1))
         return false;
     }
@@ -374,6 +342,8 @@ bool BlockSequence::move_block_right(int index)
 bool BlockSequence::is_block_valid(const Block& block) const
 {
   for (int pos = block.pos; pos < block.pos + block.length; ++pos) {
+    if (pos >= m_line.size())
+      return false;
     if (m_line[pos].state == PuzzleCell::State::crossed_out)
       return false;
     if (m_line[pos].state == PuzzleCell::State::filled
