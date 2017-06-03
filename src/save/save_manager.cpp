@@ -63,6 +63,12 @@ void SaveManager::save_progress(const PuzzleProgress& prog,
                                 const std::string& id) const
 {
   std::string filename = find_save_file(path, collection, id);
+
+  //make sure directory exists, create it if not
+  stdfs::path p = stdfs::path(filename).remove_filename();
+  if (!p.empty() && !stdfs::exists(p))
+    stdfs::create_directories(p);
+  
   std::ofstream file(filename);
 
   if (!file.is_open())
