@@ -29,6 +29,7 @@ Solver::Solver(Puzzle& puzzle)
     m_row_priority(puzzle.height(), 1),
     m_col_priority(puzzle.width(), 1)
 {
+  calc_line_slack();
 }
 
 bool Solver::step()
@@ -89,13 +90,12 @@ bool Solver::step()
   }
 
   if (!m_finished) {
-    //if the complete solver found new information,
-    //switch back to the fast solver
     bool line_available = is_line_available();
     if (m_use_complete && !line_available) {
       //complete solver found nothing, need to make a guess
       guess();
       m_use_complete = false;
+      m_new_info_found = false;
     }
 
     //if complete solver found new information, switch back to fast
@@ -107,6 +107,7 @@ bool Solver::step()
     //switch to complete line solver if the fast one didn't produce any info
     if (!m_use_complete && !line_available) {
       m_use_complete = true;
+      m_new_info_found = false;
       for (int i = 0; i < m_puzzle.width(); ++i) {
         if (m_cols_solved.find(i) == m_cols_solved.end())
           m_col_priority[i] = 1;
@@ -254,56 +255,23 @@ void Solver::backtrack()
 
 void Solver::guess()
 {
-  const int max_search_dist = 4;
-
-  //try to locate a good cell for a guess
-  int best_x = -1, best_y = -1;
-  int max_pot = 0;
-
-  //calculate potential of nearby cells
-  for (int y = m_last_row_selected - max_search_dist;
-       y < m_last_row_selected + max_search_dist;
-       ++y) {
-    for (int x = m_last_col_selected - max_search_dist;
-         x < m_last_col_selected + max_search_dist;
-         ++x) {
-      int potential = cell_potential(x, y);
-      if (potential > max_pot) {
-        best_x = x;
-        best_y = y;
-        max_pot = potential;
-      }
-    }
-  }
-
-  //if we couldn't find any candidates nearby, just search
-  //the whole grid and pick the first undetermined cell
-  if (max_pot == 0) {
-    for (int y = 0; y < m_puzzle.height(); ++y) {
-      for (int x = 0; x < m_puzzle.width(); ++x) {
-        if (m_puzzle[x][y].state == PuzzleCell::State::blank) {
-          best_x = x;
-          best_y = y;
-          y = m_puzzle.height(); //break outer loop
-          break;
-        }
-      }
-    }
-  }
+  //find a good cell for a guess
+  int x = 0, y = 0;
+  choose_cell(x, y);
 
   //if there are no blank cells, why are we here?
-  if (best_x < 0 || best_y < 0)
+  if (x < 0 || y < 0)
     throw std::runtime_error("Solver::guess: "
                              "guess called on finished puzzle");
   
   //we have our guess, now make the branches
   SolverState state;
-  state.row = best_y;
-  state.col = best_x;
+  state.row = y;
+  state.col = x;
   CompressedState grid_state;
 
   //cross out cell and push state onto the stack
-  m_puzzle.cross_out_cell(best_x, best_y);
+  m_puzzle.cross_out_cell(x, y);
   m_puzzle.copy_state(grid_state);
   state.puzzle_state = std::move(grid_state);
   m_alternatives.push(state);
@@ -314,61 +282,122 @@ void Solver::guess()
   //try each different color and push states onto the stack
   auto first = m_puzzle.palette().begin();
   if (first->name == "background") ++first;
-  auto it = first;
-  ++it;
-  while (it != m_puzzle.palette().end()
-         && it->name != "background") {
-    grid_state = CompressedState();
-    m_puzzle.mark_cell(best_x, best_y, it->color);
-    m_puzzle.copy_state(grid_state);
-    state.puzzle_state = std::move(grid_state);
-    m_alternatives.push(state);
+  if (first != m_puzzle.palette().end()) {
+    auto it = first;
+    ++it;
+    while (it != m_puzzle.palette().end()
+           && it->name != "background") {
+      //make sure this color is included in the clues for this cell
+      bool found_row = false;
+      for (const auto& c : m_puzzle.row_clues(y)) {
+        if (c.color == it->color) {
+          found_row = true;
+          break;
+        }
+      }
+      bool found_col = false;
+      for (const auto& c : m_puzzle.col_clues(x)) {
+        if (c.color == it->color) {
+          found_col = true;
+          break;
+        }
+      }
+
+      if (found_row && found_col) {
+        grid_state = CompressedState();
+        m_puzzle.mark_cell(x, y, it->color);
+        m_puzzle.copy_state(grid_state);
+        state.puzzle_state = std::move(grid_state);
+        m_alternatives.push(state);
+      }
+
+      ++it;
+    }
   }
 
   //try first color and continue on from there
-  m_puzzle.mark_cell(best_x, best_y, first->color);
-  m_col_priority[best_x] = 2;
-  m_row_priority[best_y] = 2;
+  m_puzzle.mark_cell(x, y, first->color);
+  m_col_priority[x] = 1;
+  m_row_priority[y] = 1;
 }
 
-int Solver::cell_potential(int x, int y)
+void Solver::choose_cell(int& x, int& y)
 {
-  if (x < 0 || x >= m_puzzle.width()
-      || y < 0 || y >= m_puzzle.height())
-    return 0;
+  x = -1;
+  y = -1;
+  int score = -1;
+  
+  for (int j = 0; j < m_puzzle.height(); ++j) {
+    for (int i = 0; i < m_puzzle.width(); ++i) {
+      int cur_score = cell_score(i, j);
+      if (cur_score >= 0 && (score < 0 || cur_score < score)) {
+        score = cur_score;
+        x = i;
+        y = j;
+      }
+    }
+  }
+}
+
+int Solver::cell_score(int x, int y)
+{
+  if (x < 0 || y < 0 || x >= m_puzzle.width() || y >= m_puzzle.height())
+    return -1;
 
   if (m_puzzle[x][y].state != PuzzleCell::State::blank)
-    return 0;
-  
-  return num_filled_neighbors(x, y);
+    return -1;
+
+  //base line score is slack + 2 * number of clues
+  int row_score = m_row_slack[y] + 2 * m_puzzle.row_clues(y).size();
+  int col_score = m_col_slack[x] + 2 * m_puzzle.col_clues(x).size();
+
+  //take weighted average of row and column score, giving preference
+  //to the smaller of the two
+  int score = 3 * std::min(row_score, col_score)
+    + std::max(row_score, col_score);
+
+  //add number of unsolved neighboring cells
+  score += 4;
+  if (x == 0 || m_puzzle[x - 1][y].state != PuzzleCell::State::blank)
+    --score;
+  if (y == 0 || m_puzzle[x][y - 1].state != PuzzleCell::State::blank)
+    --score;
+  if (x == m_puzzle.width() - 1
+      || m_puzzle[x + 1][y].state != PuzzleCell::State::blank)
+    --score;
+  if (y == m_puzzle.height() - 1
+      || m_puzzle[x][y + 1].state != PuzzleCell::State::blank)
+    --score;
+
+  return score;
 }
 
-int Solver::num_filled_neighbors(int x, int y)
+void Solver::calc_line_slack()
 {
-  int count = 0;
-  if (x > 0 && m_puzzle[x - 1][y].state != PuzzleCell::State::blank)
-    ++count;
-  else if (x == 0) //edge cells are useful so count them too
-    ++count;
-
-  if (y > 0 && m_puzzle[x][y - 1].state != PuzzleCell::State::blank)
-    ++count;
-  else if (y == 0)
-    ++count;
-
-  if (x + 1 < m_puzzle.width()
-      && m_puzzle[x + 1][y].state != PuzzleCell::State::blank)
-    ++count;
-  else if (x + 1 == m_puzzle.width())
-    ++count;
+  m_row_slack.resize(m_puzzle.height(), 0);
+  m_col_slack.resize(m_puzzle.width(), 0);
   
-  if (y + 1 < m_puzzle.height()
-      && m_puzzle[x][y + 1].state != PuzzleCell::State::blank)
-    ++count;
-  else if (y + 1 == m_puzzle.height())
-    ++count;
+  for (int x = 0; x < m_puzzle.width(); ++x) {
+    const auto& clues = m_puzzle.col_clues(x);
+    m_col_slack[x] = m_puzzle.height();
+    
+    for (unsigned i = 0; i < clues.size(); ++i) {
+      if (i > 0 && clues[i].color == clues[i - 1].color)
+        --m_col_slack[x];
+      m_col_slack[x] -= clues[i].value;
+    }
+  }
 
-  return count;
+  for (int y = 0; y < m_puzzle.height(); ++y) {
+    const auto& clues = m_puzzle.row_clues(y);
+    m_row_slack[y] = m_puzzle.width();
+    
+    for (unsigned i = 0; i < clues.size(); ++i) {
+      if (i > 0 && clues[i].color == clues[i - 1].color)
+        --m_row_slack[y];
+      m_row_slack[y] -= clues[i].value;
+    }
+  }
 }
 
 bool Solver::solve_line(PuzzleLine& line, bool complete)

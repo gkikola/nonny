@@ -91,11 +91,21 @@ private:
   // Create a branch point and make a guess
   void guess();
 
-  // How good a cell is for guessing, higher is better,
-  // 0 means the cell is already determined
-  int cell_potential(int x, int y);
-  
-  int num_filled_neighbors(int x, int y);
+  // Choose the best cell for guessing
+  void choose_cell(int& x, int& y);
+
+  /*
+   * Find the score of the cell as a guess choice, lower is better.
+   * Line score is slack plus twice the number of clues, cell score is
+   * 3 * the smaller of row and column scores plus the larger of the
+   * two scores, plus the number of unsolved neighbor cells.
+   *
+   * A score of -1 means the cell is invalid or already solved.
+   */
+  int cell_score(int x, int y);
+
+  // Calculate slack in each line, used for guessing
+  void calc_line_slack();
   
   // Returns false on contradiction
   bool solve_line(PuzzleLine& line, bool complete = false);
@@ -117,6 +127,10 @@ private:
   std::vector<int> m_col_priority;
   std::set<int> m_rows_solved;
   std::set<int> m_cols_solved;
+
+  // Slack in each line, used for choosing guesses
+  std::vector<int> m_row_slack;
+  std::vector<int> m_col_slack;
 
   // Used to guide the guesser
   int m_last_row_selected = 0;
