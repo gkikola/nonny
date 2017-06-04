@@ -149,6 +149,7 @@ private:
   DragType m_kb_drag_type = DragType::fill;
   bool m_mouse_dragging = false;
   bool m_kb_dragging = false;
+  bool m_dragging_grid = false;
 
   //Mouse lock state
   bool m_mouse_locked = false;

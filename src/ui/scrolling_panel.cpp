@@ -72,9 +72,17 @@ void ScrollingPanel::update(unsigned ticks, InputHandler& input,
     main_region.width() -= s_scrollbar_width;
   }
 
+  int old_x = m_main_panel->boundary().x();
+  int old_y = m_main_panel->boundary().y();
+  
   if (m_main_panel)
     m_main_panel->update(ticks, input,
                          intersection(main_region, active_region));
+  
+  //if panel moved, put it back in bounds
+  if (old_x != m_main_panel->boundary().x()
+      || old_y != m_main_panel->boundary().y())
+  move_panel_in_bounds();
 }
 
 void ScrollingPanel::draw(Renderer& renderer, const Rect& region) const
@@ -149,27 +157,28 @@ void ScrollingPanel::move_panel_in_bounds()
 {
   Rect r = m_main_panel->boundary();
 
-  if (r.x() > m_boundary.x())
-    m_main_panel->move(m_boundary.x(), r.y());
-  if (r.y() > m_boundary.y())
-    m_main_panel->move(r.x(), m_boundary.y());
+  if (r.x() > m_boundary.x() && r.width() >= m_boundary.width())
+    m_main_panel->move(m_boundary.x(), m_main_panel->boundary().y());
+  if (r.y() > m_boundary.y() && r.height() >= m_boundary.height())
+    m_main_panel->move(m_main_panel->boundary().x(), m_boundary.y());
 
   if (r.width() < m_boundary.width()
       && r.x() < m_boundary.x())
-    m_main_panel->move(m_boundary.x(), r.y());
+    m_main_panel->move(m_boundary.x(), m_main_panel->boundary().y());
   if (r.height() < m_boundary.height()
-      && r.y() < m_boundary.y())
-    m_main_panel->move(r.x(), m_boundary.y());
+      && m_main_panel->boundary().y() < m_boundary.y())
+    m_main_panel->move(m_main_panel->boundary().x(), m_boundary.y());
 
   if (r.width() >= m_boundary.width()
       && r.x() + r.width() < m_boundary.x() + m_boundary.width())
     m_main_panel->move(m_boundary.x() + m_boundary.width()
-                       - r.width(), r.y());
+                       - m_main_panel->boundary().width(),
+                       m_main_panel->boundary().y());
   if (r.height() >= m_boundary.height()
       && r.y() + r.height() < m_boundary.y() + m_boundary.height())
-    m_main_panel->move(r.x(), m_boundary.y()
+    m_main_panel->move(m_main_panel->boundary().x(), m_boundary.y()
                        + m_boundary.height()
-                       - r.height());
+                       - m_main_panel->boundary().height());
 }
 
 void ScrollingPanel::smooth_scroll_up()

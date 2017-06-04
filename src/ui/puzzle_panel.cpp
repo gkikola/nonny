@@ -503,7 +503,19 @@ void PuzzlePanel::handle_mouse_selection(unsigned ticks, InputHandler& input,
     m_mouse_locked = false;
     input.release_mouse();
   }
-        
+
+  //check for scrolling drag
+  if (input.was_mouse_button_pressed(Mouse::Button::middle)
+      && region.contains_point(input.mouse_position())) {
+    m_dragging_grid = true;
+    input.capture_mouse();
+  }
+
+  if (input.was_mouse_button_released(Mouse::Button::middle)) {
+    m_dragging_grid = false;
+    input.release_mouse();
+  }
+
   if (m_mouse_dragging) {    
     Point old_cursor = input.prev_mouse_position();
     int old_x, old_y;
@@ -566,6 +578,12 @@ void PuzzlePanel::handle_mouse_selection(unsigned ticks, InputHandler& input,
           --old_y;
       }
     }
+  }
+
+  if (m_dragging_grid) {
+    int relx = input.rel_mouse_x();
+    int rely = input.rel_mouse_y();
+    scroll(relx, rely);
   }
 }
 

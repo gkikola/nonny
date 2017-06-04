@@ -25,7 +25,7 @@
 
 void UIPanel::scroll(int x, int y)
 {
-  m_boundary.move(m_boundary.x() + x, m_boundary.y() + y);
+  move(m_boundary.x() + x, m_boundary.y() + y);
 }
 
 void UIPanel::resize(int width, int height)
