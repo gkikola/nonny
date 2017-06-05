@@ -50,7 +50,10 @@ public:
   // Notify on resize
   typedef std::function<void()> Callback;
   void on_resize(Callback fn) { m_resize_callback = fn; }
-  
+
+  void zoom(int steps = 1);
+  void zoom(int steps, int x, int y);
+
   void set_active_color(Color color) { m_color = color; }
 
   enum class DrawTool { paint = 0, line, rect, ellipse, fill };
@@ -99,6 +102,7 @@ private:
   void handle_mouse_selection(unsigned ticks, InputHandler& input,
                               const Rect& region);
   void handle_kb_selection(unsigned ticks, InputHandler& input);
+  void handle_mouse_wheel(unsigned ticks, InputHandler& input);
   void handle_resize();
 
   void do_draw_action(bool mark = true);  
@@ -115,13 +119,18 @@ private:
   //find coordinates of cell without making sure they're in bounds
   inline void generalized_cell_at_point(const Point&p, int* x, int* y) const;
 
+  void update_clue_font();
+  
+  void update_zoom(unsigned ticks);
+  void zoom_to(int amount, int x, int y);
+  
   void save_undo_state();
   void load_undo_state();
 
+  enum class DragType { fill, cross, blanking_fill, blanking_cross };
+  
   Font& m_clue_font;
   const Texture& m_cell_texture;
-
-  enum class DragType { fill, cross, blanking_fill, blanking_cross };
 
   //Puzzle information
   Puzzle* m_puzzle = nullptr;
@@ -129,6 +138,9 @@ private:
   std::vector<unsigned> m_cell_time;
   std::vector<PuzzleCell::State> m_prev_cell_state;
   int m_cell_size = 32;
+  int m_target_cell_size = 32;
+  int m_zoom_target_x = 0;
+  int m_zoom_target_y = 0;
   Point m_clue_pos;
   Point m_grid_pos;
   bool m_edit_mode = false;

@@ -328,8 +328,8 @@ void PuzzleView::setup_panels()
   ipanel->attach_puzzle(m_puzzle);
   ipanel->on_menu_open([this]() {
       m_mgr.schedule_action(ViewManager::Action::open_menu); });
-  ipanel->on_zoom_in([]() { });
-  ipanel->on_zoom_out([]() { });
+  ipanel->on_zoom_in([ppanel]() { ppanel->zoom(1); });
+  ipanel->on_zoom_out([ppanel]() { ppanel->zoom(-1); });
   ipanel->on_hint_toggle([]() { });
   ipanel->on_clear_puzzle([ppanel]() { ppanel->clear_puzzle(); });
   ipanel->on_save(std::bind(&PuzzleView::save_puzzle, this, ""));

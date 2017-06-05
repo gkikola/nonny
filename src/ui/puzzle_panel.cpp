@@ -39,11 +39,17 @@ constexpr int cell_animation_duration = 100;
 constexpr int time_for_mouse_unlock = 96;
 constexpr int max_undo_size = 64;
 
+const std::vector<int> zoom_levels = { 6, 8, 12, 16, 20, 24, 27, 32, 48,
+                                       64, 96,
+                                       128, 150};
+constexpr int zoom_speed = 500; //pixels per second
+
 PuzzlePanel::PuzzlePanel(Font& clue_font, const Texture& cell_texture,
                          Puzzle& puzzle)
   : m_clue_font(clue_font), m_cell_texture(cell_texture)
 {
   m_cur_state = m_state_history.begin();
+  update_clue_font();
   attach_puzzle(puzzle);
 }
 
@@ -54,6 +60,31 @@ void PuzzlePanel::attach_puzzle(Puzzle& puzzle)
   m_cell_time.resize(m_cur_puzzle_size, 0);
   m_prev_cell_state.resize(m_cur_puzzle_size, PuzzleCell::State::blank);
   calc_grid_pos();
+}
+
+void PuzzlePanel::zoom(int steps)
+{
+  zoom(steps,
+       m_boundary.x() + m_boundary.width() / 2,
+       m_boundary.y() + m_boundary.height() / 2);
+}
+
+void PuzzlePanel::zoom(int steps, int x, int y)
+{
+  int cur_step;
+  int num_levels = zoom_levels.size();
+  for (cur_step = 0; cur_step < num_levels; ++cur_step) {
+    if (zoom_levels[cur_step] >= m_target_cell_size)
+      break;
+  }
+
+  int target = cur_step + steps;
+  if (target >= 0 && target < num_levels)
+    zoom_to(zoom_levels[target], x, y);
+  else if (target < 0)
+    zoom_to(zoom_levels[0], x, y);
+  else if (target >= num_levels)
+    zoom_to(zoom_levels[num_levels - 1], x, y);
 }
 
 void PuzzlePanel::clear_puzzle()
@@ -98,6 +129,9 @@ void PuzzlePanel::update(unsigned ticks, InputHandler& input,
     
     update_cells(ticks);
 
+    if (m_target_cell_size != m_cell_size)
+      update_zoom(ticks);
+
     if (!m_mouse_dragging && !m_kb_dragging) {
       m_puzzle->update(m_edit_mode);
       if (m_has_state_changed) {
@@ -108,6 +142,7 @@ void PuzzlePanel::update(unsigned ticks, InputHandler& input,
 
     handle_mouse_selection(ticks, input, active_region);
     handle_kb_selection(ticks, input);
+    handle_mouse_wheel(ticks, input);
   }
 }
 
@@ -155,8 +190,10 @@ void PuzzlePanel::calc_grid_pos()
     //add extra space
     int x_padding = grid_width;
     int y_padding = grid_height;
-    m_boundary.x() -= x_padding;
-    m_boundary.y() -= y_padding;
+    m_grid_pos.x() += x_padding;
+    m_grid_pos.y() += y_padding;
+    m_clue_pos.x() += x_padding;
+    m_clue_pos.y() += y_padding;
     m_boundary.width() += 2 * x_padding;
     m_boundary.height() += 2 * y_padding;
   }
@@ -674,6 +711,13 @@ void PuzzlePanel::handle_kb_selection(unsigned ticks, InputHandler& input)
     move_selection(Direction::up, num_press);  
 }
 
+void PuzzlePanel::handle_mouse_wheel(unsigned ticks, InputHandler& input)
+{
+  int steps = input.vert_mouse_wheel_scroll();
+  if (steps != 0)
+    zoom(steps, input.mouse_position().x(), input.mouse_position().y());
+}
+
 void PuzzlePanel::handle_resize()
 {
   m_cur_puzzle_size = m_puzzle->width() * m_puzzle->height();
@@ -959,6 +1003,53 @@ void PuzzlePanel::move_selection(Direction dir, int count)
     m_drag_end_x = m_selection_x;
     m_drag_end_y = m_selection_y;
   }
+}
+
+void PuzzlePanel::update_clue_font()
+{
+  int size = m_cell_size * 3 / 5;
+  if (size <= 1)
+    size = 1;
+  m_clue_font.resize(size);
+}
+
+void PuzzlePanel::update_zoom(unsigned ticks)
+{
+  int delta = zoom_speed * ticks / 1000;
+  if (delta == 0)
+    delta = 1;
+
+  //calculate grid pos of zoom target
+  double zoom_pos_x = (m_zoom_target_x - m_grid_pos.x())
+    / static_cast<double>(m_cell_size + 1);
+  double zoom_pos_y = (m_zoom_target_y - m_grid_pos.y())
+    / static_cast<double>(m_cell_size + 1);
+
+  //update cell size
+  if (m_cell_size < m_target_cell_size) {
+    m_cell_size += delta;
+    if (m_cell_size > m_target_cell_size)
+      m_cell_size = m_target_cell_size;
+  } else if (m_cell_size > m_target_cell_size) {
+    m_cell_size -= delta;
+    if (m_cell_size < m_target_cell_size)
+      m_cell_size = m_target_cell_size;
+  }
+
+  //resize the font and recalculate boundaries
+  update_clue_font();
+  calc_grid_pos();
+
+  int new_target_x = m_grid_pos.x() + zoom_pos_x * (m_cell_size + 1);
+  int new_target_y = m_grid_pos.y() + zoom_pos_y * (m_cell_size + 1);
+  scroll(m_zoom_target_x - new_target_x, m_zoom_target_y - new_target_y);
+}
+
+void PuzzlePanel::zoom_to(int cell_size, int x, int y)
+{
+  m_target_cell_size = cell_size;
+  m_zoom_target_x = x;
+  m_zoom_target_y = y;
 }
 
 void PuzzlePanel::save_undo_state()
