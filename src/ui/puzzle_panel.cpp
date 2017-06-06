@@ -29,6 +29,7 @@
 #include "utility/utility.hpp"
 #include "video/font.hpp"
 #include "video/renderer.hpp"
+#include "video/texture.hpp"
 
 const Color cell_border_color(128, 128, 128);
 const Color blank_cell_color(255, 255, 255);
@@ -152,8 +153,8 @@ void PuzzlePanel::draw(Renderer& renderer, const Rect& region) const
     renderer.set_clip_rect(region);
     draw_cells(renderer);
     draw_grid_lines(renderer);
-    draw_clues(renderer);
     draw_selection(renderer);
+    draw_clues(renderer);
   
     renderer.set_clip_rect();
   }
@@ -313,6 +314,7 @@ void PuzzlePanel::draw_cell(Renderer& renderer, int x, int y,
   Rect dest(m_grid_pos.x() + x * (m_cell_size + 1) + 1,
             m_grid_pos.y() + y * (m_cell_size + 1) + 1,
             m_cell_size, m_cell_size);
+  Rect src(0, 0, m_cell_texture.height(), m_cell_texture.height());
 
   if (x % 2 != y % 2)
     renderer.set_draw_color(lightly_shaded_cell_color);
@@ -347,7 +349,7 @@ void PuzzlePanel::draw_cell(Renderer& renderer, int x, int y,
     renderer.set_draw_color(color);
     renderer.fill_rect(dest);
   } else if (state == PuzzleCell::State::crossed_out) {
-    renderer.copy_texture(m_cell_texture, Rect(), dest);
+    renderer.copy_texture(m_cell_texture, src, dest);
   }
 
   if (state == PuzzleCell::State::blank
@@ -356,7 +358,7 @@ void PuzzlePanel::draw_cell(Renderer& renderer, int x, int y,
       renderer.set_draw_color(color);
       renderer.fill_rect(dest);
     } else if (prev_state == PuzzleCell::State::crossed_out) {
-      renderer.copy_texture(m_cell_texture, Rect(), dest);
+      renderer.copy_texture(m_cell_texture, src, dest);
     }
   }
 }
@@ -370,19 +372,16 @@ void PuzzlePanel::draw_selection(Renderer& renderer) const
     renderer.set_draw_color(m_color);
     renderer.draw_thick_rect(cell, 3);
 
-    renderer.draw_thick_line(Point(m_clue_pos.x(), cell.y()),
-                             m_grid_pos.x() - m_clue_pos.x(), 3, false);
-    renderer.draw_thick_line(Point(m_clue_pos.x(), cell.y() + m_cell_size + 1),
-                             m_grid_pos.x() - m_clue_pos.x(), 3, false);
-    renderer.draw_thick_line(Point(m_clue_pos.x(), cell.y()),
-                             m_cell_size + 1, 3, true);
+    int src_size = m_cell_texture.height();
+    Rect dest(m_grid_pos.x() - m_cell_size - 1, cell.y(),
+              m_cell_size, m_cell_size);
+    Rect src(src_size, 0, src_size, src_size);
+    renderer.copy_texture(m_cell_texture, src, dest);
 
-    renderer.draw_thick_line(Point(cell.x(), m_clue_pos.y()),
-                             m_grid_pos.y() - m_clue_pos.y(), 3, true);
-    renderer.draw_thick_line(Point(cell.x() + m_cell_size + 1, m_clue_pos.y()),
-                             m_grid_pos.y() - m_clue_pos.y(), 3, true);
-    renderer.draw_thick_line(Point(cell.x(), m_clue_pos.y()),
-                             m_cell_size + 1, 3, false);
+    dest = Rect(cell.x(), m_grid_pos.y() - m_cell_size - 1,
+                m_cell_size, m_cell_size);
+    src = Rect(src_size * 2, 0, src_size, src_size);
+    renderer.copy_texture(m_cell_texture, src, dest);
   }
 
   if ((m_mouse_dragging || m_kb_dragging)

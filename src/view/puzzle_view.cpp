@@ -288,7 +288,7 @@ void PuzzleView::setup_panels()
 
   std::string font_file = settings.font_dir() + "FreeSans.ttf";
   std::string bold_font_file = settings.font_dir() + "FreeSansBold.ttf";
-  std::string texture_file = settings.image_dir() + "cross.png";
+  std::string texture_file = settings.image_dir() + "puzzle.png";
   m_clue_font = m_mgr.video_system().new_font(font_file, 12);
   m_cell_texture = m_mgr.video_system().load_image(m_mgr.renderer(),
                                                    texture_file);
