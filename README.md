@@ -43,19 +43,29 @@ By working line by line in this way, you can solve most
 puzzles. Harder puzzles may require more advanced techniques, but
 well-made puzzles should not require guessing.
 
-There are also multicolor puzzles. These puzzles work the same way,
+Nonny also supports multicolor puzzles. These puzzles work the same way,
 but each clue number is colored to indicate which color the cells must
-be painted. Adjacent blocks of cells of different colors need not have
-a gap between them.
+be painted:
+
+![Multicolor puzzle](media/tutorial/color_solving.png)
+
+Adjacent blocks of cells of different colors need not have a gap
+between them. For example, a blue 2 followed by a red 2 means that
+there are two consecutive blue cells, possibly but not necessarily
+followed by a gap, followed by two consecutive red cells:
+
+![Multicolor line solving - 2 2](media/tutorial/color_clue.png)
+
+Again, by considering the different possibilities you can find cells that must be filled in, which gives you more information to solve the other lines in the puzzle.
 
 
 Development Status
 ------------------
 
 Nonny is playable but not yet ready for an initial release. Most of
-the basic functionality for playing and editing puzzles has been
-implemented. However, the built-in solver/analysis tool is still being
-developed, and there are other minor features that are still missing.
+the basic functionality for playing, editing, and analyzing puzzles
+has been implemented. However, there are still some minor additions
+that need to be made and some general polishing that needs to be done.
 
 At the moment, Nonny only supports two file formats: [Steven Simpson's
 .non format](http://www.lancaster.ac.uk/~simpsons/nonogram/) (extended
