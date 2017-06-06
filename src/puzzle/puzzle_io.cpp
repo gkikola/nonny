@@ -631,7 +631,7 @@ g_format::read_clues(std::istream& is,
     clues = &blueprint.col_clues;
     size = &blueprint.width;
   }
-    
+
   std::string line;
   while (std::getline(is, line)) {
     if (!line.empty() && line[0] == ':')
@@ -655,6 +655,14 @@ g_format::read_clues(std::istream& is,
 
       cseq.push_back(clue);
     }
+
+    //handle empty lines
+    if (cseq.empty()) {
+      PuzzleClue zero;
+      zero.value = 0;
+      cseq.push_back(zero);
+    }
+
     clues->push_back(std::move(cseq));
   }
 
