@@ -395,6 +395,8 @@ namespace g_format {
   /* .g input */
   std::istream& read_front_matter(std::istream& is,
                                   PuzzleBlueprint& blueprint);
+  std::istream& read_front_matter(std::istream& is,
+                                  PuzzleSummary& summary);
   std::istream& read_colors(std::istream& is,
                             PuzzleBlueprint& blueprint,
                             std::map<char, std::string>& color_names);
@@ -543,6 +545,29 @@ g_format::read_front_matter(std::istream& is,
 }
 
 std::istream&
+g_format::read_front_matter(std::istream& is,
+                            PuzzleSummary& summary)
+{
+  std::string line;
+
+  //first line should be title and catalogue
+  if (is.peek() != ':' && is.peek() != '#') {
+    std::getline(is, line);
+    auto colon_pos = line.find(':');
+    if (colon_pos != std::string::npos)
+      summary.title = trim(line.substr(colon_pos + 1));
+    else
+      summary.title = trim(line);
+
+    //ignore rest of comment block
+    while (is.peek() != ':' && is.peek() != '#'
+           && std::getline(is, line)) { }
+  }
+
+  return is;
+}
+
+std::istream&
 g_format::read_colors(std::istream& is,
                       PuzzleBlueprint& blueprint,
                       std::map<char, std::string>& color_names)
@@ -572,7 +597,7 @@ g_format::read_colors(std::istream& is,
       else if (color_str == "red")
         color = default_colors::red;
       else if (color_str == "green")
-        color = default_colors::green;
+        color = default_colors::dark_green;
       else if (color_str == "blue")
         color = default_colors::blue;
       else if (color_str == "yellow")
@@ -640,5 +665,44 @@ g_format::read_clues(std::istream& is,
 std::istream&
 g_format::skim(std::istream& is, PuzzleSummary& summary)
 {
+  read_front_matter(is, summary);
+
+  std::string line;
+  std::getline(is, line);
+
+  //read colors
+  summary.is_multicolor = false;
+  if (!line.empty() && line[0] == '#' && to_lower(line[1]) == 'd') {
+    int num_colors = 1; //just background color
+    while (std::getline(is, line)) {
+      if (!line.empty() && line[0] == ':')
+        break;
+      //ignore whitespace
+      unsigned i = 0;
+      while (i < line.size() && is_space(line[i]))
+        ++i;
+      //make sure this isn't the background color
+      if (i < line.size() && line[i] != '0')
+        ++num_colors;
+    }
+
+    if (num_colors > 2)
+      summary.is_multicolor = true;
+  }
+
+  //determine dimensions
+  summary.height = 0;
+  while (std::getline(is, line)) {
+    if (!line.empty() && line[0] == ':')
+      break;
+    ++summary.height;
+  }
+
+  summary.width = 0;
+  while (std::getline(is, line)) {
+    if (!line.empty() && line[0] == ':')
+      break;
+    ++summary.width;
+  }
   return is;
 }

@@ -378,8 +378,8 @@ void FileSelectionPanel::load_file_list()
       else { //check for puzzle file
         if (file.path().extension() == ".non")
           info.type = FileInfo::Type::puzzle_file;
-        //else if (file.path().extension() == ".g")
-        //info.type = FileInfo::Type::puzzle_file;
+        else if (file.path().extension() == ".g")
+          info.type = FileInfo::Type::puzzle_file;
         else
           info.type = FileInfo::Type::file;
       }
@@ -415,9 +415,16 @@ void FileSelectionPanel::load_puzzle_info()
   auto summary = std::make_shared<PuzzleSummary>();
   auto progress = std::make_shared<PuzzleProgress>();
 
-  std::ifstream sfile(m_files[index].full_path);
+  std::string file_path = m_files[index].full_path;
+  std::ifstream sfile(file_path);
   if (sfile.is_open()) {
-    skim_puzzle(sfile, *summary);
+    std::string extension = stdfs::path(file_path).extension();
+    if (extension == ".non")
+      skim_puzzle(sfile, *summary, PuzzleFormat::non);
+    else if (extension == ".g")
+      skim_puzzle(sfile, *summary, PuzzleFormat::g);
+    else
+      skim_puzzle(sfile, *summary);
   }
   sfile.close();
   m_files[index].puzzle_info = summary;
