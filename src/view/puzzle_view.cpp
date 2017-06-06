@@ -170,7 +170,7 @@ PuzzleFormat PuzzleView::file_type(const std::string& filename) const
 
   if (extension.empty() || extension == "non")
     return PuzzleFormat::non;
-  else if (extension == ".g")
+  else if (extension == "g")
     return PuzzleFormat::g;
   else
     return PuzzleFormat::non;
