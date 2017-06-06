@@ -9,11 +9,24 @@ Nonny
 Description
 -----------
 
-Play and create nonogram puzzles! Nonograms (also known as Griddlers
-or Picross) are logic puzzles in which numeric clues are used to fill
-in squares within a grid in order to reveal a picture.
+Play and create nonogram puzzles! Nonograms (also known as Griddlers,
+Picross, and Paint-by-Number) are logic puzzles in which numeric clues
+are used to fill in squares within a grid in order to reveal a
+picture.
 
-![Puzzle](media/screenshots/puzzle_sm.png)
+![Puzzle](media/screenshots/puzzle.png)
+
+Nonny comes packaged with a selection of puzzles for you to play, and
+additional puzzles can be found on various websites. Nonny also allows
+you to create your own puzzles. Nonny has a built-in solver which can
+be used to verify that your puzzles have only one solution.
+
+![Puzzle](media/screenshots/puzzle2.png)
+
+Other features include support for multicolor puzzles, undo and redo
+commands, and an optional hint system. Nonny tracks your completion
+status and times for each puzzle, and you may save your progress on a
+puzzle and resume solving it at a later time.
 
 
 What Is a Nonogram?
