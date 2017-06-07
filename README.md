@@ -80,13 +80,6 @@ the basic functionality for playing, editing, and analyzing puzzles
 has been implemented. However, there are still some minor additions
 that need to be made and some general polishing that needs to be done.
 
-At the moment, Nonny only supports three file formats: [Steven
-Simpson's .non format](http://www.lancaster.ac.uk/~simpsons/nonogram/)
-(extended for multicolor support) and the .g and .mk formats used by
-[Mirek Olšák and Petr Olšák's nonogram
-solver](http://www.olsak.net/grid.html#English). Many other popular
-formats will be supported in the future.
-
 
 Installation
 ------------
