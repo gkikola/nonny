@@ -163,15 +163,17 @@ PuzzleFormat PuzzleView::file_type(const std::string& filename) const
   auto pos = filename.rfind('.');
   std::string extension = "";
   if (pos != std::string::npos) {
-    extension = filename.substr(pos + 1);
+    extension = filename.substr(pos);
     std::transform(extension.begin(), extension.end(), extension.begin(),
                    to_lower);
   }
 
-  if (extension.empty() || extension == "non")
+  if (extension.empty() || extension == ".non")
     return PuzzleFormat::non;
-  else if (extension == "g")
+  else if (extension == ".g")
     return PuzzleFormat::g;
+  else if (extension == ".mk")
+    return PuzzleFormat::mk;
   else
     return PuzzleFormat::non;
 }

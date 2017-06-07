@@ -376,9 +376,12 @@ void FileSelectionPanel::load_file_list()
       if (stdfs::is_directory(file))
         info.type = FileInfo::Type::directory;
       else { //check for puzzle file
-        if (file.path().extension() == ".non")
+        std::string extension = file.path().extension();
+        if (extension == ".non")
           info.type = FileInfo::Type::puzzle_file;
-        else if (file.path().extension() == ".g")
+        else if (extension == ".g")
+          info.type = FileInfo::Type::puzzle_file;
+        else if (extension == ".mk")
           info.type = FileInfo::Type::puzzle_file;
         else
           info.type = FileInfo::Type::file;
@@ -423,6 +426,8 @@ void FileSelectionPanel::load_puzzle_info()
       skim_puzzle(sfile, *summary, PuzzleFormat::non);
     else if (extension == ".g")
       skim_puzzle(sfile, *summary, PuzzleFormat::g);
+    else if (extension == ".mk")
+      skim_puzzle(sfile, *summary, PuzzleFormat::mk);
     else
       skim_puzzle(sfile, *summary);
   }

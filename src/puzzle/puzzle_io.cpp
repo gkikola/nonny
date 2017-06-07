@@ -60,6 +60,12 @@ namespace g_format {
   std::istream& skim(std::istream& is, PuzzleSummary& summary);
 }
 
+namespace mk_format {
+  std::ostream& write(std::ostream& os, const Puzzle& puzzle);
+  std::istream& read(std::istream& is, PuzzleBlueprint& blueprint);
+  std::istream& skim(std::istream& is, PuzzleSummary& summary);
+}
+
 std::ostream& write_puzzle(std::ostream& os, Puzzle puzzle,
                            PuzzleFormat fmt)
 {
@@ -72,6 +78,8 @@ std::ostream& write_puzzle(std::ostream& os, Puzzle puzzle,
     return non_format::write(os, puzzle);
   case PuzzleFormat::g:
     return g_format::write(os, puzzle);
+  case PuzzleFormat::mk:
+    return mk_format::write(os, puzzle);
   }
 }
 
@@ -86,6 +94,9 @@ std::istream& read_puzzle(std::istream& is, Puzzle& puzzle,
     break;
   case PuzzleFormat::g:
     g_format::read(is, blueprint);
+    break;
+  case PuzzleFormat::mk:
+    mk_format::read(is, blueprint);
     break;
   }
   
@@ -107,6 +118,8 @@ std::istream& skim_puzzle(std::istream& is, PuzzleSummary& summary,
     return non_format::skim(is, summary);
   case PuzzleFormat::g:
     return g_format::skim(is, summary);
+  case PuzzleFormat::mk:
+    return mk_format::skim(is, summary);
   }
 }
 
@@ -712,5 +725,138 @@ g_format::skim(std::istream& is, PuzzleSummary& summary)
       break;
     ++summary.width;
   }
+  return is;
+}
+
+
+namespace mk_format {
+  /* .mk output */
+  std::ostream&
+  write_clues(std::ostream& os, const Puzzle::ClueContainer& clues);
+  
+  /* .mk input */
+  std::istream&
+  read_clues(std::istream& is, PuzzleBlueprint& blueprint, ClueType type);
+}
+
+std::ostream&
+mk_format::write(std::ostream& os, const Puzzle& puzzle)
+{
+  if (puzzle.is_multicolor())
+    throw UnsupportedFeature("mk_format::write: multicolor puzzles are "
+                             "not supported by .mk format");
+
+  //write dimensions (rows first)
+  os << puzzle.height() << " " << puzzle.width() << "\n";
+
+  write_clues(os, puzzle.row_clues());
+  os << "#\n";
+  write_clues(os, puzzle.col_clues());
+  
+  return os;
+}
+
+std::ostream&
+mk_format::write_clues(std::ostream& os, const Puzzle::ClueContainer& clues)
+{
+  for (const auto& clue_seq : clues) {
+    bool first = true;
+    for (const auto& clue : clue_seq) {
+      if (!first)
+        os << " ";
+      else
+        first = false;
+      os << clue.value;
+    }
+    os << "\n";
+  }
+  return os;
+}
+
+std::istream&
+mk_format::read(std::istream& is, PuzzleBlueprint& blueprint)
+{
+  //read dimensions
+  std::string line;
+  std::getline(is, line);
+  std::istringstream ss(line);
+  ss >> blueprint.height; //num rows
+  ss >> blueprint.width; //num columns
+  if (blueprint.width < 0)
+    blueprint.width = 0;
+  if (blueprint.height < 0)
+    blueprint.height = 0;
+
+  //read clues
+  read_clues(is, blueprint, ClueType::row);
+
+  if (is.peek() == '#') {
+    std::getline(is, line);
+  }
+  
+  read_clues(is, blueprint, ClueType::col);
+  return is;
+}
+
+std::istream&
+mk_format::read_clues(std::istream& is, PuzzleBlueprint& blueprint,
+                      ClueType type)
+{
+  Puzzle::ClueContainer* clues = nullptr;
+  int count = 0;
+  if (type == ClueType::row) {
+    clues = &blueprint.row_clues;
+    count = blueprint.height;
+  } else if (type == ClueType::col) {
+    clues = &blueprint.col_clues;
+    count = blueprint.width;
+  }
+
+  std::string line;
+  while (count > 0) {
+    if (!std::getline(is, line)
+        || (!line.empty() && line[0] == '#'))
+      throw InvalidPuzzleFile("mk_format::read_clues: "
+                              "number of clue lines does not match "
+                              "puzzle dimensions");
+    
+    std::istringstream ss(line);
+    Puzzle::ClueSequence clue_seq;
+    int clue_val;
+    while (ss >> clue_val) {
+      PuzzleClue clue;
+      clue.value = clue_val;
+      clue_seq.push_back(clue);
+    }
+
+    //blank lines are supposed to be indicated by 0,
+    //but let's check just in case
+    if (clue_seq.empty()) {
+      PuzzleClue zero;
+      zero.value = 0;
+      clue_seq.push_back(zero);
+    }
+
+    if (clues) clues->push_back(std::move(clue_seq));
+    --count;
+  }
+  return is;
+}
+
+std::istream&
+mk_format::skim(std::istream& is, PuzzleSummary& summary)
+{
+  summary.is_multicolor = false;
+  std::string line;
+  std::getline(is, line);
+  std::istringstream ss(line);
+
+  ss >> summary.height;
+  ss >> summary.width;
+
+  if (summary.width < 0)
+    summary.width = 0;
+  if (summary.height < 0)
+    summary.height = 0;
   return is;
 }

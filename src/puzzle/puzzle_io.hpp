@@ -34,7 +34,13 @@ public:
     : std::logic_error(what_arg) { }
 };
 
-enum class PuzzleFormat { non, g };
+class UnsupportedFeature : std::logic_error {
+public:
+  explicit UnsupportedFeature(const std::string& what_arg)
+    : std::logic_error(what_arg) { }
+};
+
+enum class PuzzleFormat { non, g, mk };
 
 // Read or write puzzles from/to a stream
 std::ostream& write_puzzle(std::ostream& os, Puzzle puzzle,
