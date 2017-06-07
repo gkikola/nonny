@@ -40,7 +40,7 @@ public:
     : std::logic_error(what_arg) { }
 };
 
-enum class PuzzleFormat { non, g, mk };
+enum class PuzzleFormat { non, g, mk, nin };
 
 // Read or write puzzles from/to a stream
 std::ostream& write_puzzle(std::ostream& os, Puzzle puzzle,

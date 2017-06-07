@@ -383,6 +383,8 @@ void FileSelectionPanel::load_file_list()
           info.type = FileInfo::Type::puzzle_file;
         else if (extension == ".mk")
           info.type = FileInfo::Type::puzzle_file;
+        else if (extension == ".nin")
+          info.type = FileInfo::Type::puzzle_file;
         else
           info.type = FileInfo::Type::file;
       }
@@ -428,6 +430,8 @@ void FileSelectionPanel::load_puzzle_info()
       skim_puzzle(sfile, *summary, PuzzleFormat::g);
     else if (extension == ".mk")
       skim_puzzle(sfile, *summary, PuzzleFormat::mk);
+    else if (extension == ".nin")
+      skim_puzzle(sfile, *summary, PuzzleFormat::nin);
     else
       skim_puzzle(sfile, *summary);
   }

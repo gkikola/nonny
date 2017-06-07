@@ -174,6 +174,8 @@ PuzzleFormat PuzzleView::file_type(const std::string& filename) const
     return PuzzleFormat::g;
   else if (extension == ".mk")
     return PuzzleFormat::mk;
+  else if (extension == ".nin")
+    return PuzzleFormat::nin;
   else
     return PuzzleFormat::non;
 }

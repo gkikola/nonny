@@ -66,6 +66,12 @@ namespace mk_format {
   std::istream& skim(std::istream& is, PuzzleSummary& summary);
 }
 
+namespace nin_format {
+  std::ostream& write(std::ostream& os, const Puzzle& puzzle);
+  std::istream& read(std::istream& is, PuzzleBlueprint& blueprint);
+  std::istream& skim(std::istream& is, PuzzleSummary& summary);
+}
+
 std::ostream& write_puzzle(std::ostream& os, Puzzle puzzle,
                            PuzzleFormat fmt)
 {
@@ -80,6 +86,8 @@ std::ostream& write_puzzle(std::ostream& os, Puzzle puzzle,
     return g_format::write(os, puzzle);
   case PuzzleFormat::mk:
     return mk_format::write(os, puzzle);
+  case PuzzleFormat::nin:
+    return nin_format::write(os, puzzle);
   }
 }
 
@@ -97,6 +105,9 @@ std::istream& read_puzzle(std::istream& is, Puzzle& puzzle,
     break;
   case PuzzleFormat::mk:
     mk_format::read(is, blueprint);
+    break;
+  case PuzzleFormat::nin:
+    nin_format::read(is, blueprint);
     break;
   }
   
@@ -120,6 +131,8 @@ std::istream& skim_puzzle(std::istream& is, PuzzleSummary& summary,
     return g_format::skim(is, summary);
   case PuzzleFormat::mk:
     return mk_format::skim(is, summary);
+  case PuzzleFormat::nin:
+    return nin_format::skim(is, summary);
   }
 }
 
@@ -858,5 +871,53 @@ mk_format::skim(std::istream& is, PuzzleSummary& summary)
     summary.width = 0;
   if (summary.height < 0)
     summary.height = 0;
+  return is;
+}
+
+
+std::ostream&
+nin_format::write(std::ostream& os, const Puzzle& puzzle)
+{
+  //format is same as .mk except for the first line
+  os << puzzle.width() << " " << puzzle.height() << "\n";
+  mk_format::write_clues(os, puzzle.row_clues());
+  mk_format::write_clues(os, puzzle.col_clues());
+  return os;
+}
+
+std::istream&
+nin_format::read(std::istream& is, PuzzleBlueprint& blueprint)
+{
+  std::string line;
+  std::getline(is, line);
+  std::istringstream ss(line);
+
+  ss >> blueprint.width;
+  ss >> blueprint.height;
+  if (blueprint.width < 0)
+    blueprint.width = 0;
+  if (blueprint.height < 0)
+    blueprint.height = 0;
+
+  //clue format is the same as .mk
+  mk_format::read_clues(is, blueprint, ClueType::row);
+  mk_format::read_clues(is, blueprint, ClueType::col);
+  return is;
+}
+
+std::istream&
+nin_format::skim(std::istream& is, PuzzleSummary& summary)
+{
+  std::string line;
+  std::getline(is, line);
+  std::istringstream ss(line);
+
+  ss >> summary.width;
+  ss >> summary.height;
+  if (summary.width < 0)
+    summary.width = 0;
+  if (summary.height < 0)
+    summary.height = 0;
+
   return is;
 }
