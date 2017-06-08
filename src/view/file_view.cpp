@@ -128,6 +128,11 @@ void FileView::update(unsigned ticks, InputHandler& input)
 
   m_file_selection.update(ticks, input);
 
+  //make sure file selection panel was not scrolled past its start
+  UIPanel& main = m_file_selection.main_panel();
+  if (main.boundary().y() > m_file_selection.boundary().y())
+    main.move(main.boundary().x(), m_file_selection.boundary().y());
+
   if (m_need_path_change) {
     m_need_path_change = false;
     open_path(stdfs::path(m_selected_path));
