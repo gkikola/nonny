@@ -79,7 +79,7 @@ private:
   void handle_selection_change(); //update text box with selection
   void collapse_path(); //calculate start and end of ellipses in path display
   void open_subdir(int index); //open subdir at index in *m_cur_path
-  
+
   Mode m_mode;
 
   typedef std::deque<std::experimental::filesystem::path> PathContainer;

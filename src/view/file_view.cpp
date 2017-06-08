@@ -176,7 +176,7 @@ void FileView::draw(Renderer& renderer)
                  + button_spacing);
   renderer.draw_text(info_pos, *m_info_font,
                      "Supported file types: *.non, *.g, *.mk, *.nin");
-  
+
   m_menu_button->draw(renderer);
   m_up_button->draw(renderer);
   m_back_button->draw(renderer);
