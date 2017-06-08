@@ -140,8 +140,8 @@ void FileView::draw(Renderer& renderer)
   renderer.set_draw_color(background_color);
   renderer.fill_rect(Rect(0, 0, m_width, m_height));
 
+  renderer.set_draw_color(default_colors::black);
   if (m_cur_path != m_paths.end()) {
-    renderer.set_draw_color(default_colors::black);
     int x = m_path_start.x(), y = m_path_start.y();
     int index = 0;
     for (auto& e : *m_cur_path) {
@@ -170,6 +170,13 @@ void FileView::draw(Renderer& renderer)
     }
   }
 
+  Point info_pos(panel_spacing,
+                 m_filename_box->boundary().y()
+                 + m_filename_box->boundary().height()
+                 + button_spacing);
+  renderer.draw_text(info_pos, *m_info_font,
+                     "Supported file types: *.non, *.g, *.mk, *.nin");
+  
   m_menu_button->draw(renderer);
   m_up_button->draw(renderer);
   m_back_button->draw(renderer);
@@ -186,6 +193,7 @@ void FileView::resize(int width, int height)
 {
   View::resize(width, height);
 
+  //position navigation buttons
   int x = width - panel_spacing - m_forward_button->boundary().width();
   int y = panel_spacing;
   m_forward_button->move(x, y);
@@ -207,29 +215,32 @@ void FileView::resize(int width, int height)
 
   collapse_path();
 
+  x = panel_spacing;
+  y += m_menu_button->boundary().height() + button_spacing;
+  
+  //calculate height of file type info text
+  m_info_font->text_size("Supported filetypes", nullptr, &text_ht);
+  
+  //position file selection panel
   int new_width = m_width - 2 * panel_spacing;
   int new_height = m_height - 2 * panel_spacing - button_spacing
     - m_up_button->boundary().height()
-    - m_open_button->boundary().height() - button_spacing;
+    - m_open_button->boundary().height() - button_spacing
+    - text_ht - button_spacing;
   UIPanel& panel = m_file_selection.main_panel();
   panel.resize(new_width, panel.boundary().height());
-  m_file_selection.move(panel_spacing,
-                        panel_spacing + m_up_button->boundary().height()
-                        + button_spacing);
+  m_file_selection.move(x, y);
   m_file_selection.resize(new_width, new_height);
   panel.move(panel.boundary().x(), m_file_selection.boundary().y());
+  y += m_file_selection.boundary().height() + button_spacing;
 
-  m_filename_box->move(panel_spacing,
-                       m_height - m_open_button->boundary().height()
-                       - panel_spacing);
+  m_filename_box->move(x, y);
   m_filename_box->resize(m_width - m_open_button->boundary().width()
                          - 2 * panel_spacing - button_spacing,
                          m_filename_box->boundary().height());
   m_open_button->move(m_width
                       - m_open_button->boundary().width()
-                      - panel_spacing,
-                      m_height - m_open_button->boundary().height()
-                      - panel_spacing);
+                      - panel_spacing, y);
 }
 
 void FileView::load_resources()
