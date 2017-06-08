@@ -156,17 +156,17 @@ void ScrollingPanel::resize(int width, int height)
 void ScrollingPanel::move_panel_in_bounds()
 {
   Rect r = m_main_panel->boundary();
-
-  if (r.x() > m_boundary.x() && r.width() >= m_boundary.width())
+  
+  if (r.width() >= m_boundary.width() && r.x() > m_boundary.x())
     m_main_panel->move(m_boundary.x(), m_main_panel->boundary().y());
-  if (r.y() > m_boundary.y() && r.height() >= m_boundary.height())
+  if (r.height() >= m_boundary.height() && r.y() > m_boundary.y())
     m_main_panel->move(m_main_panel->boundary().x(), m_boundary.y());
 
   if (r.width() < m_boundary.width()
       && r.x() < m_boundary.x())
     m_main_panel->move(m_boundary.x(), m_main_panel->boundary().y());
   if (r.height() < m_boundary.height()
-      && m_main_panel->boundary().y() < m_boundary.y())
+      && r.y() < m_boundary.y())
     m_main_panel->move(m_main_panel->boundary().x(), m_boundary.y());
 
   if (r.width() >= m_boundary.width()
@@ -178,6 +178,17 @@ void ScrollingPanel::move_panel_in_bounds()
       && r.y() + r.height() < m_boundary.y() + m_boundary.height())
     m_main_panel->move(m_main_panel->boundary().x(), m_boundary.y()
                        + m_boundary.height()
+                       - m_main_panel->boundary().height());
+
+  if (r.width() < m_boundary.width()
+      && r.x() + r.width() > m_boundary.x() + m_boundary.width())
+    m_main_panel->move(m_boundary.x() + m_boundary.width()
+                       - m_main_panel->boundary().width(),
+                       m_main_panel->boundary().y());
+  if (r.height() < m_boundary.height()
+      && r.y() + r.height() > m_boundary.y() + m_boundary.height())
+    m_main_panel->move(m_main_panel->boundary().x(),
+                       m_boundary.y() + m_boundary.height()
                        - m_main_panel->boundary().height());
 }
 
