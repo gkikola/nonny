@@ -178,7 +178,7 @@ bool LineSolver::update_clues(std::vector<PuzzleClue>& clues)
     //iterate over blocks
     for (int i = 0; i < static_cast<int>(left.size()); ++i) {
       clues[i].state = PuzzleClue::State::normal;
-      
+
       //if left and right blocks cover the same area,
       //check to make sure that area is filled with the correct color
       if (left[i].pos == right[i].pos) {

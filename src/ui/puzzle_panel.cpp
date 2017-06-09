@@ -135,7 +135,7 @@ void PuzzlePanel::update(unsigned ticks, InputHandler& input,
       handle_resize();
       m_has_state_changed = true;
     }
-    
+
     update_cells(ticks);
 
     if (m_target_cell_size != m_cell_size)
@@ -164,7 +164,7 @@ void PuzzlePanel::draw(Renderer& renderer, const Rect& region) const
     draw_grid_lines(renderer);
     draw_selection(renderer);
     draw_clues(renderer);
-  
+
     renderer.set_clip_rect();
   }
 }
