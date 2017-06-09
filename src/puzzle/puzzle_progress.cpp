@@ -48,11 +48,21 @@ void PuzzleProgress::store_progress(const Puzzle& puzzle, unsigned time,
   }
 }
 
-void PuzzleProgress::restore_progress(Puzzle& puzzle)
+void PuzzleProgress::restore_progress(Puzzle& puzzle) const
 {
-  for (int y = 0; y != m_progress.height(); ++y) {
-    for (int x = 0; x != m_progress.width(); ++x) {
-      PuzzleCell& cell = m_progress.at(x, y);
+  restore(puzzle, m_progress);
+}
+
+void PuzzleProgress::restore_solution(Puzzle& puzzle) const
+{
+  restore(puzzle, m_solution);
+}
+
+void PuzzleProgress::restore(Puzzle& puzzle, const PuzzleGrid& grid) const
+{
+  for (int y = 0; y != grid.height(); ++y) {
+    for (int x = 0; x != grid.width(); ++x) {
+      const PuzzleCell& cell = grid.at(x, y);
       if (cell.state == PuzzleCell::State::filled)
         puzzle.mark_cell(x, y, cell.color);
       else if (cell.state == PuzzleCell::State::crossed_out)

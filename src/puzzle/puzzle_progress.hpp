@@ -60,7 +60,10 @@ public:
                       bool update_solution = false);
 
   // Restore saved progress on a puzzle
-  void restore_progress(Puzzle& puzzle);
+  void restore_progress(Puzzle& puzzle) const;
+
+  // Restore saved solution
+  void restore_solution(Puzzle& puzzle) const;
 
   std::string filename() const { return m_filename; }
   bool is_complete() const { return m_completed; }
@@ -74,6 +77,8 @@ public:
   inline const PuzzleCell& solution(int row, int col) const;
 
 private:
+  void restore(Puzzle& puzzle, const PuzzleGrid& grid) const;
+  
   std::string m_filename;
   bool m_completed = false;
   unsigned m_best_time = 0;

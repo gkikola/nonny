@@ -64,27 +64,40 @@ void PuzzleInfoPanel::attach_puzzle(Puzzle& puzzle)
 
 void PuzzleInfoPanel::setup_buttons()
 {
-  m_buttons.clear();
-  m_buttons.insert(m_buttons.begin(), num_buttons, nullptr);
-  m_buttons[menu] = std::make_shared<ImageButton>(m_ctrl_texture, 0);
-  m_buttons[zoom_in] = std::make_shared<ImageButton>(m_ctrl_texture, 1);
-  m_buttons[zoom_out] = std::make_shared<ImageButton>(m_ctrl_texture, 2);
+  if (m_buttons.empty())
+    m_buttons.insert(m_buttons.begin(), num_buttons, nullptr);
+
+  if (!m_buttons[menu])
+    m_buttons[menu] = std::make_shared<ImageButton>(m_ctrl_texture, 0);
+  if (!m_buttons[zoom_in])
+    m_buttons[zoom_in] = std::make_shared<ImageButton>(m_ctrl_texture, 1);
+  if (!m_buttons[zoom_out])
+    m_buttons[zoom_out] = std::make_shared<ImageButton>(m_ctrl_texture, 2);
 
   if (m_edit_mode)
     m_buttons[hint] = std::make_shared<ImageButton>(m_ctrl_texture, 4);
   else
     m_buttons[hint] = std::make_shared<ImageButton>(m_ctrl_texture, 3);
 
-  m_buttons[save] = std::make_shared<ImageButton>(m_ctrl_texture, 5);
-  m_buttons[undo] = std::make_shared<ImageButton>(m_ctrl_texture, 6);
-  m_buttons[redo] = std::make_shared<ImageButton>(m_ctrl_texture, 7);
-  m_buttons[analyze] = std::make_shared<ImageButton>(m_ctrl_texture, 8);
+  if (!m_buttons[save])
+    m_buttons[save] = std::make_shared<ImageButton>(m_ctrl_texture, 5);
+  if (!m_buttons[undo])
+    m_buttons[undo] = std::make_shared<ImageButton>(m_ctrl_texture, 6);
+  if (!m_buttons[redo])
+    m_buttons[redo] = std::make_shared<ImageButton>(m_ctrl_texture, 7);
+  if (!m_buttons[analyze])
+    m_buttons[analyze] = std::make_shared<ImageButton>(m_ctrl_texture, 8);
 
   if (m_edit_mode) {
     m_buttons[up] = std::make_shared<ImageButton>(m_arrow_texture, 3);
     m_buttons[left] = std::make_shared<ImageButton>(m_arrow_texture, 4);
     m_buttons[right] = std::make_shared<ImageButton>(m_arrow_texture, 5);
     m_buttons[down] = std::make_shared<ImageButton>(m_arrow_texture, 6);
+  } else {
+    m_buttons[up] = nullptr;
+    m_buttons[left] = nullptr;
+    m_buttons[right] = nullptr;
+    m_buttons[down] = nullptr;
   }
 }
 
@@ -145,13 +158,13 @@ void PuzzleInfoPanel::set_edit_mode(bool edit_mode)
     
     //switch between hint and clear buttons
     if (edit_mode) {
-      m_buttons[hint]->register_callback(m_hint_callback);
+      m_buttons[hint]->register_callback(m_clear_callback);
       m_buttons[up]->register_callback(m_up_callback);
       m_buttons[down]->register_callback(m_down_callback);
       m_buttons[left]->register_callback(m_left_callback);
       m_buttons[right]->register_callback(m_right_callback);
     } else {
-      m_buttons[hint]->register_callback(m_clear_callback);
+      m_buttons[hint]->register_callback(m_hint_callback);
     }
   }
 }

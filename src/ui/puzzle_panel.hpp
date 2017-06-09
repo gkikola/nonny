@@ -57,7 +57,7 @@ public:
   void set_active_color(Color color) { m_color = color; }
 
   enum class DrawTool { paint = 0, line, rect, ellipse, fill };
-  void set_edit_mode(bool edit_mode = true) { m_edit_mode = edit_mode; }
+  void set_edit_mode(bool edit_mode = true);
   void set_draw_tool(DrawTool tool) { m_draw_tool = tool; }
 
   // Make all cells blank

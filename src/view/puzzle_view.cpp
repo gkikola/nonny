@@ -32,6 +32,7 @@
 #include "puzzle/puzzle_io.hpp"
 #include "puzzle/puzzle_progress.hpp"
 #include "settings/game_settings.hpp"
+#include "solver/solver.hpp"
 #include "ui/puzzle_info_panel.hpp"
 #include "ui/puzzle_panel.hpp"
 #include "ui/scrollbar.hpp"
@@ -275,11 +276,37 @@ void PuzzleView::update_properties()
 
 void PuzzleView::set_edit_mode()
 {
-  //TODO: run solver then switch
-  /*auto ppanel = dynamic_cast<PuzzlePanel*>(&m_main_panel.main_panel());
-  auto ipanel = dynamic_cast<PuzzleInfoPanel*>(&m_info_pane.main_panel());
-  ppanel->set_edit_mode(true);
-  ipanel->set_edit_mode(true);*/
+  //find collection and id
+  std::string id = puzzle_id();
+  std::string collection = puzzle_collection();
+
+  //load progress
+  PuzzleProgress prog;
+  m_mgr.save_manager().load_progress(prog, m_puzzle_filename,
+                                     collection, id);
+
+  if (!prog.is_complete()) {
+    auto solve = [this]() {
+      m_mgr.schedule_action(ViewManager::Action::solve_and_edit); };
+    auto close = [this]() {
+      m_mgr.schedule_action(ViewManager::Action::close_message_box); };
+    m_mgr.message_box("The puzzle must be solved before editing. "
+                      "Do you want to run the solver now?",
+                      MessageBoxView::Type::yes_no,
+                      solve, close, close);
+  } else {
+    prog.restore_solution(m_puzzle);
+    enable_editing();
+  }
+}
+
+void PuzzleView::solve_and_edit()
+{
+  m_puzzle.clear_all_cells();
+  Solver solver(m_puzzle);
+  solver();
+
+  enable_editing();
 }
 
 bool PuzzleView::is_save_needed() const
@@ -388,6 +415,15 @@ void PuzzleView::save()
     save_puzzle();
   else
     save_progress();
+}
+
+void PuzzleView::enable_editing()
+{
+  m_edit_mode = true;
+  auto ppanel = dynamic_cast<PuzzlePanel*>(&m_main_panel.main_panel());
+  auto ipanel = dynamic_cast<PuzzleInfoPanel*>(&m_info_pane.main_panel());
+  ppanel->set_edit_mode(true);
+  ipanel->set_edit_mode(true);
 }
 
 void PuzzleView::update(unsigned ticks, InputHandler& input)

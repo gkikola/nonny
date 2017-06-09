@@ -50,8 +50,9 @@ public:
   enum class Action { no_action, quit_game, force_quit, save_and_quit,
       choose_puzzle, create_puzzle, save_properties,
       open_menu, close_menu, load_puzzle, save_puzzle, save_puzzle_as,
-      analyze_puzzle, edit_puzzle, quit_puzzle, save_and_quit_puzzle,
-      force_quit_puzzle, save_game, restart, show_victory_screen,
+      analyze_puzzle, edit_puzzle, solve_and_edit, quit_puzzle,
+      save_and_quit_puzzle, force_quit_puzzle, save_game,
+      restart, show_victory_screen,
       edit_puzzle_data, message_box, close_message_box };
   inline void schedule_action(Action action, std::string argument = "");
 

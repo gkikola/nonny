@@ -187,7 +187,21 @@ void ViewManager::update(unsigned ticks, InputHandler& input)
         if (typeid(*m_views.back()) == typeid(MenuView))
           pop();
         auto pview = std::dynamic_pointer_cast<PuzzleView>(m_views.back());
-        pview->set_edit_mode();
+        if (pview) {
+          pview->set_edit_mode();
+          if (pview->is_editing_mode_active())
+            m_puzzle_status = puzzle_edit;
+        }
+      }
+      break;
+    case Action::solve_and_edit:
+      if (!m_views.empty()) {
+        auto pview = std::dynamic_pointer_cast<PuzzleView>(m_views.back());
+        if (pview) {
+          pview->solve_and_edit();
+          if (pview->is_editing_mode_active())
+            m_puzzle_status = puzzle_edit;
+        }
       }
       break;
     case Action::quit_puzzle:

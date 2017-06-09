@@ -88,6 +88,14 @@ void PuzzlePanel::zoom(int steps, int x, int y)
     zoom_to(zoom_levels[num_levels - 1], x, y);
 }
 
+void PuzzlePanel::set_edit_mode(bool edit_mode)
+{
+  m_edit_mode = edit_mode;
+  m_state_history.clear();
+  m_cur_state = m_state_history.begin();
+  m_has_state_changed = true;
+}
+
 void PuzzlePanel::clear_puzzle()
 {
   m_puzzle->clear_all_cells();

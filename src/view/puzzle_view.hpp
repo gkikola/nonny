@@ -57,7 +57,9 @@ public:
   void save_puzzle(std::string filename = "");
   void update_properties();
   void set_edit_mode();
+  void solve_and_edit();
 
+  bool is_editing_mode_active() const { return m_edit_mode; }
   bool is_save_needed() const;
   
   Puzzle& puzzle() { return m_puzzle; }
@@ -75,6 +77,7 @@ private:
   void handle_color_change();
   void handle_tool_change();
   void save();
+  void enable_editing();
   std::string puzzle_id() const;
   std::string puzzle_collection() const;
   
