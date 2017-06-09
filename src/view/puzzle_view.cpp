@@ -255,15 +255,28 @@ void PuzzleView::save_puzzle(std::string filename)
   if (filename.empty()) {
     m_mgr.schedule_action(ViewManager::Action::save_puzzle_as);
   } else {
-    std::ofstream file(filename);
+    if (m_ask_before_save) {
+      std::string fname = stdfs::path(filename).filename();
+      auto do_save = [this]() {
+        m_ask_before_save = false;
+        m_mgr.schedule_action(ViewManager::Action::save_puzzle); };
+      auto cancel = [this]() {
+        m_mgr.schedule_action(ViewManager::Action::close_message_box); };
+      m_mgr.message_box("Are you sure you want to overwrite the file "
+                        "\"" + fname + "\"?",
+                        MessageBoxView::Type::yes_no,
+                        do_save, cancel, cancel);
+    } else {
+      std::ofstream file(filename);
 
-    if (file.is_open())
-      m_puzzle_filename = filename;
+      if (file.is_open())
+        m_puzzle_filename = filename;
     
-    write_puzzle(file, m_puzzle, file_type(filename));
+      write_puzzle(file, m_puzzle, file_type(filename));
 
-    //wipe previous puzzle progress and store solution
-    save_progress();
+      //wipe previous puzzle progress and store solution
+      save_progress();
+    }
   }
 }
 
@@ -432,6 +445,8 @@ void PuzzleView::enable_editing()
         m_puzzle.clear_cell(x, y);
     }
   }
+
+  m_ask_before_save = true;
 }
 
 void PuzzleView::update(unsigned ticks, InputHandler& input)

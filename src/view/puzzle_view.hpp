@@ -85,6 +85,7 @@ private:
   std::string m_puzzle_filename;
   bool m_edit_mode = false;
   unsigned m_best_time = 0;
+  bool m_ask_before_save = false;
 
   ScrollingPanel m_main_panel;
   ScrollingPanel m_info_pane;
