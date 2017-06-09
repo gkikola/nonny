@@ -211,7 +211,7 @@ std::string PuzzleView::puzzle_collection() const
 void PuzzleView::save_progress()
 {
   bool just_completed = false;
-  if (m_puzzle.is_solved())
+  if (m_edit_mode || m_puzzle.is_solved())
     just_completed = true;
   
   //find collection and id
@@ -256,8 +256,9 @@ void PuzzleView::save_puzzle(std::string filename)
       m_puzzle_filename = filename;
     
     write_puzzle(file, m_puzzle, file_type(filename));
-    auto& pp = dynamic_cast<PuzzlePanel&>(m_main_panel.main_panel());
-    pp.clear_save_flag();
+
+    //wipe previous puzzle progress and store solution
+    save_progress();
   }
 }
 
