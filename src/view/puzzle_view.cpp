@@ -224,8 +224,12 @@ void PuzzleView::save_progress()
                                      collection, id);
   
   //store current progress
-  auto& ip = dynamic_cast<const PuzzleInfoPanel&>(m_info_pane.main_panel());
-  prog.store_progress(m_puzzle, ip.time(), just_completed);
+  unsigned time = 0;
+  if (!m_edit_mode) {
+    auto& ip = dynamic_cast<const PuzzleInfoPanel&>(m_info_pane.main_panel());
+    time = ip.time();
+  }
+  prog.store_progress(m_puzzle, time, just_completed);
 
   m_mgr.save_manager().save_progress(prog, m_puzzle_filename,
                                      collection, id);
