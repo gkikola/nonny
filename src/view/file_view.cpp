@@ -291,6 +291,9 @@ void FileView::load_resources()
                       { handle_selection_change(); });
   m_file_selection.attach_panel(fsv);
 
+  if (m_mode == Mode::save)
+    m_filename_box->give_focus();
+
   m_controls = { m_menu_button,
                  m_home_button,
                  m_saved_button,
