@@ -20,6 +20,7 @@
 
 #include "view/data_edit_view.hpp"
 
+#include "input/input_handler.hpp"
 #include "puzzle/puzzle.hpp"
 #include "settings/game_settings.hpp"
 #include "video/font.hpp"
@@ -56,6 +57,9 @@ void DataEditView::save_properties()
 
 void DataEditView::update(unsigned ticks, InputHandler& input)
 {
+  if (input.was_key_pressed(Keyboard::Key::escape))
+    m_mgr.schedule_action(ViewManager::Action::close_menu);
+  
   m_dialog->update(ticks, input);
 }
 

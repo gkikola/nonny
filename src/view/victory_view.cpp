@@ -63,6 +63,9 @@ void VictoryView::update(unsigned ticks, InputHandler& input)
   
   m_preview.update(ticks, input);
   m_back_button->update(ticks, input);
+
+  if (input.was_key_pressed(Keyboard::Key::escape))
+    m_mgr.schedule_action(ViewManager::Action::quit_puzzle);
 }
 
 void VictoryView::draw(Renderer& renderer)

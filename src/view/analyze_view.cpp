@@ -20,6 +20,7 @@
 
 #include "view/analyze_view.hpp"
 
+#include "input/input_handler.hpp"
 #include "puzzle/puzzle.hpp"
 #include "settings/game_settings.hpp"
 #include "view/view_manager.hpp"
@@ -36,6 +37,9 @@ AnalyzeView::AnalyzeView(ViewManager& vm, Puzzle& puzzle)
 
 void AnalyzeView::update(unsigned ticks, InputHandler& input)
 {
+  if (input.was_key_pressed(Keyboard::Key::escape))
+    m_mgr.schedule_action(ViewManager::Action::close_menu);
+
   m_panel->update(ticks, input);
 }
 

@@ -56,6 +56,7 @@ FileView::FileView(ViewManager& vm, Mode mode,
 
 void FileView::update(unsigned ticks, InputHandler& input)
 {
+  //see if mouse is hovering over or pressing a directory link
   if (m_cur_path != m_paths.end()) {
     if (input.was_mouse_button_pressed(Mouse::Button::left)
         || input.was_mouse_moved()) {
@@ -92,6 +93,7 @@ void FileView::update(unsigned ticks, InputHandler& input)
     }
   }
 
+  //scroll with mouse wheel
   int mwheel_scroll = input.vert_mouse_wheel_scroll();
   if (mwheel_scroll < 0)
     m_file_selection.smooth_scroll_down();
@@ -118,6 +120,9 @@ void FileView::update(unsigned ticks, InputHandler& input)
         || input.was_key_pressed(Keyboard::Key::kp_down))
       clear_focus();
   }
+
+  if (input.was_key_pressed(Keyboard::Key::escape))
+    m_mgr.schedule_action(ViewManager::Action::open_menu);
 
   for (auto& c : m_controls)
     c->update(ticks, input);

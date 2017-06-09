@@ -48,6 +48,7 @@ private:
   MessageBox m_mbox;
   std::unique_ptr<Font> m_text_font;
   std::unique_ptr<Font> m_control_font;
+  Callback m_esc_callback;
 };
 
 #endif

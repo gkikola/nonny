@@ -45,6 +45,7 @@ MessageBoxView::MessageBoxView(ViewManager& vm,
       button->register_callback(on_yes);
       button->resize(button_width, button->boundary().height());
       m_mbox.add_control(button);
+      m_esc_callback = on_yes;
     }
     break;
   case Type::yes_no:
@@ -58,6 +59,8 @@ MessageBoxView::MessageBoxView(ViewManager& vm,
       button->register_callback(on_no);
       button->resize(button_width, button->boundary().height());
       m_mbox.add_control(button);
+
+      m_esc_callback = on_no;
     }
     break;
   case Type::yes_no_cancel:
@@ -76,6 +79,8 @@ MessageBoxView::MessageBoxView(ViewManager& vm,
       button->register_callback(on_cancel);
       button->resize(button_width, button->boundary().height());
       m_mbox.add_control(button);
+
+      m_esc_callback = on_cancel;
       break;
     }
   }
@@ -84,6 +89,11 @@ MessageBoxView::MessageBoxView(ViewManager& vm,
 
 void MessageBoxView::update(unsigned ticks, InputHandler& input)
 {
+  if (input.was_key_pressed(Keyboard::Key::escape)) {
+    if (m_esc_callback)
+      m_esc_callback();
+  }    
+
   m_mbox.update(ticks, input);
 }
 

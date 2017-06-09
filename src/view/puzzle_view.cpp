@@ -403,6 +403,9 @@ void PuzzleView::update(unsigned ticks, InputHandler& input)
     save();
     m_mgr.schedule_action(ViewManager::Action::show_victory_screen);
   }
+
+  if (input.was_key_pressed(Keyboard::Key::escape))
+    m_mgr.schedule_action(ViewManager::Action::open_menu);
 }
 
 void PuzzleView::draw(Renderer& renderer)
