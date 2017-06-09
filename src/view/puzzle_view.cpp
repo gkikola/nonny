@@ -251,6 +251,8 @@ void PuzzleView::save_puzzle(std::string filename)
 {
   if (filename.empty())
     filename = m_puzzle_filename;
+  else if (filename != m_puzzle_filename)
+    m_ask_before_save = false;
 
   if (filename.empty()) {
     m_mgr.schedule_action(ViewManager::Action::save_puzzle_as);
