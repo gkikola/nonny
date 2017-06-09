@@ -132,8 +132,13 @@ void AnalysisPanel::draw(Renderer& renderer, const Rect& region) const
   r = renderer.draw_text(Point(x, y), m_font, lsolvable_str);
   y += r.height() + text_spacing;
 
-  r = renderer.draw_text(Point(x, y), m_font, "Difficulty: ?");
-  y += r.height() + text_spacing;
+  std::string depth_str;
+  if (m_solver.search_depth() > 0)
+    depth_str = "Search depth: " + std::to_string(m_solver.search_depth());
+  if (!depth_str.empty()) {
+    r = renderer.draw_text(Point(x, y), m_font, depth_str);
+    y += r.height() + text_spacing;
+  }
 
   std::string sol_str;
   if (m_solver.is_finished() && m_solver.was_contradiction_found())
@@ -145,17 +150,6 @@ void AnalysisPanel::draw(Renderer& renderer, const Rect& region) const
       + " solutions";
   if (!sol_str.empty()) {
     r = renderer.draw_text(Point(x, y), m_font, sol_str);
-    y += r.height() + text_spacing;
-  }
-
-  std::string guess_str;
-  if (m_solver.num_guesses() == 1)
-    guess_str = "Made 1 guess";
-  else if (m_solver.num_guesses() > 1)
-    guess_str = "Made " + std::to_string(m_solver.num_guesses())
-      + " guesses";
-  if (!guess_str.empty()) {
-    r = renderer.draw_text(Point(x, y), m_font, guess_str);
     y += r.height() + text_spacing;
   }
 
@@ -207,15 +201,11 @@ void AnalysisPanel::calc_size()
   width = std::max(width, text_wd + 2 * panel_spacing);
   height += text_ht + text_spacing;
 
-  m_font.text_size("Difficulty: moderate", &text_wd, &text_ht);
-  width = std::max(width, text_wd + 2 * panel_spacing);
-  height += text_ht + text_spacing;
-
-  m_font.text_size("Found m solutions", &text_wd, &text_ht);
+  m_font.text_size("Search depth: nnn", &text_wd, &text_ht);
   width = std::max(width, text_wd + 2 * panel_spacing);
   height += text_ht + panel_spacing;
-  
-  m_font.text_size("Made n guesses", &text_wd, &text_ht);
+
+  m_font.text_size("Found mmm solutions", &text_wd, &text_ht);
   width = std::max(width, text_wd + 2 * panel_spacing);
   height += text_ht + panel_spacing;
 
