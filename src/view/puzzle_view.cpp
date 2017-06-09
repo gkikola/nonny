@@ -389,6 +389,7 @@ void PuzzleView::setup_panels()
   ipanel->on_undo([ppanel]() { ppanel->undo(); });
   ipanel->on_redo([ppanel]() { ppanel->redo(); });
   ipanel->on_analyze([this]() {
+      m_draw_tooltips = false;
       m_mgr.schedule_action(ViewManager::Action::analyze_puzzle); });
   ipanel->on_left([ppanel]() { ppanel->shift_left(); });
   ipanel->on_right([ppanel]() { ppanel->shift_right(); });
