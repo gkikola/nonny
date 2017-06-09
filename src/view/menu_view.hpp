@@ -53,7 +53,8 @@ private:
   void about_menu();
 
   enum class MenuAction { no_action, load_main, load_about };
-  
+
+  MenuType m_cur_menu;
   ScrollingPanel m_main_panel;
   MenuAction m_action = MenuAction::no_action;
 

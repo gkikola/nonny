@@ -22,6 +22,7 @@
 
 #include "config.h"
 #include "color/color.hpp"
+#include "input/input_handler.hpp"
 #include "settings/game_settings.hpp"
 #include "ui/button.hpp"
 #include "ui/menu.hpp"
@@ -69,7 +70,17 @@ void MenuView::update(unsigned ticks, InputHandler& input)
 
     m_action = MenuAction::no_action;
   }
-    
+
+  if (input.was_key_pressed(Keyboard::Key::escape)) {
+    if (m_cur_menu == MenuType::main_menu)
+      m_mgr.schedule_action(ViewManager::Action::quit_game);
+    else if (m_cur_menu == MenuType::about_menu)
+      m_action = MenuAction::load_main;
+    else if (m_cur_menu == MenuType::in_game_menu
+             || m_cur_menu == MenuType::edit_menu)
+      m_mgr.schedule_action(ViewManager::Action::close_menu);
+  }
+  
   m_main_panel.update(ticks, input);
 }
 
@@ -112,6 +123,7 @@ void MenuView::start_slide()
 
 void MenuView::open_menu(MenuType menu)
 {
+  m_cur_menu = menu;
   switch (menu) {
   default:
   case MenuType::main_menu:
