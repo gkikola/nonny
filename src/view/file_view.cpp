@@ -115,9 +115,7 @@ void FileView::update(unsigned ticks, InputHandler& input)
       forward();
 
     if (input.was_key_pressed(Keyboard::Key::up)
-        || input.was_key_pressed(Keyboard::Key::kp_up)
-        || input.was_key_pressed(Keyboard::Key::down)
-        || input.was_key_pressed(Keyboard::Key::kp_down))
+        || input.was_key_pressed(Keyboard::Key::down))
       clear_focus();
   }
 

@@ -135,8 +135,7 @@ void FileSelectionPanel::update(unsigned ticks, InputHandler& input,
     }
 
     //change selection with arrow keys
-    if (input.was_key_pressed(Keyboard::Key::down)
-        || input.was_key_pressed(Keyboard::Key::kp_down)) {
+    if (input.was_key_pressed(Keyboard::Key::down)) {
       if (!m_is_selected) {
         select(0);
       } else {
@@ -146,8 +145,7 @@ void FileSelectionPanel::update(unsigned ticks, InputHandler& input,
           select(m_selection + 1);
       }
       make_selection_visible(active_region);
-    } else if (input.was_key_pressed(Keyboard::Key::up)
-               || input.was_key_pressed(Keyboard::Key::kp_up)) {
+    } else if (input.was_key_pressed(Keyboard::Key::up)) {
       if (!m_is_selected)
         select(m_files.size() - 1);
       else {

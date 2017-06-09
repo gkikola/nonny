@@ -199,8 +199,7 @@ void TextBox::read_chars(InputHandler& input)
 
 void TextBox::handle_arrow_keys(InputHandler& input)
 {
-  int num_press = input.num_key_presses(Keyboard::Key::left)
-    + input.num_key_presses(Keyboard::Key::kp_left);
+  int num_press = input.num_key_presses(Keyboard::Key::left);
   if (num_press) {
     if (input.is_shift_down()) {
       if (m_sel_start > 0 && m_cursor == m_sel_start) {
@@ -219,8 +218,7 @@ void TextBox::handle_arrow_keys(InputHandler& input)
   else
     m_cursor = 0;
 
-  num_press = input.num_key_presses(Keyboard::Key::right)
-    + input.num_key_presses(Keyboard::Key::kp_right);
+  num_press = input.num_key_presses(Keyboard::Key::right);
   if (num_press) {
     if (input.is_shift_down()) {
       if (m_sel_start + m_sel_length < static_cast<int>(m_text.size())
@@ -260,8 +258,7 @@ void TextBox::handle_delete_keys(InputHandler& input)
     }
   }
 
-  num_press = input.num_key_presses(Keyboard::Key::del)
-    + input.num_key_presses(Keyboard::Key::kp_del);
+  num_press = input.num_key_presses(Keyboard::Key::del);
   if (num_press && m_sel_length > 0) {
     m_text.erase(m_sel_start, m_sel_length);
     m_sel_length = 0;
@@ -279,8 +276,7 @@ void TextBox::handle_delete_keys(InputHandler& input)
 void TextBox::handle_home_end(InputHandler& input)
 {
   int old_sel_start = m_sel_start;
-  if (input.was_key_pressed(Keyboard::Key::home)
-      || input.was_key_pressed(Keyboard::Key::kp_home)) {
+  if (input.was_key_pressed(Keyboard::Key::home)) {
     m_cursor = 0;
     m_visible = 0;
 
@@ -291,8 +287,7 @@ void TextBox::handle_home_end(InputHandler& input)
       m_sel_start = 0;
       m_sel_length = 0;
     }
-  } else if (input.was_key_pressed(Keyboard::Key::end)
-             || input.was_key_pressed(Keyboard::Key::kp_end)) {
+  } else if (input.was_key_pressed(Keyboard::Key::end)) {
     m_cursor = m_sel_start = m_text.size();
 
     if (input.is_shift_down()) {
