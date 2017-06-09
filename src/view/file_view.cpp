@@ -26,6 +26,7 @@
 #include "input/input_handler.hpp"
 #include "save/save_manager.hpp"
 #include "settings/game_settings.hpp"
+#include "ui/tooltip.hpp"
 #include "video/renderer.hpp"
 #include "view/message_box_view.hpp"
 #include "view/view_manager.hpp"
@@ -180,6 +181,8 @@ void FileView::draw(Renderer& renderer)
   renderer.set_draw_color(default_colors::white);
   renderer.fill_rect(m_file_selection.boundary());
   m_file_selection.draw(renderer);
+
+  draw_tooltips(renderer);
 }
 
 void FileView::resize(int width, int height)
@@ -546,5 +549,43 @@ void FileView::open_subdir(int index)
     }
 
     open_path(p);
+  }
+}
+
+void FileView::draw_tooltips(Renderer& renderer) const
+{
+  const int tt_spacing = 2;
+
+  std::string tooltip;
+  Rect bound;
+  if (m_menu_button->is_mouse_over()) {
+    tooltip = "Open menu";
+    bound = m_menu_button->boundary();
+  } else if (m_home_button->is_mouse_over()) {
+    tooltip = "Go to default puzzles";
+    bound = m_home_button->boundary();
+  } else if (m_saved_button->is_mouse_over()) {
+    tooltip = "Go to saved puzzles";
+    bound = m_saved_button->boundary();
+  } else if (m_up_button->is_mouse_over()) {
+    tooltip = "Go up";
+    bound = m_up_button->boundary();
+  } else if (m_back_button->is_mouse_over()) {
+    tooltip = "Go back";
+    bound = m_back_button->boundary();
+  } else if (m_forward_button->is_mouse_over()) {
+    tooltip = "Go forward";
+    bound = m_forward_button->boundary();
+  }
+
+  if (!tooltip.empty()) {
+    int text_wd;
+    m_filename_font->text_size(tooltip, &text_wd, nullptr);
+    Point pt(bound.x(), bound.y() + bound.height() + tt_spacing);
+
+    if (pt.x() + text_wd >= m_width)
+      pt.x() = m_width - text_wd - tt_spacing * 2;
+
+    draw_tooltip(renderer, pt, *m_filename_font, tooltip);
   }
 }

@@ -79,6 +79,8 @@ private:
   void collapse_path(); //calculate start and end of ellipses in path display
   void open_subdir(int index); //open subdir at index in *m_cur_path
 
+  void draw_tooltips(Renderer& renderer) const;
+
   Mode m_mode;
 
   typedef std::deque<std::experimental::filesystem::path> PathContainer;
