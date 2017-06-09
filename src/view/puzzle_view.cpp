@@ -244,7 +244,9 @@ void PuzzleView::restart()
 {
   auto& ipanel = dynamic_cast<PuzzleInfoPanel&>(m_info_pane.main_panel());
   ipanel.time(0);
-  m_puzzle.clear_all_cells();
+
+  auto& ppanel = dynamic_cast<PuzzlePanel&>(m_main_panel.main_panel());
+  ppanel.clear_puzzle();
 }
 
 void PuzzleView::save_puzzle(std::string filename)
