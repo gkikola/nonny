@@ -101,6 +101,7 @@ private:
   void drag_over_cell(int x, int y);
   void handle_mouse_selection(unsigned ticks, InputHandler& input,
                               const Rect& region);
+  void handle_kb_shortcuts(unsigned ticks, InputHandler& input);
   void handle_kb_selection(unsigned ticks, InputHandler& input);
   void handle_mouse_wheel(unsigned ticks, InputHandler& input);
   void handle_resize();

@@ -150,6 +150,7 @@ void PuzzlePanel::update(unsigned ticks, InputHandler& input,
     }
 
     handle_mouse_selection(ticks, input, active_region);
+    handle_kb_shortcuts(ticks, input);
     handle_kb_selection(ticks, input);
     handle_mouse_wheel(ticks, input);
   }
@@ -631,6 +632,16 @@ void PuzzlePanel::handle_mouse_selection(unsigned ticks, InputHandler& input,
   }
 }
 
+void PuzzlePanel::handle_kb_shortcuts(unsigned ticks, InputHandler& input)
+{
+  if (input.is_ctrl_down()) {
+    if (input.was_key_pressed(Keyboard::Key::letter_z))
+      undo();
+    else if (input.was_key_pressed(Keyboard::Key::letter_y))
+      redo();
+  }
+}
+
 void PuzzlePanel::handle_kb_selection(unsigned ticks, InputHandler& input)
 {
   bool fill_pressed = input.was_key_pressed(Keyboard::Key::space)
@@ -638,9 +649,7 @@ void PuzzlePanel::handle_kb_selection(unsigned ticks, InputHandler& input)
     || input.was_key_pressed(Keyboard::Key::kp_enter)
     || input.was_key_pressed(Keyboard::Key::ins)
     || input.was_key_pressed(Keyboard::Key::kp_ins);
-  bool cross_pressed = input.was_key_pressed(Keyboard::Key::lctrl)
-    || input.was_key_pressed(Keyboard::Key::rctrl)
-    || input.was_key_pressed(Keyboard::Key::backspace)
+  bool cross_pressed = input.was_key_pressed(Keyboard::Key::backspace)
     || input.was_key_pressed(Keyboard::Key::del)
     || input.was_key_pressed(Keyboard::Key::kp_del);
   if (m_selected && (fill_pressed || cross_pressed)) {
