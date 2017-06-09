@@ -346,7 +346,7 @@ void PuzzleInfoPanel::draw_tooltips(Renderer& renderer,
 
     if (pt.y() + text_ht >= screen_height)
       pt.y() = bound.y() - text_ht - tt_spacing * 3;
-    
+
     draw_tooltip(renderer, pt, m_info_font, tooltip);
   }
 }
