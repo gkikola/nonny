@@ -86,6 +86,7 @@ private:
   bool m_edit_mode = false;
   unsigned m_best_time = 0;
   bool m_ask_before_save = false;
+  bool m_draw_tooltips = true;
 
   ScrollingPanel m_main_panel;
   ScrollingPanel m_info_pane;

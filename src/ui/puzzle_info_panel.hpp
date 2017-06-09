@@ -94,6 +94,9 @@ public:
 
   void draw(Renderer& renderer, const Rect& region) const override;
 
+  void draw_tooltips(Renderer& renderer,
+                     int screen_width, int screen_height) const;
+
   void move(int x, int y) override;
 
 private:

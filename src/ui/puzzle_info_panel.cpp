@@ -24,6 +24,7 @@
 #include <string>
 #include "input/input_handler.hpp"
 #include "puzzle/puzzle.hpp"
+#include "ui/tooltip.hpp"
 #include "utility/utility.hpp"
 #include "video/font.hpp"
 #include "video/renderer.hpp"
@@ -280,6 +281,73 @@ void PuzzleInfoPanel::draw(Renderer& renderer, const Rect& region) const
     pos.y() += 2 * m_buttons[0]->boundary().height() + 2 * spacing;
 
     renderer.set_clip_rect();
+  }
+}
+
+void PuzzleInfoPanel::draw_tooltips(Renderer& renderer,
+                                    int screen_width,
+                                    int screen_height) const
+{
+  const int tt_spacing = 2;
+  std::string tooltip;
+  Rect bound;
+  if (m_buttons[menu] && m_buttons[menu]->is_mouse_over()) {
+    tooltip = "Open menu";
+    bound = m_buttons[menu]->boundary();
+  } else if (m_buttons[zoom_in] && m_buttons[zoom_in]->is_mouse_over()) {
+    tooltip = "Zoom in";
+    bound = m_buttons[zoom_in]->boundary();
+  } else if (m_buttons[zoom_out] && m_buttons[zoom_out]->is_mouse_over()) {
+    tooltip = "Zoom out";
+    bound = m_buttons[zoom_out]->boundary();
+  } else if (m_buttons[hint] && m_buttons[hint]->is_mouse_over()
+             && m_edit_mode) {
+    tooltip = "Clear puzzle";
+    bound = m_buttons[hint]->boundary();
+  } else if (m_buttons[hint] && m_buttons[hint]->is_mouse_over()
+             && !m_edit_mode) {
+    tooltip = "Toggle hints";
+    bound = m_buttons[hint]->boundary();
+  } else if (m_buttons[save] && m_buttons[save]->is_mouse_over()
+             && m_edit_mode) {
+    tooltip = "Save puzzle";
+    bound = m_buttons[save]->boundary();
+  } else if (m_buttons[save] && m_buttons[save]->is_mouse_over()
+             && !m_edit_mode) {
+    tooltip = "Save progress";
+    bound = m_buttons[save]->boundary();
+  } else if (m_buttons[undo] && m_buttons[undo]->is_mouse_over()) {
+    tooltip = "Undo";
+    bound = m_buttons[undo]->boundary();
+  } else if (m_buttons[redo] && m_buttons[redo]->is_mouse_over()) {
+    tooltip = "Redo";
+    bound = m_buttons[redo]->boundary();
+  } else if (m_buttons[analyze] && m_buttons[analyze]->is_mouse_over()) {
+    tooltip = "Solve and analyze";
+    bound = m_buttons[analyze]->boundary();
+  } else if (m_buttons[left] && m_buttons[left]->is_mouse_over()) {
+    tooltip = "Shift puzzle left";
+    bound = m_buttons[left]->boundary();
+  } else if (m_buttons[right] && m_buttons[right]->is_mouse_over()) {
+    tooltip = "Shift puzzle right";
+    bound = m_buttons[right]->boundary();
+  } else if (m_buttons[up] && m_buttons[up]->is_mouse_over()) {
+    tooltip = "Shift puzzle up";
+    bound = m_buttons[up]->boundary();
+  } else if (m_buttons[down] && m_buttons[down]->is_mouse_over()) {
+    tooltip = "Shift puzzle down";
+    bound = m_buttons[down]->boundary();
+  }
+
+  if (!tooltip.empty()) {
+    int text_ht;
+    m_info_font.text_size(tooltip, nullptr, &text_ht);
+    Point pt(bound.x(), bound.y() + bound.height() + tt_spacing);
+
+    if (pt.y() + text_ht >= screen_height)
+      pt.y() = bound.y() - text_ht - tt_spacing * 3;
+    
+    draw_tooltip(renderer, pt, m_info_font, tooltip);
   }
 }
 

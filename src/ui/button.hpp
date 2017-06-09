@@ -44,6 +44,8 @@ public:
   void register_callback(std::function<void()> fn) { m_operation = fn; }
   void press() { if (m_operation) m_operation(); }
 
+  bool is_mouse_over() const { return m_mouse_hover; }
+  
   using UIPanel::update; //make update and draw overloads visible
   using UIPanel::draw;
   void update(unsigned ticks, InputHandler& input,

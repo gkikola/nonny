@@ -475,6 +475,15 @@ void PuzzleView::update(unsigned ticks, InputHandler& input)
     m_main_panel.center_main_panel();
   }
 
+  //see if mouse is over info pane
+  //if so we need to allow it to draw tooltips
+  if (input.was_mouse_moved()) {
+    m_draw_tooltips = false;
+    if (m_info_pane.boundary().contains_point(input.mouse_position())) {
+      m_draw_tooltips = true;
+    }
+  }
+
   if (!m_edit_mode && m_puzzle.is_solved()) {
     save_progress();
     m_mgr.schedule_action(ViewManager::Action::show_victory_screen);
@@ -491,6 +500,11 @@ void PuzzleView::draw(Renderer& renderer)
   renderer.set_draw_color(info_pane_background_color);
   renderer.fill_rect(m_info_pane.boundary());
   m_info_pane.draw(renderer);
+
+  if (m_draw_tooltips) {
+    auto& ipanel = dynamic_cast<PuzzleInfoPanel&>(m_info_pane.main_panel());
+    ipanel.draw_tooltips(renderer, m_width, m_height);
+  }
 }
 
 void PuzzleView::resize(int width, int height)

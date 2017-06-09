@@ -80,6 +80,7 @@ add_executable (
   src/ui/static_image.cpp
   src/ui/static_text.cpp
   src/ui/text_box.cpp
+  src/ui/tooltip.cpp
   src/ui/ui_panel.cpp
   src/utility/sdl/sdl_error.cpp
   src/utility/sdl/sdl_paths.cpp
