@@ -424,6 +424,14 @@ void PuzzleView::enable_editing()
   auto ipanel = dynamic_cast<PuzzleInfoPanel*>(&m_info_pane.main_panel());
   ppanel->set_edit_mode(true);
   ipanel->set_edit_mode(true);
+
+  //get rid of crosses
+  for (int y = 0; y < m_puzzle.height(); ++y) {
+    for (int x = 0; x < m_puzzle.width(); ++x) {
+      if (m_puzzle[x][y].state == PuzzleCell::State::crossed_out)
+        m_puzzle.clear_cell(x, y);
+    }
+  }
 }
 
 void PuzzleView::update(unsigned ticks, InputHandler& input)
