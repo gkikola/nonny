@@ -250,6 +250,8 @@ void Solver::backtrack()
     check_for_solved_lines();
 
     m_alternatives.pop();
+
+    --m_cur_depth;
   }
 }
 
@@ -275,6 +277,9 @@ void Solver::guess()
   m_puzzle.copy_state(grid_state);
   state.puzzle_state = std::move(grid_state);
   m_alternatives.push(state);
+
+  ++m_cur_depth;
+  m_max_depth = std::max(m_cur_depth, m_max_depth);
 
   //increment guess counter
   ++m_num_guesses;
@@ -309,6 +314,9 @@ void Solver::guess()
         m_puzzle.copy_state(grid_state);
         state.puzzle_state = std::move(grid_state);
         m_alternatives.push(state);
+
+        ++m_cur_depth;
+        m_max_depth = std::max(m_cur_depth, m_max_depth);
       }
 
       ++it;

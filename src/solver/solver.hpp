@@ -69,6 +69,8 @@ public:
 
   // How many guesses did the solver have to make?
   int num_guesses() const { return m_num_guesses; }
+
+  int search_depth() const { return m_max_depth; }
   
   // Can the puzzle be solved one line at a time?
   inline bool is_line_solvable() const;
@@ -138,6 +140,8 @@ private:
 
   bool m_finished = false; //are we done?
   int m_num_guesses = 0; //how many guesses have we made?
+  int m_cur_depth = 0;
+  int m_max_depth = 0;
   bool m_inconsistent = false; //is puzzle contradictory?
   bool m_use_complete = false; //use the complete rather than fast linesolver
   bool m_new_info_found = false; //did the line solver find new info?
