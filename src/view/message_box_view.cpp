@@ -44,6 +44,7 @@ MessageBoxView::MessageBoxView(ViewManager& vm,
       auto button = std::make_shared<Button>(*m_control_font, "Okay");
       button->register_callback(on_yes);
       button->resize(button_width, button->boundary().height());
+      button->give_focus();
       m_mbox.add_control(button);
       m_esc_callback = on_yes;
     }
@@ -58,6 +59,7 @@ MessageBoxView::MessageBoxView(ViewManager& vm,
       button = std::make_shared<Button>(*m_control_font, "No");
       button->register_callback(on_no);
       button->resize(button_width, button->boundary().height());
+      button->give_focus();
       m_mbox.add_control(button);
 
       m_esc_callback = on_no;
@@ -78,6 +80,7 @@ MessageBoxView::MessageBoxView(ViewManager& vm,
       button = std::make_shared<Button>(*m_control_font, "Cancel");
       button->register_callback(on_cancel);
       button->resize(button_width, button->boundary().height());
+      button->give_focus();
       m_mbox.add_control(button);
 
       m_esc_callback = on_cancel;
@@ -92,7 +95,7 @@ void MessageBoxView::update(unsigned ticks, InputHandler& input)
   if (input.was_key_pressed(Keyboard::Key::escape)) {
     if (m_esc_callback)
       m_esc_callback();
-  }    
+  }
 
   m_mbox.update(ticks, input);
 }
