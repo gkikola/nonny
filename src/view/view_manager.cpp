@@ -224,7 +224,7 @@ void ViewManager::update(unsigned ticks, InputHandler& input)
       if (!m_views.empty()) {
         auto pv = std::dynamic_pointer_cast<PuzzleView>(m_views.back());
         if (pv)
-          pv->save();
+          pv->save_progress();
       }
       break;
     case Action::restart:
@@ -313,7 +313,7 @@ bool ViewManager::save()
     if (typeid(**it) == typeid(PuzzleView)) {
       auto pv = std::dynamic_pointer_cast<PuzzleView>(*it);
       if (m_puzzle_status == puzzle_play)
-        pv->save();
+        pv->save_progress();
       else if (m_puzzle_status == puzzle_edit)
         pv->save_puzzle();
       return !pv->is_save_needed();

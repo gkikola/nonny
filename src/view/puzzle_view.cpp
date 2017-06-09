@@ -208,7 +208,7 @@ std::string PuzzleView::puzzle_collection() const
     return "Default";
 }
 
-void PuzzleView::save()
+void PuzzleView::save_progress()
 {
   bool just_completed = false;
   if (m_puzzle.is_solved())
@@ -336,7 +336,7 @@ void PuzzleView::setup_panels()
   ipanel->on_zoom_out([ppanel]() { ppanel->zoom(-1); });
   ipanel->on_hint_toggle([]() { });
   ipanel->on_clear_puzzle([ppanel]() { ppanel->clear_puzzle(); });
-  ipanel->on_save(std::bind(&PuzzleView::save_puzzle, this, ""));
+  ipanel->on_save(std::bind(&PuzzleView::save, this));
   ipanel->on_undo([ppanel]() { ppanel->undo(); });
   ipanel->on_redo([ppanel]() { ppanel->redo(); });
   ipanel->on_analyze([this]() {
@@ -377,6 +377,14 @@ void PuzzleView::handle_tool_change()
   }
 }
 
+void PuzzleView::save()
+{
+  if (m_edit_mode)
+    save_puzzle();
+  else
+    save_progress();
+}
+
 void PuzzleView::update(unsigned ticks, InputHandler& input)
 {  
   m_main_panel.update(ticks, input);
@@ -400,7 +408,7 @@ void PuzzleView::update(unsigned ticks, InputHandler& input)
   }
 
   if (!m_edit_mode && m_puzzle.is_solved()) {
-    save();
+    save_progress();
     m_mgr.schedule_action(ViewManager::Action::show_victory_screen);
   }
 

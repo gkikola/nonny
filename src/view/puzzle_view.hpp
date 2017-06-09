@@ -52,7 +52,7 @@ public:
   void draw(Renderer& renderer) override;
   void resize(int width, int height) override;
 
-  void save();
+  void save_progress();
   void restart();
   void save_puzzle(std::string filename = "");
   void update_properties();
@@ -74,6 +74,7 @@ private:
   void setup_panels();
   void handle_color_change();
   void handle_tool_change();
+  void save();
   std::string puzzle_id() const;
   std::string puzzle_collection() const;
   
