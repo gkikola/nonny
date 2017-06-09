@@ -37,6 +37,10 @@ public:
   inline std::string font_dir() const;
   inline std::string image_dir() const;
   inline std::string puzzle_dir() const;
+
+  inline std::string saved_progress_dir() const;
+  inline std::string saved_puzzle_dir() const;
+
 private:
   void find_directories();
   bool is_data_dir(const std::string& path);
@@ -60,6 +64,16 @@ inline std::string GameSettings::image_dir() const
 inline std::string GameSettings::puzzle_dir() const
 {
   return data_dir() + "puzzles" + filesystem_separator();
+}
+
+inline std::string GameSettings::saved_progress_dir() const
+{
+  return save_dir() + "saves" + filesystem_separator();
+}
+
+inline std::string GameSettings::saved_puzzle_dir() const
+{
+  return save_dir() + "puzzles" + filesystem_separator();
 }
 
 #endif

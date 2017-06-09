@@ -119,12 +119,8 @@ void FileView::update(unsigned ticks, InputHandler& input)
       clear_focus();
   }
 
-  m_menu_button->update(ticks, input);
-  m_up_button->update(ticks, input);
-  m_back_button->update(ticks, input);
-  m_forward_button->update(ticks, input);
-  m_open_button->update(ticks, input);
-  m_filename_box->update(ticks, input);
+  for (auto& c : m_controls)
+    c->update(ticks, input);
 
   m_file_selection.update(ticks, input);
 
@@ -175,19 +171,8 @@ void FileView::draw(Renderer& renderer)
     }
   }
 
-  Point info_pos(panel_spacing,
-                 m_filename_box->boundary().y()
-                 + m_filename_box->boundary().height()
-                 + button_spacing);
-  renderer.draw_text(info_pos, *m_info_font,
-                     "Supported file types: *.non, *.g, *.mk, *.nin");
-
-  m_menu_button->draw(renderer);
-  m_up_button->draw(renderer);
-  m_back_button->draw(renderer);
-  m_forward_button->draw(renderer);
-  m_open_button->draw(renderer);
-  m_filename_box->draw(renderer);
+  for (auto& c : m_controls)
+    c->draw(renderer);
 
   renderer.set_draw_color(default_colors::white);
   renderer.fill_rect(m_file_selection.boundary());
@@ -209,29 +194,33 @@ void FileView::resize(int width, int height)
   x -= button_spacing + m_up_button->boundary().width();
   m_up_button->move(x, y);
 
+  x -= button_spacing + m_saved_button->boundary().width();
+  m_saved_button->move(x, y);
+
+  x -= button_spacing + m_home_button->boundary().width();
+  m_home_button->move(x, y);
+
   x -= button_spacing + m_menu_button->boundary().width();
   m_menu_button->move(x, y);
+
+  x = panel_spacing;
 
   //vertically center path text
   int text_ht = 0;
   m_filename_font->text_size(">", nullptr, &text_ht);
-  m_path_start = Point(panel_spacing, panel_spacing);
+  m_path_start = Point(x, y);
   m_path_start.y() += m_menu_button->boundary().height() / 2 - text_ht / 2;
 
   collapse_path();
 
   x = panel_spacing;
   y += m_menu_button->boundary().height() + button_spacing;
-  
-  //calculate height of file type info text
-  m_info_font->text_size("Supported filetypes", nullptr, &text_ht);
-  
+
   //position file selection panel
   int new_width = m_width - 2 * panel_spacing;
   int new_height = m_height - 2 * panel_spacing - button_spacing
     - m_up_button->boundary().height()
-    - m_open_button->boundary().height() - button_spacing
-    - text_ht - button_spacing;
+    - m_open_button->boundary().height() - button_spacing;
   UIPanel& panel = m_file_selection.main_panel();
   panel.resize(new_width, panel.boundary().height());
   m_file_selection.move(x, y);
@@ -258,22 +247,26 @@ void FileView::load_resources()
   std::string font_file = settings.font_dir() + "FreeSans.ttf";
   std::string nav_texture_file = settings.image_dir() + "nav.png";
   std::string icon_texture_file = settings.image_dir() + "file.png";
-  m_filename_font = vs.new_font(font_file, 20);
+  m_filename_font = vs.new_font(font_file, 18);
   m_info_font = vs.new_font(font_file, 16);
   m_control_font = vs.new_font(font_file, 24);
   m_nav_texture = vs.load_image(m_mgr.renderer(), nav_texture_file);
   m_file_icons_texture = vs.load_image(m_mgr.renderer(), icon_texture_file);
 
   m_menu_button = std::make_shared<ImageButton>(*m_nav_texture, 0);
-  m_up_button = std::make_shared<ImageButton>(*m_nav_texture, 1);
-  m_back_button = std::make_shared<ImageButton>(*m_nav_texture, 2);
-  m_forward_button = std::make_shared<ImageButton>(*m_nav_texture, 3);
+  m_home_button = std::make_shared<ImageButton>(*m_nav_texture, 1);
+  m_saved_button = std::make_shared<ImageButton>(*m_nav_texture, 2);
+  m_up_button = std::make_shared<ImageButton>(*m_nav_texture, 3);
+  m_back_button = std::make_shared<ImageButton>(*m_nav_texture, 4);
+  m_forward_button = std::make_shared<ImageButton>(*m_nav_texture, 5);
 
   std::string open_label = m_mode == Mode::open ? "Load" : "Save";
   m_open_button = std::make_shared<Button>(*m_control_font, open_label);
 
   m_menu_button->register_callback([this]() {
       m_mgr.schedule_action(ViewManager::Action::open_menu); });
+  m_home_button->register_callback(std::bind(&FileView::home, this));
+  m_saved_button->register_callback(std::bind(&FileView::open_saved, this));
   m_up_button->register_callback(std::bind(&FileView::up, this));
   m_back_button->register_callback(std::bind(&FileView::back, this));
   m_forward_button->register_callback(std::bind(&FileView::forward, this));
@@ -294,6 +287,8 @@ void FileView::load_resources()
   m_file_selection.attach_panel(fsv);
 
   m_controls = { m_menu_button,
+                 m_home_button,
+                 m_saved_button,
                  m_up_button,
                  m_back_button,
                  m_forward_button,
@@ -313,6 +308,21 @@ void FileView::open_path(const stdfs::path& p)
   }
 
   handle_directory_change();
+}
+
+void FileView::home()
+{
+  open_path(stdfs::canonical(stdfs::path(m_mgr.game_settings().puzzle_dir())));
+}
+
+void FileView::open_saved()
+{
+  stdfs::path dir = m_mgr.game_settings().saved_puzzle_dir();
+  if (!stdfs::exists(dir))
+    stdfs::create_directories(dir);
+  dir = stdfs::canonical(dir);
+
+  open_path(dir);
 }
 
 void FileView::back()
@@ -371,19 +381,9 @@ void FileView::clear_focus()
 void FileView::open_default_dir()
 {
   if (m_mode == Mode::open)
-    open_puzzle_dir();
+    home();
   else if (m_mode == Mode::save)
-    open_save_dir();
-}
-
-void FileView::open_puzzle_dir()
-{
-  open_path(stdfs::canonical(stdfs::path(m_mgr.game_settings().puzzle_dir())));
-}
-
-void FileView::open_save_dir()
-{
-  open_path(stdfs::canonical(stdfs::path(m_mgr.game_settings().save_dir())));
+    open_saved();
 }
 
 void FileView::open_file(const std::string& filename)
@@ -493,9 +493,9 @@ void FileView::handle_selection_change()
 void FileView::collapse_path()
 {    
   if (m_cur_path != m_paths.end()) {
-    //max allowed width is screen width minus the four nav buttons
+    //max allowed width is screen width minus the six nav buttons
     int max_width = 2 * panel_spacing
-      + 4 * (m_up_button->boundary().width() + button_spacing);
+      + 6 * (m_up_button->boundary().width() + button_spacing);
     if (max_width < m_width)
       max_width = m_width - max_width;
     else

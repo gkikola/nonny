@@ -81,10 +81,10 @@ void PuzzleInfoPanel::setup_buttons()
   m_buttons[analyze] = std::make_shared<ImageButton>(m_ctrl_texture, 8);
 
   if (m_edit_mode) {
-    m_buttons[up] = std::make_shared<ImageButton>(m_arrow_texture, 1);
-    m_buttons[left] = std::make_shared<ImageButton>(m_arrow_texture, 2);
-    m_buttons[right] = std::make_shared<ImageButton>(m_arrow_texture, 3);
-    m_buttons[down] = std::make_shared<ImageButton>(m_arrow_texture, 4);
+    m_buttons[up] = std::make_shared<ImageButton>(m_arrow_texture, 3);
+    m_buttons[left] = std::make_shared<ImageButton>(m_arrow_texture, 4);
+    m_buttons[right] = std::make_shared<ImageButton>(m_arrow_texture, 5);
+    m_buttons[down] = std::make_shared<ImageButton>(m_arrow_texture, 6);
   }
 }
 

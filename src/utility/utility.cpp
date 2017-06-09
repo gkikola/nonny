@@ -41,7 +41,7 @@ std::string base_path()
 std::string save_path()
 {
 #ifdef NONNY_INPUT_SDL
-  return sdl_base_path();
+  return sdl_save_path();
 #else
   throw std::runtime_error("::save_path: save path not retrievable");
 #endif

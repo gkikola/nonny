@@ -60,6 +60,8 @@ private:
   void load_resources();
 
   void open_path(const std::experimental::filesystem::path& p);
+  void home();
+  void open_saved();
   void back();
   void forward();
   void up();
@@ -68,9 +70,6 @@ private:
   void clear_focus();
   
   void open_default_dir();
-  void open_puzzle_dir();
-  void open_save_dir();
-
   void open_file(const std::string& filename = "");
 
   int path_name_width() const; //get display width of cur path name
@@ -90,6 +89,8 @@ private:
   Point m_path_start;
 
   std::shared_ptr<ImageButton> m_menu_button;
+  std::shared_ptr<ImageButton> m_home_button;
+  std::shared_ptr<ImageButton> m_saved_button;
   std::shared_ptr<ImageButton> m_up_button;
   std::shared_ptr<ImageButton> m_back_button;
   std::shared_ptr<ImageButton> m_forward_button;
