@@ -51,7 +51,7 @@ void PuzzlePreview::draw(Renderer& renderer, const Rect& region) const
                 - pixel_size * m_puzzle->width() / 2,
                 m_boundary.y() + m_boundary.height() / 2
                 - pixel_size * m_puzzle->height() / 2);
-    
+
     //draw the "pixels"
     for (int y = 0; y < m_puzzle->height(); ++y) {
       for (int x = 0; x < m_puzzle->width(); ++x) {
@@ -67,7 +67,7 @@ void PuzzlePreview::draw(Renderer& renderer, const Rect& region) const
         }
       }
     }
-    
+
     renderer.set_clip_rect();
   }
 }
