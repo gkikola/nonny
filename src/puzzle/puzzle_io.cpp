@@ -117,6 +117,8 @@ std::istream& read_puzzle(std::istream& is, Puzzle& puzzle,
   puzzle.m_col_clues = std::move(blueprint.col_clues);
   puzzle.m_palette = std::move(blueprint.palette);
   puzzle.m_properties = std::move(blueprint.properties);
+
+  puzzle.refresh_all_cells();
   return is;
 }
 
