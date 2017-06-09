@@ -52,6 +52,8 @@ public:
 private:
   void setup_buttons();
   void calc_size();
+  void focus_prev();
+  void focus_next();
   
   Puzzle m_puzzle;
   Solver m_solver;

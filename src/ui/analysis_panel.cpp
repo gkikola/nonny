@@ -65,6 +65,25 @@ void AnalysisPanel::update(unsigned ticks, InputHandler& input,
       m_sol_cycle_time = 0;
     }
   }
+
+  if (input.was_key_pressed(Keyboard::Key::tab)) {
+    if (input.is_shift_down())
+      focus_prev();
+    else
+      focus_next();
+  }
+
+  if (input.was_key_pressed(Keyboard::Key::left)
+      || input.was_key_pressed(Keyboard::Key::kp_left)
+      || input.was_key_pressed(Keyboard::Key::up)
+      || input.was_key_pressed(Keyboard::Key::kp_up))
+    focus_prev();
+
+  if (input.was_key_pressed(Keyboard::Key::right)
+      || input.was_key_pressed(Keyboard::Key::kp_right)
+      || input.was_key_pressed(Keyboard::Key::down)
+      || input.was_key_pressed(Keyboard::Key::kp_down))
+    focus_next();
   
   m_preview.update(ticks, input, active_region);
   m_solve_button.update(ticks, input, active_region);
@@ -219,4 +238,30 @@ void AnalysisPanel::calc_size()
   height += button_height + panel_spacing;
 
   resize(width, height);
+}
+
+void AnalysisPanel::focus_prev()
+{
+  if (m_solve_button.has_focus()) {
+    m_solve_button.remove_focus();
+    m_close_button.give_focus();
+  } else if (m_close_button.has_focus()) {
+    m_close_button.remove_focus();
+    m_solve_button.give_focus();
+  } else {
+    m_close_button.give_focus();
+  }
+}
+
+void AnalysisPanel::focus_next()
+{
+  if (m_solve_button.has_focus()) {
+    m_solve_button.remove_focus();
+    m_close_button.give_focus();
+  } else if (m_close_button.has_focus()) {
+    m_close_button.remove_focus();
+    m_solve_button.give_focus();
+  } else {
+    m_solve_button.give_focus();
+  }
 }
