@@ -691,7 +691,7 @@ void PuzzlePanel::handle_kb_selection(unsigned ticks, InputHandler& input)
   if (fill_released || cross_released) {
     m_kb_dragging = false;
 
-    if (m_edit_mode
+    if (m_edit_mode && m_selected
         && m_draw_tool != DrawTool::paint
         && m_draw_tool != DrawTool::fill)
       do_draw_action(fill_released);
