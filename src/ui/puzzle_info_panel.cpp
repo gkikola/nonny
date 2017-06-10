@@ -220,8 +220,16 @@ void PuzzleInfoPanel::draw(Renderer& renderer, const Rect& region) const
     m_title_font.text_size_wrapped(m_puzzle_title, m_boundary.width(),
                                    &text_width, &text_height);
     Point text_pos(pos.x(), pos.y());
-    renderer.draw_text_wrapped(text_pos, m_title_font, m_puzzle_title,
-                               m_boundary.width(), true);
+
+    if (m_edit_mode || m_show_title
+        || m_puzzle_title == "Untitled") {
+      renderer.draw_text_wrapped(text_pos, m_title_font, m_puzzle_title,
+                                 m_boundary.width(), true);
+    } else {
+      renderer.draw_text_wrapped(text_pos, m_title_font, "???",
+                         m_boundary.width(), true);
+    }
+
     pos.y() += text_height + spacing;
 
     //draw author
@@ -368,10 +376,11 @@ void PuzzleInfoPanel::retrieve_puzzle_info()
 {
   const std::string* property;
   property = m_puzzle->find_property("title");
-  if (property)
+  if (property) {
     m_puzzle_title = *property;
-  else
+  } else {
     m_puzzle_title = "Untitled";
+  }
   m_puzzle_author = "";
   property = m_puzzle->find_property("by");
   if (property)

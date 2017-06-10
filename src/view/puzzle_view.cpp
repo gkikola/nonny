@@ -156,6 +156,11 @@ void PuzzleView::load(const std::string& filename)
     = dynamic_cast<PuzzleInfoPanel&>(m_info_pane.main_panel());
   ipanel.time(prog.current_time());
 
+  if (prog.is_complete())
+    ipanel.show_puzzle_title();
+  else
+    ipanel.hide_puzzle_title();
+
   handle_color_change();
 }
 

@@ -84,6 +84,10 @@ public:
   unsigned time() const { return m_time; }
   void time(unsigned time) { m_time = time; }
 
+  // Show/hide puzzle title
+  void show_puzzle_title() { m_show_title = true; }
+  void hide_puzzle_title() { m_show_title = false; }
+
   // Reload puzzle metadata and size
   void refresh_puzzle_properties();
 
@@ -135,6 +139,7 @@ private:
   unsigned m_time = 0;
   int m_max_width = 0;
   bool m_edit_mode = false;
+  bool m_show_title = false;
 };
 
 #endif
