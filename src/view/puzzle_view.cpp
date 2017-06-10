@@ -383,7 +383,7 @@ void PuzzleView::setup_panels()
       m_mgr.schedule_action(ViewManager::Action::open_menu); });
   ipanel->on_zoom_in([ppanel]() { ppanel->zoom(1); });
   ipanel->on_zoom_out([ppanel]() { ppanel->zoom(-1); });
-  ipanel->on_hint_toggle([]() { });
+  ipanel->on_hint_toggle([ppanel]() { ppanel->toggle_hints(); });
   ipanel->on_clear_puzzle([ppanel]() { ppanel->clear_puzzle(); });
   ipanel->on_save(std::bind(&PuzzleView::save, this));
   ipanel->on_undo([ppanel]() { ppanel->undo(); });

@@ -26,6 +26,7 @@
 #include "color/color.hpp"
 #include "input/input_handler.hpp"
 #include "puzzle/puzzle.hpp"
+#include "solver/line_solver.hpp"
 #include "utility/utility.hpp"
 #include "video/font.hpp"
 #include "video/renderer.hpp"
@@ -146,6 +147,7 @@ void PuzzlePanel::update(unsigned ticks, InputHandler& input,
       if (m_has_state_changed) {
         m_need_save = !m_state_history.empty();
         save_undo_state();
+        clear_hints();
       }
     }
 
@@ -163,6 +165,8 @@ void PuzzlePanel::draw(Renderer& renderer, const Rect& region) const
     draw_cells(renderer);
     draw_grid_lines(renderer);
     draw_selection(renderer);
+    draw_errors(renderer);
+    draw_hints(renderer);
     draw_clues(renderer);
 
     renderer.set_clip_rect();
@@ -320,10 +324,11 @@ void PuzzlePanel::draw_cell(Renderer& renderer, int x, int y,
                             const Color& color,
                             unsigned animation_time) const
 {
+  int src_cell_size = m_cell_texture.height() / 3;
   Rect dest(m_grid_pos.x() + x * (m_cell_size + 1) + 1,
             m_grid_pos.y() + y * (m_cell_size + 1) + 1,
             m_cell_size, m_cell_size);
-  Rect src(0, 0, m_cell_texture.height(), m_cell_texture.height());
+  Rect src(0, 0, src_cell_size, src_cell_size);
 
   if (x % 2 != y % 2)
     renderer.set_draw_color(lightly_shaded_cell_color);
@@ -381,7 +386,7 @@ void PuzzlePanel::draw_selection(Renderer& renderer) const
     renderer.set_draw_color(m_color);
     renderer.draw_thick_rect(cell, 3);
 
-    int src_size = m_cell_texture.height();
+    int src_size = m_cell_texture.height() / 3;
     Rect dest(m_grid_pos.x() - m_cell_size - 1, cell.y(),
               m_cell_size, m_cell_size);
     Rect src(src_size, 0, src_size, src_size);
@@ -408,6 +413,30 @@ void PuzzlePanel::draw_selection(Renderer& renderer) const
                 m_color, cell_animation_duration);
     };
     for_each_point_on_selection(fn);
+  }
+}
+
+void PuzzlePanel::draw_errors(Renderer& renderer) const
+{
+}
+
+void PuzzlePanel::draw_hints(Renderer& renderer) const
+{
+  int src_size = m_cell_texture.height() / 3;
+  Rect dest, src;
+  src = Rect(src_size, src_size, src_size, src_size);
+  for (int j : m_hinted_rows) {
+    dest = Rect(m_grid_pos.x() - m_cell_size,
+                m_grid_pos.y() + j * (m_cell_size + 1),
+                m_cell_size, m_cell_size);
+    renderer.copy_texture(m_cell_texture, src, dest);
+  }
+  src = Rect(src_size * 2, src_size, src_size, src_size);
+  for (int i : m_hinted_cols) {
+    dest = Rect(m_grid_pos.x() + i * (m_cell_size + 1),
+                m_grid_pos.y() - m_cell_size,
+                m_cell_size, m_cell_size);
+    renderer.copy_texture(m_cell_texture, src, dest);
   }
 }
 
@@ -1108,5 +1137,68 @@ void PuzzlePanel::redo()
       load_undo_state();
     else
       --m_cur_state;
+  }
+}
+
+void PuzzlePanel::toggle_hints()
+{
+  if (!m_hinted_rows.empty() || !m_hinted_cols.empty())
+    clear_hints();
+  else {
+    update_hints(true);
+
+    //if nothing was found, do an exhaustive check
+    if (m_hinted_rows.empty() && m_hinted_cols.empty())
+      update_hints(false);
+  }
+}
+
+void PuzzlePanel::clear_hints()
+{
+  m_hinted_rows.clear();
+  m_hinted_cols.clear();
+}
+
+bool PuzzlePanel::can_line_be_further_solved(PuzzleLine line,
+                                             bool fast_check)
+{
+  LineSolver ls(line);
+  std::vector<PuzzleCell> result;
+
+  bool solvable = false;
+  if (fast_check)
+    solvable = ls.solve_fast(result);
+  else
+    solvable = ls.solve_complete(result);
+
+  if (!solvable)
+    return false;
+
+  //see if solver found anything
+  for (int i = 0; i < line.size(); ++i) {
+    if (result[i].state != PuzzleCell::State::blank
+        && (line[i].state != result[i].state
+            || (result[i].state == PuzzleCell::State::filled
+                && line[i].color != result[i].color)))
+      return true;
+  }
+
+  //no differences found
+  return false;
+}
+
+void PuzzlePanel::update_hints(bool fast)
+{
+  if (m_puzzle) {
+    for (int i = 0; i < m_puzzle->width(); ++i) {
+      PuzzleLine line = m_puzzle->get_col(i);
+      if (can_line_be_further_solved(line, fast))
+        m_hinted_cols.insert(i);
+    }
+    for (int j = 0; j < m_puzzle->height(); ++j) {
+      PuzzleLine line = m_puzzle->get_row(j);
+      if (can_line_be_further_solved(line, fast))
+        m_hinted_rows.insert(j);
+    }
   }
 }

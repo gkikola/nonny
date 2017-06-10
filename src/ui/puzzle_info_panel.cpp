@@ -306,7 +306,7 @@ void PuzzleInfoPanel::draw_tooltips(Renderer& renderer,
     bound = m_buttons[hint]->boundary();
   } else if (m_buttons[hint] && m_buttons[hint]->is_mouse_over()
              && !m_edit_mode) {
-    tooltip = "Toggle hints";
+    tooltip = "Show hints";
     bound = m_buttons[hint]->boundary();
   } else if (m_buttons[save] && m_buttons[save]->is_mouse_over()
              && m_edit_mode) {

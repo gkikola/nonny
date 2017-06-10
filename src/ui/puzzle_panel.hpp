@@ -23,6 +23,7 @@
 
 #include <functional>
 #include <list>
+#include <set>
 #include <vector>
 #include "color/color_palette.hpp"
 #include "puzzle/compressed_state.hpp"
@@ -72,6 +73,9 @@ public:
   void undo();
   void redo();
 
+  void toggle_hints();
+  void clear_hints();
+  
   bool is_save_needed() const { return m_need_save; }
   void clear_save_flag() { m_need_save = false; }
   
@@ -95,6 +99,8 @@ private:
                  PuzzleCell::State state, PuzzleCell::State prev_state,
                  const Color& color, unsigned animation_time) const;
   void draw_selection(Renderer& renderer) const;
+  void draw_errors(Renderer& renderer) const;
+  void draw_hints(Renderer& renderer) const;
 
   void update_cells(unsigned ticks);
   void set_cell(int x, int y, PuzzleCell::State state);
@@ -128,6 +134,9 @@ private:
   void save_undo_state();
   void load_undo_state();
 
+  bool can_line_be_further_solved(PuzzleLine line, bool fast_check = true);
+  void update_hints(bool fast = true);
+
   enum class DragType { fill, cross, blanking_fill, blanking_cross };
   
   Font& m_clue_font;
@@ -157,6 +166,10 @@ private:
   std::list<CompressedState>::iterator m_cur_state;
   bool m_has_state_changed = true;
 
+  //Hints
+  std::set<int> m_hinted_rows;
+  std::set<int> m_hinted_cols;
+  
   //Dragging states
   DragType m_mouse_drag_type = DragType::fill;
   DragType m_kb_drag_type = DragType::fill;
