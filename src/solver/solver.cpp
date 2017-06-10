@@ -423,9 +423,10 @@ bool Solver::solve_line(PuzzleLine& line, bool complete)
   bool is_solved = true;
   for (int i = 0; i < line.size(); ++i) {
     //if line is completely filled in, we're done with this line
-    if (m_solved_line[i].state == PuzzleCell::State::blank)
+    if (line[i].state == PuzzleCell::State::blank
+        && m_solved_line[i].state == PuzzleCell::State::blank)
       is_solved = false;
-    
+
     //if line solver produced new information, update puzzle line
     //and boost priority of changed perpendicular lines
     if (line[i] != m_solved_line[i]
