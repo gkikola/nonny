@@ -256,8 +256,13 @@ void FileSelectionPanel::draw(Renderer& renderer, const Rect& region) const
         std::string title;
         if (m_files[i].puzzle_info->title.empty())
           title = "Untitled";
-        else
-          title = m_files[i].puzzle_info->title;
+        else {
+          if (!m_files[i].puzzle_progress
+              || !m_files[i].puzzle_progress->is_complete())
+            title = "???";
+          else
+            title = m_files[i].puzzle_info->title;
+        }
         if (!m_files[i].puzzle_info->author.empty())
           title += " by " + m_files[i].puzzle_info->author;
         txt = renderer.draw_text(Point(x, y), m_info_font, title);
