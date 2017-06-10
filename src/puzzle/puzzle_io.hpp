@@ -28,13 +28,13 @@
 class Puzzle;
 struct PuzzleSummary;
 
-class InvalidPuzzleFile : std::logic_error {
+class InvalidPuzzleFile : public std::logic_error {
 public:
   explicit InvalidPuzzleFile(const std::string& what_arg)
     : std::logic_error(what_arg) { }
 };
 
-class UnsupportedFeature : std::logic_error {
+class UnsupportedFeature : public std::logic_error {
 public:
   explicit UnsupportedFeature(const std::string& what_arg)
     : std::logic_error(what_arg) { }

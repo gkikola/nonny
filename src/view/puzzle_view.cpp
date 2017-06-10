@@ -149,6 +149,10 @@ void PuzzleView::load(const std::string& filename)
   m_best_time = prog.best_time();
   prog.restore_progress(m_puzzle);
 
+  if (m_puzzle.width() == 0 || m_puzzle.height() == 0)
+    throw InvalidPuzzleFile("PuzzleView::load: puzzle has a "
+                            "size of 0");
+
   setup_panels();
 
   //restore game time

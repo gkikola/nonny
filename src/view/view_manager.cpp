@@ -155,8 +155,18 @@ void ViewManager::update(unsigned ticks, InputHandler& input)
       break;
     case Action::load_puzzle:
       pop(); //close file selector
-      push(std::make_shared<PuzzleView>(*this, m_action_arg));
-      m_puzzle_status = puzzle_play;
+
+      try {
+        push(std::make_shared<PuzzleView>(*this, m_action_arg));
+        m_puzzle_status = puzzle_play;
+      } catch (const std::exception& e) {
+        std::string err_msg = "Error loading puzzle:\n\n";
+        err_msg += e.what();
+        message_box(err_msg, MessageBoxView::Type::okay,
+                    std::bind(&ViewManager::schedule_action,
+                              this, Action::open_menu, ""),
+                    []() { }, []() { });
+      }
       break;
     case Action::save_puzzle_as:
       if (!m_views.empty() && typeid(*m_views.back()) != typeid(FileView))
