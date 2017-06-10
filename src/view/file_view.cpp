@@ -39,6 +39,9 @@ constexpr int path_spacing = 8;
 constexpr int button_spacing = 16;
 constexpr int panel_spacing = 32;
 
+std::string FileView::s_last_open_path;
+std::string FileView::s_last_save_path;
+
 FileView::FileView(ViewManager& vm, Mode mode)
   : View(vm), m_mode(mode), m_cur_path(m_paths.end())
 {
@@ -389,10 +392,17 @@ void FileView::clear_focus()
 
 void FileView::open_default_dir()
 {
-  if (m_mode == Mode::open)
-    home();
-  else if (m_mode == Mode::save)
-    open_saved();
+  if (m_mode == Mode::open) {
+    if (!s_last_open_path.empty())
+      open_path(stdfs::path(s_last_open_path));
+    else
+      home();
+  } else if (m_mode == Mode::save) {
+    if (!s_last_save_path.empty())
+      open_path(stdfs::path(s_last_save_path));
+    else
+      open_saved();
+  }
 }
 
 void FileView::open_file(const std::string& filename)
@@ -486,6 +496,12 @@ void FileView::handle_directory_change()
     m_file_selection.resize(panel_width, panel_height); //refresh scrollbars
     file_panel.move(file_panel.boundary().x(),
                     m_file_selection.boundary().y());
+
+    //save path for future FileView instances
+    if (m_mode == Mode::open)
+      s_last_open_path = *m_cur_path;
+    else
+      s_last_save_path = *m_cur_path;
   }
 
   collapse_path();

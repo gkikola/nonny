@@ -90,6 +90,9 @@ private:
   int m_path_collapse_end;
   Point m_path_start;
 
+  static std::string s_last_open_path;
+  static std::string s_last_save_path;
+
   std::shared_ptr<ImageButton> m_menu_button;
   std::shared_ptr<ImageButton> m_home_button;
   std::shared_ptr<ImageButton> m_saved_button;
