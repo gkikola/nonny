@@ -75,19 +75,21 @@ Again, by considering the different possibilities you can find cells that must b
 Development Status
 ------------------
 
-Nonny is playable but not yet ready for an initial release. Most of
-the basic functionality for playing, editing, and analyzing puzzles
-has been implemented. However, there are still some minor additions
-that need to be made and some general polishing that needs to be done.
+Nonny should be ready for its initial, preliminary release within the
+next several days, probably on or before June 12th, 2017. Windows
+binaries will be provided then.
+
+In the mean time, it is perfectly possible to build the game and play
+it in its current state. Nonny is quite functional, but is just
+missing some last-minute touches and it may be a little rough around
+the edges.
 
 
 Installation
 ------------
 
-Windows binaries will eventually be provided. For now the only way to
-install Nonny is to build the game yourself.
-
-To build Nonny, you'll need [CMake](https://cmake.org/) 3.1 or later,
+Windows binaries will be provided soon. To build Nonny yourself,
+you'll need [CMake](https://cmake.org/) 3.1 or later,
 [SDL2](https://www.libsdl.org/),
 [SDL2_image](https://www.libsdl.org/projects/SDL_image/), and
 [SDL2_ttf](https://www.libsdl.org/projects/SDL_ttf/).
