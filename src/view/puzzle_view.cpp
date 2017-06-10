@@ -284,11 +284,22 @@ void PuzzleView::save_puzzle(std::string filename)
 
       if (file.is_open())
         m_puzzle_filename = filename;
-    
-      write_puzzle(file, m_puzzle, file_type(filename));
 
-      //wipe previous puzzle progress and store solution
-      save_progress();
+      try {
+        write_puzzle(file, m_puzzle, file_type(filename));
+
+        //wipe previous puzzle progress and store solution
+        save_progress();
+      } catch (const std::exception& e) {
+        std::string err_msg = "Error saving puzzle:\n\n";
+        err_msg += e.what();
+
+        //show error message
+        auto close = [this]() {
+          m_mgr.schedule_action(ViewManager::Action::close_message_box); };
+        m_mgr.message_box(err_msg, MessageBoxView::Type::okay,
+                          close, []() { }, []() { });
+      }
     }
   }
 }
