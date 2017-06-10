@@ -9,24 +9,60 @@ Nonny
 Description
 -----------
 
-Play and create nonogram puzzles! Nonograms (also known as Griddlers,
-Picross, and Paint-by-Number) are logic puzzles in which numeric clues
-are used to fill in squares within a grid in order to reveal a
-picture.
+Nonny lets you play and create nonogram puzzles! Nonograms (also known
+as Griddlers, Picross, and Paint-by-Number) are logic puzzles played
+on a grid of squares. The squares are filled in or left blank
+according to numeric clues at the sides of the grid. When the puzzle
+is finished, the filled-in squares form a picture.
 
 ![Puzzle](media/screenshots/puzzle.png)
 
 Nonny comes packaged with a selection of puzzles for you to play, and
-additional puzzles can be found on various websites. Nonny also allows
-you to create your own puzzles. Nonny has a built-in solver which can
+you can easily import puzzles from other sources. Nonny also allows
+you to create your own puzzles. There is a built-in solver which can
 be used to verify that your puzzles have only one solution.
 
 ![Puzzle](media/screenshots/puzzle2.png)
 
-Other features include support for multicolor puzzles, undo and redo
-commands, and an optional hint system. Nonny tracks your completion
-status and times for each puzzle, and you may save your progress on a
-puzzle and resume solving it at a later time.
+Nonny tracks your completion status and times for each puzzle, and you
+may save your progress on a puzzle and resume solving it at a later
+time.
+
+
+Current Features
+----------------
+
+* Can play both standard and multicolor nonograms
+  * Tracks completion status for all puzzles
+  * Tracks time spent on solving each puzzle and records best completion
+    times
+  * Will save your progress on unfinished puzzles
+  * Optional hint system shows you which lines can be further solved
+  * No explicit limits on puzzle size or complexity
+  * Information panel shows details about the current puzzle and
+    shows a snapshot of the puzzle grid
+* Can create both standard and multicolor nonograms
+  * Various drawing tools are available: draw lines, rectangles,
+    and ellipses, or fill regions with a particular color
+  * Allows you to save title, author, and copyright information for
+    each puzzle you create
+* Undo and redo commands can be used while solving or
+  editing puzzles
+* Built-in solver and analysis tool
+  * Will solve most simple puzzles very quickly
+  * Can solve puzzles which require guessing or multi-line reasoning
+  * Can determine whether a puzzle has a unique solution
+  * Can determine whether a puzzle is solvable one line at a time
+  * Can find and display multiple solutions for a puzzle
+* File selector displays puzzle information and allows you to load
+  and save puzzles anywhere and in various file formats
+  * Supports the
+    [.non format](http://www.lancaster.ac.uk/~simpsons/nonogram/fmt2)
+    used in Steven Simpson's solver, extended with multicolor support
+  * Supports the .g and .mk formats used in
+    [Mirek Olšák and Petr Olšák's solver](http://www.olsak.net/grid.html#English)
+  * Supports the .nin format used by
+    [Jakub Wilk's solver](https://jwilk.net/software/nonogram)
 
 
 What Is a Nonogram?
