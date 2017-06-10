@@ -1,10 +1,12 @@
 title "Heart"
 by "Gregory Kikola"
+collection "Nonny"
+copyright "Copyright 2017 Gregory Kikola"
 width 10
 height 10
 
 rows
-3 3
+3, 3
 10
 10
 10

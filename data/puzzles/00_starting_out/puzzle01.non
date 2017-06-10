@@ -1,5 +1,7 @@
 title "Pie"
 by "Gregory Kikola"
+collection "Nonny"
+copyright "Copyright 2017 Gregory Kikola"
 width 5
 height 5
 
@@ -13,6 +15,6 @@ rows
 columns
 3
 5
-2 2
-1 2
+2, 2
+1, 2
 1
