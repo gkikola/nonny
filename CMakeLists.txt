@@ -1,6 +1,8 @@
 cmake_minimum_required (VERSION 3.1)
 project (Nonny)
 
+set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake")
+
 set (NONNY_VERSION_MAJOR 0)
 set (NONNY_VERSION_MINOR 01)
 set (
@@ -23,15 +25,14 @@ set (CMAKE_CXX_STANDARD 14)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
 set (CMAKE_CXX_EXTENSIONS OFF)
 
-include (FindPkgConfig)
-pkg_search_module (SDL2 REQUIRED sdl2>=2.0.1)
-pkg_search_module (SDL2IMAGE REQUIRED SDL2_image>=2.0.0)
-pkg_search_module (SDL2TTF REQUIRED SDL2_ttf>=2.0.0)
+find_package (SDL2 REQUIRED)
+find_package (SDL2_image REQUIRED)
+find_package (SDL2_ttf REQUIRED)
 
 include_directories (
-  ${SDL2_INCLUDE_DIRS}
-  ${SDL2IMAGE_INCLUDE_DIRS}
-  ${SDL2TTF_INCLUDE_DIRS}
+  ${SDL2_INCLUDE_DIR}
+  ${SDL2_IMAGE_INCLUDE_DIR}
+  ${SDL2_TTF_INCLUDE_DIR}
   )
 include_directories ("src")
 include_directories ("${PROJECT_BINARY_DIR}")
@@ -111,9 +112,9 @@ add_executable (
 target_link_libraries (
   nonny
   stdc++fs
-  ${SDL2_LIBRARIES}
-  ${SDL2IMAGE_LIBRARIES}
-  ${SDL2TTF_LIBRARIES}
+  ${SDL2_LIBRARY}
+  ${SDL2_IMAGE_LIBRARIES}
+  ${SDL2_TTF_LIBRARIES}
   )
 
 if (WIN32)
