@@ -21,10 +21,9 @@
 #ifndef NONNY_SDL_EVENT_HANDLER_HPP
 #define NONNY_SDL_EVENT_HANDLER_HPP
 
+#include "SDL.h"
 #include "event/event_handler.hpp"
 #include "input/key.hpp"
-
-#include <SDL2/SDL.h>
 
 class ViewManager;
 

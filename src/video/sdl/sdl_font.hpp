@@ -22,7 +22,7 @@
 #define NONNY_SDL_FONT_HPP
 
 #include <string>
-#include <SDL2/SDL_ttf.h>
+#include "SDL_ttf.h"
 #include "video/font.hpp"
 
 class SDLFont : public Font {

@@ -21,7 +21,7 @@
 #ifndef NONNY_SDL_INPUT_HANDLER_HPP
 #define NONNY_SDL_INPUT_HANDLER_HPP
 
-#include <SDL2/SDL.h>
+#include "SDL.h"
 #include "input/input_handler.hpp"
 
 class SDLInputHandler : public InputHandler {

@@ -21,7 +21,7 @@
 #ifndef NONNY_SDL_TEXTURE_HPP
 #define NONNY_SDL_TEXTURE_HPP
 
-#include <SDL2/SDL.h>
+#include "SDL.h"
 #include "video/texture.hpp"
 
 class SDLTexture : public Texture {

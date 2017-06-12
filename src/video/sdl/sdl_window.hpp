@@ -21,7 +21,7 @@
 #ifndef NONNY_SDL_WINDOW_HPP
 #define NONNY_SDL_WINDOW_HPP
 
-#include <SDL2/SDL.h>
+#include "SDL.h"
 #include "video/window.hpp"
 
 class SDLWindow : public Window {

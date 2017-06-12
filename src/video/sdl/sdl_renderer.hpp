@@ -22,7 +22,7 @@
 #define NONNY_SDL_RENDERER_HPP
 
 #include <string>
-#include <SDL2/SDL.h>
+#include "SDL.h"
 #include "video/renderer.hpp"
 
 class Font;

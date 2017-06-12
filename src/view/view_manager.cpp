@@ -22,7 +22,6 @@
 
 #include <stdexcept>
 #include <string>
-#include <SDL2/SDL.h>
 #include "input/input_handler.hpp"
 #include "settings/game_settings.hpp"
 #include "video/renderer.hpp"

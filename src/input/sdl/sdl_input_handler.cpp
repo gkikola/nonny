@@ -20,8 +20,6 @@
 
 #include "input/sdl/sdl_input_handler.hpp"
 
-#include <SDL2/SDL.h>
-
 SDLInputHandler::~SDLInputHandler()
 {
   if (m_cursor)

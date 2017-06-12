@@ -23,9 +23,9 @@
 #include <memory>
 #include <stdexcept>
 #include <string>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
+#include "SDL.h"
+#include "SDL_image.h"
+#include "SDL_ttf.h"
 #include "utility/sdl/sdl_error.hpp"
 #include "video/sdl/sdl_font.hpp"
 #include "video/sdl/sdl_renderer.hpp"

@@ -20,7 +20,7 @@
 
 #include "utility/sdl/sdl_paths.hpp"
 
-#include <SDL2/SDL.h>
+#include "SDL.h"
 
 std::string sdl_base_path()
 {
