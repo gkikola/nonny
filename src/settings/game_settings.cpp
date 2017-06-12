@@ -47,6 +47,11 @@ void GameSettings::find_directories()
   if (is_data_dir(m_data_dir))
     return;
 
+  //one last check
+  m_data_dir = base + ".." + m_separator + ".." + m_separator + "data" + m_separator;
+  if (is_data_dir(m_data_dir))
+    return;
+
   //none of the above, use installed directory
   m_data_dir = NONNY_DATADIR;
 }
