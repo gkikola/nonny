@@ -269,7 +269,7 @@ void FileSelectionPanel::draw(Renderer& renderer, const Rect& region) const
         y += txt.height();
 
         std::string size = std::to_string(m_files[i].puzzle_info->width);
-        size += "\u00D7" + std::to_string(m_files[i].puzzle_info->height);
+        size += u8"\u00D7" + std::to_string(m_files[i].puzzle_info->height);
         if (m_files[i].puzzle_info->is_multicolor)
           size += " Multicolor";
         txt = renderer.draw_text(Point(x, y), m_info_font, size);

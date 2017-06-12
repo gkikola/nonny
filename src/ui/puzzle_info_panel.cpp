@@ -387,7 +387,7 @@ void PuzzleInfoPanel::retrieve_puzzle_info()
     m_puzzle_author = "by " + *property;
 
   m_puzzle_size = std::to_string(m_puzzle->width())
-    + "\u00D7" + std::to_string(m_puzzle->height());
+    + u8"\u00D7" + std::to_string(m_puzzle->height());
   m_time = 0;
 }
 

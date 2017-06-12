@@ -94,7 +94,7 @@ void DataEditView::load_resources()
   
   m_dialog->add_text_box("Title:", "title", title);
   m_dialog->add_text_box("Author:", "author", author);
-  m_dialog->add_size_text_box("Size:", "\u00D7", "width", "height",
+  m_dialog->add_size_text_box("Size:", u8"\u00D7", "width", "height",
                               m_puzzle.width(), m_puzzle.height());
   m_dialog->add_text_box("Copyright:", "copyright", copyright);
   m_dialog->add_text_box("Collection:", "collection", collection);
