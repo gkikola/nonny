@@ -109,13 +109,8 @@ Development Status
 ------------------
 
 Nonny should be ready for its initial, preliminary release within the
-next several days, probably on or before June 12th, 2017. Windows
+next several days, probably on or before June 16th, 2017. Windows
 binaries will be provided then.
-
-In the mean time, it is perfectly possible to build the game and play
-it in its current state. Nonny is quite functional, but is just
-missing some last-minute touches and it may be a little rough around
-the edges.
 
 
 Installation
