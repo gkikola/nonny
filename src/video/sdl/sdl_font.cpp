@@ -20,6 +20,8 @@
 
 #include "video/sdl/sdl_font.hpp"
 
+#include <stdexcept>
+
 SDLFont::SDLFont(const std::string& filename, int pt_size)
   : m_filename(filename), m_pt_size(pt_size)
 {
@@ -50,4 +52,7 @@ void SDLFont::resize(int pt_size)
     TTF_CloseFont(m_font);
   m_pt_size = pt_size;
   m_font = TTF_OpenFont(m_filename.c_str(), m_pt_size);
+
+  if (!m_font)
+    throw std::runtime_error("SDLFont::resize: Could not open font " + m_filename);
 }
