@@ -204,7 +204,7 @@ std::string PuzzleView::puzzle_id() const
   if (!id)
     id = m_puzzle.find_property("title");
   if (!id)
-    return stdfs::path(m_puzzle_filename).stem();
+    return stdfs::path(m_puzzle_filename).stem().string();
   else
     return *id;
 }
@@ -269,7 +269,7 @@ void PuzzleView::save_puzzle(std::string filename)
     m_mgr.schedule_action(ViewManager::Action::save_puzzle_as);
   } else {
     if (m_ask_before_save) {
-      std::string fname = stdfs::path(filename).filename();
+      std::string fname = stdfs::path(filename).filename().string();
       auto do_save = [this]() {
         m_ask_before_save = false;
         m_mgr.schedule_action(ViewManager::Action::save_puzzle); };

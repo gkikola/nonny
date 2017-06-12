@@ -374,12 +374,12 @@ void FileSelectionPanel::load_file_list()
 
     for (const auto& file : stdfs::directory_iterator(p)) {
       FileInfo info;
-      info.full_path = file.path();
-      info.filename = file.path().filename();
+      info.full_path = file.path().string();
+      info.filename = file.path().filename().string();
       if (stdfs::is_directory(file))
         info.type = FileInfo::Type::directory;
       else { //check for puzzle file
-        std::string extension = file.path().extension();
+        std::string extension = file.path().extension().string();
         if (extension == ".non")
           info.type = FileInfo::Type::puzzle_file;
         else if (extension == ".g")
@@ -426,7 +426,7 @@ void FileSelectionPanel::load_puzzle_info()
   std::string file_path = m_files[index].full_path;
   std::ifstream sfile(file_path);
   if (sfile.is_open()) {
-    std::string extension = stdfs::path(file_path).extension();
+    std::string extension = stdfs::path(file_path).extension().string();
     if (extension == ".non")
       skim_puzzle(sfile, *summary, PuzzleFormat::non);
     else if (extension == ".g")
@@ -447,7 +447,7 @@ void FileSelectionPanel::load_puzzle_info()
     collection = "Default";
   if (id.empty()) {
     if (summary->title.empty()) {
-      id = stdfs::path(m_files[index].full_path).stem();
+      id = stdfs::path(m_files[index].full_path).stem().string();
     } else
       id = summary->title;
   }

@@ -70,7 +70,7 @@ void FileView::update(unsigned ticks, InputHandler& input)
       bool set_cursor = false;
       for (const auto& e : *m_cur_path) {
         if (index < m_path_collapse_start || index >= m_path_collapse_end) {
-          m_filename_font->text_size(e, &width, &height);
+          m_filename_font->text_size(e.string(), &width, &height);
           if (Rect(x, y, width, height)
               .contains_point(input.mouse_position())) {
             if (input.was_mouse_button_pressed(Mouse::Button::left))
@@ -166,7 +166,7 @@ void FileView::draw(Renderer& renderer)
         x += r.width() + path_spacing;
       } else if (index < m_path_collapse_start
                  || index >= m_path_collapse_end) { //not collapsed
-        r = renderer.draw_text(Point(x, y), *m_filename_font, e);
+        r = renderer.draw_text(Point(x, y), *m_filename_font, e.string());
 
         //draw underline
         renderer.draw_line(Point(x, y + r.height()),
@@ -418,7 +418,7 @@ void FileView::open_file(const std::string& filename)
         if (p.extension().empty())
           p.replace_extension(".non");
         if (!p.empty())
-          open_file(p);
+          open_file(p.string());
       }
     }
   } else {
@@ -454,7 +454,7 @@ int FileView::path_name_width() const
         m_filename_font->text_size("...", &width, nullptr);
       else if (index < m_path_collapse_start
                || index >= m_path_collapse_end)
-        m_filename_font->text_size(e.filename(), &width, nullptr);
+        m_filename_font->text_size(e.filename().string(), &width, nullptr);
       if (width > 0) {
         total += width + path_spacing;
         if (index != 0) {
@@ -488,7 +488,7 @@ void FileView::handle_directory_change()
       = dynamic_cast<FileSelectionPanel&>(m_file_selection.main_panel());
     //if path hasn't already been changed, change it
     if (*m_cur_path != file_panel.path())
-      file_panel.open_path(*m_cur_path);
+      file_panel.open_path(m_cur_path->string());
     //resize and reposition panels
     int panel_width = m_file_selection.boundary().width();
     int panel_height = m_file_selection.boundary().height();
@@ -499,9 +499,9 @@ void FileView::handle_directory_change()
 
     //save path for future FileView instances
     if (m_mode == Mode::open)
-      s_last_open_path = *m_cur_path;
+      s_last_open_path = m_cur_path->string();
     else
-      s_last_save_path = *m_cur_path;
+      s_last_save_path = m_cur_path->string();
   }
 
   collapse_path();

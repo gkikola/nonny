@@ -20,6 +20,7 @@
 
 #include "video/font.hpp"
 
+#include <algorithm>
 #include <cstddef>
 
 void Font::text_size_wrapped(std::string text, int wrap_width,

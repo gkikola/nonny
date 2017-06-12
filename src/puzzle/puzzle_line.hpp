@@ -27,7 +27,7 @@
 enum class LineType { row, column };
 
 class Puzzle;
-class PuzzleCell;
+struct PuzzleCell;
 
 /*
  * Holds a reference to a line (row or column) of puzzle cells.

@@ -40,9 +40,9 @@ namespace default_colors {
 Color Color::fade(double opacity) const
 {
   const int max = 256;
-  int red = (1 - opacity) * max + opacity * m_r;
-  int green = (1 - opacity) * max + opacity * m_g;
-  int blue = (1 - opacity) * max + opacity * m_b;
+  int red = static_cast<int>((1 - opacity) * max + opacity * m_r);
+  int green = static_cast<int>((1 - opacity) * max + opacity * m_g);
+  int blue = static_cast<int>((1 - opacity) * max + opacity * m_b);
 
   if (red > max)
     red = max;
