@@ -11,7 +11,7 @@ set (
   )
 
 if (WIN32)
-  set (NONNY_DATADIR_SUFFIX "/nonny/")
+  set (NONNY_DATADIR_SUFFIX "/")
 else ()
   set (NONNY_DATADIR_SUFFIX "/share/nonny/")
 endif ()
@@ -111,11 +111,13 @@ add_executable (
 
 target_link_libraries (
   nonny
-  stdc++fs
   ${SDL2_LIBRARY}
   ${SDL2_IMAGE_LIBRARIES}
   ${SDL2_TTF_LIBRARIES}
   )
+if (NOT WIN32)
+  target_link_libraries (nonny stdc++fs)
+endif ()
 
 if (WIN32)
   install (TARGETS nonny DESTINATION nonny)

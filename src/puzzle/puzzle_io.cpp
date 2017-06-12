@@ -362,7 +362,7 @@ non_format::read(std::istream& is, PuzzleBlueprint& blueprint)
     if (dimension) {
       try {
         *dimension = str_to_uint(argument);
-      } catch (const std::logic_error& e) {
+      } catch (const std::logic_error&) {
         throw InvalidPuzzleFile("non_format::read: invalid puzzle "
                                 + property);
       }
@@ -403,7 +403,7 @@ non_format::skim(std::istream& is, PuzzleSummary& summary)
       else if (p.first == "columns" && !p.second.empty())
         summary.height = str_to_uint(p.second);
     }
-  } catch (const std::exception& e) { } //ignore file errors
+  } catch (const std::exception&) { } //ignore file errors
 
   return is;
 }

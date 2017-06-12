@@ -1,1 +1,4 @@
 build/
+.vs/
+Win32/
+nonny.dir/

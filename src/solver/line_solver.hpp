@@ -24,8 +24,8 @@
 #include <vector>
 
 class BlockSequence;
-class PuzzleCell;
-class PuzzleClue;
+struct PuzzleCell;
+struct PuzzleClue;
 class PuzzleLine;
 
 /*
