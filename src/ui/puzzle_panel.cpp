@@ -1085,8 +1085,10 @@ void PuzzlePanel::update_zoom(unsigned ticks)
   update_clue_font();
   calc_grid_pos();
 
-  int new_target_x = m_grid_pos.x() + zoom_pos_x * (m_cell_size + 1);
-  int new_target_y = m_grid_pos.y() + zoom_pos_y * (m_cell_size + 1);
+  int new_target_x = static_cast<int>(m_grid_pos.x() 
+                                      + zoom_pos_x * (m_cell_size + 1));
+  int new_target_y = static_cast<int>(m_grid_pos.y()
+                                      + zoom_pos_y * (m_cell_size + 1));
   scroll(m_zoom_target_x - new_target_x, m_zoom_target_y - new_target_y);
 }
 
