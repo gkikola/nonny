@@ -102,7 +102,9 @@ followed by a gap, followed by two consecutive red cells:
 
 ![Multicolor line solving - 2 2](media/tutorial/color_clue.png)
 
-Again, by considering the different possibilities you can find cells that must be filled in, which gives you more information to solve the other lines in the puzzle.
+Again, by considering the different possibilities you can find cells
+that must be filled in, which gives you more information to solve the
+other lines in the puzzle.
 
 
 Development Status
