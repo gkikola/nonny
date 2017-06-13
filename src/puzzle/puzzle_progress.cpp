@@ -75,7 +75,7 @@ void PuzzleProgress::restore(Puzzle& puzzle, const PuzzleGrid& grid) const
 
 std::ostream& operator<<(std::ostream& os, const PuzzleProgress& prog)
 {
-  os << "file \"" << prog.m_filename << "\"\n"
+  os << "file \"" << unescape(prog.m_filename) << "\"\n"
      << "completed " << (prog.m_completed ? "yes" : "no") << "\n";
   
   os << "best_time \"";
