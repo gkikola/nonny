@@ -43,6 +43,12 @@ char escape(char c);
  */
 std::string escape(const std::string& s);
 
+/* 
+ * Reverts special characters in the given string back to their escape
+ * sequences
+ */
+std::string unescape(const std::string& s);
+
 // Trims whitespace from the beginning and end of a string
 std::string trim(std::string s);
 

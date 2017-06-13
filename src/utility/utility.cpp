@@ -110,6 +110,42 @@ std::string escape(const std::string& s)
   return retvalue;
 }
 
+std::string unescape(const std::string& s)
+{
+  std::string result;
+
+  for (char c : s) {
+    switch (c) {
+    default:
+      result.push_back(c);
+      break;
+    case '\\':
+      result += "\\\\";
+      break;
+    case '\b':
+      result += "\\b";
+      break;
+    case '\f':
+      result += "\\f";
+      break;
+    case '\n':
+      result += "\\n";
+      break;
+    case '\r':
+      result += "\\r";
+      break;
+    case '\t':
+      result += "\\t";
+      break;
+    case '\v':
+      result += "\\v";
+      break;
+    }
+  }
+  
+  return result;
+}
+
 std::string trim(std::string s)
 {
   auto front = std::find_if_not(s.begin(), s.end(), is_space);
