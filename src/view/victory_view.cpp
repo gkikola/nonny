@@ -159,8 +159,10 @@ void VictoryView::load_resources()
   m_times = oss.str();
 
   GameSettings& settings = m_mgr.game_settings();
-  std::string font_file = settings.font_dir() + "FreeSans.ttf";
-  std::string bold_font_file = settings.font_dir() + "FreeSansBold.ttf";
+  std::string font_file = settings.font_dir()
+    + settings.filesystem_separator() + "FreeSans.ttf";
+  std::string bold_font_file = settings.font_dir()
+    + settings.filesystem_separator() + "FreeSansBold.ttf";
   m_title_font = m_mgr.video_system().new_font(bold_font_file, 32);
   m_info_font = m_mgr.video_system().new_font(font_file, 24);
 

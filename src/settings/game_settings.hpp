@@ -53,27 +53,27 @@ private:
 /* implementation */
 inline std::string GameSettings::font_dir() const
 {
-  return data_dir() + "fonts" + filesystem_separator();
+  return data_dir() + m_separator + "fonts";
 }
 
 inline std::string GameSettings::image_dir() const
 {
-  return data_dir() + "images" + filesystem_separator();
+  return data_dir() + m_separator + "images";
 }
 
 inline std::string GameSettings::puzzle_dir() const
 {
-  return data_dir() + "puzzles" + filesystem_separator();
+  return data_dir() + m_separator + "puzzles";
 }
 
 inline std::string GameSettings::saved_progress_dir() const
 {
-  return save_dir() + "saves" + filesystem_separator();
+  return save_dir() + m_separator + "saves";
 }
 
 inline std::string GameSettings::saved_puzzle_dir() const
 {
-  return save_dir() + "puzzles" + filesystem_separator();
+  return save_dir() + m_separator + "puzzles";
 }
 
 #endif

@@ -34,9 +34,6 @@ std::string base_path();
 // Returns the default directory where save data should go
 std::string save_path();
 
-// Returns the separator used in the platform's filesystem
-char filesystem_separator();
-
 // Converts an escape sequence code to its corresponding character
 char escape(char c);
 

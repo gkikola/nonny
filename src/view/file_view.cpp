@@ -253,9 +253,12 @@ void FileView::load_resources()
   const GameSettings& settings = m_mgr.game_settings();
   VideoSystem& vs = m_mgr.video_system();
 
-  std::string font_file = settings.font_dir() + "FreeSans.ttf";
-  std::string nav_texture_file = settings.image_dir() + "nav.png";
-  std::string icon_texture_file = settings.image_dir() + "file.png";
+  std::string font_file = settings.font_dir()
+    + settings.filesystem_separator() + "FreeSans.ttf";
+  std::string nav_texture_file = settings.image_dir()
+    + settings.filesystem_separator() + "nav.png";
+  std::string icon_texture_file = settings.image_dir()
+    + settings.filesystem_separator() + "file.png";
   m_filename_font = vs.new_font(font_file, 18);
   m_info_font = vs.new_font(font_file, 16);
   m_control_font = vs.new_font(font_file, 24);

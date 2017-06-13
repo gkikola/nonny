@@ -37,9 +37,3 @@ std::string sdl_save_path()
   SDL_free(cstr);
   return result;
 }
-
-char sdl_filesystem_separator()
-{
-  std::string path = sdl_base_path(); //guaranteed to end with separator
-  return path[path.size() - 1];
-}

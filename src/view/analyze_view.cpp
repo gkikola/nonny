@@ -57,6 +57,7 @@ void AnalyzeView::resize(int width, int height)
 
 void AnalyzeView::load_resources()
 {
-  std::string font_file = m_mgr.game_settings().font_dir() + "FreeSans.ttf";
+  std::string font_file = m_mgr.game_settings().font_dir()
+    + m_mgr.game_settings().filesystem_separator() + "FreeSans.ttf";
   m_font = m_mgr.video_system().new_font(font_file, 24);
 }

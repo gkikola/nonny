@@ -25,6 +25,5 @@
 
 std::string sdl_base_path();
 std::string sdl_save_path();
-char sdl_filesystem_separator();
 
 #endif

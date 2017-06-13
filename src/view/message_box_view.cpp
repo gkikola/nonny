@@ -117,7 +117,8 @@ void MessageBoxView::resize(int width, int height)
 
 void MessageBoxView::load_resources()
 {
-  std::string file = m_mgr.game_settings().font_dir() + "FreeSans.ttf";
+  std::string file = m_mgr.game_settings().font_dir()
+    + m_mgr.game_settings().filesystem_separator() + "FreeSans.ttf";
   m_text_font = m_mgr.video_system().new_font(file, 18);
   m_control_font = m_mgr.video_system().new_font(file, 24);
 }

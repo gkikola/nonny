@@ -21,8 +21,11 @@
 #include "settings/game_settings.hpp"
 
 #include <fstream>
+#include <experimental/filesystem>
 #include "config.h"
 #include "utility/utility.hpp"
+
+namespace stdfs = std::experimental::filesystem;
 
 GameSettings::GameSettings()
 {
@@ -31,24 +34,24 @@ GameSettings::GameSettings()
 
 void GameSettings::find_directories()
 {
-  m_separator = filesystem_separator();
+  m_separator = static_cast<char>(stdfs::path::preferred_separator);
   m_save_dir = save_path();
 
-  std::string base = base_path();
+  stdfs::path base(base_path());
 
   //find data directory
   //look in current directory first
-  m_data_dir = base;
+  m_data_dir = base.string();
   if (is_data_dir(m_data_dir))
     return;
 
   //could we be inside a build directory?
-  m_data_dir = base + ".." + m_separator + "data" + m_separator;
+  m_data_dir = (base / stdfs::path("../data")).string();
   if (is_data_dir(m_data_dir))
     return;
 
   //one last check
-  m_data_dir = base + ".." + m_separator + ".." + m_separator + "data" + m_separator;
+  m_data_dir = (base / stdfs::path("../../data")).string();
   if (is_data_dir(m_data_dir))
     return;
 
@@ -58,7 +61,7 @@ void GameSettings::find_directories()
 
 bool GameSettings::is_data_dir(const std::string& path)
 {
-  std::string img_path = path + "images" + filesystem_separator();
-  std::ifstream file(img_path + "nonny.png");
+  stdfs::path img_path = stdfs::path(path) / stdfs::path("images/nonny.png");
+  std::ifstream file(img_path);
   return file.is_open();
 }

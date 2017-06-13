@@ -76,7 +76,8 @@ void DataEditView::resize(int width, int height)
 
 void DataEditView::load_resources()
 {
-  std::string file = m_mgr.game_settings().font_dir() + "FreeSans.ttf";
+  std::string file = m_mgr.game_settings().font_dir()
+    + m_mgr.game_settings().filesystem_separator() + "FreeSans.ttf";
   m_control_font = m_mgr.video_system().new_font(file, 24);
 
   m_dialog = std::make_unique<OptionDialog>(*m_control_font,

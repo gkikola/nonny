@@ -92,6 +92,7 @@ std::string SaveManager::find_save_file(const std::string& path,
     std_id = "untitled";
   
   std::string expected_dir = m_settings.saved_progress_dir();
+  expected_dir += m_settings.filesystem_separator();
   expected_dir += std_dir + m_settings.filesystem_separator();
 
   int counter = 0;

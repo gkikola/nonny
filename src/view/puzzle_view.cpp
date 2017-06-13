@@ -359,9 +359,12 @@ void PuzzleView::setup_panels()
 {
   const GameSettings& settings = m_mgr.game_settings();
 
-  std::string font_file = settings.font_dir() + "FreeSans.ttf";
-  std::string bold_font_file = settings.font_dir() + "FreeSansBold.ttf";
-  std::string texture_file = settings.image_dir() + "puzzle.png";
+  std::string font_file = settings.font_dir()
+    + settings.filesystem_separator() + "FreeSans.ttf";
+  std::string bold_font_file = settings.font_dir()
+    + settings.filesystem_separator() + "FreeSansBold.ttf";
+  std::string texture_file = settings.image_dir()
+    + settings.filesystem_separator() + "puzzle.png";
   m_clue_font = m_mgr.video_system().new_font(font_file, 12);
   m_cell_texture = m_mgr.video_system().load_image(m_mgr.renderer(),
                                                    texture_file);
@@ -378,15 +381,18 @@ void PuzzleView::setup_panels()
   m_info_font = m_mgr.video_system().new_font(font_file, 18);
   m_size_font = m_mgr.video_system().new_font(font_file, 24);
 
-  texture_file = settings.image_dir() + "control.png";
+  texture_file = settings.image_dir()
+    + settings.filesystem_separator() + "control.png";
   m_ctrl_texture = m_mgr.video_system().load_image(m_mgr.renderer(),
                                                    texture_file);
 
-  texture_file = settings.image_dir() + "nav.png";
+  texture_file = settings.image_dir()
+    + settings.filesystem_separator() + "nav.png";
   m_arrow_texture = m_mgr.video_system().load_image(m_mgr.renderer(),
                                                     texture_file);
 
-  texture_file = settings.image_dir() + "draw.png";
+  texture_file = settings.image_dir()
+    + settings.filesystem_separator() + "draw.png";
   m_draw_texture = m_mgr.video_system().load_image(m_mgr.renderer(),
                                                    texture_file);
 

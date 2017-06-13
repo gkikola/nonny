@@ -104,13 +104,16 @@ void MenuView::resize(int width, int height)
 
 void MenuView::load_resources()
 {
-  std::string file = m_mgr.game_settings().image_dir() + "nonny.png";
+  std::string file = m_mgr.game_settings().image_dir()
+    + m_mgr.game_settings().filesystem_separator() + "nonny.png";
   m_logo_texture = m_mgr.video_system().load_image(m_mgr.renderer(), file);
 
-  file = m_mgr.game_settings().font_dir() + "FreeSansBold.ttf";
+  file = m_mgr.game_settings().font_dir()
+    + m_mgr.game_settings().filesystem_separator() + "FreeSansBold.ttf";
   m_title_font = m_mgr.video_system().new_font(file, 56);
 
-  file = m_mgr.game_settings().font_dir() + "FreeSans.ttf";
+  file = m_mgr.game_settings().font_dir()
+    + m_mgr.game_settings().filesystem_separator() + "FreeSans.ttf";
   m_about_font = m_mgr.video_system().new_font(file, 18);
   m_control_font = m_mgr.video_system().new_font(file, 24);
 }

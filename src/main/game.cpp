@@ -36,7 +36,8 @@ Game::Game(int argc, char* argv[])
 
   WindowSettings ws;
   ws.title = NONNY_TITLE;
-  ws.icon = m_settings.image_dir() + "nonny.png";
+  ws.icon = m_settings.image_dir()
+    + m_settings.filesystem_separator() + "nonny.png";
   m_window = m_video->new_window(ws);
   m_renderer = m_video->new_renderer(*m_window);
 

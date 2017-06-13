@@ -23,37 +23,43 @@
 #include <algorithm>
 #include <sstream>
 #include <stdexcept>
+#include <experimental/filesystem>
 #include "config.h"
 
 #ifdef NONNY_INPUT_SDL
 #include "sdl/sdl_paths.hpp"
 #endif
 
+namespace stdfs = std::experimental::filesystem;
+
 std::string base_path()
 {
 #ifdef NONNY_INPUT_SDL
-  return sdl_base_path();
+  std::string result = sdl_base_path();
 #else
   throw std::runtime_error("::base_path: base path not retrievable");
 #endif
+
+  stdfs::path p(result);
+  if (!stdfs::exists(p))
+    stdfs::create_directories(p);
+
+  return stdfs::canonical(p).string();
 }
 
 std::string save_path()
 {
 #ifdef NONNY_INPUT_SDL
-  return sdl_save_path();
+  std::string result = sdl_save_path();
 #else
   throw std::runtime_error("::save_path: save path not retrievable");
 #endif
-}
 
-char filesystem_separator()
-{
-#ifdef NONNY_INPUT_SDL
-  return sdl_filesystem_separator();
-#else
-  return '/';
-#endif
+  stdfs::path p(result);
+  if (!stdfs::exists(p))
+    stdfs::create_directories(p);
+
+  return stdfs::canonical(p).string();
 }
 
 char escape(char c)
