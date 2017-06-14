@@ -134,12 +134,14 @@ contents anywhere. You can then run Nonny by running `nonny.exe`.
 **From source:**
 
 You'll need to have several things installed. First you'll need
-general development tools: a C++ compiler (the one provided by the GNU
-Compiler Collection works well), essential binary utilities as
-provided by GNU binutils or your system's equivalent, a shell from
-which to run commands, and basic command line tools for working with
-directories. On Debian-based systems, you can get these by installing
-the `build-essential` package.
+general development tools: a C++ compiler (the one provided by the
+[GNU Compiler Collection](https://gcc.gnu.org/) works well), essential
+binary utilities as provided by [GNU
+binutils](https://www.gnu.org/software/binutils/) or your system's
+equivalent, a shell from which to run commands, and basic command line
+tools for working with directories. On
+[Debian](https://www.debian.org/)-based systems, you can get these by
+installing the `build-essential` package.
 
 Next, you'll need [CMake](https://cmake.org/) 3.1 or later, and the
 following libraries: [SDL2](https://www.libsdl.org/),
