@@ -21,6 +21,11 @@
 #include <iostream>
 #include <stdexcept>
 #include "main/game.hpp"
+#include "config.h"
+
+#ifdef NONNY_INPUT_SDL
+#include "SDL.h"
+#endif
 
 int main(int argc, char* argv[])
 {

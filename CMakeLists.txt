@@ -37,8 +37,14 @@ include_directories (
 include_directories ("src")
 include_directories ("${PROJECT_BINARY_DIR}")
 
+if (WIN32)
+  set (APP_TYPE WIN32)
+else ()
+  set (APP_TYPE)
+endif ()
+
 add_executable (
-  nonny
+  nonny ${APP_TYPE}
   src/color/color.cpp
   src/color/color_palette.cpp
   src/event/sdl/sdl_event_handler.cpp
