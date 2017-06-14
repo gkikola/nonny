@@ -110,30 +110,66 @@ other lines in the puzzle.
 Development Status
 ------------------
 
-Nonny should be ready for its initial, preliminary release within the
-next several days, probably on or before June 16th, 2017. Windows
-binaries will be provided then.
+Nonny is functional and has a reasonable set of features but needs
+some optimization and some polish. Other goals for the near future
+include support for more file formats, better efficiency in the
+solver, and command-line arguments for easy puzzle loading and
+solving.
+
+Additional planned features include the ability to save and load
+puzzle states while solving so that guesses can be easily made or
+reverted, and a better clue display that makes it easier to see clues
+for the current row and column when working on large puzzles.
 
 
 Installation
 ------------
 
-Windows binaries will be provided soon. To build Nonny yourself,
-you'll need [CMake](https://cmake.org/) 3.1 or later,
-[SDL2](https://www.libsdl.org/),
-[SDL2_image](https://www.libsdl.org/projects/SDL_image/), and
-[SDL2_ttf](https://www.libsdl.org/projects/SDL_ttf/).
+**From binary (currently Windows only):**
 
-GNU/Linux build and install example:
+Download the latest `nonny-x.x_w32.zip` archive and extract its
+contents anywhere. You can then run Nonny by running `nonny.exe`.
+
+
+**From source:**
+
+You'll need to have several things installed. First you'll need
+general development tools: a C++ compiler (the one provided by the GNU
+Compiler Collection works well), essential binary utilities as
+provided by GNU binutils or your system's equivalent, a shell from
+which to run commands, and basic command line tools for working with
+directories. On Debian-based systems, you can get these by installing
+the `build-essential` package.
+
+Next, you'll need [CMake](https://cmake.org/) 3.1 or later, and the
+following libraries: [SDL2](https://www.libsdl.org/),
+[SDL2_image](https://www.libsdl.org/projects/SDL_image/), and
+[SDL2_ttf](https://www.libsdl.org/projects/SDL_ttf/). Make sure you
+have the development headers for these libraries installed. On
+Debian-based systems you can simply install the packages `cmake`,
+`libsdl2-dev`, `libsdl2-image-dev`, and `libsdl2-ttf-dev`.
+
+To build Nonny, first download and extract the source archive, or (if
+you have `git` installed) clone the repository with
 ```
 git clone https://github.com/gkikola/nonny.git
-cd nonny
+```
+
+Then from the main project directory (the one that contains the
+`CMakeLists.txt` file), run the following commands:
+```
 mkdir build
 cd build
 cmake ..
-make
-sudo make install
 ```
+This should create the input files for your platform's native build
+system. On Unix-like systems this will usually be in the form of
+makefiles. You can then run `make` to build the game and then `sudo
+make install` to install it (installing is not necessary, you can run
+the game from its `build` directory). On Windows you can use CMake to
+generate a Visual Studio solution, which you can then open and build
+within Visual Studio. It should also be possible to build and run
+Nonny on macOS or OS X but this has not yet been tested.
 
 
 Copyright
