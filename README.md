@@ -3,6 +3,7 @@ Nonny
 
 ![Nonny](media/nonny.png)
 
+
 Description
 -----------
 
@@ -24,6 +25,14 @@ be used to verify that your puzzles have only one solution.
 Nonny tracks your completion status and times for each puzzle, and you
 may save your progress on a puzzle and resume solving it at a later
 time.
+
+
+Download
+--------
+
+Visit
+[gkikola.com/projects/nonny/#download](http://www.gkikola.com/projects/nonny/#download)
+for the latest version.
 
 
 Current Features
