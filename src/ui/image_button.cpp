@@ -25,7 +25,7 @@
 #include "video/renderer.hpp"
 #include "video/texture.hpp"
 
-constexpr int num_cells = 4;
+constexpr int num_cells = 5;
 
 void ImageButton::draw(Renderer& renderer, const Rect& region) const
 {

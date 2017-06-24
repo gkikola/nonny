@@ -43,8 +43,13 @@ public:
   virtual bool can_focus() const { return true; }
   virtual bool has_focus() const { return m_focused; }
 
+  virtual void enable() { m_enabled = true; }
+  virtual void disable() { m_enabled = false; }
+  virtual bool is_enabled() const { return m_enabled; }
+
 private:
   bool m_focused = false;
+  bool m_enabled = false;
 };
 
 typedef std::shared_ptr<Control> ControlPtr;
