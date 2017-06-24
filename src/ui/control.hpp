@@ -49,7 +49,7 @@ public:
 
 private:
   bool m_focused = false;
-  bool m_enabled = false;
+  bool m_enabled = true;
 };
 
 typedef std::shared_ptr<Control> ControlPtr;

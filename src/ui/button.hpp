@@ -27,6 +27,10 @@
 
 class Font;
 
+/*
+ * A button control. Can be moused over or clicked. Performs an action
+ * when clicked.
+ */
 class Button : public Control {
 public:
   Button() = default;
