@@ -66,7 +66,7 @@ MessageBoxView::MessageBoxView(ViewManager& vm,
     }
     break;
   case Type::yes_no_cancel:
-    {   
+    {
       auto button = std::make_shared<Button>(*m_control_font, "Yes");
       button->register_callback(on_yes);
       button->resize(button_width, button->boundary().height());

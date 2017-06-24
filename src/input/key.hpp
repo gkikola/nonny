@@ -52,7 +52,7 @@ namespace Keyboard {
 }
 
 namespace Mouse {
-  
+
   enum Button {
     unknown, left, right, middle, back, forward
   };
@@ -62,7 +62,7 @@ namespace Mouse {
   enum class Cursor {
     unknown, arrow, ibeam, wait, crosshair, size_we, size_ns, no, hand
   };
-  
+
   std::string button_name(Button button);
 }
 

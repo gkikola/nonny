@@ -35,7 +35,7 @@ struct PuzzleCell;
 class PuzzleLine {
 public:
   typedef std::vector<PuzzleClue> ClueSequence;
-  
+
   PuzzleLine(Puzzle& puzzle, int line, LineType type)
     : m_puzzle(puzzle), m_line(line), m_type(type) { }
 
@@ -64,7 +64,7 @@ public:
 private:
   inline int row(int index) const;
   inline int col(int index) const;
-  
+
   Puzzle& m_puzzle;
   int m_line;
   LineType m_type;
@@ -91,7 +91,7 @@ public:
   const ClueSequence& clues() const;
 
   bool is_solved() const;
-  
+
 private:
   const Puzzle& m_puzzle;
   int m_line;

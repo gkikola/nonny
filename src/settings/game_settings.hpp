@@ -29,7 +29,7 @@
 class GameSettings {
 public:
   GameSettings();
-  
+
   const std::string& data_dir() const { return m_data_dir; }
   const std::string& save_dir() const { return m_save_dir; }
   char filesystem_separator() const { return m_separator; }

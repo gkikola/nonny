@@ -38,12 +38,12 @@ public:
 
   VideoSystem(const VideoSystem&) = delete;
   VideoSystem& operator=(const VideoSystem&) = delete;
-  
+
   static std::unique_ptr<VideoSystem> create();
 
   virtual std::unique_ptr<Window>
   new_window(const WindowSettings& ws) const = 0;
-  
+
   virtual std::unique_ptr<Renderer> new_renderer(Window& window) const = 0;
   virtual std::unique_ptr<Font> new_font(const std::string& filename,
                                          int pt_size) const = 0;

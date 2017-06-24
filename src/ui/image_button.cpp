@@ -35,7 +35,7 @@ void ImageButton::draw(Renderer& renderer, const Rect& region) const
   if (has_focus())
     draw_sel_rect(renderer);
   draw_image(renderer);
-  
+
   renderer.set_clip_rect();
 }
 
@@ -50,7 +50,7 @@ void ImageButton::draw_image(Renderer& renderer) const
       state = 1;
     else if (has_focus())
       state = 2;
-    
+
     Rect src(m_cell * cell_size, state * cell_size,
              cell_size, cell_size);
     renderer.copy_texture(*m_texture, src, m_boundary);

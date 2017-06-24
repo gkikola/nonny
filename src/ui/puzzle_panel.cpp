@@ -263,7 +263,7 @@ void PuzzlePanel::draw_grid_lines(Renderer& renderer) const
 void PuzzlePanel::draw_clues(Renderer& renderer) const
 {
   constexpr double finished_fade = 0.33;
-  
+
   int x, y;
   for (int i = 0; i < m_puzzle->width(); ++i) {
     x = m_grid_pos.x() + i * (m_cell_size + 1);
@@ -351,7 +351,7 @@ void PuzzlePanel::draw_cell(Renderer& renderer, int x, int y,
 
       if (state == PuzzleCell::State::blank)
         size_reduction = m_cell_size / 2 - 1 - size_reduction;
-        
+
       dest.x() += size_reduction;
       dest.y() += size_reduction;
       dest.width() -= 2 * size_reduction;
@@ -523,7 +523,7 @@ void PuzzlePanel::handle_mouse_selection(unsigned ticks, InputHandler& input,
   if (cursor_over_grid) {
     cur_state = (*m_puzzle)[x][y].state;
   }
-  
+
   if (input.rel_mouse_x() != 0 || input.rel_mouse_y() != 0) {
     m_selected = cursor_over_grid;
     if (m_selected) {
@@ -572,7 +572,7 @@ void PuzzlePanel::handle_mouse_selection(unsigned ticks, InputHandler& input,
         && m_draw_tool != DrawTool::paint
         && m_draw_tool != DrawTool::fill)
       do_draw_action(input.was_mouse_button_released(Mouse::Button::left));
-    
+
     m_mouse_dragging = false;
     m_mouse_locked = false;
     input.release_mouse();
@@ -590,7 +590,7 @@ void PuzzlePanel::handle_mouse_selection(unsigned ticks, InputHandler& input,
     input.release_mouse();
   }
 
-  if (m_mouse_dragging) {    
+  if (m_mouse_dragging) {
     Point old_cursor = input.prev_mouse_position();
     int old_x, old_y;
     cell_at_point(old_cursor, &old_x, &old_y);
@@ -635,11 +635,11 @@ void PuzzlePanel::handle_mouse_selection(unsigned ticks, InputHandler& input,
         m_drag_start_y = y;
       }
     }
-    
+
     //mark current cell and any cells that the mouse passed over
     if (m_draw_tool == DrawTool::paint) {
       drag_over_cell(x, y);
-    
+
       while (old_x != x || old_y != y) {
         drag_over_cell(old_x, old_y);
         if (old_x < x)
@@ -753,7 +753,7 @@ void PuzzlePanel::handle_kb_selection(unsigned ticks, InputHandler& input)
   num_press = input.num_key_presses(Keyboard::Key::up)
     + input.num_key_presses(Keyboard::Key::kp_up);
   if (num_press)
-    move_selection(Direction::up, num_press);  
+    move_selection(Direction::up, num_press);
 }
 
 void PuzzlePanel::handle_mouse_wheel(unsigned ticks, InputHandler& input)
@@ -821,7 +821,7 @@ void PuzzlePanel::do_draw_action(bool mark)
               && replace_state == fill
               && target_color == replace_color))
         break;
-      
+
       std::queue<Point> queue;
       queue.push(Point(m_selection_x, m_selection_y));
 
@@ -866,7 +866,7 @@ void PuzzlePanel::for_each_point_on_selection(CellFunction fn) const
   int y0 = m_drag_start_y;
   int x1 = m_drag_end_x;
   int y1 = m_drag_end_y;
-  
+
   switch (m_draw_tool) {
   case DrawTool::paint:
   case DrawTool::fill:
@@ -1085,7 +1085,7 @@ void PuzzlePanel::update_zoom(unsigned ticks)
   update_clue_font();
   calc_grid_pos();
 
-  int new_target_x = static_cast<int>(m_grid_pos.x() 
+  int new_target_x = static_cast<int>(m_grid_pos.x()
                                       + zoom_pos_x * (m_cell_size + 1));
   int new_target_y = static_cast<int>(m_grid_pos.y()
                                       + zoom_pos_y * (m_cell_size + 1));

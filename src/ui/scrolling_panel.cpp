@@ -44,7 +44,7 @@ void ScrollingPanel::update(unsigned ticks, InputHandler& input,
   if (m_main_panel->boundary().width() != m_main_panel_width
       || m_main_panel->boundary().height() != m_main_panel_height)
     resize(m_boundary.width(), m_boundary.height());
-  
+
   //handle smooth scroll
   int scroll_amt = 0;
   if (m_smooth_scroll_amount < 0) {
@@ -61,7 +61,7 @@ void ScrollingPanel::update(unsigned ticks, InputHandler& input,
     m_main_panel->scroll(0, scroll_amt);
     move_panel_in_bounds();
   }
-  
+
   Rect main_region = m_boundary;
   if (m_hscroll_active) {
     m_hscroll.update(ticks, input, active_region);
@@ -74,11 +74,11 @@ void ScrollingPanel::update(unsigned ticks, InputHandler& input,
 
   int old_x = m_main_panel->boundary().x();
   int old_y = m_main_panel->boundary().y();
-  
+
   if (m_main_panel)
     m_main_panel->update(ticks, input,
                          intersection(main_region, active_region));
-  
+
   //if panel moved, put it back in bounds
   if (old_x != m_main_panel->boundary().x()
       || old_y != m_main_panel->boundary().y())
@@ -115,7 +115,7 @@ void ScrollingPanel::resize(int width, int height)
 
   m_main_panel_width = m_main_panel->boundary().width();
   m_main_panel_height = m_main_panel->boundary().height();
-  
+
   //figure out if we need scrollbars
   m_hscroll_active = false;
   m_vscroll_active = false;
@@ -156,7 +156,7 @@ void ScrollingPanel::resize(int width, int height)
 void ScrollingPanel::move_panel_in_bounds()
 {
   Rect r = m_main_panel->boundary();
-  
+
   if (r.width() >= m_boundary.width() && r.x() > m_boundary.x())
     m_main_panel->move(m_boundary.x(), m_main_panel->boundary().y());
   if (r.height() >= m_boundary.height() && r.y() > m_boundary.y())

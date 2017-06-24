@@ -45,7 +45,7 @@ public:
 
 private:
   void calc_size();
-  
+
   Texture& m_texture;
   Callback m_tool_callback;
   PuzzlePanel::DrawTool m_cur_tool = PuzzlePanel::DrawTool::paint;

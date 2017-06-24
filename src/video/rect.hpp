@@ -31,7 +31,7 @@ public:
   Rect() = default;
   Rect(int x, int y, int width, int height)
     : m_x(x), m_y(y), m_width(width), m_height(height) { }
-  
+
   Rect(const Rect&) = default;
   Rect(Rect&&) = default;
   Rect& operator=(const Rect&) & = default;
@@ -53,7 +53,7 @@ public:
 
   inline bool contains_point(int x, int y) const;
   inline bool contains_point(const Point& p) const;
-  
+
 private:
   int m_x = 0;
   int m_y = 0;

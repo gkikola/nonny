@@ -282,7 +282,7 @@ void FileView::load_resources()
   m_up_button->register_callback(std::bind(&FileView::up, this));
   m_back_button->register_callback(std::bind(&FileView::back, this));
   m_forward_button->register_callback(std::bind(&FileView::forward, this));
-  
+
   m_open_button->register_callback(std::bind(&FileView::open_file, this, ""));
 
   m_filename_box = std::make_shared<TextBox>(*m_control_font);
@@ -447,7 +447,7 @@ void FileView::open_file(const std::string& filename)
 int FileView::path_name_width() const
 {
   int total = 0;
-  
+
   if (m_cur_path != m_paths.end()) {
     int index = 0;
     for (const auto& e : *m_cur_path) {
@@ -519,7 +519,7 @@ void FileView::handle_selection_change()
 }
 
 void FileView::collapse_path()
-{    
+{
   if (m_cur_path != m_paths.end()) {
     //max allowed width is screen width minus the six nav buttons
     int max_width = 2 * panel_spacing

@@ -37,7 +37,7 @@ public:
   // Load a blank puzzle in edit mode
   PuzzleView(ViewManager& vm);
   PuzzleView(ViewManager& vm, int width, int height);
-  
+
   // Load the designated puzzle file
   PuzzleView(ViewManager& vm, const std::string& filename);
   PuzzleView(ViewManager& vm, const std::string& filename,
@@ -61,13 +61,13 @@ public:
 
   bool is_editing_mode_active() const { return m_edit_mode; }
   bool is_save_needed() const;
-  
+
   Puzzle& puzzle() { return m_puzzle; }
   const Puzzle& puzzle() const { return m_puzzle; }
 
   unsigned time() const;
   unsigned best_time() const { return m_best_time; }
-  
+
 private:
   void load(const std::string& filename);
   PuzzleFormat file_type(const std::string& filename) const;
@@ -80,7 +80,7 @@ private:
   void enable_editing();
   std::string puzzle_id() const;
   std::string puzzle_collection() const;
-  
+
   Puzzle m_puzzle;
   std::string m_puzzle_filename;
   bool m_edit_mode = false;

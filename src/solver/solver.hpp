@@ -47,7 +47,7 @@ public:
 
   // Execute one step in solving the puzzle, returns true if finished
   bool step();
-  
+
   // Solve the whole puzzle, all at once
   void operator()();
 
@@ -63,7 +63,7 @@ public:
    * solution, or cycle to the next solution if more than one.
    */
   void cycle_solution();
-  
+
   // How many solutions were found?
   int num_solutions() const { return m_solutions.size(); }
 
@@ -71,13 +71,13 @@ public:
   int num_guesses() const { return m_num_guesses; }
 
   int search_depth() const { return m_max_depth; }
-  
+
   // Can the puzzle be solved one line at a time?
   inline bool is_line_solvable() const;
 
   // Is there an inconsistency in the puzzle?
   bool was_contradiction_found() const { return m_inconsistent; }
-  
+
 private:
   // Choose a line to solve
   int select_row();
@@ -86,7 +86,7 @@ private:
 
   // Update solved line information
   void check_for_solved_lines();
-  
+
   // Return to the most recent alternative guess state
   void backtrack();
 
@@ -108,13 +108,13 @@ private:
 
   // Calculate slack in each line, used for guessing
   void calc_line_slack();
-  
+
   // Returns false on contradiction
   bool solve_line(PuzzleLine& line, bool complete = false);
 
   // Store the solution in the solution list
   void record_solution();
-  
+
   Puzzle& m_puzzle;
   std::vector<PuzzleCell> m_solved_line;
 

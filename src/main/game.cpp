@@ -62,7 +62,7 @@ void Game::run()
     ticks = event->get_ticks();
     elapsed = ticks - prev_ticks;
     prev_ticks = ticks;
-    
+
     input->update(elapsed);
 
     event->process(*input, *m_view_mgr);
@@ -72,9 +72,9 @@ void Game::run()
 
     m_view_mgr->update(elapsed, *input);
     m_view_mgr->draw(*m_renderer);
-    
+
     m_renderer->present();
-    
+
     exit = m_view_mgr->empty();
   }
 }

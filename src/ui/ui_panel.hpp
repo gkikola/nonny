@@ -55,11 +55,11 @@ public:
   // Draw the panel
   virtual void draw(Renderer& renderer) const { draw(renderer, m_boundary); }
   virtual void draw(Renderer& renderer, const Rect& region) const = 0;
-  
+
   virtual void move(int x, int y) { m_boundary.move(x, y); }
   virtual void scroll(int x, int y);
   virtual void resize(int width, int height);
-  
+
   Rect boundary() const { return m_boundary; }
 
 protected:

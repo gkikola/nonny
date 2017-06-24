@@ -38,7 +38,7 @@ public:
   PuzzleGrid() : m_width(0) { }
   PuzzleGrid(const PuzzleGrid&) = default;
   PuzzleGrid(PuzzleGrid&&) = default;
-  
+
   PuzzleGrid(int width, int height)
     : m_grid(width * height), m_width(width) { }
 

@@ -34,16 +34,16 @@ public:
   DataEditView(ViewManager& vm, Puzzle& puzzle);
 
   void save_properties();
-  
+
   void update(unsigned ticks, InputHandler& input) override;
   void draw(Renderer& renderer) override;
   void resize(int width, int height) override;
 
   bool is_transparent() const override { return true; }
-  
+
 private:
   void load_resources();
-  
+
   Puzzle& m_puzzle;
   std::unique_ptr<OptionDialog> m_dialog;
   std::unique_ptr<Font> m_control_font;

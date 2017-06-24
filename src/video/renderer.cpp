@@ -114,9 +114,9 @@ Rect Renderer::draw_text_wrapped(const Point& point, const Font& font,
         word = "";
       }
     }
-    
+
     ++pos;
   }
-  
+
   return bounds;
 }

@@ -43,7 +43,7 @@ char escape(char c);
  */
 std::string escape(const std::string& s);
 
-/* 
+/*
  * Reverts special characters in the given string back to their escape
  * sequences
  */
@@ -65,7 +65,7 @@ void split(const std::string& s, OutputIt dest,
  * Converts a string to an unsigned integer or throws an out_of_range
  * or invalid_argument exception if it can't be done.
  *
- * If the pos parameter is nonzero, it specifies the address of a variable 
+ * If the pos parameter is nonzero, it specifies the address of a variable
  * in which to store the number of characters that were read.
  */
 unsigned
@@ -89,8 +89,8 @@ inline char to_lower(char c);
  * where the quotation marks are optional and extra whitespace is ignored. The
  * string should not contain newline characters.
  *
- * Returns a pair of strings, the first of which is the property name 
- * converted to lowercase and the second of which is the argument or 
+ * Returns a pair of strings, the first of which is the property name
+ * converted to lowercase and the second of which is the argument or
  * arguments (if any). A blank property name indicates a blank line.
  */
 std::pair<std::string, std::string>

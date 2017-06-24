@@ -66,20 +66,20 @@ public:
   void on_data_edit_request(Callback fn);
   void on_tool_change(Callback fn) { m_tool_selector.on_tool_change(fn); }
   void on_color_change(Callback fn) { m_color_selector.on_color_change(fn); }
-  
+
   // Start/stop sliding animation
   void start_slide() { m_sliding = true; }
   void stop_slide() { m_sliding = false; }
 
   // Set or clear puzzle editing mode
   void set_edit_mode(bool edit_mode = true);
-  
+
   // Get currently selected color
   Color active_color() const;
 
   // Get currently selected draw tool
   PuzzlePanel::DrawTool active_draw_tool() const;
-  
+
   // Get/set time puzzle has been open
   unsigned time() const { return m_time; }
   void time(unsigned time) { m_time = time; }

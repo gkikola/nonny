@@ -77,7 +77,7 @@ std::ostream& write_puzzle(std::ostream& os, Puzzle puzzle,
 {
   //just modifying local copy
   puzzle.purge_unused_colors();
-  
+
   switch (fmt) {
   default:
   case PuzzleFormat::non:
@@ -110,7 +110,7 @@ std::istream& read_puzzle(std::istream& is, Puzzle& puzzle,
     nin_format::read(is, blueprint);
     break;
   }
-  
+
   puzzle = Puzzle();
   puzzle.m_grid = PuzzleGrid(blueprint.width, blueprint.height);
   puzzle.m_row_clues = std::move(blueprint.row_clues);
@@ -174,7 +174,7 @@ non_format::write_clues(std::ostream& os, const Puzzle::ClueContainer& clues,
         auto color_entry = palette.find(clue.color);
         os << color_entry->name << ": ";
       }
-        
+
       os << clue.value;
       first = false;
     }
@@ -198,7 +198,7 @@ non_format::write_colors(std::ostream& os, const ColorPalette& palette)
   }
   return os;
 }
-  
+
 std::ostream&
 non_format::write(std::ostream& os, const Puzzle& puzzle)
 {
@@ -217,14 +217,14 @@ non_format::write(std::ostream& os, const Puzzle& puzzle)
     os << "copyright \"" << *val << "\"\n";
   if ( (val = puzzle.find_property("catalogue")) )
     os << "catalogue \"" << *val << "\"\n";
-    
+
   os << "width " << puzzle.width() << "\n"
      << "height " << puzzle.height() << "\n";
 
   //only write colors if they're different from defaults
   if (puzzle.palette() != ColorPalette())
     write_colors(os << "\n", puzzle.palette());
-    
+
   os << "\nrows\n";
   write_clues(os, puzzle.row_clues(), puzzle.palette());
   os << "\ncolumns\n";
@@ -251,7 +251,7 @@ non_format::read_clues(std::istream& is,
     clues = &blueprint.col_clues;
     count = blueprint.width;
   }
-  
+
   std::string line;
   while (count > 0) {
     if (!std::getline(is, line))
@@ -261,13 +261,13 @@ non_format::read_clues(std::istream& is,
 
     auto clue_seq
       = parse_clue_line(line, blueprint.palette);
-    
+
     if (!clue_seq.empty()) {
       if (clues) clues->push_back(std::move(clue_seq));
       --count;
     }
   }
-  
+
   return is;
 }
 
@@ -280,7 +280,7 @@ non_format::read_clues(std::istream& is,
  * far.
  *
  * An typical line of clues might look like
- * 
+ *
  *   blue: 3, 1, 2  red: 4  blue: 1, 1  black: 3
  *
  * A color specifier affects all remaining clues up until the next
@@ -304,7 +304,7 @@ non_format::parse_clue_line(const std::string& line,
       clue.value = str_to_uint(s, &chars_read);
       clue.color = color;
       result.push_back(clue);
-      
+
       s.erase(0, chars_read); //in case there's a color trailing the number
     }
 
@@ -319,7 +319,7 @@ non_format::parse_clue_line(const std::string& line,
 /*
  * Reads a color entry from a string and stores it in the provided
  * palette. The format is
- * 
+ *
  *   color_name hex_value [symbol]
  *
  * where symbol is an optional character to be used in reading or
@@ -375,7 +375,7 @@ non_format::read(std::istream& is, PuzzleBlueprint& blueprint)
     else
       blueprint.properties[property] = argument;
   }
-  
+
   return is;
 }
 
@@ -457,7 +457,7 @@ g_format::write(std::ostream& os, const Puzzle& puzzle)
 
   std::map<std::string, char> short_names;
   generate_short_color_names(puzzle.palette(), short_names);
-    
+
   os << "#d\n";
   write_colors(os, puzzle.palette(), short_names);
 
@@ -465,7 +465,7 @@ g_format::write(std::ostream& os, const Puzzle& puzzle)
   write_clues(os, puzzle.row_clues(), puzzle.palette(), short_names);
   os << ": columns\n";
   write_clues(os, puzzle.col_clues(), puzzle.palette(), short_names);
-    
+
   return os;
 }
 
@@ -491,7 +491,7 @@ g_format::generate_short_color_names(const ColorPalette& palette,
     used.push_back(sn);
   }
 }
-  
+
 std::ostream&
 g_format::write_colors(std::ostream& os, const ColorPalette& palette,
                        const std::map<std::string, char>& short_names)
@@ -506,7 +506,7 @@ g_format::write_colors(std::ostream& os, const ColorPalette& palette,
   }
   return os;
 }
-  
+
 std::ostream&
 g_format::write_clues(std::ostream& os,
                       const Puzzle::ClueContainer& clues,
@@ -529,7 +529,7 @@ g_format::write_clues(std::ostream& os,
   }
   return os;
 }
-  
+
 std::istream&
 g_format::read(std::istream& is, PuzzleBlueprint& blueprint)
 {
@@ -664,7 +664,7 @@ g_format::read_clues(std::istream& is,
   while (std::getline(is, line)) {
     if (!line.empty() && line[0] == ':')
       break;
-      
+
     std::istringstream ss(line);
     int value;
     Puzzle::ClueSequence cseq;
@@ -697,7 +697,7 @@ g_format::read_clues(std::istream& is,
   *size = clues->size();
   return is;
 }
-  
+
 std::istream&
 g_format::skim(std::istream& is, PuzzleSummary& summary)
 {
@@ -748,7 +748,7 @@ namespace mk_format {
   /* .mk output */
   std::ostream&
   write_clues(std::ostream& os, const Puzzle::ClueContainer& clues);
-  
+
   /* .mk input */
   std::istream&
   read_clues(std::istream& is, PuzzleBlueprint& blueprint, ClueType type);
@@ -767,7 +767,7 @@ mk_format::write(std::ostream& os, const Puzzle& puzzle)
   write_clues(os, puzzle.row_clues());
   os << "#\n";
   write_clues(os, puzzle.col_clues());
-  
+
   return os;
 }
 
@@ -808,7 +808,7 @@ mk_format::read(std::istream& is, PuzzleBlueprint& blueprint)
   if (is.peek() == '#') {
     std::getline(is, line);
   }
-  
+
   read_clues(is, blueprint, ClueType::col);
   return is;
 }
@@ -834,7 +834,7 @@ mk_format::read_clues(std::istream& is, PuzzleBlueprint& blueprint,
       throw InvalidPuzzleFile("mk_format::read_clues: "
                               "number of clue lines does not match "
                               "puzzle dimensions");
-    
+
     std::istringstream ss(line);
     Puzzle::ClueSequence clue_seq;
     int clue_val;

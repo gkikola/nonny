@@ -38,9 +38,9 @@ bool Solver::step()
     return true;
   if (m_inconsistent)
     return false;
-  
+
   const int num_iters = 16;
-  
+
   int count = 0;
   while (count < num_iters && is_line_available()) {
     LineType type;
@@ -78,7 +78,7 @@ bool Solver::step()
   if (num_rows_solved == m_puzzle.height()
       && num_cols_solved == m_puzzle.width()) {
     record_solution();
-    
+
     if (m_alternatives.empty()) {
       //no other possibilities, so we're done
       m_finished = true;
@@ -122,7 +122,7 @@ bool Solver::step()
       }
     }
   }
-  
+
   return m_finished;
 }
 
@@ -137,7 +137,7 @@ void Solver::cycle_solution()
     return;
 
   bool has_changed = false;
-  
+
   if (!m_solution_selected) {
     m_cur_solution = m_solutions.begin();
     m_solution_selected = true;
@@ -227,7 +227,7 @@ void Solver::backtrack()
   if (m_alternatives.empty()) {
     //no alternatives
     m_finished = true;
-    
+
     //if no solutions were found yet, then the puzzle is inconsistent
     if (num_solutions() == 0) {
       m_inconsistent = true;
@@ -265,7 +265,7 @@ void Solver::guess()
   if (x < 0 || y < 0)
     throw std::runtime_error("Solver::guess: "
                              "guess called on finished puzzle");
-  
+
   //we have our guess, now make the branches
   SolverState state;
   state.row = y;
@@ -283,7 +283,7 @@ void Solver::guess()
 
   //increment guess counter
   ++m_num_guesses;
-  
+
   //try each different color and push states onto the stack
   auto first = m_puzzle.palette().begin();
   if (first->name == "background") ++first;
@@ -334,7 +334,7 @@ void Solver::choose_cell(int& x, int& y)
   x = -1;
   y = -1;
   int score = -1;
-  
+
   for (int j = 0; j < m_puzzle.height(); ++j) {
     for (int i = 0; i < m_puzzle.width(); ++i) {
       int cur_score = cell_score(i, j);
@@ -384,11 +384,11 @@ void Solver::calc_line_slack()
 {
   m_row_slack.resize(m_puzzle.height(), 0);
   m_col_slack.resize(m_puzzle.width(), 0);
-  
+
   for (int x = 0; x < m_puzzle.width(); ++x) {
     const auto& clues = m_puzzle.col_clues(x);
     m_col_slack[x] = m_puzzle.height();
-    
+
     for (unsigned i = 0; i < clues.size(); ++i) {
       if (i > 0 && clues[i].color == clues[i - 1].color)
         --m_col_slack[x];
@@ -399,7 +399,7 @@ void Solver::calc_line_slack()
   for (int y = 0; y < m_puzzle.height(); ++y) {
     const auto& clues = m_puzzle.row_clues(y);
     m_row_slack[y] = m_puzzle.width();
-    
+
     for (unsigned i = 0; i < clues.size(); ++i) {
       if (i > 0 && clues[i].color == clues[i - 1].color)
         --m_row_slack[y];
@@ -457,7 +457,7 @@ bool Solver::solve_line(PuzzleLine& line, bool complete)
     else
       m_cols_solved.insert(line.index());
   }
-  
+
   return true;
 }
 
@@ -471,7 +471,7 @@ void Solver::record_solution()
     if (e == sol)
       return;
   }
-  
+
   //otherwise, record the solution
   m_solutions.push_back(std::move(sol));
   m_cur_solution = m_solutions.begin();

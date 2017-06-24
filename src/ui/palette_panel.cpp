@@ -69,7 +69,7 @@ void PalettePanel::update(unsigned ticks, InputHandler& input,
 void PalettePanel::draw(Renderer& renderer, const Rect& region) const
 {
   renderer.set_clip_rect(region);
-  
+
   for (int i = 0; i < static_cast<int>(m_colors.size()); ++i) {
     Rect r = entry_rect(i);
     renderer.set_draw_color(m_colors[i]);
@@ -129,7 +129,7 @@ int PalettePanel::colors_per_line() const
 }
 
 int PalettePanel::entry_at_point(Point pt) const
-{  
+{
   int x = (pt.x() - m_boundary.x() - m_offset)
     / (color_size + spacing);
   int y = (pt.y() - m_boundary.y()) / (color_size + spacing);

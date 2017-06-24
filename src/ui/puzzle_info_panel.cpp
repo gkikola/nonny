@@ -156,7 +156,7 @@ void PuzzleInfoPanel::set_edit_mode(bool edit_mode)
 
     setup_buttons();
     calculate_bounds();
-    
+
     //switch between hint and clear buttons
     if (edit_mode) {
       m_buttons[hint]->register_callback(m_clear_callback);

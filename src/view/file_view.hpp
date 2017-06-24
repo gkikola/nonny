@@ -43,7 +43,7 @@
 class FileView : public View {
 public:
   enum class Mode { open, save };
-  
+
   FileView(ViewManager& vm, Mode mode = Mode::open);
   FileView(ViewManager& vm, Mode mode, int width, int height);
 
@@ -68,7 +68,7 @@ private:
 
   void switch_focus(bool fwd = true);
   void clear_focus();
-  
+
   void open_default_dir();
   void open_file(const std::string& filename = "");
 

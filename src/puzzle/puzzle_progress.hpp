@@ -78,7 +78,7 @@ public:
 
 private:
   void restore(Puzzle& puzzle, const PuzzleGrid& grid) const;
-  
+
   std::string m_filename;
   bool m_completed = false;
   unsigned m_best_time = 0;

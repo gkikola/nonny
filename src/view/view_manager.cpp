@@ -288,7 +288,7 @@ void ViewManager::update(unsigned ticks, InputHandler& input)
     input.reset_cursor();
     resize(m_width, m_height);
   }
-  
+
   if (!m_views.empty())
     m_views.back()->update(ticks, input);
 }

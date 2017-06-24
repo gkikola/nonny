@@ -37,7 +37,7 @@ public:
   void set_text(const std::string& text);
 
   void select_all();
-  
+
   using UIPanel::update;
   using UIPanel::draw;
   void update(unsigned ticks, InputHandler& input,
@@ -52,7 +52,7 @@ private:
   void handle_delete_keys(InputHandler& input);
   void handle_home_end(InputHandler& input);
   void handle_mouse_input(InputHandler& input, const Rect& region);
-  
+
   const Font* m_font = nullptr;
   std::string m_text;
   int m_cursor = 0;

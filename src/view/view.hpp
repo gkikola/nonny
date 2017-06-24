@@ -36,7 +36,7 @@ public:
   View(ViewManager& vm, int width, int height)
     : m_mgr(vm), m_width(width), m_height(height) { }
   virtual ~View() { }
-  
+
   virtual void update(unsigned ticks, InputHandler& input) = 0;
   virtual void draw(Renderer& renderer) = 0;
   virtual void resize(int width, int height);

@@ -66,7 +66,7 @@ private:
    */
   void intersect_blocks(std::vector<PuzzleCell>& result,
                         std::vector<BlockSequence>& seqs);
-  
+
   PuzzleLine& m_line;
 };
 

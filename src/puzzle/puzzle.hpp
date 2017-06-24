@@ -47,7 +47,7 @@ public:
   typedef std::map<std::string, std::string> Properties;
   typedef std::vector<std::vector<PuzzleClue>> ClueContainer;
   typedef ClueContainer::value_type ClueSequence;
-  
+
   Puzzle() = default; // blank 0x0 puzzle
   Puzzle(const Puzzle&) = default;
   Puzzle(Puzzle&&) = default;
@@ -66,7 +66,7 @@ public:
 
   ConstPuzzleLine operator[](int col) const;
   inline const PuzzleCell& at(int col, int row) const;
-  
+
   void mark_cell(int col, int row, const Color& color = Color());
   void clear_cell(int col, int row);
   void cross_out_cell(int col, int row);
@@ -74,7 +74,7 @@ public:
   void clear_all_cells();
 
   void shift_cells(int x, int y);
-  
+
   void copy_state(CompressedState& state) const;
   void load_state(const CompressedState& state);
 
@@ -93,7 +93,7 @@ public:
    * update line solve status
    */
   void update(bool edit_mode = false);
-  
+
   // Get color palette associated with this puzzle
   const ColorPalette& palette() const { return m_palette; }
 
@@ -105,7 +105,7 @@ public:
 
   void set_property(const std::string& property, const std::string& value);
   void resize(int width, int height);
-  
+
   // Throw exception if p is not found in property map
   const std::string&
   property(const std::string& p) const { return m_properties.at(p); }
@@ -114,7 +114,7 @@ public:
   const ClueContainer& col_clues() const { return m_col_clues; }
   inline const ClueSequence& row_clues(int row) const;
   inline const ClueSequence& col_clues(int col) const;
-  
+
   Puzzle& operator=(const Puzzle&) & = default;
   Puzzle& operator=(Puzzle&&) & = default;
 

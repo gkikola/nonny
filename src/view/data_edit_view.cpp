@@ -59,7 +59,7 @@ void DataEditView::update(unsigned ticks, InputHandler& input)
 {
   if (input.was_key_pressed(Keyboard::Key::escape))
     m_mgr.schedule_action(ViewManager::Action::close_menu);
-  
+
   m_dialog->update(ticks, input);
 }
 
@@ -92,7 +92,7 @@ void DataEditView::load_resources()
   if (prop) copyright = *prop;
   prop = m_puzzle.find_property("collection");
   if (prop) collection = *prop;
-  
+
   m_dialog->add_text_box("Title:", "title", title);
   m_dialog->add_text_box("Author:", "author", author);
   m_dialog->add_size_text_box("Size:", u8"\u00D7", "width", "height",

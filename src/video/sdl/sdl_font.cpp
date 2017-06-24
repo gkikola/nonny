@@ -54,5 +54,6 @@ void SDLFont::resize(int pt_size)
   m_font = TTF_OpenFont(m_filename.c_str(), m_pt_size);
 
   if (!m_font)
-    throw std::runtime_error("SDLFont::resize: Could not open font " + m_filename);
+    throw std::runtime_error("SDLFont::resize: Could not open font "
+                             + m_filename);
 }

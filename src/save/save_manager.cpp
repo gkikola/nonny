@@ -68,7 +68,7 @@ void SaveManager::save_progress(const PuzzleProgress& prog,
   stdfs::path p = stdfs::path(filename).remove_filename();
   if (!p.empty() && !stdfs::exists(p))
     stdfs::create_directories(p);
-  
+
   std::ofstream file(filename);
 
   if (!file.is_open())
@@ -90,7 +90,7 @@ std::string SaveManager::find_save_file(const std::string& path,
     std_dir = "default";
   if (std_id.empty())
     std_id = "untitled";
-  
+
   std::string expected_dir = m_settings.saved_progress_dir();
   expected_dir += m_settings.filesystem_separator();
   expected_dir += std_dir + m_settings.filesystem_separator();
@@ -102,7 +102,7 @@ std::string SaveManager::find_save_file(const std::string& path,
       full_name += std_id + ".nsv";
     else
       full_name += std_id + std::to_string(counter) + ".nsv";
-    
+
     std::ifstream file(full_name);
     if (file.is_open()) {
       std::string name;

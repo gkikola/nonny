@@ -42,7 +42,7 @@ SDLVideoSystem::SDLVideoSystem()
     SDL_Quit();
     throw IMGError("IMG_Init");
   }
-  
+
   if (TTF_Init() == -1) {
     IMG_Quit();
     SDL_Quit();

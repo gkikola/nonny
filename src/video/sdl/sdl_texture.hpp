@@ -35,9 +35,9 @@ public:
 
   int width() const override { return m_width; }
   int height() const override { return m_height; }
-  
+
   SDL_Texture* get_sdl_handle() const { return m_texture; }
-  
+
   ~SDLTexture();
 private:
   SDL_Texture* m_texture = nullptr;

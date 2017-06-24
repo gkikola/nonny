@@ -51,9 +51,9 @@ public:
   Color& operator=(const Color&) & = default;
 private:
   inline void validate() const;
-  
+
   int m_r, m_g, m_b;
-  static constexpr int s_max = 255;   
+  static constexpr int s_max = 255;
 };
 
 /*

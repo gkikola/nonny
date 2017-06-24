@@ -35,7 +35,7 @@ public:
   struct Entry;
   typedef std::vector<Entry>::iterator iterator;
   typedef std::vector<Entry>::const_iterator const_iterator;
-  
+
   ColorPalette();
   ColorPalette(const ColorPalette&) = default;
   ColorPalette(ColorPalette&&) = default;
@@ -48,7 +48,7 @@ public:
 
   // Lookup a symbol character from a color name
   inline char symbol(const std::string& name) const;
-  
+
   ColorPalette& operator=(const ColorPalette&) & = default;
   ColorPalette& operator=(ColorPalette&&) & = default;
 
@@ -68,7 +68,7 @@ public:
 private:
   iterator at(const std::string& name);
   const_iterator at(const std::string& name) const;
-  
+
   std::vector<Entry> m_colors;
 };
 

@@ -223,7 +223,7 @@ void PuzzleView::save_progress()
   bool just_completed = false;
   if (m_edit_mode || m_puzzle.is_solved())
     just_completed = true;
-  
+
   //find collection and id
   std::string id = puzzle_id();
   std::string collection = puzzle_collection();
@@ -232,7 +232,7 @@ void PuzzleView::save_progress()
   PuzzleProgress prog;
   m_mgr.save_manager().load_progress(prog, m_puzzle_filename,
                                      collection, id);
-  
+
   //store current progress
   unsigned time = 0;
   if (!m_edit_mode) {
@@ -368,7 +368,7 @@ void PuzzleView::setup_panels()
   m_clue_font = m_mgr.video_system().new_font(font_file, 12);
   m_cell_texture = m_mgr.video_system().load_image(m_mgr.renderer(),
                                                    texture_file);
-  
+
   auto ppanel = std::make_shared<PuzzlePanel>(*m_clue_font, *m_cell_texture,
                                               m_puzzle);
   ppanel->set_edit_mode(m_edit_mode);
@@ -481,14 +481,14 @@ void PuzzleView::enable_editing()
 }
 
 void PuzzleView::update(unsigned ticks, InputHandler& input)
-{  
+{
   m_main_panel.update(ticks, input);
   m_info_pane.update(ticks, input);
 
   int cur_info_width = m_info_pane.boundary().width();
   if (cur_info_width < info_pane_width) {
     cur_info_width += info_pane_slide_speed * ticks / 1000;
-    
+
     if (cur_info_width >= info_pane_width) {
       cur_info_width = info_pane_width;
 
@@ -523,7 +523,7 @@ void PuzzleView::update(unsigned ticks, InputHandler& input)
 void PuzzleView::draw(Renderer& renderer)
 {
   m_main_panel.draw(renderer);
-  
+
   renderer.set_draw_color(info_pane_background_color);
   renderer.fill_rect(m_info_pane.boundary());
   m_info_pane.draw(renderer);

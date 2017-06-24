@@ -37,7 +37,7 @@ PuzzleCell& PuzzleGrid::at(int x, int y)
 const PuzzleCell& PuzzleGrid::at(int x, int y) const
 {
   decltype(m_grid.size()) pos = y * m_width + x;
-  
+
   if (pos > m_grid.size())
     throw std::out_of_range("PuzzleGrid::at: attempted to access "
                             "invalid puzzle cell");
@@ -89,7 +89,7 @@ std::ostream& write_grid(std::ostream& os, const PuzzleGrid& grid,
 {
   char bkgd;
   bkgd = palette.symbol("background");
-  
+
   for (int y = 0; y != grid.height(); ++y) {
     os << "|";
     for (int x = 0; x != grid.width(); ++x) {
@@ -120,7 +120,7 @@ std::istream& read_grid(std::istream& is, PuzzleGrid& grid,
   grid.m_grid.clear();
 
   std::string line;
-  while (is && is.peek() == '|' && std::getline(is, line)) {    
+  while (is && is.peek() == '|' && std::getline(is, line)) {
     int counter = 0;
     for (auto c : line) {
       if (c != '|') {

@@ -50,22 +50,22 @@ void TextBox::update(unsigned ticks, InputHandler& input,
                      const Rect& active_region)
 {
   handle_mouse_input(input, active_region);
-  
+
   if (has_focus()) {
     //select text if tabbing onto control
     if (input.was_key_pressed(Keyboard::Key::tab))
       select_all();
-    
+
     //handle cursor blinking
     m_cursor_duration += ticks;
     int num_blinks = m_cursor_duration / cursor_blink_duration;
     if (num_blinks % 2 != 0)
       m_cursor_visible = !m_cursor_visible;
     m_cursor_duration -= num_blinks * cursor_blink_duration;
-    
+
     int prev_cursor = m_cursor;
     int prev_size = m_text.size();
-    
+
     read_chars(input);
     handle_delete_keys(input);
     handle_arrow_keys(input);
@@ -135,7 +135,7 @@ void TextBox::draw(Renderer& renderer, const Rect& region) const
       renderer.draw_text(text_pos, *m_font, m_text.substr(m_visible));
     }
   }
-  
+
   renderer.set_clip_rect();
 }
 
@@ -191,7 +191,7 @@ void TextBox::read_chars(InputHandler& input)
       m_sel_length = 0;
       m_cursor = m_sel_start;
     }
-      
+
     m_text.insert(m_cursor, text);
     m_cursor += text.size();
   }
@@ -265,7 +265,7 @@ void TextBox::handle_delete_keys(InputHandler& input)
     m_cursor = m_sel_start;
     --num_press;
   }
-  if (num_press) {      
+  if (num_press) {
     if (m_cursor + num_press <= static_cast<int>(m_text.size()))
       m_text.erase(m_cursor, num_press);
     else

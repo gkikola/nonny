@@ -46,10 +46,10 @@ private:
   inline int target_height() const;
   void update_thumb_position();
   void do_thumb_drag(InputHandler& input);
-  
+
   UIPanelPtr m_scroll_target = nullptr;
   bool m_vertical = true;
-  
+
   bool m_dragging = false;
   int m_drag_pos = 0;
   Rect m_thumb_pos;

@@ -84,7 +84,7 @@ void AnalysisPanel::update(unsigned ticks, InputHandler& input,
       || input.was_key_pressed(Keyboard::Key::down)
       || input.was_key_pressed(Keyboard::Key::kp_down))
     focus_next();
-  
+
   m_preview.update(ticks, input, active_region);
   m_solve_button.update(ticks, input, active_region);
   m_close_button.update(ticks, input, active_region);
@@ -192,7 +192,7 @@ void AnalysisPanel::calc_size()
   m_font.text_size("Time: 00:00.0", &text_wd, &text_ht);
   width = std::max(width, text_wd + 2 * panel_spacing);
   height += text_ht + text_spacing;
-  
+
   m_font.text_size("Unique solution: Yes", &text_wd, &text_ht);
   width = std::max(width, text_wd + 2 * panel_spacing);
   height += text_ht + text_spacing;

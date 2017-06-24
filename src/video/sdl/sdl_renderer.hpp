@@ -36,7 +36,7 @@ public:
   ~SDLRenderer();
 
   void present() override { SDL_RenderPresent(m_renderer); }
-  
+
   void set_draw_color(const Color& color) override;
 
   void clear() override { SDL_RenderClear(m_renderer); }
@@ -45,7 +45,7 @@ public:
   void draw_line(const Point& point1, const Point& point2) override;
   void draw_dotted_line(const Point& start,
                         int length, bool vertical = true) override;
-  
+
   void draw_rect(const Rect& rect) override;
   void fill_rect(const Rect& rect) override;
 

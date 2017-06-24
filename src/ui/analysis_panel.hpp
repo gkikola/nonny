@@ -40,7 +40,7 @@ public:
 
   typedef std::function<void()> Callback;
   void on_close(Callback fn) { m_close_button.register_callback(fn); }
-  
+
   using UIPanel::update;
   using UIPanel::draw;
   void update(unsigned ticks, InputHandler& input,
@@ -48,13 +48,13 @@ public:
   void draw(Renderer& renderer, const Rect& region) const override;
 
   void move(int x, int y) override;
-  
+
 private:
   void setup_buttons();
   void calc_size();
   void focus_prev();
   void focus_next();
-  
+
   Puzzle m_puzzle;
   Solver m_solver;
   const Font& m_font;

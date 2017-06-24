@@ -32,7 +32,7 @@ public:
   Menu() = default;
 
   void position_controls() override;
-  
+
 protected:
   void calc_size();
   bool allow_arrow_focus() const override { return true; }

@@ -44,10 +44,10 @@ public:
 
 protected:
   void draw_image(Renderer& renderer) const;
-  
+
 private:
   void calc_size();
-  
+
   const Texture* m_texture;
   int m_cell = 0;
 };

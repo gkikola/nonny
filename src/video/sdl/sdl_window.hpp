@@ -31,7 +31,7 @@ public:
 
   int width() const override;
   int height() const override;
-  
+
   SDL_Window* get_sdl_handle() { return m_window; }
 private:
   SDL_Window* m_window;

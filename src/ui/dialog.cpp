@@ -111,7 +111,7 @@ void Dialog::update(unsigned ticks, InputHandler& input,
       || input.was_mouse_button_pressed(Mouse::Button::middle)
       || input.was_mouse_button_pressed(Mouse::Button::right))
     remove_focus();
-  
+
   for (auto& c : m_controls)
     c->update(ticks, input, active_region);
 

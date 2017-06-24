@@ -43,10 +43,10 @@ public:
   void resize(int width, int height) override;
 
   bool is_transparent() const override { return true; }
-  
+
 private:
   void load_resources();
-  
+
   Puzzle& m_puzzle;
 
   std::shared_ptr<AnalysisPanel> m_panel;

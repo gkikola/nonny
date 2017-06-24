@@ -134,7 +134,7 @@ void Puzzle::copy_state(CompressedState& state) const
       e.count = 0;
       state.m_state.push_back(e);
     }
-    
+
     prev_cell = cur_cell;
     ++pos;
     ++state.m_state[state.m_state.size() - 1].count;

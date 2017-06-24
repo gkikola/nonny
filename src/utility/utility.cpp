@@ -92,10 +92,10 @@ std::string escape(const std::string& s)
     ++beg;
   if (beg != end && *(end - 1) == '"')
     --end;
-  
+
   std::string retvalue;
   bool reading_escape_seq = false;
-  for (auto it = beg; it != end; ++it) {    
+  for (auto it = beg; it != end; ++it) {
     if (reading_escape_seq) {
       reading_escape_seq = false;
       retvalue.push_back(escape(*it));
@@ -142,7 +142,7 @@ std::string unescape(const std::string& s)
       break;
     }
   }
-  
+
   return result;
 }
 
@@ -168,10 +168,10 @@ parse_property(const std::string& line)
   std::string property;
   std::transform(trimmed_line.begin(), end_of_name,
                  std::back_inserter(property), to_lower);
-  
+
   std::string argument
     = escape(trim(std::string(end_of_name, trimmed_line.end())));
-  
+
   return std::make_pair(std::move(property), std::move(argument));
 }
 

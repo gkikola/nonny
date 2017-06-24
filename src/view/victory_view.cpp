@@ -60,7 +60,7 @@ void VictoryView::update(unsigned ticks, InputHandler& input)
       || input.was_key_pressed(Keyboard::Key::enter)
       || input.was_key_pressed(Keyboard::Key::kp_enter))
     m_back_button->give_focus();
-  
+
   m_preview.update(ticks, input);
   m_back_button->update(ticks, input);
 
@@ -76,7 +76,7 @@ void VictoryView::draw(Renderer& renderer)
   renderer.fill_rect(Rect(0, 0, m_width, m_height));
 
   renderer.set_draw_color(default_colors::black);
-  
+
   int text_width, text_height;
   m_title_font->text_size(m_puzzle_title, &text_width, &text_height);
   pt.x() = m_width / 2 - text_width / 2;
@@ -87,7 +87,7 @@ void VictoryView::draw(Renderer& renderer)
   pt.x() = m_width / 2 - text_width / 2;
   renderer.draw_text(pt, *m_info_font, m_puzzle_author);
   pt.y() += text_height + spacing;
-  
+
   m_preview.draw(renderer);
   pt.y() += m_preview.boundary().height() + spacing;
 
@@ -107,7 +107,7 @@ void VictoryView::resize(int width, int height)
   View::resize(width, height);
 
   Point pos(0, spacing);
-  
+
   int text_width, text_height;
   m_title_font->text_size(m_puzzle_title, &text_width, &text_height);
   pos.y() += text_height + spacing;
@@ -125,7 +125,7 @@ void VictoryView::resize(int width, int height)
     preview_height = preview_width * m_puzzle.height() / m_puzzle.width();
 
   pos.x() = m_width / 2 - preview_width / 2;
-  
+
   m_preview.move(pos.x(), pos.y());
   m_preview.resize(preview_width, preview_height);
 

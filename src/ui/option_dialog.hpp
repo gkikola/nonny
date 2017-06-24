@@ -54,7 +54,7 @@ public:
   void move(int x, int y) override;
 
   void draw(Renderer& renderer) const override;
-  
+
 protected:
   void calc_size();
 

@@ -36,10 +36,10 @@ public:
 
   virtual void add_control(ControlPtr control);
   virtual void position_controls() = 0;
-  
+
   void focus_prev();
   void focus_next();
-  
+
   using UIPanel::update; //make update and draw overloads visible
   using UIPanel::draw;
   void update(unsigned ticks, InputHandler& input,
@@ -54,7 +54,7 @@ protected:
   void remove_focus();
 
   virtual bool allow_arrow_focus() const { return false; }
-  
+
   std::vector<ControlPtr> m_controls;
   std::vector<ControlPtr>::iterator m_focused;
   bool m_need_reposition = false;

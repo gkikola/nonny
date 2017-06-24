@@ -27,7 +27,7 @@
 #include "input/key.hpp"
 #include "video/point.hpp"
 
-/* 
+/*
  * Processes input events and keeps track of key states and
  * mouse movement
  */
@@ -49,7 +49,7 @@ public:
   virtual void set_cursor(Mouse::Cursor cursor) = 0;
   virtual void reset_cursor() = 0;
   virtual Mouse::Cursor cursor() const = 0;
-  
+
   virtual void process_key_event(Keyboard::Key key, bool down);
   virtual void process_text_input_event(const std::string& text);
   virtual void process_mouse_button_event(Mouse::Button button, bool down,
@@ -81,13 +81,13 @@ public:
 
   virtual int vert_mouse_wheel_scroll() const { return m_mwheel_vert; }
   virtual int horiz_mouse_wheel_scroll() const { return m_mwheel_horiz; }
-  
+
 private:
   Point m_mouse;
   Point m_prev_mouse;
   int m_mwheel_vert = 0;
   int m_mwheel_horiz = 0;
-  
+
   std::vector<bool> m_keys; //which keys are down
   std::vector<bool> m_prev_keys;
   std::vector<int> m_num_presses; //how many presses in last frame

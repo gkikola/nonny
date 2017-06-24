@@ -57,7 +57,7 @@ void OptionDialog::position_controls()
           x = m_label_width - m_controls[pos]->boundary().width() - spacing;
         else if (j == 1) //second control should be left-aligned
           x = m_label_width;
-      
+
         //position and vertically center control
         int yoffset = m_line_height / 2
           - m_controls[pos]->boundary().height() / 2;

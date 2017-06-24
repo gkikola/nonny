@@ -42,10 +42,10 @@ public:
   void draw(Renderer& renderer, const Rect& region) const override;
 
   bool can_focus() const override { return false; }
-  
+
 private:
   void calc_size();
-  
+
   const Font* m_font = nullptr;
   std::string m_label;
   int m_label_width = 0;

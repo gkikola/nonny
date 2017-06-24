@@ -69,7 +69,7 @@ void MessageBox::recalculate_size()
     control_ht = std::max(control_ht, c->boundary().height());
   }
   control_wd += border_spacing - spacing;
-  
+
   width = std::max(width, control_wd);
   height += control_ht + spacing;
 
@@ -94,6 +94,6 @@ void MessageBox::draw(Renderer& renderer, const Rect& region) const
   renderer.draw_text_wrapped(text_pos, *m_text_font, m_text,
                              m_boundary.width()
                              - 2 * border_spacing, true);
-  
+
   Dialog::draw(renderer, region);
 }

@@ -27,7 +27,7 @@
 void StaticText::draw(Renderer& renderer, const Rect& region) const
 {
   renderer.set_clip_rect(intersection(m_boundary, region));
-  
+
   Point location(m_boundary.x()
                  + m_boundary.width() / 2
                  - m_label_width / 2,

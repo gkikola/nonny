@@ -92,7 +92,7 @@ void SDLRenderer::set_draw_color(const Color& color)
   m_draw_color.r = color.red();
   m_draw_color.g = color.green();
   m_draw_color.b = color.blue();
-  
+
   SDL_SetRenderDrawColor(m_renderer,
                          color.red(), color.green(), color.blue(),
                          255);

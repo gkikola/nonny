@@ -110,7 +110,7 @@ void FileSelectionPanel::update(unsigned ticks, InputHandler& input,
     if (m_num_puzzles_loaded < static_cast<int>(m_files.size())
         && m_num_puzzles_loaded < max_puzzles_open)
       load_puzzle_info();
-    
+
     //check for mouse click to select a file
     Point cursor = input.mouse_position();
     if ((input.was_mouse_button_pressed(Mouse::Button::left)
@@ -274,7 +274,7 @@ void FileSelectionPanel::draw(Renderer& renderer, const Rect& region) const
           size += " Multicolor";
         txt = renderer.draw_text(Point(x, y), m_info_font, size);
         x += txt.width();
-        
+
         if (m_files[i].puzzle_progress) {
           txt = renderer.draw_text(Point(x, y),
                                    m_info_font, "    Completed:");
@@ -301,7 +301,7 @@ void FileSelectionPanel::draw(Renderer& renderer, const Rect& region) const
       }
     }
   }
-  
+
   renderer.set_clip_rect();
 }
 
@@ -315,10 +315,10 @@ void FileSelectionPanel::draw_progress(Renderer& renderer,
   int pixel_size = area.width() / grid.width();
   if (area.height() / grid.height() < pixel_size)
     pixel_size = area.height() / grid.height();
-  
+
   Point start(area.x() + area.width() / 2 - pixel_size * grid.width() / 2,
               area.y() + area.height() / 2 - pixel_size * grid.height() / 2);
-  
+
   for (int y = 0; y != grid.height(); ++y) {
     for (int x = 0; x != grid.width(); ++x) {
       if (grid.at(x, y).state == PuzzleCell::State::filled) {
@@ -327,7 +327,7 @@ void FileSelectionPanel::draw_progress(Renderer& renderer,
                    pixel_size, pixel_size);
         renderer.set_draw_color(grid.at(x, y).color);
         renderer.fill_rect(pixel);
-      }      
+      }
     }
   }
 }
@@ -440,7 +440,7 @@ void FileSelectionPanel::load_puzzle_info()
   }
   sfile.close();
   m_files[index].puzzle_info = summary;
-  
+
   std::string collection = summary->collection;
   std::string id = summary->id;
   if (collection.empty())
@@ -456,6 +456,6 @@ void FileSelectionPanel::load_puzzle_info()
                            m_files[index].full_path,
                            collection, id);
   m_files[index].puzzle_progress = progress;
-  
+
   ++m_num_puzzles_loaded;
 }

@@ -53,7 +53,7 @@ public:
    * or if there are crossed out cells that are covered by a block.
    */
   bool is_valid() const;
-  
+
   /*
    * Arranges the blocks as far to the left or as far to the right as
    * possible while still producing a consistent arrangement. Returns
@@ -96,14 +96,14 @@ public:
 
   Block& operator[](int index) { return m_blocks[index]; }
   const Block& operator[](int index) const { return m_blocks[index]; }
-  
+
 private:
   bool move_block_left(int index);
   bool move_block_right(int index);
   bool force_block_left(int index);
   bool force_block_right(int index);
   bool is_block_valid(const Block& block) const;
-  
+
   std::vector<Block> m_blocks;
   PuzzleLine& m_line;
 };

@@ -27,7 +27,7 @@
 #include "video/texture.hpp"
 #include "view/view.hpp"
 
-/* 
+/*
  * Menu screen. Presents a menu with options that the user may select.
  */
 class MenuView : public View {

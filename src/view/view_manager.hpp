@@ -46,7 +46,7 @@ public:
   ViewManager(VideoSystem& vs, Renderer& renderer, GameSettings& settings);
   ViewManager(VideoSystem& vs, Renderer& renderer, GameSettings& settings,
               int width, int height);
-  
+
   enum class Action { no_action, quit_game, force_quit, save_and_quit,
       choose_puzzle, create_puzzle, save_properties,
       open_menu, close_menu, load_puzzle, save_puzzle, save_puzzle_as,
@@ -60,12 +60,12 @@ public:
   void message_box(const std::string& message,
                    MessageBoxView::Type type,
                    Callback on_yes, Callback on_no, Callback on_cancel);
-  
+
   void push(std::shared_ptr<View> view) { m_views.push_back(view); }
   void pop();
   bool empty() const { return m_views.empty(); }
   std::size_t size() const { return m_views.size(); }
-  
+
   void update(unsigned ticks, InputHandler& input);
   void draw(Renderer& renderer);
 
@@ -79,7 +79,7 @@ public:
 
   Renderer& renderer() { return m_renderer; }
   const Renderer& renderer() const { return m_renderer; }
-  
+
   GameSettings& game_settings() { return m_settings; }
   const GameSettings& game_settings() const { return m_settings; }
 
@@ -89,7 +89,7 @@ public:
 private:
   bool is_save_needed() const;
   bool save(); //returns true if save was successful or unneeded
-  
+
   std::vector<std::shared_ptr<View>> m_views;
   VideoSystem& m_video;
   Renderer& m_renderer;

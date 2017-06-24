@@ -66,7 +66,7 @@ void Font::text_size_wrapped(std::string text, int wrap_width,
           text_size(word, &line_wd, &line_ht);
         else
           text_size(line + " " + word, &line_wd, &line_ht);
-        
+
         if (width)
           *width = std::max(*width, line_wd);
         if (height)

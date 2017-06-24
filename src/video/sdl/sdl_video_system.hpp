@@ -34,7 +34,7 @@ class SDLVideoSystem : public VideoSystem {
 public:
   SDLVideoSystem();
   ~SDLVideoSystem();
-  
+
   SDLVideoSystem(const SDLVideoSystem&) = delete;
   SDLVideoSystem& operator=(const SDLVideoSystem&) = delete;
 

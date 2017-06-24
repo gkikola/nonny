@@ -54,7 +54,7 @@ void MenuView::update(unsigned ticks, InputHandler& input)
       m_sliding = false;
     }
   }
-  
+
   if (m_action != MenuAction::no_action) {
     switch (m_action) {
     default:
@@ -80,7 +80,7 @@ void MenuView::update(unsigned ticks, InputHandler& input)
              || m_cur_menu == MenuType::edit_menu)
       m_mgr.schedule_action(ViewManager::Action::close_menu);
   }
-  
+
   m_main_panel.update(ticks, input);
 }
 
@@ -153,7 +153,7 @@ void MenuView::main_menu()
 
   auto logo = std::make_shared<StaticImage>(*m_logo_texture);
   menu->add_control(logo);
-  
+
   auto button = std::make_shared<Button>(*m_control_font, "Play");
   button->register_callback([this]()
                             {
@@ -224,7 +224,7 @@ void MenuView::in_game_menu()
       m_mgr.schedule_action(ViewManager::Action::edit_puzzle); });
   button->resize(menu_button_width, button->boundary().height());
   menu->add_control(button);
-  
+
   button = std::make_shared<Button>(*m_control_font, "Quit Puzzle");
   button->register_callback([this]() {
       m_mgr.schedule_action(ViewManager::Action::quit_puzzle); });
@@ -257,7 +257,7 @@ void MenuView::edit_menu()
       m_mgr.schedule_action(ViewManager::Action::save_puzzle); });
   button->resize(menu_button_width, button->boundary().height());
   menu->add_control(button);
-  
+
   button = std::make_shared<Button>(*m_control_font, "Save As...");
   button->register_callback([this]() {
       m_mgr.schedule_action(ViewManager::Action::save_puzzle_as); });
@@ -269,7 +269,7 @@ void MenuView::edit_menu()
       m_mgr.schedule_action(ViewManager::Action::analyze_puzzle); });
   button->resize(menu_button_width, button->boundary().height());
   menu->add_control(button);
-  
+
   button = std::make_shared<Button>(*m_control_font, "Quit Puzzle");
   button->register_callback([this]() {
       m_mgr.schedule_action(ViewManager::Action::quit_puzzle); });

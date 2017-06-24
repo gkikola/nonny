@@ -26,7 +26,7 @@ class Point {
 public:
   Point() = default;
   Point(int x, int y) : m_x(x), m_y(y) { }
-  
+
   Point(const Point&) = default;
   Point(Point&&) = default;
   Point& operator=(const Point&) & = default;

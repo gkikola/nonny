@@ -63,7 +63,7 @@ public:
 
   // Make all cells blank
   void clear_puzzle();
-  
+
   // Shift puzzle cells
   void shift_left();
   void shift_right();
@@ -75,10 +75,10 @@ public:
 
   void toggle_hints();
   void clear_hints();
-  
+
   bool is_save_needed() const { return m_need_save; }
   void clear_save_flag() { m_need_save = false; }
-  
+
   using UIPanel::update; //make all update and draw overloads visible
   using UIPanel::draw;
   void update(unsigned ticks, InputHandler& input,
@@ -112,7 +112,7 @@ private:
   void handle_mouse_wheel(unsigned ticks, InputHandler& input);
   void handle_resize();
 
-  void do_draw_action(bool mark = true);  
+  void do_draw_action(bool mark = true);
 
   typedef std::function<void(int, int)> CellFunction;
   void for_each_point_on_selection(CellFunction fn) const;
@@ -127,10 +127,10 @@ private:
   inline void generalized_cell_at_point(const Point&p, int* x, int* y) const;
 
   void update_clue_font();
-  
+
   void update_zoom(unsigned ticks);
   void zoom_to(int amount, int x, int y);
-  
+
   void save_undo_state();
   void load_undo_state();
 
@@ -138,7 +138,7 @@ private:
   void update_hints(bool fast = true);
 
   enum class DragType { fill, cross, blanking_fill, blanking_cross };
-  
+
   Font& m_clue_font;
   const Texture& m_cell_texture;
 
@@ -169,7 +169,7 @@ private:
   //Hints
   std::set<int> m_hinted_rows;
   std::set<int> m_hinted_cols;
-  
+
   //Dragging states
   DragType m_mouse_drag_type = DragType::fill;
   DragType m_kb_drag_type = DragType::fill;

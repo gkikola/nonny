@@ -42,7 +42,7 @@ void Scrollbar::update(unsigned ticks, InputHandler& input,
 
     if (m_dragging) {
       do_thumb_drag(input);
-    
+
       if (input.was_mouse_button_released(Mouse::left)
           || input.was_mouse_button_released(Mouse::right)) {
         m_dragging = false;
@@ -54,7 +54,7 @@ void Scrollbar::update(unsigned ticks, InputHandler& input,
 
         if (m_thumb_pos.contains_point(cursor))
           m_mouse_hover = true;
-      
+
         if (input.was_mouse_button_pressed(Mouse::left)
             || input.was_mouse_button_pressed(Mouse::right)) {
           if (m_mouse_hover) {

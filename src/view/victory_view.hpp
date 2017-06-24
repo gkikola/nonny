@@ -56,7 +56,7 @@ public:
 
 private:
   void load_resources();
-  
+
   Puzzle& m_puzzle;
   unsigned m_clear_time;
   unsigned m_best_time;

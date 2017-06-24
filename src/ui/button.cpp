@@ -48,7 +48,7 @@ void Button::update(unsigned ticks, InputHandler& input,
       press();
     m_depressed = false;
   }
-  
+
   if (input.was_mouse_button_pressed(Mouse::Button::left)) {
     if (m_mouse_hover) {
       give_focus();
@@ -80,7 +80,7 @@ void Button::draw(Renderer& renderer, const Rect& region) const
   if (has_focus())
     draw_sel_rect(renderer);
   draw_label(renderer);
-  
+
   renderer.set_clip_rect();
 }
 
@@ -88,7 +88,7 @@ void Button::draw_background(Renderer& renderer) const
 {
   renderer.set_draw_color(button_background_color);
   renderer.fill_rect(m_boundary);
-  
+
   if (has_focus() || m_mouse_hover) {
     renderer.set_draw_color(button_selection_color);
     renderer.draw_rect(m_boundary);
@@ -102,7 +102,7 @@ void Button::draw_sel_rect(Renderer& renderer) const
                  m_boundary.width() - 2 * spacing,
                  m_boundary.height() - 2 * spacing);
   renderer.set_draw_color(button_selection_color);
-  renderer.draw_dotted_rect(selection);  
+  renderer.draw_dotted_rect(selection);
 }
 
 void Button::draw_label(Renderer& renderer) const

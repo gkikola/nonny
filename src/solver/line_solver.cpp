@@ -43,7 +43,7 @@ bool LineSolver::operator()()
 }
 
 bool LineSolver::solve_fast(std::vector<PuzzleCell>& result)
-{  
+{
   std::vector<BlockSequence> seqs;
   seqs.emplace_back(m_line);
   seqs.emplace_back(m_line);
@@ -66,7 +66,7 @@ bool LineSolver::solve_complete(std::vector<PuzzleCell>& result)
   BlockSequence blocks(m_line);
   if (!blocks.arrange_left())
     return false;
-  
+
   std::vector<BlockSequence> valid;
 
   do
@@ -92,7 +92,7 @@ void LineSolver::intersect_blocks(std::vector<PuzzleCell>& result,
   }
 
   result = std::vector<PuzzleCell>(m_line.size(), PuzzleCell());
-  
+
   int size = m_line.clues().size();
   if (size == 1 && m_line.clues()[0].value == 0)
     size = 0;
