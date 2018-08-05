@@ -27,6 +27,8 @@
 #include <stdexcept>
 #include <utility>
 #include <experimental/filesystem>
+#include "SDL.h"
+#include "SDL_image.h"
 #include "color/color.hpp"
 #include "input/input_handler.hpp"
 #include "puzzle/puzzle_io.hpp"
@@ -186,6 +188,8 @@ PuzzleFormat PuzzleView::file_type(const std::string& filename) const
     return PuzzleFormat::mk;
   else if (extension == ".nin")
     return PuzzleFormat::nin;
+  else if (extension == ".png")
+    return PuzzleFormat::png;
   else
     return PuzzleFormat::non;
 }
@@ -280,25 +284,31 @@ void PuzzleView::save_puzzle(std::string filename)
                         MessageBoxView::Type::yes_no,
                         do_save, cancel, cancel);
     } else {
-      std::ofstream file(filename);
+      PuzzleFormat type = file_type(filename);
 
-      if (file.is_open())
-        m_puzzle_filename = filename;
+      if (type == PuzzleFormat::png) {
+        write_puzzle_png(filename, m_puzzle);
+      } else {
+        std::ofstream file(filename);
 
-      try {
-        write_puzzle(file, m_puzzle, file_type(filename));
+        if (file.is_open())
+          m_puzzle_filename = filename;
 
-        //wipe previous puzzle progress and store solution
-        save_progress();
-      } catch (const std::exception& e) {
-        std::string err_msg = "Error saving puzzle:\n\n";
-        err_msg += e.what();
+        try {
+          write_puzzle(file, m_puzzle, file_type(filename));
 
-        //show error message
-        auto close = [this]() {
-          m_mgr.schedule_action(ViewManager::Action::close_message_box); };
-        m_mgr.message_box(err_msg, MessageBoxView::Type::okay,
-                          close, []() { }, []() { });
+          //wipe previous puzzle progress and store solution
+          save_progress();
+        } catch (const std::exception& e) {
+          std::string err_msg = "Error saving puzzle:\n\n";
+          err_msg += e.what();
+
+          //show error message
+          auto close = [this]() {
+            m_mgr.schedule_action(ViewManager::Action::close_message_box); };
+          m_mgr.message_box(err_msg, MessageBoxView::Type::okay,
+                            close, []() { }, []() { });
+        }
       }
     }
   }
@@ -554,4 +564,43 @@ unsigned PuzzleView::time() const
   auto& ipanel
     = dynamic_cast<const PuzzleInfoPanel&>(m_info_pane.main_panel());
   return ipanel.time();
+}
+
+void write_puzzle_png(const std::string& filename, Puzzle& puzzle)
+{
+  Uint32* data = new Uint32[puzzle.width() * puzzle.height()];
+  auto* fmt = SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32);
+
+  for (int y = 0; y < puzzle.height(); ++y) {
+    for (int x = 0; x < puzzle.width(); ++x) {
+      Color color;
+      if (puzzle[x][y].state == PuzzleCell::State::filled)
+        color = puzzle[x][y].color;
+      else
+        color = default_colors::white;
+
+      data[x + y * puzzle.width()]
+        = static_cast<Uint32>(SDL_MapRGBA(fmt,
+                                          color.red(),
+                                          color.green(),
+                                          color.blue(),
+                                          255));
+    }
+  }
+
+  Uint32 rmask = 0x000000ff,
+         gmask = 0x0000ff00,
+         bmask = 0x00ff0000,
+         amask = 0xff000000;
+  SDL_FreeFormat(fmt);
+  SDL_Surface* surface = SDL_CreateRGBSurfaceFrom(static_cast<void*>(data),
+                                                  puzzle.width(),
+                                                  puzzle.height(),
+                                                  32, 4 * puzzle.width(),
+                                                  rmask, gmask, bmask, amask);
+
+  IMG_SavePNG(surface, filename.c_str());
+
+  SDL_FreeSurface(surface);
+  delete[] data;
 }

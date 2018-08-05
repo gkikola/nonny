@@ -102,4 +102,6 @@ private:
   std::unique_ptr<Texture> m_draw_texture;
 };
 
+void write_puzzle_png(const std::string& filename, Puzzle& puzzle);
+
 #endif
