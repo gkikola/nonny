@@ -84,7 +84,6 @@ add_executable (
   src/ui/puzzle_preview.cpp
   src/ui/scrollbar.cpp
   src/ui/scrolling_panel.cpp
-  src/ui/spacer.cpp
   src/ui/static_image.cpp
   src/ui/static_text.cpp
   src/ui/text_box.cpp
