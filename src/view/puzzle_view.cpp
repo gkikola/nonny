@@ -573,18 +573,19 @@ void write_puzzle_png(const std::string& filename, Puzzle& puzzle)
 
   for (int y = 0; y < puzzle.height(); ++y) {
     for (int x = 0; x < puzzle.width(); ++x) {
-      Color color;
-      if (puzzle[x][y].state == PuzzleCell::State::filled)
-        color = puzzle[x][y].color;
-      else
-        color = default_colors::white;
+      Uint32 value;
+      if (puzzle[x][y].state == PuzzleCell::State::filled) {
+        Color color = puzzle[x][y].color;
+        value = static_cast<Uint32>(SDL_MapRGBA(fmt,
+                                                color.red(),
+                                                color.green(),
+                                                color.blue(),
+                                                255));
+      } else {
+        value = static_cast<Uint32>(SDL_MapRGBA(fmt, 0, 0, 0, 0));
+      }
 
-      data[x + y * puzzle.width()]
-        = static_cast<Uint32>(SDL_MapRGBA(fmt,
-                                          color.red(),
-                                          color.green(),
-                                          color.blue(),
-                                          255));
+      data[x + y * puzzle.width()] = value;
     }
   }
 
