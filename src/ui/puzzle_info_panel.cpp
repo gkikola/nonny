@@ -58,7 +58,6 @@ void PuzzleInfoPanel::attach_puzzle(Puzzle& puzzle)
 {
   m_puzzle = &puzzle;
   m_preview.attach_puzzle(puzzle);
-  m_color_selector.set_palette(puzzle.palette());
   retrieve_puzzle_info();
   calculate_bounds();
 }
@@ -389,6 +388,8 @@ void PuzzleInfoPanel::retrieve_puzzle_info()
   m_puzzle_size = std::to_string(m_puzzle->width())
     + u8"\u00D7" + std::to_string(m_puzzle->height());
   m_time = 0;
+
+  m_color_selector.set_palette(m_puzzle->palette());
 }
 
 void PuzzleInfoPanel::calculate_bounds()

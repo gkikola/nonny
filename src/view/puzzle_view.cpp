@@ -487,6 +487,10 @@ void PuzzleView::enable_editing()
     }
   }
 
+  //restore default palette
+  m_puzzle.reset_palette();
+  update_properties();
+
   m_ask_before_save = true;
 }
 
@@ -564,6 +568,10 @@ unsigned PuzzleView::time() const
   auto& ipanel
     = dynamic_cast<const PuzzleInfoPanel&>(m_info_pane.main_panel());
   return ipanel.time();
+}
+
+void read_puzzle_png(const std::string& filename, Puzzle& puzzle)
+{
 }
 
 void write_puzzle_png(const std::string& filename, Puzzle& puzzle)

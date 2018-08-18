@@ -211,6 +211,11 @@ void Puzzle::update(bool edit_mode)
   }
 }
 
+void Puzzle::reset_palette()
+{
+  m_palette = ColorPalette::default_palette();
+}
+
 void Puzzle::purge_unused_colors()
 {
   std::set<Color> used_colors;

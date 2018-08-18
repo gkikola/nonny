@@ -117,6 +117,30 @@ Rect SDLRenderer::draw_text(const Point& point, const Font& font,
   return dest_rect;
 }
 
+Rect SDLRenderer::draw_text_with_bg(const Point& point, const Font& font,
+                                    const std::string& text,
+                                    const Color& bg_color)
+{
+  const SDLFont* sdl_font = dynamic_cast<const SDLFont*>(&font);
+  if (!sdl_font)
+    throw std::runtime_error("SDLRenderer::draw_text: "
+                             "given Font is not an SDLFont");
+
+  SDL_Color bg = { static_cast<Uint8>(bg_color.red()),
+                   static_cast<Uint8>(bg_color.green()),
+                   static_cast<Uint8>(bg_color.blue()) };
+  SDL_Surface* surface
+    = TTF_RenderUTF8_Shaded(sdl_font->get_sdl_handle(),
+                            text.c_str(),
+                            m_draw_color, bg);
+  SDLTexture texture(m_renderer, surface);
+  SDL_FreeSurface(surface);
+
+  Rect dest_rect(point.x(), point.y(), texture.width(), texture.height());
+  copy_texture(texture, Rect(), dest_rect);
+  return dest_rect;
+}
+
 void SDLRenderer::copy_texture(const Texture& src,
                                const Rect& src_rect, const Rect& dest_rect)
 {

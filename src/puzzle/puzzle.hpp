@@ -97,6 +97,9 @@ public:
   // Get color palette associated with this puzzle
   const ColorPalette& palette() const { return m_palette; }
 
+  // Restore the default color palette
+  void reset_palette();
+
   // Get rid of palette colors that aren't being used
   void purge_unused_colors();
 

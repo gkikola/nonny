@@ -57,6 +57,9 @@ public:
 
   virtual Rect draw_text(const Point& point, const Font& font,
                          const std::string& text) = 0;
+  virtual Rect draw_text_with_bg(const Point& point, const Font& font,
+                                 const std::string& text,
+                                 const Color& bg_color) = 0;
   virtual Rect draw_text_wrapped(const Point& point, const Font& font,
                                  std::string text, int width,
                                  bool center = false);

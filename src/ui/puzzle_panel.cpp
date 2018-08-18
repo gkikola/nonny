@@ -276,11 +276,15 @@ void PuzzlePanel::draw_clues(Renderer& renderer) const
         color = clue.color;
       }
       renderer.set_draw_color(color);
+      //Color bg_color = default_colors::white;
+      //if (m_color != default_colors::black && color == m_color)
+      //  bg_color = Color(192, 192, 192);
       std::string value = std::to_string(clue.value);
       int wd, ht;
       m_clue_font.text_size(value, &wd, &ht);
       Point pos(x + (m_cell_size + 1) / 2 - wd / 2, y);
       renderer.draw_text(pos, m_clue_font, value);
+      //renderer.draw_text_with_bg(pos, m_clue_font, value, bg_color);
       y += ht + clue_spacing();
     }
   }
@@ -296,11 +300,15 @@ void PuzzlePanel::draw_clues(Renderer& renderer) const
         color = clue.color;
       }
       renderer.set_draw_color(color);
+      //Color bg_color = default_colors::white;
+      //if (m_color != default_colors::black && color == m_color)
+      //  bg_color = Color(192, 192, 192);
       std::string value = std::to_string(clue.value);
       int wd, ht;
       m_clue_font.text_size(value, &wd, &ht);
       Point pos(x, y + (m_cell_size + 1) / 2 - ht / 2);
       renderer.draw_text(pos, m_clue_font, value);
+      //renderer.draw_text_with_bg(pos, m_clue_font, value, bg_color);
       x += wd + clue_spacing();
     }
   }

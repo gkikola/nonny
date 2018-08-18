@@ -27,14 +27,22 @@
 
 namespace default_colors {
   extern const Color black(0, 0, 0);
+  extern const Color gray(128, 128, 128);
+  extern const Color silver(192, 192, 192);
   extern const Color white(255, 255, 255);
+  extern const Color maroon(128, 0, 0);
   extern const Color red(255, 0, 0);
-  extern const Color green(0, 255, 0);
-  extern const Color dark_green(0, 176, 0);
-  extern const Color blue(0, 0, 255);
+  extern const Color olive(128, 128, 0);
   extern const Color yellow(255, 255, 0);
-  extern const Color orange(255, 128, 0);
+  extern const Color green(0, 128, 0);
+  extern const Color lime(0, 255, 0);
+  extern const Color teal(0, 128, 128);
+  extern const Color aqua(0, 255, 255);
+  extern const Color navy(0, 0, 128);
+  extern const Color blue(0, 0, 255);
   extern const Color purple(128, 0, 128);
+  extern const Color fuchsia(255, 0, 255);
+  extern const Color orange(255, 128, 0);
 }
 
 Color Color::fade(double opacity) const

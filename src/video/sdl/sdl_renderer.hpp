@@ -51,6 +51,8 @@ public:
 
   Rect draw_text(const Point& point, const Font& font,
                  const std::string& text) override;
+  Rect draw_text_with_bg(const Point& point, const Font& font,
+                         const std::string& text, const Color& bg_color);
 
   void copy_texture(const Texture& src,
                     const Rect& src_rect, const Rect& dest_rect) override;

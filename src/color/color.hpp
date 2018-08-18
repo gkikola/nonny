@@ -81,14 +81,22 @@ std::istream& operator>>(std::istream& is, Color& color);
 // Predefined default colors
 namespace default_colors {
   extern const Color black;
+  extern const Color gray;
+  extern const Color silver;
   extern const Color white;
+  extern const Color maroon;
   extern const Color red;
-  extern const Color green;
-  extern const Color dark_green;
-  extern const Color blue;
+  extern const Color olive;
   extern const Color yellow;
-  extern const Color orange;
+  extern const Color green;
+  extern const Color lime;
+  extern const Color teal;
+  extern const Color aqua;
+  extern const Color navy;
+  extern const Color blue;
   extern const Color purple;
+  extern const Color fuchsia;
+  extern const Color orange;
 }
 
 

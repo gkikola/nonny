@@ -625,7 +625,7 @@ g_format::read_colors(std::istream& is,
       else if (color_str == "red")
         color = default_colors::red;
       else if (color_str == "green")
-        color = default_colors::dark_green;
+        color = default_colors::green;
       else if (color_str == "blue")
         color = default_colors::blue;
       else if (color_str == "yellow")

@@ -69,11 +69,21 @@ const Color& ColorPalette::operator[](char symbol) const
 ColorPalette ColorPalette::default_palette()
 {
   ColorPalette palette;
+  palette.add(default_colors::gray, "gray", '/');
+  palette.add(default_colors::silver, "silver", '|');
+  palette.add(default_colors::maroon, "maroon", '&');
   palette.add(default_colors::red, "red", '@');
-  palette.add(default_colors::dark_green, "green", '#');
+  palette.add(default_colors::olive, "olive", '(');
+  palette.add(default_colors::yellow, "yellow", '^');
+  palette.add(default_colors::green, "green", '*');
+  palette.add(default_colors::lime, "lime", '#');
+  palette.add(default_colors::teal, "teal", ')');
+  palette.add(default_colors::aqua, "aqua", '+');
+  palette.add(default_colors::navy, "navy", '-');
   palette.add(default_colors::blue, "blue", '$');
-  palette.add(default_colors::orange, "orange", '%');
   palette.add(default_colors::purple, "purple", '!');
+  palette.add(default_colors::fuchsia, "fuchsia", '=');
+  palette.add(default_colors::orange, "orange", '%');
   return palette;
 }
 
